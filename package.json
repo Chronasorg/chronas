@@ -18,13 +18,14 @@
     "url": "git+https://github.com/daumann/chronas.git"
   },
   "dependencies": {
-    "aor-rich-text-input": "^1.0.1",
+    "admin-on-rest": "^1.1.1",
     "aor-json-rest-client": "2.0.0",
     "aor-language-french": "~1.8.0",
-    "admin-on-rest": "^1.1.1",
+    "aor-rich-text-input": "^1.0.1",
     "bootstrap": "^4.0.0-alpha",
     "compression": "^1.6.2",
     "express": "^4.15.3",
+    "font-awesome": "^4.7.0",
     "material-ui": "~0.18.4",
     "object-assign": "^4.1.1",
     "promise": "^7.3.1",

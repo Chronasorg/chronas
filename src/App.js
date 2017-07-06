@@ -3,21 +3,25 @@ import { browserHistory, Router } from 'react-router'
 import { Provider } from 'react-redux'
 import PropTypes from 'prop-types'
 
-import { combineReducers, createStore, compose, applyMiddleware } from 'redux';
-import createHistory from 'history/createHashHistory';
-import { Switch, Route } from 'react-router-dom';
-import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux';
-import { reducer as formReducer } from 'redux-form';
-import createSagaMiddleware from 'redux-saga';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import autoprefixer from 'material-ui/utils/autoprefixer';
-import Menu from './components/menu/menu';
-import AppBar from 'material-ui/AppBar';
+import 'font-awesome/css/font-awesome.css'
+
+import { combineReducers, createStore, compose, applyMiddleware } from 'redux'
+import createHistory from 'history/createHashHistory'
+import { Switch, Route } from 'react-router-dom'
+import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux'
+import { reducer as formReducer } from 'redux-form'
+import createSagaMiddleware from 'redux-saga'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import autoprefixer from 'material-ui/utils/autoprefixer'
+import Menu from './components/menu/menu'
+import Drawer from 'material-ui/Drawer'
+import IconButton from 'material-ui/IconButton'
+import FontIcon from 'material-ui/FontIcon'
 import themeReducer from './components/menu/configuration/themeReducer';
 
-import restClient from './dummyRest/restClient';
-import fakeRestServer from './dummyRest/restServer';
+import restClient from './dummyRest/restClient'
+import fakeRestServer from './dummyRest/restServer'
 
 // prebuilt admin-on-rest features
 import {
@@ -28,12 +32,11 @@ import {
   crudSaga,
   simpleRestClient,
   Delete,
-  Sidebar,
   Logout,
-  SideMenu,
   TranslationProvider,
 } from 'admin-on-rest';
 
+import Sidebar from './components/menu/Sidebar'
 // translations
 import messages from './translations';
 
@@ -125,6 +128,10 @@ sagaMiddleware.run(crudSaga(restClient, authClient));
 const logout = authClient ? createElement(Logout) : null;
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { drawerOpen: false };
+  }
   componentDidMount() {
     this.restoreFetch = fakeRestServer();
   }
@@ -158,6 +165,14 @@ class App extends Component {
       prefixedStyles.contentSmall = prefix(styles.contentSmall);
     }
 
+    prefixedStyles.content.transition = 'margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)';
+
+    if (this.state.drawerOpen) {
+      prefixedStyles.content.marginLeft = 156
+    } else {
+      prefixedStyles.content.marginLeft = 0
+    }
+
     return (
       <Provider store={store}>
         <TranslationProvider messages={messages}>
@@ -167,6 +182,10 @@ class App extends Component {
                 <div style={prefixedStyles.main}>
                   <div className="body" style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
+                      <IconButton onClick={() => this.setState({ drawerOpen: true }) }>
+                        <FontIcon className="fa fa-chevron-right" />
+                      </IconButton>
+
                       MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                vMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                vMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPvMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP
                       <Switch>
                         <Route exact path="/"/>
@@ -186,13 +205,18 @@ class App extends Component {
                         <Route exact path="/products/:id/delete" render={(routeProps) => <Delete resource="products" {...routeProps} />} />
                       </Switch>
                     </div>
+                    <Drawer style={{ marginLeft: 100, zIndex: 9}} open={this.state.drawerOpen}>
+                      <div style={{ textAlign: 'right' }}>
+                        <IconButton onClick={() => this.setState({ drawerOpen: false }) }>
+                          <FontIcon className="fa fa-chevron-left" />
+                        </IconButton>
+                      </div>
+                      {this.props.children}
+                    </Drawer>
                     <Sidebar open={true} muiTheme={CustomTheme}>
                       {createElement(Menu, {
                         logout})}
                     </Sidebar>
-                    {/*<SideMenu open={false} sidebarOpen={false} sidemenuOpen={false} theme={theme}>*/}
-                      {/*{menu}*/}
-                    {/*</SideMenu>*/}
                   </div>
                   {/*<Notification />*/}
                   {/*{isLoading && <CircularProgress*/}

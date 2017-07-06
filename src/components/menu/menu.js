@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import IconButton from 'material-ui/IconButton';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
+import LayersIcon from 'material-ui/svg-icons/maps/layers';
 import { Link } from 'react-router-dom';
 import pure from 'recompose/pure';
 import { connect } from 'react-redux'
@@ -21,6 +22,17 @@ const styles = {
 };
 const Menu = ({ hasDashboard, onMenuTap, resources, translate }) => (
   <div style={styles.main}>
+    <IconButton
+      key={'layers'}
+      containerElement={<Link to="/layers" />}
+      tooltipPosition="bottom-right"
+      tooltip={translate('pos.layers')}
+      tooltipStyles={defaultTheme.tooltip}
+      onTouchTap={onMenuTap}
+      iconStyle={defaultTheme.icon}
+    >
+      <LayersIcon />
+    </IconButton>
     <IconButton
       key={'configuration'}
       containerElement={<Link to="/configuration" />}
