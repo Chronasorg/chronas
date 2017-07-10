@@ -100,5 +100,9 @@
     "webpack-dev-middleware": "^1.11.0",
     "webpack-hot-middleware": "^2.13.2",
     "yargs": "^8.0.2"
-  }
+  },
+  "engines": {
+    "node": "6.10.0",
+    "npm": "3.10.10"
+  }  
 }
