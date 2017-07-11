@@ -35,9 +35,7 @@
     "redbox-react": "^1.4.2",
     "redux": "^3.7.1",
     "redux-thunk": "^2.2.0",
-    "whatwg-fetch": "^2.0.3"
-  },
-  "devDependencies": {
+    "whatwg-fetch": "^2.0.3",
     "babel-core": "^6.25.0",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.0",
@@ -103,6 +101,6 @@
   },
   "engines": {
     "node": "7.7.4",
-    "npm": "5.0.0"
+    "npm": "5.1.0"
   }  
 }
