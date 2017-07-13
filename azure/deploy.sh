@@ -1,7 +1,7 @@
 #!/bin/bash
 
 gitrepo=https://github.com/daumann/chronas.git
-token=<fillInTOken>
+token=1738523ac008d08005350dae115d98247eb926cb
 webappname=chronasNew$RANDOM
 branch=dev
 
@@ -15,6 +15,14 @@ az appservice plan create --name $webappname --resource-group myResourceGroup --
 
 # Create a web app.
 az webapp create --name $webappname --resource-group myResourceGroup --plan $webappname
+
+#enable full logging for the webapp
+az webapp log config --name $webappname --resource-group myResourceGroup  \
+--application-logging true  \
+--detailed-error-messages true  \
+--failed-request-tracing true  \
+--level verbose  \
+--web-server-logging filesystem
 
 # Configure continuous deployment from GitHub. 
 # --git-token parameter is required only once per Azure account (Azure remembers token).
