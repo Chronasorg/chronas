@@ -6,11 +6,12 @@ webappname=chronasNew$RANDOM
 branch=dev
 
 
+
 # Create a resource group.
 az group create --location westeurope --name myResourceGroup
 
 # Create an App Service plan in `FREE` tier.
-az appservice plan create --name $webappname --resource-group myResourceGroup --sku FREE
+az appservice plan create --name $webappname --resource-group myResourceGroup --sku S1
 
 # Create a web app.
 az webapp create --name $webappname --resource-group myResourceGroup --plan $webappname
