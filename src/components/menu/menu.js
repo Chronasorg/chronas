@@ -7,9 +7,8 @@ import { Link } from 'react-router-dom';
 import pure from 'recompose/pure';
 import { connect } from 'react-redux'
 import compose from 'recompose/compose';
-import inflection from 'inflection';
-// import DashboardMenuItem from './DashboardMenuItem';
 import { translate, defaultTheme } from 'admin-on-rest';
+import { toggleMenuDrawer as toggleMenuDrawerAction } from './actions';
 
 const styles = {
   main: {
@@ -20,15 +19,14 @@ const styles = {
     padding: '8px 4px',
   },
 };
-const Menu = ({ hasDashboard, onMenuTap, resources, translate }) => (
+const Menu = ({ toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate }) => (
   <div style={styles.main}>
     <IconButton
       key={'layers'}
-      containerElement={<Link to="/layers" />}
       tooltipPosition="bottom-right"
       tooltip={translate('pos.layers')}
       tooltipStyles={defaultTheme.tooltip}
-      onTouchTap={onMenuTap}
+      onTouchTap={() => toggleMenuDrawer()}
       iconStyle={defaultTheme.icon}
     >
       <LayersIcon />
@@ -74,7 +72,10 @@ const enhance = compose(
   connect(state => ({
     theme: state.theme,
     locale: state.locale,
-  })),
+    menuDrawerOpen: state.menuDrawerOpen,
+  }), {
+    toggleMenuDrawer: toggleMenuDrawerAction,
+  }),
   pure,
   translate,
 );

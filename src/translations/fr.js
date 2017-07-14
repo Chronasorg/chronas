@@ -1,7 +1,7 @@
 export default {
     pos: {
         search: 'Rechercher',
-        configuration: 'Configuration',
+        configuration: 'Configuration2',
         language: 'Langue',
         theme: {
             name: 'Theme',

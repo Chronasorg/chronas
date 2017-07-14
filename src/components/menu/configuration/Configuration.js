@@ -7,9 +7,9 @@ import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui/svg-icons/content/clear';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
-import { translate, changeLocale as changeLocaleAction, ViewTitle } from 'admin-on-rest';
+import { translate, ViewTitle } from 'admin-on-rest';
 
-import { changeTheme as changeThemeAction } from './actions';
+import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actions';
 
 const styles = {
   label: { width: '10em', display: 'inline-block' },
