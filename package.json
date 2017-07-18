@@ -6,9 +6,9 @@
   "scripts": {
     "clean": "rimraf dist",
     "compile": "node build/scripts/compile",
-    "build": "npm run clean && cross-env NODE_ENV=production npm run compile",
-    "start": "cross-env NODE_ENV=development node build/scripts/start",
-    "test": "cross-env NODE_ENV=test karma start build/karma.config",
+    "build": "npm run clean && npm run compile",
+    "start": "node build/scripts/start",
+    "test": "karma start build/karma.config",
     "test:watch": "npm test -- --watch",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix"
@@ -102,5 +102,5 @@
   "engines": {
     "node": "7.7.4",
     "npm": "4.1.2"
-  }  
+  }
 }
