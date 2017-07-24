@@ -16,4 +16,4 @@ az vm extension set \
   --name DockerExtension \
   --publisher Microsoft.Azure.Extensions \
   --version 1.1 \
---settings '{"docker": {"port": "2375"},"compose": {"web": {"image": "aumanjoa/chronas","ports": ["80:3000"]}}}'
+--settings '{"docker": {"port": "2375"},"compose": {"web": {"image": "aumanjoa/chronas","ports": ["80:80"]}}}'
