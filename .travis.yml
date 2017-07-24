@@ -5,14 +5,13 @@ node_js:
   - "6"
 
 cache:
-  yarn: true
   directories:
     - node_modules
 
 script:
-  - yarn lint
-  - yarn test
-  - yarn build
+  - npm run lint
+  - npm run test
+  - npm run build
 
 after_success:
-  - yarn codecov
+  - npm run codecov
