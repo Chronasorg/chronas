@@ -63,11 +63,11 @@ Sidebar.propTypes = {
   children: PropTypes.node.isRequired,
   muiTheme: PropTypes.object.isRequired,
   open: PropTypes.bool.isRequired,
-  setSidebarVisibility: PropTypes.func.isRequired,
+  setSidebarVisibility: PropTypes.func,
 };
 
 const mapStateToProps = (state, props) => ({
-  open: state.admin.ui.sidebarOpen,
+  open: props.open,
   locale: state.locale, // force redraw on locale change
   theme: props.theme, // force redraw on theme changes
 });

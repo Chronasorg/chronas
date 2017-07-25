@@ -1,26 +1,13 @@
 import React, { Component, createElement } from 'react'
-import { browserHistory, Router } from 'react-router'
 import { Provider } from 'react-redux'
 import PropTypes from 'prop-types'
-
 import 'font-awesome/css/font-awesome.css'
-
-import { combineReducers, createStore, compose, applyMiddleware } from 'redux'
-import createHistory from 'history/createHashHistory'
 import { Switch, Route } from 'react-router-dom'
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux'
-import { reducer as formReducer } from 'redux-form'
-import createSagaMiddleware from 'redux-saga'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
 import Menu from './components/menu/menu'
-import Drawer from 'material-ui/Drawer'
-import IconButton from 'material-ui/IconButton'
-import FontIcon from 'material-ui/FontIcon'
-import themeReducer from './components/menu/configuration/themeReducer';
-
-import restClient from './dummyRest/restClient'
 import fakeRestServer from './dummyRest/restServer'
 
 // prebuilt admin-on-rest features
@@ -37,8 +24,11 @@ import {
 } from 'admin-on-rest';
 
 import Sidebar from './components/menu/Sidebar'
+import Sidedrawer from './components/menu/Sidedrawer'
+
 // translations
 import messages from './translations';
+import { history } from './store/createStore';
 
 // your app components
 import { PostList, PostCreate, PostEdit, PostShow } from './components/menu/posts';
@@ -87,47 +77,18 @@ const styles = {
 
 const prefixedStyles = {};
 
-
-const initialState =  {
-  admin: {
-    ui: {
-      sidebarOpen: true
-    }
-  }
-};
-
-const reducer = combineReducers({
-  admin: adminReducer([
-    { name: 'categories' },
-    { name: 'comments' },
-    { name: 'customers' },
-    { name: 'posts' },
-    { name: 'products' },
-    { name: 'reviews' },
-    { name: 'settings' },
-    { name: 'tags' },
-    { name: 'users' }
-  ]),
-  locale: localeReducer(),
-  form: formReducer,
-  routing: routerReducer,
-});
-
-const sagaMiddleware = createSagaMiddleware();
-const history = createHistory();
-const store = createStore(reducer, initialState, compose(
-  applyMiddleware(sagaMiddleware, routerMiddleware(history)),
-  window.devToolsExtension ? window.devToolsExtension() : f => f,
-));
-
-console.log(store.getState())
-
-// const restClient = simpleRestClient('http://localhost:3000');
-sagaMiddleware.run(crudSaga(restClient, authClient));
-
 const logout = authClient ? createElement(Logout) : null;
 
 class App extends Component {
+  static propTypes = {
+    store: PropTypes.object.isRequired,
+    // routes: PropTypes.object.isRequired,
+  }
+
+  shouldComponentUpdate () {
+    return false
+  }
+
   constructor(props) {
     super(props);
     this.state = { drawerOpen: false };
@@ -174,7 +135,7 @@ class App extends Component {
     }
 
     return (
-      <Provider store={store}>
+      <Provider store={this.props.store}>
         <TranslationProvider messages={messages}>
           <ConnectedRouter history={history}>
             <MuiThemeProvider muiTheme={muiTheme}>
@@ -182,10 +143,6 @@ class App extends Component {
                 <div style={prefixedStyles.main}>
                   <div className="body" style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
-                      <IconButton onClick={() => this.setState({ drawerOpen: true }) }>
-                        <FontIcon className="fa fa-chevron-right" />
-                      </IconButton>
-
                       MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                vMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                vMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPvMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP
                       <Switch>
                         <Route exact path="/"/>
@@ -205,14 +162,10 @@ class App extends Component {
                         <Route exact path="/products/:id/delete" render={(routeProps) => <Delete resource="products" {...routeProps} />} />
                       </Switch>
                     </div>
-                    <Drawer style={{ marginLeft: 100, zIndex: 9}} open={this.state.drawerOpen}>
-                      <div style={{ textAlign: 'right' }}>
-                        <IconButton onClick={() => this.setState({ drawerOpen: false }) }>
-                          <FontIcon className="fa fa-chevron-left" />
-                        </IconButton>
-                      </div>
-                      {this.props.children}
-                    </Drawer>
+                    <Sidedrawer muiTheme={CustomTheme}>
+                      {createElement(Menu, {
+                        logout})}
+                    </Sidedrawer>
                     <Sidebar open={true} muiTheme={CustomTheme}>
                       {createElement(Menu, {
                         logout})}
