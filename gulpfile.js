@@ -14,7 +14,7 @@ var options = minimist(process.argv.slice(2), knownOptions);
 
 gulp.task('default', function () {
 
-	var packagePaths = ['**', 
+	var packagePaths = ['dist/**', 
 					'!**/_package/**', 
 					'!**/typings/**',
 					'!typings', 
