@@ -136,6 +136,15 @@ Out of the box, Chronas is deployable by serving the `./dist` folder generated b
 
 Serve the application with a web server such as nginx by pointing it at your `./dist` folder. Make sure to direct incoming route requests to the root `./dist/index.html` file so that the client application will be loaded; react-router will take care of the rest. If you are unsure of how to do this, you might find [this documentation](https://github.com/reactjs/react-router/blob/master/docs/guides/Histories.md#configuring-your-server) helpful. The Express server that comes with this early draft project is able to be extended to serve as an API and more, but is not required for a static deployment.
 
+### Docker
+
+You can find Chronas as well on Docker [aumanjoa/chronas](https://hub.docker.com/r/aumanjoa/chronas/)
+
+[Dockerfile](https://github.com/aumanjoa/chronas/blob/master/Dockerfile)
+
+To run the docker use ```docker run -p -d 80:80 aumanjoa/chronas```
+
+
 ## Thank You
 
 This project wouldn't be possible without help from the Chronas community, so I'd like to thank especially those who backed the [Kickstarter](https://www.kickstarter.com/projects/1152044848/chronas-interactive-history-map-application) campaign!
