@@ -3,19 +3,19 @@ import { Provider } from 'react-redux'
 import PropTypes from 'prop-types'
 import 'font-awesome/css/font-awesome.css'
 import { Switch, Route } from 'react-router-dom'
-import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux'
+import { ConnectedRouter } from 'react-router-redux'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
-import Menu from './components/menu/menu'
+import Menu from './components/menu/Menu'
+import Map from './components/map/Map'
+import LayerContent from './components/menu/layers/LayersContent'
+import RightContent from './components/content/Content'
 import fakeRestServer from './dummyRest/restServer'
-
 // prebuilt admin-on-rest features
 import {
   authClient,
-  adminReducer,
   defaultTheme,
-  localeReducer,
   crudSaga,
   simpleRestClient,
   Delete,
@@ -24,19 +24,18 @@ import {
 } from 'admin-on-rest';
 
 import Sidebar from './components/menu/Sidebar'
-import Sidedrawer from './components/menu/Sidedrawer'
+import MenuDrawer from './components/menu/MenuDrawer'
+import RightDrawer from './components/content/RightDrawer'
 
 // translations
-import messages from './translations';
-import { history } from './store/createStore';
-
+import messages from './translations'
+import { history } from './store/createStore'
 // your app components
-import { PostList, PostCreate, PostEdit, PostShow } from './components/menu/posts';
-import { CommentList, CommentEdit, CommentCreate } from './components/menu/comments';
-import { ProductList, ProductEdit, ProductCreate } from './components/menu/products';
-import Configuration from './components/menu/configuration/Configuration';
-import CustomTheme from './styles/CustomAdminTheme';
-
+import { PostList, PostCreate, PostEdit, PostShow } from './components/menu/posts'
+import { CommentList, CommentEdit, CommentCreate } from './components/menu/comments'
+import { ProductList, ProductEdit, ProductCreate } from './components/menu/products'
+import Configuration from './components/menu/configuration/Configuration'
+import CustomTheme from './styles/CustomAdminTheme'
 
 const styles = {
   wrapper: {
@@ -103,14 +102,6 @@ class App extends Component {
 
   render() {
     const {
-      authClient,
-      customRoutes,
-      dashboard,
-      isLoading,
-      menu,
-      resources,
-      theme,
-      title,
       width,
     } = this.props;
 
@@ -127,6 +118,7 @@ class App extends Component {
     }
 
     prefixedStyles.content.transition = 'margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)';
+    prefixedStyles.content.overflow = 'hidden';
 
     if (this.state.drawerOpen) {
       prefixedStyles.content.marginLeft = 156
@@ -142,8 +134,8 @@ class App extends Component {
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
                   <div className="body" style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
+                    {createElement(Map)}
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
-                      MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                vMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                vMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPvMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP                MAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAPMAP
                       <Switch>
                         <Route exact path="/"/>
                         <Route exact path="/configuration" component={Configuration} />,
@@ -162,10 +154,12 @@ class App extends Component {
                         <Route exact path="/products/:id/delete" render={(routeProps) => <Delete resource="products" {...routeProps} />} />
                       </Switch>
                     </div>
-                    <Sidedrawer muiTheme={CustomTheme}>
-                      {createElement(Menu, {
-                        logout})}
-                    </Sidedrawer>
+                    <MenuDrawer muiTheme={CustomTheme}>
+                      {createElement(LayerContent)}
+                    </MenuDrawer>
+                    <RightDrawer muiTheme={CustomTheme}>
+                      {createElement(RightContent)}
+                    </RightDrawer>
                     <Sidebar open={true} muiTheme={CustomTheme}>
                       {createElement(Menu, {
                         logout})}

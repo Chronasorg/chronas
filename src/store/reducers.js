@@ -3,6 +3,8 @@ import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-r
 import locationReducer from './location'
 import { adminReducer } from 'admin-on-rest'
 import reducerLocale from '../components/menu/configuration/reducerLocale'
+import { basemapReducer } from '../components/menu/layers/reducers'
+import { rightDrawerReducer } from '../components/content/reducers'
 import reducerMenuDrawer from '../components/menu/reducerMenuDrawer'
 import { reducer as formReducer } from 'redux-form'
 
@@ -20,8 +22,9 @@ export const makeRootReducer = (asyncReducers) => {
       { name: 'users' }
     ]),
     locale: reducerLocale(),
+    basemap: basemapReducer(),
     menuDrawerOpen: reducerMenuDrawer(),
-    // reducerMenuDrawer,
+    rightDrawerOpen: rightDrawerReducer(),
     form: formReducer,
     routing: routerReducer,
     location: locationReducer,
@@ -31,7 +34,6 @@ export const makeRootReducer = (asyncReducers) => {
 
 export const injectReducer = (store, { key, reducer }) => {
   if (Object.hasOwnProperty.call(store.asyncReducers, key)) return
-
   store.asyncReducers[key] = reducer
   store.replaceReducer(makeRootReducer(store.asyncReducers))
 }

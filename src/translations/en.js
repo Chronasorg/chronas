@@ -2,6 +2,7 @@ export default {
     pos: {
         search: 'Search',
         map: '',
+        layers: 'Layers',
         configuration: 'Configuration',
         language: 'Language',
         theme: {
