@@ -16,7 +16,6 @@
       "tileSize": 256
     }
   },
-  "sprite": "mapbox://sprites/mapbox/basic-v8",
   "glyphs": "fonts/{fontstack}/{range}.pbf",
   "layers": [
   ]
