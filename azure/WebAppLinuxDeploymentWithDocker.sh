@@ -2,7 +2,7 @@
 
 # Variables
 appName="AppServiceLinuxDocker$random"
-dockerHubContainerPath="aumanjoa/chronas"
+dockerHubContainerPath="aumanjoa/chronas-map"
 
 # Create a Resource Group
 az group create --name chronasLinuxWebAppResourceGroup --location westeurope

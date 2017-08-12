@@ -1,6 +1,6 @@
 #!/bin/bash
 
-gitrepo=https://github.com/aumanjoa/chronas.git
+gitrepo=https://github.com/daumann/chronas.git
 token=
 webappname=chronasNew$RANDOM
 branch=dev
@@ -14,7 +14,7 @@ az appservice plan create --name $webappname --resource-group myResourceGroup --
 # Create a web app.
 az webapp create --name $webappname --resource-group myResourceGroup --plan $webappname
 
-az webapp config appsettings set --name $webappname --resource-group myResourceGroup --settings NODE_ENV=development
+az webapp config appsettings set --name $webappname --resource-group myResourceGroup
 
 #enable full logging for the webapp
 az webapp log config --name $webappname --resource-group myResourceGroup  \
