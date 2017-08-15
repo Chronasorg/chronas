@@ -1,5 +1,5 @@
 
-az group create --name containertesting --location westeurope
+az group create --name chronas-container --location westeurope
 
 #deploying the chronas azure container
-az container create --name chronascontainer --image aumanjoa/chronas --resource-group containertesting --ip-address public
+az container create --name chronascontainer --image aumanjoa/chronas-map --resource-group containertesting --ip-address public
