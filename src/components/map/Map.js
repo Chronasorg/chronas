@@ -8,45 +8,76 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
-import { toggleRightDrawer as toggleRightDrawerAction } from '../content/actions'
+import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actions'
+import { setItemId as setItemIdAction } from './actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import {render} from 'react-dom'
 import {fromJS} from 'immutable'
-import MapGL, {Popup} from 'react-map-gl'
+import MapGL, {Marker, Popup} from 'react-map-gl'
 import {json as requestJson} from 'd3-request'
-import {defaultMapStyle, provincesLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex} from './map-style.js'
+import {defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex} from './mapStyles/map-style.js'
 import {updatePercentiles} from './utils'
 import fakeRestServer from '../../dummyRest/restServer'
-import ControlPanel from './control-panel'
+import Timeline from './timeline/MapTimeline'
+
+import BasicInfo from './markers/basic-info'
+import BasicPin from './markers/basic-pin'
+
 
 class Map extends Component {
 
   state = {
     mapStyle: defaultMapStyle,
-    year: 2015,
+    year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
     data: null,
     viewport: {
-      latitude: 38.88,
-      longitude: -98,
-      zoom: 3,
+      latitude: 0.88,
+      longitude: -0,
+      zoom: 1,
       minZoom: 2,
       bearing: 0,
       pitch: 0,
       width: 500,
       height: 500
     },
-    hoverInfo: null
-  };
+    hoverInfo: null,
+    popupInfo: null
+  }
 
   componentDidMount() {
     window.addEventListener('resize', this._resize);
     this._resize();
 
     this.restoreFetch = fakeRestServer();
-    fetch('http://fakeapi/provinces')
-      .then(res => res.text())
-      .then(res => this._loadData(JSON.parse(res)));
+
+
+    window.addEventListener('load', function(){
+
+      fetch('http://fakeapi/provinces')
+        .then(res => res.text())
+        .then(res => this._loadGeoJson(
+          fromJS({
+            type: 'geojson',
+            data: JSON.parse(res)
+          }),
+          'provinces',
+          [provincesLayer]));
+
+      fetch('http://fakeapi/markersExample')
+        .then(res => res.text())
+        .then(res => this._loadGeoJson(
+          fromJS({
+            cluster: true,
+            clusterMaxZoom: 14, // Max zoom to cluster points on
+            clusterRadius: 50, // Radius of each cluster when clustering points (defaults to 50),
+            type: 'geojson',
+            data: JSON.parse(res)
+          }),
+          'markers',
+          [markerLayer, clusterLayer, markerCountLayer]));
+
+    }.bind(this));
   }
 
   componentWillReceiveProps(prevProps, prevState) {
@@ -58,7 +89,6 @@ class Map extends Component {
 
     // if drawer changed
     this._resize();
-
   }
 
   componentWillUnmount() {
@@ -66,35 +96,54 @@ class Map extends Component {
   }
 
   _resize = () => {
-
-    const marginLeft = (this.props.menuDrawerOpen) ? 100 : 0
-    const marginRight =(this.props.menuDrawerOpen) ? 100 : 0
-
     this.setState({
       viewport: {
         ...this.state.viewport,
-        width: (this.props.width || window.innerWidth) - (marginLeft + marginRight),
-        height: this.props.height || window.innerHeight
+        width: this.props.width || (window.innerWidth - 56),
+        height: (this.props.height || window.innerHeight) - 38
       }
     });
   };
 
-  _loadData = data => {
-
+  _loadGeoJson = (sourceData, sourceId, layers) => {
     // updatePercentiles(data, f => f.properties.income[this.state.year]);
+    const prevMapStyle = this.state.mapStyle
+    let mapStyle = prevMapStyle
+    // Add source
+      .setIn(['sources', sourceId], sourceData)
+    // /fromJS({
+        // cluster: true,
+        // clusterMaxZoom: 14, // Max zoom to cluster points on
+        // clusterRadius: 50, // Radius of each cluster when clustering points (defaults to 50),
+        // type: 'geojson', data}))
+      // Add layer
+      .set('layers', prevMapStyle.get('layers').concat(layers));
+      /*
+       mapStyle = mapStyle
+       // Add highlighted province fill
+       .set('layers', mapStyle.get('layers').push(provincesHighlightedLayer));
+       */
+      //data, m
+      this.setState({mapStyle});
 
-    let mapStyle = defaultMapStyle
-    // Add geojson source to map
-      .setIn(['sources', 'incomeByState'], fromJS({type: 'geojson', data}))
-      // Add default province fill
-      .set('layers', defaultMapStyle.get('layers').push(provincesLayer));
-
-    mapStyle = mapStyle
-      // Add highlighted province fill
-      .set('layers', mapStyle.get('layers').push(provincesHighlightedLayer));
-
-    this.setState({data, mapStyle});
   };
+
+
+  _loadMarkerData = data => {
+    data.features.map((markerData, iter) => (
+      this._renderBasicMarker(markerData, iter)
+    ))
+  };
+
+  _renderBasicMarker = (markerData, index) => {
+    return (
+      <Marker key={`marker-${index}`}
+              longitude={markerData.geometry.coordinates[0]}
+              latitude={markerData.geometry.coordinates[1]}>
+        <BasicPin size={20} onClick={() => this.setState({popupInfo: markerData.properties})} />
+      </Marker>
+    );
+  }
 
   _onViewportChange = viewport => this.setState({viewport});
 
@@ -131,27 +180,38 @@ class Map extends Component {
   };
 
   _onClick = event => {
-    let countyName = '';
-    let hoverInfo = null;
+    let itemName = '';
+    let itemId = '';
 
-    const county = event.features && event.features.find(f => f.layer.id === 'provinces');
-    if (county) {
-      hoverInfo = {
-        lngLat: event.lngLat,
-        county: county.properties
-      };
-      countyName = county.properties.name;
+    const item = event.features && event.features.find(f => f.layer.id === 'provinces');
+    if (item) {
+      itemName = item.properties.name;
+      itemId = item.properties.wikiUrl;
     }
 
-    this.props.toggleRightDrawer()
+    console.debug(event)
+
+    this.props.setRightDrawerVisibility(itemName !== '')
+    this.props.setItemId(itemId)
   };
 
   _renderPopup() {
-    const {hoverInfo} = this.state;
+    const {hoverInfo, popupInfo} = this.state;
     if (hoverInfo) {
       return (
         <Popup longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
           <div className="county-info">{JSON.stringify(hoverInfo)}</div>
+        </Popup>
+      );
+    }
+    if (popupInfo) {
+      return (
+        <Popup tipSize={5}
+               anchor="top"
+               longitude={popupInfo.longitude}
+               latitude={popupInfo.latitude}
+               onClose={() => this.setState({popupInfo: null})} >
+          <BasicInfo info={popupInfo} />
         </Popup>
       );
     }
@@ -172,13 +232,20 @@ class Map extends Component {
 
   render() {
     const {viewport, mapStyle} = this.state;
-    console.debug("menuDrawerOpen: this.state this.props",this.state, this.props)
+
+    let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
+    if (this.props.rightDrawerOpen) leftOffset -= 228
 
     return (
       <div style={{
-        marginLeft: (this.props.menuDrawerOpen) ? '100px' : '0px',
-        marginRight: (this.props.menuDrawerOpen) ? '100px' : '0px',
-        transition: 'all 300ms'
+        left: leftOffset,
+        position: 'absolute',
+        top: 0,
+        width: 'calc(100% - 56px)',
+        height: '100%',
+        overflow: 'hidden',
+        zIndex: 0,
+        transition: 'left 300ms cubic-bezier(0.4, 0, 0.2, 1), right 300ms cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
         <MapGL
           {...viewport}
@@ -190,9 +257,7 @@ class Map extends Component {
 
           {this._renderPopup()}
         </MapGL>
-
-        <ControlPanel containerComponent={this.props.containerComponent}
-                      settings={this.state} onChange={this._updateSettings} />
+        <Timeline/>
       </div>
     );
   }
@@ -216,10 +281,12 @@ const enhance = compose(
     theme: state.theme,
     locale: state.locale,
     basemap: state.basemap,
+    selectedItem: state.selectedItem,
     menuDrawerOpen: state.menuDrawerOpen,
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
-    toggleRightDrawer: toggleRightDrawerAction,
+    setRightDrawerVisibility: setRightDrawerVisibilityAction,
+    setItemId: setItemIdAction
   }),
   pure,
   translate,

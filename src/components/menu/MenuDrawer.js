@@ -16,12 +16,10 @@ import Responsive from './Responsive';
 // but for some reason it keeps rendering even though mapStateToProps returns the same object
 class MenuDrawer extends PureComponent {
   handleClose = () => {
-    console.debug("handle close")
     this.props.toggleMenuDrawer()
   }
 
   render() {
-    console.debug("menuDrawerOpen: this.state this.props",this.state, this.props)
     const { menuDrawerOpen, setMenuDrawerVisibility, children, muiTheme } = this.props;
 
     return (
@@ -45,7 +43,7 @@ class MenuDrawer extends PureComponent {
               showMenuIconButton={false}
               style={{backgroundColor: '#fff'}}
               iconElementRight={
-                <IconButton iconStyle={{textAlign: 'right', fontSize: '12', color: grey600}}
+                <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
                             onTouchTap={() => this.handleClose()}>
                   <FontIcon className="fa fa-chevron-left"/>
                 </IconButton>

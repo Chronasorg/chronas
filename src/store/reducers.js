@@ -5,6 +5,7 @@ import { adminReducer } from 'admin-on-rest'
 import reducerLocale from '../components/menu/configuration/reducerLocale'
 import { basemapReducer } from '../components/menu/layers/reducers'
 import { rightDrawerReducer } from '../components/content/reducers'
+import { itemIdReducer } from '../components/map/actionReducers'
 import reducerMenuDrawer from '../components/menu/reducerMenuDrawer'
 import { reducer as formReducer } from 'redux-form'
 
@@ -25,6 +26,7 @@ export const makeRootReducer = (asyncReducers) => {
     basemap: basemapReducer(),
     menuDrawerOpen: reducerMenuDrawer(),
     rightDrawerOpen: rightDrawerReducer(),
+    selectedItem: itemIdReducer(),
     form: formReducer,
     routing: routerReducer,
     location: locationReducer,

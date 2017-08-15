@@ -19,9 +19,9 @@ const getStyles = ({ drawer }) => {
       marginLeft: 0,
       order: -1,
       zIndex: 10,
-
+      borderRadius: 0,
       color: '#fff', backgroundColor: '#000',
-      transition: 'margin 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
+      transition: 'margin 350ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
     },
     sidebarClosed: {
 
@@ -29,7 +29,7 @@ const getStyles = ({ drawer }) => {
       marginLeft: `-${width}`,
       order: -1,
       zIndex: 10,
-      transition: 'margin 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
+      transition: 'margin 350ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
     },
   });
 };

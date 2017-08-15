@@ -29,7 +29,6 @@ export default (apiUrl, httpClient = fetchJson) => {
      * @returns {Object} { url, options } The HTTP request parameters
      */
     const convertRESTRequestToHTTP = (type, resource, params) => {
-        console.debug("convertRESTRequestToHTTP", type, resource, params)
         let url = '';
         const options = {};
         switch (type) {
@@ -92,7 +91,6 @@ export default (apiUrl, httpClient = fetchJson) => {
      */
     const convertHTTPResponseToREST = (response, type, resource, params) => {
         const { headers, json } = response;
-      console.debug("convertHTTPResponseToREST", response)
         switch (type) {
         case GET_LIST:
         case GET_MANY_REFERENCE:

@@ -20,7 +20,6 @@ class RightDrawer extends PureComponent {
   }
 
   render() {
-    console.debug("rightDrawerOpen: this.state this.props",this.state, this.props)
     const { rightDrawerOpen, setRightDrawerVisibility, children, muiTheme } = this.props;
 
     return (
@@ -39,8 +38,9 @@ class RightDrawer extends PureComponent {
           <Drawer
             openSecondary={true}
             containerStyle={{ overflow: 'none' }}
-            style={{ overflow: 'none', zIndex: 9}}
+            style={{ overflow: 'none', zIndex: 9 }}
             open={rightDrawerOpen}
+            width={'50%'}
           >
             <AppBar
               title={
@@ -53,7 +53,7 @@ class RightDrawer extends PureComponent {
               showMenuIconButton={false}
               style={{backgroundColor: '#fff'}}
               iconElementRight={
-                <IconButton iconStyle={{textAlign: 'right', fontSize: '12', color: grey600}}
+                <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
                             onTouchTap={() => this.handleClose()}>
                   <FontIcon className="fa fa-chevron-right"/>
                 </IconButton>

@@ -173953,5 +173953,2271 @@ export const data = {
         }
       }
     ]
+  },
+  "markersExample": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.4,
+            54.416666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Jakob%20Erlandsen",
+          "name": "Jakob Erlandsen",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            6.2166666666667,
+            49.516666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Peter%20of%20Aspelt",
+          "name": "Peter of Aspelt",
+          "yOBirth": "1240"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            7.895,
+            49.966944444444
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Siegfried%20III%20%28Archbishop%20of%20Mainz%29",
+          "name": "Siegfried III (Archbishop of Mainz)",
+          "yOBirth": "1195"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            7.0997222222222,
+            50.733888888889
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Siegfried%20II%20of%20Westerburg",
+          "name": "Siegfried II of Westerburg",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.891666666667,
+            49.891666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Berthold%20%28patriarch%20of%20Aquileia%29",
+          "name": "Berthold (patriarch of Aquileia)",
+          "yOBirth": "1180"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            6.9577777777778,
+            50.942222222222
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Konrad%20von%20Hochstaden",
+          "name": "Konrad von Hochstaden",
+          "yOBirth": "1205"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.8094,
+            49.4359
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Conrad%20II%2c%20Bishop%20of%20Hildesheim",
+          "name": "Conrad II, Bishop of Hildesheim",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.575277777778,
+            42.854722222222
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Nicholas%20IV",
+          "name": "Pope Nicholas IV",
+          "yOBirth": "1227"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            14.6111,
+            41.6997
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Celestine%20V",
+          "name": "Pope Celestine V",
+          "yOBirth": "1215"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.15,
+            41.75
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Boniface%20VIII",
+          "name": "Pope Boniface VIII",
+          "yOBirth": "1235"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            50.003888888889,
+            37.207222222222
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Zahed%20Gilani",
+          "name": "Zahed Gilani",
+          "yOBirth": "1216"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.25,
+            43.783333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Philip%20Benizi%20de%20Damiani",
+          "name": "Philip Benizi de Damiani",
+          "yOBirth": "1233"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.9333333333333,
+            44.416666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Innocent%20IV",
+          "name": "Pope Innocent IV",
+          "yOBirth": "1195"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            9.7,
+            45.05
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Gregory%20X",
+          "name": "Pope Gregory X",
+          "yOBirth": "1210"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.4333333333333,
+            44.45
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20John%20XXII",
+          "name": "Pope John XXII",
+          "yOBirth": "1244"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.25,
+            45.666666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Benedict%20XI",
+          "name": "Pope Benedict XI",
+          "yOBirth": "1240"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.0791666666667,
+            48.299722222222
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Urban%20IV",
+          "name": "Pope Urban IV",
+          "yOBirth": "1195"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.166666666667,
+            41.883333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Alexander%20IV",
+          "name": "Pope Alexander IV",
+          "yOBirth": "1199"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.5,
+            41.9
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Nicholas%20III",
+          "name": "Pope Nicholas III",
+          "yOBirth": "1215"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            6.6933,
+            45.4553
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Innocent%20V",
+          "name": "Pope Innocent V",
+          "yOBirth": "1225"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.4333333333333,
+            43.683333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Clement%20IV",
+          "name": "Pope Clement IV",
+          "yOBirth": "1190"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.9333333333333,
+            44.416666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Adrian%20V",
+          "name": "Pope Adrian V",
+          "yOBirth": "1215"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            5.3772222222222,
+            43.2975
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-J.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Moses%20ibn%20Tibbon",
+          "name": "Moses ibn Tibbon",
+          "yOBirth": "1195"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.68333333333333,
+            47.4
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Martin%20IV",
+          "name": "Pope Martin IV",
+          "yOBirth": "1215"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.5,
+            41.9
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pope%20Honorius%20IV",
+          "name": "Pope Honorius IV",
+          "yOBirth": "1210"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.983333333333,
+            45.433333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Peter%20of%20Verona",
+          "name": "Peter of Verona",
+          "yOBirth": "1206"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            5.3233333333333,
+            60.3925
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Ãrni%20%deorlÃ¡ksson",
+          "name": "Ãrni ÃžorlÃ¡ksson",
+          "yOBirth": "1237"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.274,
+            52.318
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Robert%20Grosseteste",
+          "name": "Robert Grosseteste",
+          "yOBirth": "1175"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            15.283333,
+            41.683333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Rogerius%20of%20Apulia",
+          "name": "Rogerius of Apulia",
+          "yOBirth": "1200"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.9333333333333,
+            44.416666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Jacobus%20de%20Voragine",
+          "name": "Jacobus de Voragine",
+          "yOBirth": "1228"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.4775,
+            51.163611111111
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Anselm%20of%20Meissen",
+          "name": "Anselm of Meissen",
+          "yOBirth": "1210"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.47,
+            41.81
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Raymond%20of%20Penyafort",
+          "name": "Raymond of Penyafort",
+          "yOBirth": "1175"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            15.6,
+            48.4
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Philip%20of%20Spanheim",
+          "name": "Philip of Spanheim",
+          "yOBirth": "1220"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.2783,
+            43.2808
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Peter%20Olivi",
+          "name": "Peter Olivi",
+          "yOBirth": "1248"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.516666666667,
+            43.85
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Theodoric%20Borgognoni",
+          "name": "Theodoric Borgognoni",
+          "yOBirth": "1206"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.8166666666667,
+            41.983333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-J.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Nahmanides",
+          "name": "Nahmanides",
+          "yOBirth": "1194"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            14.983333333333,
+            40.7
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "John%20of%20Montecorvino",
+          "name": "John of Montecorvino",
+          "yOBirth": "1246"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.5,
+            41.9
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Giles%20of%20Rome",
+          "name": "Giles of Rome",
+          "yOBirth": "1243"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.6,
+            42.35
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Agostino%20Novello",
+          "name": "Agostino Novello",
+          "yOBirth": "1240"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.68306,
+            53.4833
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Hermann%20of%20Dorpat",
+          "name": "Hermann of Dorpat",
+          "yOBirth": "1163"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            14.421388888889,
+            50.088611111111
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Agnes%20of%20Bohemia",
+          "name": "Agnes of Bohemia",
+          "yOBirth": "1211"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            17.65,
+            59.85
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Jarler",
+          "name": "Jarler",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.077777777778,
+            49.452777777778
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-J.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Mordechai%20ben%20Hillel",
+          "name": "Mordechai ben Hillel",
+          "yOBirth": "1240"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.3425,
+            43.4706
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Benedict%20of%20Alignan",
+          "name": "Benedict of Alignan",
+          "yOBirth": "1200"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13,
+            43.316666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Nicholas%20of%20Tolentino",
+          "name": "Nicholas of Tolentino",
+          "yOBirth": "1245"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            6.9577777777778,
+            50.942222222222
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Albert%20Suerbeer",
+          "name": "Albert Suerbeer",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.3330555555556,
+            48.866666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Robert%20de%20Sorbon",
+          "name": "Robert de Sorbon",
+          "yOBirth": "1201"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.4833333333333,
+            45.75
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Ottone%20Visconti",
+          "name": "Ottone Visconti",
+          "yOBirth": "1207"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            9.95,
+            45.65
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Oddone%20di%20Monferrato",
+          "name": "Oddone di Monferrato",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.033333333333,
+            47.8
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Ladislaus%20of%20Salzburg",
+          "name": "Ladislaus of Salzburg",
+          "yOBirth": "1237"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            33.174166666667,
+            35.336666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Gregory%20II%20of%20Constantinople",
+          "name": "Gregory II of Constantinople",
+          "yOBirth": "1241"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            6.3061,
+            45.5433
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Philip%20I%2c%20Count%20of%20Savoy",
+          "name": "Philip I, Count of Savoy",
+          "yOBirth": "1207"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            16.080277777778,
+            51.658888888889
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Konrad%20I%2c%20Duke%20of%20GÅ‚ogÃ³w",
+          "name": "Konrad I, Duke of GÅ‚ogÃ³w",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.4313888888889,
+            52.893055555556
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "John%20of%20Wildeshausen",
+          "name": "John of Wildeshausen",
+          "yOBirth": "1180"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.5,
+            41.9
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Annibale%20Annibaldi",
+          "name": "Annibale Annibaldi",
+          "yOBirth": "1220"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.8422222222222,
+            45.759722222222
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Bernard%20Ayglerius",
+          "name": "Bernard Ayglerius",
+          "yOBirth": "1216"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            16.373064,
+            48.20833
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-J.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Isaac%20ben%20Moses%20of%20Vienna",
+          "name": "Isaac ben Moses of Vienna",
+          "yOBirth": "1200"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.9333333333333,
+            44.416666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Guglielmo%20Fieschi",
+          "name": "Guglielmo Fieschi",
+          "yOBirth": "1210"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            7.4386111111111,
+            46.950833333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Burchard%20von%20Schwanden",
+          "name": "Burchard von Schwanden",
+          "yOBirth": "1245"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            28.976018,
+            41.01224
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Arsenios%20Autoreianos",
+          "name": "Arsenios Autoreianos",
+          "yOBirth": "1200"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.55,
+            45.55
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Bartolomeo%20di%20Breganze",
+          "name": "Bartolomeo di Breganze",
+          "yOBirth": "1200"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            7.9166666666667,
+            45.25
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "William%20of%20Modena",
+          "name": "William of Modena",
+          "yOBirth": "1184"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.3382,
+            45.7197
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Hugh%20Aycelin",
+          "name": "Hugh Aycelin",
+          "yOBirth": "1230"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -0.375,
+            39.466666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Peter%20Pascual",
+          "name": "Peter Pascual",
+          "yOBirth": "1227"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.488333333333,
+            43.483611111111
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Sylvester%20Gozzolini",
+          "name": "Sylvester Gozzolini",
+          "yOBirth": "1177"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            9.7,
+            45.05
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Vicedomino%20de%20Vicedominis",
+          "name": "Vicedomino de Vicedominis",
+          "yOBirth": "1210"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.233333333333,
+            45.533333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Bartholomew%20of%20Brescia",
+          "name": "Bartholomew of Brescia",
+          "yOBirth": "1200"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.1091666666667,
+            51.571111111111
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Wigbold%20von%20Holte",
+          "name": "Wigbold von Holte",
+          "yOBirth": "1201"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.983333333333,
+            45.433333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-J.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Hillel%20ben%20Samuel",
+          "name": "Hillel ben Samuel",
+          "yOBirth": "1220"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.1769444444444,
+            41.3825
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-J.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Shlomo%20ben%20Aderet",
+          "name": "Shlomo ben Aderet",
+          "yOBirth": "1235"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.25,
+            43.783333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Andrea%20dei%20Mozzi",
+          "name": "Andrea dei Mozzi",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.3833,
+            43.95
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Ruggieri%20degli%20Ubaldini",
+          "name": "Ruggieri degli Ubaldini",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.316666666667,
+            41.8
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Leonardo%20Patrasso",
+          "name": "Leonardo Patrasso",
+          "yOBirth": "1230"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            6.0667,
+            45.4831
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Boniface%20of%20Savoy%20%28bishop%29",
+          "name": "Boniface of Savoy (bishop)",
+          "yOBirth": "1207"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.35,
+            44.5
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Reginald%20of%20Bologna",
+          "name": "Reginald of Bologna",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            17.016666666667,
+            52.083333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Arsenije%20Sremac",
+          "name": "Arsenije Sremac",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.017855555555556,
+            50.875627777778
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "John%20Peckham",
+          "name": "John Peckham",
+          "yOBirth": "1227"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.55,
+            42.683333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Matthew%20of%20Aquasparta",
+          "name": "Matthew of Aquasparta",
+          "yOBirth": "1240"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            7.9166666666667,
+            45.25
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Henry%20of%20Segusio",
+          "name": "Henry of Segusio",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.4405555555556,
+            44.926111111111
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "William%20of%20Auvergne%20%28bishop%29",
+          "name": "William of Auvergne (bishop)",
+          "yOBirth": "1190"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -0.11666666666667,
+            51.5
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Robert%20Kilwardby",
+          "name": "Robert Kilwardby",
+          "yOBirth": "1210"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.8758,
+            45.5253
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Hugh%20of%20Saint-Cher",
+          "name": "Hugh of Saint-Cher",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.55,
+            42.683333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Bentivenga%20da%20Bentivengi",
+          "name": "Bentivenga da Bentivengi",
+          "yOBirth": "1230"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -2.153,
+            52.267
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Richard%20of%20Chichester",
+          "name": "Richard of Chichester",
+          "yOBirth": "1197"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.316666666667,
+            44.916666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Gerardo%20Bianchi",
+          "name": "Gerardo Bianchi",
+          "yOBirth": "1220"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.898333333333,
+            48.371666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Hartmann%20of%20Dillingen",
+          "name": "Hartmann of Dillingen",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -0.9,
+            52.233333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Silvester%20de%20Everdon",
+          "name": "Silvester de Everdon",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -3,
+            40
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "William%20of%20Kilkenny",
+          "name": "William of Kilkenny",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.8883,
+            48.9603
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-J.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Yechiel%20of%20Paris",
+          "name": "Yechiel of Paris",
+          "yOBirth": "1200"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -2.4352777777778,
+            41.172222222222
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-J.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Joseph%20ben%20Abraham%20Gikatilla",
+          "name": "Joseph ben Abraham Gikatilla",
+          "yOBirth": "1248"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.1,
+            42.416666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Raniero%20Capocci",
+          "name": "Raniero Capocci",
+          "yOBirth": "1190"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.4828,
+            49.3756
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Jean%20Cholet",
+          "name": "Jean Cholet",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            7.4814,
+            48.9217
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Conrad%20de%20Lichtenberg",
+          "name": "Conrad de Lichtenberg",
+          "yOBirth": "1240"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            19,
+            47
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Stephen%20I%20BÃ¡ncsa",
+          "name": "Stephen I BÃ¡ncsa",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            3.7166666666667,
+            51.05
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Philippe%20Mouskes",
+          "name": "Philippe Mouskes",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -0.11666666666667,
+            51.5
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "John%20of%20Toledo",
+          "name": "John of Toledo",
+          "yOBirth": "1190"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.5,
+            41.9
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Guillaume%20Durand",
+          "name": "Guillaume Durand",
+          "yOBirth": "1237"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -5.7555555555556,
+            41.498888888889
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Munio%20of%20Zamora",
+          "name": "Munio of Zamora",
+          "yOBirth": "1237"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.5,
+            41.9
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Giovanni%20Boccamazza",
+          "name": "Giovanni Boccamazza",
+          "yOBirth": "1240"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.25,
+            43.783333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Ottaviano%20degli%20Ubaldini",
+          "name": "Ottaviano degli Ubaldini",
+          "yOBirth": "1214"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.3613888888889,
+            50.830277777778
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Boniface%20of%20Brussels",
+          "name": "Boniface of Brussels",
+          "yOBirth": "1183"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.6294444444444,
+            43.666666666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Bertrand%20de%20Saint-Martin",
+          "name": "Bertrand de Saint-Martin",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.0791666666667,
+            48.299722222222
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Anchero%20PantalÃ©one",
+          "name": "Anchero PantalÃ©one",
+          "yOBirth": "1210"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.15,
+            41.75
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Benedetto%20II%20Caetani",
+          "name": "Benedetto II Caetani",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -3,
+            40
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Ordonho%20Alvares",
+          "name": "Ordonho Alvares",
+          "yOBirth": "1230"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            38.856152777778,
+            56.738133333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Kirill%20III%20of%20Kiev",
+          "name": "Kirill III of Kiev",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            9.7,
+            45.05
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Giovanni%20Visconti%20%28bishop%29",
+          "name": "Giovanni Visconti (bishop)",
+          "yOBirth": "1210"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.8358333333333,
+            50.105833333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Gerard%20of%20Abbeville",
+          "name": "Gerard of Abbeville",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -0.11666666666667,
+            51.5
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Hugh%20of%20Evesham",
+          "name": "Hugh of Evesham",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            6.5103,
+            45.5017
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Peter%20of%20Aigueblanche",
+          "name": "Peter of Aigueblanche",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2,
+            47
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Pierre%20de%20Bar",
+          "name": "Pierre de Bar",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.516666666667,
+            43.85
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Bartholomew%20of%20Lucca",
+          "name": "Bartholomew of Lucca",
+          "yOBirth": "1236"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            18.283333333333,
+            57.633333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Thomas%20%28bishop%20of%20Finland%29",
+          "name": "Thomas (bishop of Finland)",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.521111111111,
+            52.269166666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Conrad%20of%20Saxony",
+          "name": "Conrad of Saxony",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.316666666667,
+            45.433333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "James%20Salomoni",
+          "name": "James Salomoni",
+          "yOBirth": "1231"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.25,
+            41.683333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Gregorio%20di%20Montelongo",
+          "name": "Gregorio di Montelongo",
+          "yOBirth": "1200"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.465,
+            53.8925
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Ludolph%20of%20Ratzeburg",
+          "name": "Ludolph of Ratzeburg",
+          "yOBirth": "NOTDEFINED"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.033333333333,
+            42.533333333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Thomas%20de%20Cantilupe",
+          "name": "Thomas de Cantilupe",
+          "yOBirth": "1218"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            36.292,
+            33.513
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/Rel-C.png",
+            "iconClass": "Drop"
+          },
+          "Url": "Izz%20al-Din%20ibn%20%27Abd%20al-Salam",
+          "name": "Izz al-Din ibn 'Abd al-Salam",
+          "yOBirth": "1181"
+        }
+      }
+    ]
   }
 }

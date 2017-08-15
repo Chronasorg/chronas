@@ -117,7 +117,7 @@ class App extends Component {
       prefixedStyles.contentSmall = prefix(styles.contentSmall);
     }
 
-    prefixedStyles.content.transition = 'margin-left 450ms cubic-bezier(0.23, 1, 0.32, 1)';
+    prefixedStyles.content.transition = 'margin-left 350ms cubic-bezier(0.23, 1, 0.32, 1)';
     prefixedStyles.content.overflow = 'hidden';
 
     if (this.state.drawerOpen) {

@@ -1,0 +1,16 @@
+/** Timeline Overwrites **/
+.vis-timeline.vis-bottom {
+  .vis-panel.vis-bottom {
+    top: 6px !important;
+    pointer-events: none;
+  }
+}
+
+.vis-timeline {
+  border: none;
+  background: black;
+}
+
+.vis-custom-time.selectedYear {
+  transition: left 100ms cubic-bezier(0.4, 0, 0.2, 1), right 100ms cubic-bezier(0.4, 0, 0.2, 1);
+}
