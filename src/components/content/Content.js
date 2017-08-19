@@ -8,7 +8,7 @@ import pure from 'recompose/pure';
 import { connect } from 'react-redux'
 import compose from 'recompose/compose';
 import { translate, defaultTheme } from 'admin-on-rest';
-import { toggleRightDrawer as toggleRightDrawerAction } from './actions';
+import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers';
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 

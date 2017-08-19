@@ -173954,7 +173954,7 @@ export const data = {
       }
     ]
   },
-  "markersExample": {
+  "markers_people": {
     "type": "FeatureCollection",
     "features": [
       {
@@ -176219,5 +176219,871 @@ export const data = {
         }
       }
     ]
+  },
+  "markers_battles": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            15.122,
+            50.029
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -116,
+          "wikiUrl": "Battle%20of%20KolÃ­n",
+          "name": "Battle of KolÃ­n",
+          "yearOfOcc": "1757"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.9127777777778,
+            50.638611111111
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -65,
+          "wikiUrl": "Battle%20of%20Ramillies",
+          "name": "Battle of Ramillies",
+          "yearOfOcc": "1706"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            12.1375,
+            51.2525
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 9,
+          "wikiUrl": "Battle%20of%20LÃ¼tzen%20%281632%29",
+          "name": "Battle of LÃ¼tzen (1632)",
+          "yearOfOcc": "1632"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -79.05049,
+            43.16192
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -171,
+          "wikiUrl": "Battle%20of%20Queenston%20Heights",
+          "name": "Battle of Queenston Heights",
+          "yearOfOcc": "1812"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.63333333,
+            41.61666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -1,
+          "wikiUrl": "Battle%20of%20Lerida%20%281642%29",
+          "name": "Battle of Lerida (1642)",
+          "yearOfOcc": "1642"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -3.48916667,
+            57.33166667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -49,
+          "wikiUrl": "Battle%20of%20Cromdale",
+          "name": "Battle of Cromdale",
+          "yearOfOcc": "1690"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.492802,
+            48.805026
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 7,
+          "wikiUrl": "Battle%20of%20NÃ¶rdlingen%20%281634%29",
+          "name": "Battle of NÃ¶rdlingen (1634)",
+          "yearOfOcc": "1634"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -1.2619,
+            53.9637
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -3,
+          "wikiUrl": "Battle%20of%20Marston%20Moor",
+          "name": "Battle of Marston Moor",
+          "yearOfOcc": "1644"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.15888889,
+            41.36722222
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b1.png",
+            "iconClass": "Drop"
+          },
+          "age": 0,
+          "wikiUrl": "Battle%20of%20MontjuÃ¯c%20%281641%29",
+          "name": "Battle of MontjuÃ¯c (1641)",
+          "yearOfOcc": "1641"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            7.8,
+            47.55
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 3,
+          "wikiUrl": "Battle%20of%20Rheinfelden",
+          "name": "Battle of Rheinfelden",
+          "yearOfOcc": "1638"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.03566667,
+            54.6735
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -3,
+          "wikiUrl": "Battle%20of%20Fehmarn%20%281644%29",
+          "name": "Battle of Fehmarn (1644)",
+          "yearOfOcc": "1644"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            25.116666666667,
+            50.35
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -10,
+          "wikiUrl": "Battle%20of%20Berestechko",
+          "name": "Battle of Berestechko",
+          "yearOfOcc": "1651"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.87,
+            55.27
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -18,
+          "wikiUrl": "Battle%20of%20Nyborg",
+          "name": "Battle of Nyborg",
+          "yearOfOcc": "1659"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            13.76666667,
+            54.05
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 13,
+          "wikiUrl": "Battle%20of%20Wolgast",
+          "name": "Battle of Wolgast",
+          "yearOfOcc": "1628"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            9.17222,
+            49.1972
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 19,
+          "wikiUrl": "Battle%20of%20Wimpfen",
+          "name": "Battle of Wimpfen",
+          "yearOfOcc": "1622"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.5,
+            51.2
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 2,
+          "wikiUrl": "Battle%20of%20the%20Downs",
+          "name": "Battle of the Downs",
+          "yearOfOcc": "1639"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -2.80111111,
+            51.04194444
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -4,
+          "wikiUrl": "Battle%20of%20Langport",
+          "name": "Battle of Langport",
+          "yearOfOcc": "1645"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            23.5253,
+            56.4344
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -64,
+          "wikiUrl": "Battle%20of%20Gemauerthof",
+          "name": "Battle of Gemauerthof",
+          "yearOfOcc": "1705"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.5277777777778,
+            49.919444444444
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -2,
+          "wikiUrl": "Battle%20of%20Rocroi",
+          "name": "Battle of Rocroi",
+          "yearOfOcc": "1643"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2,
+            51.4
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -25,
+          "wikiUrl": "Four%20Days%27%20Battle",
+          "name": "Four Days' Battle",
+          "yearOfOcc": "1666"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.6582888888889,
+            49.216844444444
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 19,
+          "wikiUrl": "Battle%20of%20Mingolsheim",
+          "name": "Battle of Mingolsheim",
+          "yearOfOcc": "1622"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.67208,
+            49.2935
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 9,
+          "wikiUrl": "Battle%20of%20Wiesloch%20%281632%29",
+          "name": "Battle of Wiesloch (1632)",
+          "yearOfOcc": "1632"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            24.348055555556,
+            56.848611111111
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 36,
+          "wikiUrl": "Battle%20of%20Kircholm",
+          "name": "Battle of Kircholm",
+          "yearOfOcc": "1605"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            15.35,
+            37.25
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -35,
+          "wikiUrl": "Battle%20of%20Augusta",
+          "name": "Battle of Augusta",
+          "yearOfOcc": "1676"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -82.3833,
+            23.1167
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -107,
+          "wikiUrl": "Battle%20of%20Havana%20%281748%29",
+          "name": "Battle of Havana (1748)",
+          "yearOfOcc": "1748"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            8.84972222,
+            52.16666667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 3,
+          "wikiUrl": "Battle%20of%20Vlotho",
+          "name": "Battle of Vlotho",
+          "yearOfOcc": "1638"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            2.3775,
+            51.0383
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -17,
+          "wikiUrl": "Battle%20of%20the%20Dunes%20%281658%29",
+          "name": "Battle of the Dunes (1658)",
+          "yearOfOcc": "1658"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -60.667,
+            11.25
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -36,
+          "wikiUrl": "Action%20of%20March%201677",
+          "name": "Action of March 1677",
+          "yearOfOcc": "1677"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.8,
+            52.4
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -31,
+          "wikiUrl": "Battle%20of%20Solebay",
+          "name": "Battle of Solebay",
+          "yearOfOcc": "1672"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.2,
+            51.5
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -11,
+          "wikiUrl": "Battle%20of%20the%20Kentish%20Knock",
+          "name": "Battle of the Kentish Knock",
+          "yearOfOcc": "1652"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.2217,
+            59.0083
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -75,
+          "wikiUrl": "Battle%20of%20Dynekilen",
+          "name": "Battle of Dynekilen",
+          "yearOfOcc": "1716"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            10.96527778,
+            49.45277778
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 9,
+          "wikiUrl": "Battle%20of%20the%20Alte%20Veste",
+          "name": "Battle of the Alte Veste",
+          "yearOfOcc": "1632"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -2.5,
+            50.4
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -12,
+          "wikiUrl": "Battle%20of%20Portland",
+          "name": "Battle of Portland",
+          "yearOfOcc": "1653"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.6,
+            53.15
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -32,
+          "wikiUrl": "Battle%20of%20Texel",
+          "name": "Battle of Texel",
+          "yearOfOcc": "1673"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            -0.983333,
+            37.6
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -2,
+          "wikiUrl": "Battle%20of%20Cartagena%20%281643%29",
+          "name": "Battle of Cartagena (1643)",
+          "yearOfOcc": "1643"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.05444444,
+            41.07527778
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 1,
+          "wikiUrl": "Battle%20of%20Cambrils",
+          "name": "Battle of Cambrils",
+          "yearOfOcc": "1640"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.28555556,
+            51.29444444
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 3,
+          "wikiUrl": "Battle%20of%20Kallo",
+          "name": "Battle of Kallo",
+          "yearOfOcc": "1638"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            4.01666667,
+            50.48333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -37,
+          "wikiUrl": "Battle%20of%20Saint-Denis%20%281678%29",
+          "name": "Battle of Saint-Denis (1678)",
+          "yearOfOcc": "1678"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.25194,
+            41.1181
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b1.png",
+            "iconClass": "Drop"
+          },
+          "age": 0,
+          "wikiUrl": "Naval%20Battle%20of%20Tarragona%20%28July%201641%29",
+          "name": "Naval Battle of Tarragona (July 1641)",
+          "yearOfOcc": "1641"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            120.75,
+            14.53333333
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -6,
+          "wikiUrl": "Battle%20of%20Puerto%20de%20Cavite",
+          "name": "Battle of Puerto de Cavite",
+          "yearOfOcc": "1647"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            26.5,
+            48.5
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b0.png",
+            "iconClass": "Drop"
+          },
+          "age": -32,
+          "wikiUrl": "Battle%20of%20Khotyn%20%281673%29",
+          "name": "Battle of Khotyn (1673)",
+          "yearOfOcc": "1673"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            45.01972222,
+            41.78805556
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 16,
+          "wikiUrl": "Battle%20of%20Martqopi",
+          "name": "Battle of Martqopi",
+          "yearOfOcc": "1625"
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            11.0167,
+            49.4667
+          ]
+        },
+        "properties": {
+          "_storage_options": {
+            "iconUrl": "/static/i/b2.png",
+            "iconClass": "Drop"
+          },
+          "age": 9,
+          "wikiUrl": "Battle%20of%20FÃ¼rth",
+          "name": "Battle of FÃ¼rth",
+          "yearOfOcc": "1632"
+        }
+      }
+    ]
   }
+
 }

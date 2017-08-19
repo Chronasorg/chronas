@@ -2,11 +2,12 @@ import { combineReducers } from 'redux'
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux'
 import locationReducer from './location'
 import { adminReducer } from 'admin-on-rest'
-import reducerLocale from '../components/menu/configuration/reducerLocale'
-import { basemapReducer } from '../components/menu/layers/reducers'
-import { rightDrawerReducer } from '../components/content/reducers'
+import { localeReducer, themeReducer } from '../components/menu/configuration/actionReducers'
+import { basemapReducer, areaReducer, markerReducer } from '../components/menu/layers/actionReducers'
+import { rightDrawerReducer } from '../components/content/actionReducers'
 import { itemIdReducer } from '../components/map/actionReducers'
-import reducerMenuDrawer from '../components/menu/reducerMenuDrawer'
+import { yearReducer } from '../components/map/timeline/actionReducers'
+import { menuDrawerReducer, menuIdReducer } from '../components/menu/actionReducers'
 import { reducer as formReducer } from 'redux-form'
 
 export const makeRootReducer = (asyncReducers) => {
@@ -22,14 +23,19 @@ export const makeRootReducer = (asyncReducers) => {
       { name: 'tags' },
       { name: 'users' }
     ]),
-    locale: reducerLocale(),
     basemap: basemapReducer(),
-    menuDrawerOpen: reducerMenuDrawer(),
-    rightDrawerOpen: rightDrawerReducer(),
-    selectedItem: itemIdReducer(),
-    form: formReducer,
-    routing: routerReducer,
+    menuDrawerOpen: menuDrawerReducer(),
+    locale: localeReducer(),
+    theme: themeReducer(),
     location: locationReducer,
+    menuItemActive: menuIdReducer(),
+    selectedArea: areaReducer(),
+    selectedMarkers: markerReducer(),
+    selectedItem: itemIdReducer(),
+    selectedYear: yearReducer(),
+    form: formReducer,
+    rightDrawerOpen: rightDrawerReducer(),
+    routing: routerReducer,
     ...asyncReducers
   })
 }

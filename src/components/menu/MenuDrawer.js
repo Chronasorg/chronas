@@ -6,7 +6,7 @@ import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer';
 import IconButton from 'material-ui/IconButton'
 import FontIcon from 'material-ui/FontIcon'
-import { toggleMenuDrawer as toggleMenuDrawerAction } from './actions';
+import { toggleMenuDrawer as toggleMenuDrawerAction } from './actionReducers';
 import {grey600, grey400, chronasDark} from '../../styles/chronasColors';
 import {backIcon, drawer} from '../../styles/chronasStyleComponents';
 

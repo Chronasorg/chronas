@@ -5,10 +5,12 @@ import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import RaisedButton from 'material-ui/RaisedButton'
 import { translate, defaultTheme } from 'admin-on-rest'
-import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actions'
+import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actionReducers'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
-import { changeBasemap as changeBasemapAction } from './actions'
+import { changeBasemap as changeBasemapAction,
+  changeArea as changeAreaAction,
+  toggleMarker as toggleMarkerAction } from './actionReducers'
 
 const styles = {
   main: {
@@ -19,14 +21,32 @@ const styles = {
     padding: '18px 14px',
   },
 };
-const LayerContent = ({ toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap }) => (
+
+const allMarkers = ['People', 'Battles']
+
+const LayerContent = ({ selectedArea, selectedMarkers,  selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, changeArea, toggleMarker }) => (
   <div style={styles.main}>
-    <h4> AREA </h4>
-    <h4> MARKER </h4>
-    <br/>
-    <h6> Basemap Placeholder</h6>
+    <h4> Basemap</h4>
     <RaisedButton style={styles.button} label="Watercolor" primary={basemap === 'watercolor'} onClick={() => changeBasemap('watercolor')} />
     <RaisedButton style={styles.button} label="Topographic" primary={basemap === 'topographic'} onClick={() => changeBasemap('topographic')} />
+    <br/>
+    <h4>Area</h4>
+    {selectedArea}
+    <RaisedButton style={styles.button} label="Political" primary={selectedArea === 'political'} onClick={() => changeArea('political')} />
+    <RaisedButton style={styles.button} label="Religion" primary={selectedArea === 'religion'} onClick={() => changeArea('religion')} />
+    <br/>
+    <h4>Marker</h4>
+    {selectedMarkers}
+    {allMarkers.map(id =>
+      <RaisedButton
+        style={styles.button}
+        label={id}
+        key={id}
+        primary={selectedMarkers.indexOf(id.toLowerCase()) > -1}
+        onClick={() => {console.debug(id.toLowerCase()); toggleMarker(id.toLowerCase())}} />)}
+    <br/>
+    <h4>Year</h4>
+    {selectedYear}
   </div>
 );
 
@@ -44,12 +64,17 @@ LayerContent.defaultProps = {
 
 const enhance = compose(
   connect(state => ({
+    selectedArea: state.selectedArea,
+    selectedMarkers: state.selectedMarkers,
+    selectedYear: state.selectedYear,
     theme: state.theme,
     locale: state.locale,
     basemap: state.basemap,
   }), {
-    toggleMenuDrawer: toggleMenuDrawerAction,
     changeBasemap: changeBasemapAction,
+    changeArea: changeAreaAction,
+    toggleMarker: toggleMarkerAction,
+    toggleMenuDrawer: toggleMenuDrawerAction
   }),
   pure,
   translate,

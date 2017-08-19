@@ -2,6 +2,7 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 const project = require('../project.config')
 
 const inProject = path.resolve.bind(path, project.basePath)
@@ -73,6 +74,7 @@ config.module.rules.push({
             useBuiltIns: true // we polyfill Object.assign in src/normalize.js
           },
         ],
+        'lodash'
       ],
       presets: [
         'react',
@@ -84,6 +86,7 @@ config.module.rules.push({
           },
           uglify: true,
         }],
+        ['env', { modules: false, targets: { node: 4 } }],
       ]
     },
   }],
@@ -228,7 +231,8 @@ if (__PROD__) {
         if_return: true,
         join_vars: true,
       },
-    })
+    }),
+    new LodashModuleReplacementPlugin
   )
 }
 

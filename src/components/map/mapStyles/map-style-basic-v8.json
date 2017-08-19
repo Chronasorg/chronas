@@ -14,9 +14,82 @@
         "http://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}"
       ],
       "tileSize": 256
+    },
+    "markers": {
+      "cluster": true,
+      "clusterMaxZoom": 14,
+      "clusterRadius": 50,
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [ ]
+      }
+    },
+    "area-labels": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [ ]
+      }
+    },
+    "provinces": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [ ]
+      }
     }
   },
   "glyphs": "fonts/{fontstack}/{range}.pbf",
   "layers": [
+    {
+      "id": "markers",
+      "type": "circle",
+      "source": "markers",
+      "filter": ["!has", "point_count"],
+      "paint": {
+        "circle-color": "#11b4da",
+        "circle-radius": 4,
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#fff"
+      }
+    },
+    {
+      "id": "clusters",
+      "type": "circle",
+      "source": "markers",
+      "filter": ["has", "point_count"],
+      "paint": {
+        "circle-color": {
+          "property": "point_count",
+          "type": "interval",
+          "stops": [
+            [0, "#51bbd6"],
+            [10, "#f1f075"],
+            [30, "#f28cb1"]
+          ]
+        },
+        "circle-radius": {
+          "property": "point_count",
+          "type": "interval",
+          "stops": [
+            [0, 20],
+            [100, 30],
+            [750, 40]
+          ]
+        }
+      }
+    },
+    {
+      "id": "cluster-count",
+      "type": "symbol",
+      "source": "markers",
+      "filter": ["has", "point_count"],
+      "layout": {
+        "text-field": "{point_count_abbreviated}",
+        "text-font": ["Cinzel Bold"],
+        "text-size": 12
+      }
+    }
   ]
 }

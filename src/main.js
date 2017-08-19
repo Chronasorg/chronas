@@ -47,6 +47,7 @@ if (__DEV__) {
     module.hot.accept([
       './App',
       './routes/index',
+      './components/map/Map',
     ], () =>
       setImmediate(() => {
         ReactDOM.unmountComponentAtNode(MOUNT_NODE)

@@ -6,7 +6,7 @@ import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer';
 import IconButton from 'material-ui/IconButton'
 import FontIcon from 'material-ui/FontIcon'
-import { toggleRightDrawer as toggleRightDrawerAction } from './actions';
+import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers';
 import {grey600, grey400, chronasDark} from '../../styles/chronasColors';
 import {backIcon, drawer} from '../../styles/chronasStyleComponents';
 
@@ -70,7 +70,6 @@ class RightDrawer extends PureComponent {
 RightDrawer.propTypes = {
   children: PropTypes.node.isRequired,
   muiTheme: PropTypes.object.isRequired,
-  rightDrawerOpen: PropTypes.bool,
   setRightDrawerVisibility: PropTypes.func,
 };
 

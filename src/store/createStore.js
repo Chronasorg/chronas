@@ -45,15 +45,6 @@ const createStore = (initialState = {}) => {
   const restClient = simpleRestClient('http://localhost:3000');
 
   sagaMiddleware.run(crudSaga(restClient, authClient));
-
-  // const store = createReduxStore(
-  //   makeRootReducer(),
-  //   initialState,
-  //   composeEnhancers(
-  //     applyMiddleware(...middleware),
-  //     ...enhancers
-  //   )
-  // )
   store.asyncReducers = {}
 
   // To unsubscribe, invoke `store.unsubscribeHistory()` anytime

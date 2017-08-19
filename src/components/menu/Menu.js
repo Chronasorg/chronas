@@ -8,7 +8,7 @@ import pure from 'recompose/pure';
 import { connect } from 'react-redux'
 import compose from 'recompose/compose';
 import { translate, defaultTheme } from 'admin-on-rest';
-import { toggleMenuDrawer as toggleMenuDrawerAction } from './actions';
+import { toggleMenuDrawer as toggleMenuDrawerAction, setActiveMenu as setActiveMenuAction } from './actionReducers';
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 
@@ -22,7 +22,7 @@ const styles = {
   },
 };
 
-const Menu = ({ toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate }) => (
+const Menu = ({ toggleMenuDrawer, setActiveMenu, hasDashboard, onMenuTap, resources, translate }) => (
   <div style={styles.main}>
     <IconButton
       key={'layers'}
@@ -42,7 +42,7 @@ const Menu = ({ toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate 
       tooltipPosition="bottom-right"
       tooltip={translate('pos.configuration')}
       tooltipStyles={tooltip}
-      onTouchTap={onMenuTap}
+      onTouchTap={() => setActiveMenu('configuration')}
       iconStyle={{color: '#fff'}}
     >
       <SettingsIcon
@@ -83,6 +83,7 @@ const enhance = compose(
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
     toggleMenuDrawer: toggleMenuDrawerAction,
+    setActiveMenu: setActiveMenuAction,
   }),
   pure,
   translate,
