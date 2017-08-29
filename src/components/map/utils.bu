@@ -1,8 +1,5 @@
-import { activeYear, provinceCollection, provArea, adjacent, relPlus, rulPlus } from './data/datadef'
-import * as scale from 'd3-scale'
-
-const turfUnion = require('@turf/union');
-const turfArea = require('@turf/area');
+import turf from 'turf'
+import { activeYear, provinceCollection, provArea, adjacent, rulPlus } from './data/datadef'
 
 const utils = {
 
@@ -17,9 +14,6 @@ const utils = {
   rulStops: [],
   relStops: [],
 
-  _scaleLogText: scale.scaleLog()
-    .domain([500, 15000])
-    .range([0, 700]),
 
   isTouching: function (array1, array2) {
 
@@ -52,7 +46,7 @@ const utils = {
     return ([minX, minY, maxX, maxY]);
   },
 
-  get_polygon_centroid2: function (fullpts) {
+  get_polygon_centroid2: function (fullpts) { // need this
     var pts = [];
     for (var j = 0; j < fullpts.length; j++) {
       for (var k = 0; k < fullpts[j].length; k++) {
@@ -273,7 +267,6 @@ const utils = {
     var tmpName = "";
     var groups = {};
     var polyGroups = {};
-    var polyArray = [];
     var myColl = {
       "type": "FeatureCollection",
       "features": []
@@ -295,7 +288,7 @@ const utils = {
         tmpName = "";
         if (culPlus[key]) tmpName = culPlus[key][0];
       }
-      else if (postfix == "e") {
+      else if (postfix == "r") {
         tmpName = "";
         if (relPlus[key]) tmpName = relPlus[key][0];
       }
@@ -335,19 +328,7 @@ const utils = {
         }
       }
 
-
       for (var i = 0; i < groups[key].length; i++) {  //tmpLength
-        //
-        // console.debug(i)
-        // try {
-        //   polyArray.push(turf.union.apply( this, polyGroups[key][i] ));
-        //   console.debug("turf, this",turf, this)
-        //   console.debug("polyArray",polyArray)
-        //   polyArray[polyArray.length-1].properties.n = key
-        // }
-        // catch (err) {
-        //
-        // }
 
         var lineCoordinates = this.getCoordsForMultiPolyLine(groups[key][i])
 
@@ -360,30 +341,25 @@ const utils = {
           "properties": {}
         }
 
-        try {
-          var multiLine = turfUnion.apply( this, polyGroups[key][i] );
-          // console.debug(JSON.stringify(polyGroups[key][i]),"->", JSON.stringify(multiLine))
-        }
-        catch (err) {
-
-        }
-
-
-        multiLine.properties.n = key
-        multiLine.properties.d = this._scaleLogText(turfArea(multiLine)/100000000) //
-        myLineColl.features.push(multiLine);
-
+        // try {
+        // var multiLine = turf.union.apply( this, polyGroups[key][i] );
+        // }
+        // catch (err) {
+        //
+        // }
+        // multiLine.properties.n = key
+        // myLineColl.features.push(multiLine);
         var angleDeg = Math.atan2(lineCoordinates[2][1] - lineCoordinates[0][1], lineCoordinates[2][0] - lineCoordinates[0][0]) * 180 / Math.PI;
-        // var line = turf.lineString(lineCoordinates)
-        // point.properties.n = tmpName
-        // point.properties.d = Math.round(Math.sqrt(turf.lineDistance(line))) * 10
-        // point.properties.ro = -1 * angleDeg
+        var line = turf.lineString(lineCoordinates)
+        point.properties.n = tmpName
+        point.properties.d = Math.round(Math.sqrt(turf.lineDistance(line))) * 10
+        point.properties.ro = -1 * angleDeg
 
         myColl.features.push(point);
       }
     }
 
-    return [myColl, polyArray, myLineColl]
+    return [myColl, myLineColl]
   },
   /*
    function addAreaFeat(setActiveFeat) {
@@ -475,10 +451,10 @@ const utils = {
 
     this.activeTextFeat = setActiveFeat; //"country";
 
-    if ((this.activeTextFeat === "country" && !this.countryIsSetup) ||
-      (this.activeTextFeat === "culture" && !this.culIsSetup) ||
-      (this.activeTextFeat === "religion" && !this.relIsSetup) ||
-      (this.activeTextFeat === "religionGeneral" && !this.relGenIsSetup)) {
+    if ((this.activeTextFeat == "country" && !this.countryIsSetup) ||
+      (this.activeTextFeat == "culture" && !this.culIsSetup) ||
+      (this.activeTextFeat == "religion" && !this.relIsSetup) ||
+      (this.activeTextFeat == "religionGeneral" && !this.relGenIsSetup)) {
 
       var countryCollection = {};
       var relCollection = {};
@@ -515,37 +491,29 @@ const utils = {
           provinceCollection.features[i].properties.Pop = tmpPop;
           provinceCollection.features[i].properties.Cap = tmpCap;
 
-          if (this.activeTextFeat == "country" && rulPlus[tmpCountry]) {
-            provinceCollection.features[i].properties.nameLabel = rulPlus[tmpCountry][0];
-          }
-          else if (this.activeTextFeat == "religion" && relPlus[tmpCountry]) {
-            provinceCollection.features[i].properties.nameLabel = relPlus[tmpCountry][0];
+          if (rulPlus[tmpCountry]) {
+            provinceCollection.features[i].properties.nameCountry = rulPlus[tmpCountry][0];
           }
         }
 
-        if (this.activeTextFeat === "country" && !this.countryIsSetup)
+        if (!this.countryIsSetup)
           this.prepareCollectionIDs(countryCollection, tmpCountry, i);
-        if (this.activeTextFeat === "culture" && !this.culIsSetup)
+        if (!this.culIsSetup)
           this.prepareCollectionIDs(culCollection, tmpCul, i);
-        if (this.activeTextFeat === "religion" && !this.relIsSetup)
+        if (!this.relIsSetup)
           this.prepareCollectionIDs(relCollection, tmpRel, i);
         // if (!relGenIsSetup)
         //     prepareCollectionIDs(relGenIdCollection, relGen[tmpRel][0], i);
 
       }
 
-
-      if (!this.countryIsSetup && (this.activeTextFeat === "country")) {
+      if (!this.countryIsSetup) {
         this.countryIsSetup = true;
-        return this.fillCollectionId(countryCollection, null, "co");
-      }
-      else if (!this.culIsSetup && (this.activeTextFeat === "culture")) {
         this.culIsSetup = true;
-        return this.fillCollectionId(culCollection, null, "cu");
-      }
-      else if (!this.relIsSetup && (this.activeTextFeat === "religion")) {
         this.relIsSetup = true;
-        return this.fillCollectionId(relCollection, null, "e");
+        this.relGenIsSetup = true;
+
+        return this.fillCollectionId(countryCollection, null, "co");
       } else {
         return []
       }
@@ -557,6 +525,7 @@ const utils = {
   },
 
   prepareCollectionIDs: function (targetC, attr, provId) {
+    // prepareCollectionIDs(countryCollection, tmpCountry, i);
     if (attr !== "na" && attr != undefined) {
       if (targetC.hasOwnProperty(attr)) {
         if (targetC[attr][0].length == 0 || this.isTouching(targetC[attr][0], adjacent[provId])) {

@@ -32,11 +32,10 @@ const LayerContent = ({ selectedArea, selectedMarkers,  selectedYear, toggleMenu
     <br/>
     <h4>Area</h4>
     {selectedArea}
-    <RaisedButton style={styles.button} label="Political" primary={selectedArea === 'political'} onClick={() => changeArea('political')} />
+    <RaisedButton style={styles.button} label="Political" primary={selectedArea === 'political'} onClick={() => changeArea('country')} />
     <RaisedButton style={styles.button} label="Religion" primary={selectedArea === 'religion'} onClick={() => changeArea('religion')} />
     <br/>
     <h4>Marker</h4>
-    {selectedMarkers}
     {allMarkers.map(id =>
       <RaisedButton
         style={styles.button}
@@ -44,6 +43,7 @@ const LayerContent = ({ selectedArea, selectedMarkers,  selectedYear, toggleMenu
         key={id}
         primary={selectedMarkers.indexOf(id.toLowerCase()) > -1}
         onClick={() => {console.debug(id.toLowerCase()); toggleMarker(id.toLowerCase())}} />)}
+    {selectedMarkers}
     <br/>
     <h4>Year</h4>
     {selectedYear}

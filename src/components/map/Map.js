@@ -129,7 +129,7 @@ class Map extends Component {
               'fill-outline-color': 'rgba(0,0,0,.2)'
             }
           })
-
+/*
           layers.push({
             id: 'ruler',
             type: 'fill',
@@ -149,7 +149,7 @@ class Map extends Component {
               'fill-outline-color': 'rgba(0,0,0,.2)'
             }
           })
-
+*/
 
           layers.push({
             id: 'ruler-hover',
@@ -167,15 +167,75 @@ class Map extends Component {
             },
             "filter": ["==", "r", ""]
           })
+
+          // layers.push({
+          //   "id": "area-labels",
+          //   "type": "symbol",
+          //   "source": "area-labels",
+          //   "layout": {
+          //     "symbol-spacing": 100,
+          //     "icon-allow-overlap": false,
+          //     "text-field": "{n}",
+          //     "text-font": ["Cinzel Regular"],
+          //     "text-size": //20//20,//{"type": "identity", "property": "d" }
+          //       {
+          //         "type": "exponential",
+          //         "stops": [
+          //           // zoom is 0 and "rating" is 0 -> circle radius will be 0px
+          //           [{zoom: 0, value: 100}, 0],
+          //
+          //           // zoom is 0 and "rating" is 5 -> circle radius will be 5px
+          //           [{zoom: 0, value: 800}, 2],
+          //
+          //           // zoom is 20 and "rating" is 0 -> circle radius will be 0px
+          //           [{zoom: 20, value: 100}, 50],
+          //
+          //           // zoom is 20 and "rating" is 5 -> circle radius will be 20px
+          //           [{zoom: 20, value: 800}, 250]
+          //
+          //         ], "property": "d"
+          //         // type": "identity", "property": "d" }
+          //       },
+          //     "text-transform": "uppercase",
+          //     // "text-max-width": +"{d}",
+          //     "text-rotate": {"type": "identity", "property": "ro" }
+          //   },
+          //   "paint": {
+          //     "text-color": "#333",
+          //     "text-halo-width": 1,
+          //     "text-halo-blur": 1,
+          //     "text-halo-color": "#FFFBE5"
+          //   }
+          // })
+
+          layers.push({
+            "id": "area-outlines",
+            "type": "line",
+            "source": "area-outlines",
+            "paint": {
+              'line-color': {
+                'property': 'n',
+                'type': 'categorical',
+                'stops': rulStops,
+                'default': "rgba(1,1,1,0.5)"
+              },
+              'line-width': 4,
+              'line-opacity': .6,
+              'line-blur': 2,
+              // 'fill-outline-color': 'rgba(0,0,0,.2)'
+            }
+          })
+
           layers.push({
             "id": "area-labels",
             "type": "symbol",
-            "source": "area-labels",
+            "source": "area-outlines",
             "layout": {
-              "symbol-spacing": 100,
+              "symbol-spacing": 1000,
               "icon-allow-overlap": false,
-              "text-field": "{n}",
+              "text-field": "{nameLabel}",
               "text-font": ["Cinzel Regular"],
+              "text-transform": "uppercase",
               "text-size": //20//20,//{"type": "identity", "property": "d" }
                 {
                   "type": "exponential",
@@ -195,9 +255,6 @@ class Map extends Component {
                   ], "property": "d"
                   // type": "identity", "property": "d" }
                 },
-              "text-transform": "uppercase",
-              // "text-max-width": +"{d}",
-              "text-rotate": {"type": "identity", "property": "ro" }
             },
             "paint": {
               "text-color": "#333",
@@ -248,7 +305,7 @@ class Map extends Component {
            */
 
           this._simulateYearChange()
-          this._simulateDimChange()
+          this._simulateDimChange("country")
 
 
           // .then(res => this._loadGeoJson(
@@ -267,24 +324,23 @@ class Map extends Component {
 
   }
 
-  _simulateDimChange = () => {
-    console.debug("changing dim")
+  _simulateDimChange = (newArea) => {
+    console.debug("changing dim " + newArea)
     // if (map.getLayoutProperty('ruler', 'visibility') !== 'none'){
     //   activeTextFeat = 'country'
     //   map.setLayoutProperty('religion', 'visibility', 'visible');
     //   map.setLayoutProperty('ruler', 'visibility', 'none');
     // } else {
     //   activeTextFeat = 'religion'
-      const plCol = utils.addTextFeat("country")
+      const plCol = utils.addTextFeat(newArea)
 
-
-      console.debug("plCol",plCol)
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
         .setIn(['sources', 'area-labels', 'data'], fromJS(plCol[0]))
+        .setIn(['sources', 'area-outlines', 'data'], fromJS(plCol[2]))
+      console.debug("plCol",plCol)
       this.setState({mapStyle});
     // }
-
     //   map.setLayoutProperty('ruler', 'visibility', 'visible');
     //   map.setLayoutProperty('religion', 'visibility', 'none');
     // }
@@ -296,7 +352,7 @@ class Map extends Component {
     let geojson = prevMapStyle
       .getIn(['sources', sourceId, 'data']).toJS()
 
-    console.debug("simulateYearChange", geojson)
+    console.debug("simuldasateYdasearChange", geojson)
 
     let mapStyle = prevMapStyle
       .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function(feature) {
@@ -328,7 +384,8 @@ class Map extends Component {
 
     // Area changed?
     if (selectedArea != nextProps.selectedArea) {
-      console.debug("###### Area changed")
+      console.debug("###### Area changed" + nextProps.selectedArea)
+      this._simulateDimChange(nextProps.selectedArea)
 
     }
 

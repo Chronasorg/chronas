@@ -15,17 +15,14 @@
       ],
       "tileSize": 256
     },
-    "markers": {
-      "cluster": true,
-      "clusterMaxZoom": 14,
-      "clusterRadius": 50,
+    "area-labels": {
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
         "features": [ ]
       }
     },
-    "area-labels": {
+    "area-outlines": {
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
@@ -38,7 +35,21 @@
         "type": "FeatureCollection",
         "features": [ ]
       }
+    },
+    "markers": {
+      "cluster": true,
+      "clusterMaxZoom": 14,
+      "clusterRadius": 50,
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [ ]
+      }
     }
+  },
+  "transition": {
+    "duration": 0,
+    "delay": 0
   },
   "glyphs": "fonts/{fontstack}/{range}.pbf",
   "layers": [
