@@ -19,7 +19,7 @@ const karmaConfig = {
     included : true
   }],
   frameworks: ['mocha'],
-  reporters: ['mocha'],
+  reporters: ['mocha', 'junit'],
   preprocessors: {
     [TEST_BUNDLER]: ['webpack'],
   },
