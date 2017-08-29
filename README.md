@@ -22,6 +22,8 @@ Current Development page: [chronasnew26206.azurewebsites.net](http://chronasnew2
     * [dirty-chai](#dirty-chai)
 1. [Building for Production](#building-for-production)
 1. [Deployment](#deployment)
+1. [Docker](#Docker)
+
 1. [Thank You](#thank-you)
 
 ## Requirements
@@ -107,11 +109,11 @@ Serve the application with a web server such as nginx by pointing it at your `./
 
 ### Docker
 
-You can find Chronas as well on Docker [aumanjoa/chronas](https://hub.docker.com/r/aumanjoa/chronas/)
+You can find Chronas as well on Docker [aumanjoa/chronas-map](https://hub.docker.com/r/aumanjoa/chronas-map/)
 
-[Dockerfile](https://github.com/aumanjoa/chronas/blob/master/Dockerfile)
+[Dockerfile](https://github.com/daumann/chronas/blob/master/Dockerfile)
 
-To run the docker use ```docker run -p -d 80:80 aumanjoa/chronas```
+To run the docker use ```docker run -p -d 80:80 aumanjoa/chronas-map```
 
 
 ## Thank You
