@@ -1,11 +1,13 @@
 # Chronas
 
-[![Build Status](https://travis-ci.org/daumann/chronas.svg?branch=master)](https://travis-ci.org/daumann/chronas?branch=master)
+![Build Status](https://joausandbox.visualstudio.com/_apis/public/build/definitions/2b7f7236-ef4a-4ee5-9164-a7cb0ad72964/17/badge)
 [![dependencies](https://david-dm.org/daumann/chronas.svg)](https://david-dm.org/daumann/chronas)
 [![devDependency Status](https://david-dm.org/daumann/chronas/dev-status.svg)](https://david-dm.org/daumann/chronas#info=devDependencies)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 The upcoming version of Chronas in early development...
+
+Current Development page: [chronasnew26206.azurewebsites.net](http://chronasnew26206.azurewebsites.net/#/)
 
 ## Table of Contents
 1. [Requirements](#requirements)
