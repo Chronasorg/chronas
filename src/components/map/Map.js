@@ -352,7 +352,7 @@ class Map extends Component {
     let geojson = prevMapStyle
       .getIn(['sources', sourceId, 'data']).toJS()
 
-    console.debug("simuldasateYdasearChange", geojson)
+    console.debug("simuldadassateYdasearChange", geojson)
 
     let mapStyle = prevMapStyle
       .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function(feature) {

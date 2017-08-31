@@ -54,6 +54,14 @@
   "glyphs": "fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
+      "id": "watercolor",
+      "type": "raster",
+      "source": "watercolor",
+      "paint": {
+        "raster-saturation": 0
+      }
+    },
+    {
       "id": "markers",
       "type": "circle",
       "source": "markers",
