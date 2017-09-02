@@ -6,8 +6,8 @@ const turfArea = require('@turf/area');
 
 const utils = {
 
-  activeTextFeat: 'country',
-  activeAreaFeat: 'country',
+  activeTextFeat: 'political',
+  activeAreaFeat: 'political',
 
   countryIsSetup: false,
   culIsSetup: false,
@@ -473,9 +473,9 @@ const utils = {
    */
   addTextFeat: function (setActiveFeat) {
 
-    this.activeTextFeat = setActiveFeat; //"country";
+    this.activeTextFeat = setActiveFeat;
 
-    if ((this.activeTextFeat === "country" && !this.countryIsSetup) ||
+    if ((this.activeTextFeat === "political" && !this.countryIsSetup) ||
       (this.activeTextFeat === "culture" && !this.culIsSetup) ||
       (this.activeTextFeat === "religion" && !this.relIsSetup) ||
       (this.activeTextFeat === "religionGeneral" && !this.relGenIsSetup)) {
@@ -515,7 +515,7 @@ const utils = {
           provinceCollection.features[i].properties.Pop = tmpPop;
           provinceCollection.features[i].properties.Cap = tmpCap;
 
-          if (this.activeTextFeat == "country" && rulPlus[tmpCountry]) {
+          if (this.activeTextFeat == "political" && rulPlus[tmpCountry]) {
             provinceCollection.features[i].properties.nameLabel = rulPlus[tmpCountry][0];
           }
           else if (this.activeTextFeat == "religion" && relPlus[tmpCountry]) {
@@ -523,7 +523,7 @@ const utils = {
           }
         }
 
-        if (this.activeTextFeat === "country" && !this.countryIsSetup)
+        if (this.activeTextFeat === "political" && !this.countryIsSetup)
           this.prepareCollectionIDs(countryCollection, tmpCountry, i);
         if (this.activeTextFeat === "culture" && !this.culIsSetup)
           this.prepareCollectionIDs(culCollection, tmpCul, i);
@@ -535,7 +535,7 @@ const utils = {
       }
 
 
-      if (!this.countryIsSetup && (this.activeTextFeat === "country")) {
+      if (!this.countryIsSetup && (this.activeTextFeat === "political")) {
         this.countryIsSetup = true;
         return this.fillCollectionId(countryCollection, null, "co");
       }

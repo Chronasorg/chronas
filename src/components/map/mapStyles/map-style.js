@@ -1,13 +1,6 @@
-import {fromJS} from 'immutable';
-import MAP_STYLE from './map-style-basic-v8.json';
-
-export const watercolorBase = {
-  "id": "basemap",
-  "type": "raster",
-  "source": "watercolor",
-  "minzoom": 0,
-  "maxzoom": 22,
-}
+import {fromJS} from 'immutable'
+import MAP_STYLE from './map-style-basic-v8.json'
+import properties from '../../../properties'
 
 // export const topographicBase = {
 //   "id": "topographic",
@@ -16,12 +9,6 @@ export const watercolorBase = {
 //   "minzoom": 0,
 //   "maxzoom": 22,
 // }
-
-// Add the vector tile source for counties
-MAP_STYLE.layers.splice(0, 0,
-  watercolorBase,
-  // topographicBase
-);
 //
 // export const provincesLayer = fromJS({
 //   id: 'provinces',
@@ -108,3 +95,8 @@ export const defaultMapStyle = fromJS(MAP_STYLE);
 
 export const highlightLayerIndex = MAP_STYLE.layers.findIndex(layer => layer.id === 'provinces-highlighted');
 export const basemapLayerIndex = MAP_STYLE.layers.findIndex(layer => layer.id === 'basemap');
+
+export const areaColorLayerIndex = properties.areaColorLayers.reduce(function(acc, cur) {
+  acc[cur] = MAP_STYLE.layers.findIndex(layer => layer.id === cur);
+  return acc;
+}, {});

@@ -54,7 +54,7 @@
   "glyphs": "fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
-      "id": "watercolor",
+      "id": "basemap",
       "type": "raster",
       "source": "watercolor",
       "paint": {
@@ -62,15 +62,82 @@
       }
     },
     {
-      "id": "markers",
-      "type": "circle",
-      "source": "markers",
-      "filter": ["!has", "point_count"],
+      "id": "political",
+      "type": "fill",
+      "maxzoom": 4,
+      "source": "provinces",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {}
+    },
+    {
+      "id": "religion",
+      "type": "fill",
+      "maxzoom": 4,
+      "source": "provinces",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {}
+    },
+    {
+      "id": "main-religion",
+      "type": "fill",
+      "maxzoom": 4,
+      "source": "provinces",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {}
+    },
+    {
+      "id": "culture",
+      "type": "fill",
+      "maxzoom": 4,
+      "source": "provinces",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {}
+    },
+    {
+      "id": "area-outlines",
+      "type": "line",
+      "source": "area-outlines",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {}
+    },
+    {
+      "id": "area-labels",
+      "type": "symbol",
+      "source": "area-outlines",
+      "layout": {
+        "symbol-spacing": 1000,
+        "icon-allow-overlap": false,
+        "text-field": "{nameLabel}",
+        "text-font": ["Cinzel Regular"],
+        "text-transform": "uppercase",
+        "text-size":
+        {
+          "type": "exponential",
+          "stops": [
+            [{"zoom": 0, "value": 100}, 0],
+            [{"zoom": 0, "value": 800}, 2],
+            [{"zoom": 20, "value": 100}, 50],
+            [{"zoom": 20, "value": 800}, 250]
+
+          ], "property": "d",
+          "default": 50
+        }
+      },
       "paint": {
-        "circle-color": "#11b4da",
-        "circle-radius": 4,
-        "circle-stroke-width": 1,
-        "circle-stroke-color": "#fff"
+        "text-color": "#333",
+        "text-halo-width": 1,
+        "text-halo-blur": 1,
+        "text-halo-color": "#FFFBE5"
       }
     },
     {
@@ -108,6 +175,18 @@
         "text-field": "{point_count_abbreviated}",
         "text-font": ["Cinzel Bold"],
         "text-size": 12
+      }
+    },
+    {
+      "id": "markers",
+      "type": "circle",
+      "source": "markers",
+      "filter": ["!has", "point_count"],
+      "paint": {
+        "circle-color": "#11b4da",
+        "circle-radius": 4,
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#fff"
       }
     }
   ]

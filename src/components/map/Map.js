@@ -18,18 +18,15 @@ import {fromJS} from 'immutable'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import {json as requestJson} from 'd3-request'
 import properties from '../../properties'
-import {defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex} from './mapStyles/map-style.js'
+import {defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utils from './utils'
 import fakeRestServer from '../../dummyRest/restServer'
-
 import _ from 'lodash'
 
 import Timeline from './timeline/MapTimeline'
 
 import BasicInfo from './markers/basic-info'
 import BasicPin from './markers/basic-pin'
-
-const provinceThreshold = 4
 
 class Map extends Component {
 
@@ -63,14 +60,6 @@ class Map extends Component {
         .then(res => res.text())
         .then(res => this._loadGeoJson('provinces', JSON.parse(res)))
         .then( () => {
-          var activeTextFeat = 'country'
-          var activeAreaFeat = 'country'
-
-          var countryIsSetup = false
-          var culIsSetup = false
-          var relIsSetup = false
-          var relGenIsSetup = false
-
           var rulStops = [],
             relStops = []
 
@@ -91,7 +80,6 @@ class Map extends Component {
             relStops.push([relKeys[i], relPlus[relKeys[i]][1]])
           }
 
-          var layers = []; //bucket to hold our data layers.  We'll fill this in next.
 
           /*
            layers.push({
@@ -113,48 +101,14 @@ class Map extends Component {
            })
            */
 
-          layers.push({
-            id: 'religion',
-            type: 'fill',
-            source: 'provinces',
-            'minzoom': properties.provinceThreshold,
-            paint: {
-              'fill-color': {
-                'property': 'e',
-                'type': 'categorical',
-                'stops': relStops,
-                'default': "rgba(1,1,1,0.3)"
-              },
-              'fill-opacity': 0.6,
-              'fill-outline-color': 'rgba(0,0,0,.2)'
-            }
-          })
 /*
-          layers.push({
-            id: 'ruler',
-            type: 'fill',
-            'maxzoom': properties.provinceThreshold,
-            source: 'provinces',
-            "layout": {
-              "visibility": "visible"
-            },
-            paint: {
-              'fill-color': {
-                'property': 'r',
-                'type': 'categorical',
-                'stops': rulStops,
-                'default': "rgba(1,1,1,0.3)"
-              },
-              'fill-opacity': 0.6,
-              'fill-outline-color': 'rgba(0,0,0,.2)'
-            }
-          })
-*/
-
           layers.push({
             id: 'ruler-hover',
             type: 'fill',
             source: 'provinces',
+            "layout": {
+              "visibility": "none"
+            },
             paint: {
               'fill-color': {
                 'property': 'r',
@@ -164,10 +118,10 @@ class Map extends Component {
               },
               'fill-opacity': 0.9,
               'fill-outline-color': 'rgba(0,0,0,.2)'
-            },
-            "filter": ["==", "r", ""]
+            }
           })
-
+            // ,
+            // "filter": ["==", "r", ""]
           // layers.push({
           //   "id": "area-labels",
           //   "type": "symbol",
@@ -212,71 +166,62 @@ class Map extends Component {
             "id": "area-outlines",
             "type": "line",
             "source": "area-outlines",
-            "paint": {
-              'line-color': {
-                'property': 'n',
-                'type': 'categorical',
-                'stops': rulStops,
-                'default': "rgba(1,1,1,0.5)"
-              },
-              'line-width': 4,
-              'line-opacity': .6,
-              'line-blur': 2,
-              // 'fill-outline-color': 'rgba(0,0,0,.2)'
-            }
-          })
-
-          layers.push({
-            "id": "area-labels",
-            "type": "symbol",
-            "source": "area-outlines",
             "layout": {
-              "symbol-spacing": 1000,
-              "icon-allow-overlap": false,
-              "text-field": "{nameLabel}",
-              "text-font": ["Cinzel Regular"],
-              "text-transform": "uppercase",
-              "text-size": //20//20,//{"type": "identity", "property": "d" }
-                {
-                  "type": "exponential",
-                  "stops": [
-                    // zoom is 0 and "rating" is 0 -> circle radius will be 0px
-                    [{zoom: 0, value: 100}, 0],
-
-                    // zoom is 0 and "rating" is 5 -> circle radius will be 5px
-                    [{zoom: 0, value: 800}, 2],
-
-                    // zoom is 20 and "rating" is 0 -> circle radius will be 0px
-                    [{zoom: 20, value: 100}, 50],
-
-                    // zoom is 20 and "rating" is 5 -> circle radius will be 20px
-                    [{zoom: 20, value: 800}, 250]
-
-                  ], "property": "d"
-                  // type": "identity", "property": "d" }
-                },
+              "visibility": "none"
             },
             "paint": {
-              "text-color": "#333",
-              "text-halo-width": 1,
-              "text-halo-blur": 1,
-              "text-halo-color": "#FFFBE5"
+              "line-color": {
+                "property": "n",
+                "type": "categorical",
+                "stops": rulStops,
+                "default": "rgba(1,1,1,0.5)"
+              },
+              "line-width": 4,
+              "line-opacity": .6,
+              "line-blur": 2,
+              // "fill-outline-color": "rgba(0,0,0,.2)"
             }
           })
-          const prevMapStyle = this.state.mapStyle
-
-          let mapStyle = prevMapStyle
-            // .update('layers', list => list.concat(layers))
-          .set('layers', prevMapStyle.get('layers').concat(fromJS(layers)))
-
-/*
-          let mapStyle = prevMapStyle
-            .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function(feature) {
-              feature.properties.r = (activeYear[feature.properties.name] || [])[0]
-              feature.properties.e = (activeYear[feature.properties.name] || [])[2]
-              return feature
-            }))
           */
+
+          const mapStyle = this.state.mapStyle
+            // .setIn(['layers', areaColorLayerIndex['area-outlines'], 'paint'], fromJS(
+            //   {
+            //     "line-color": {
+            //       "property": "n",
+            //       "type": "categorical",
+            //       "stops": rulStops,
+            //       "default": "rgba(1,1,1,0.5)"
+            //     },
+            //     "line-width": 4,
+            //     "line-opacity": 0.6,
+            //     "line-blur": 2
+            //   }
+            // )
+            .setIn(['layers', areaColorLayerIndex['political'], 'paint'], fromJS(
+              {
+                'fill-color': {
+                  'property': 'r',
+                  'type': 'categorical',
+                  'stops': rulStops,
+                  'default': "rgba(1,1,1,0.3)"
+                },
+                'fill-opacity': 0.6,
+                'fill-outline-color': 'rgba(0,0,0,.2)'
+              }
+            ))
+            .setIn(['layers', areaColorLayerIndex['religion'], 'paint'], fromJS(
+              {
+                "fill-color": {
+                  "property": "e",
+                  "type": "categorical",
+                  "stops": relStops,
+                  "default": "rgba(1,1,1,0.3)"
+                },
+                "fill-opacity": 0.6,
+                "fill-outline-color": "rgba(0,0,0,.2)"
+              }
+            ))
 
           this.setState({mapStyle});
 
@@ -305,45 +250,38 @@ class Map extends Component {
            */
 
           this._simulateYearChange()
-          this._simulateDimChange("country")
-
-
-          // .then(res => this._loadGeoJson(
-          //   'markers',
-          //   fromJS({
-          //     cluster: true,
-          //     clusterMaxZoom: 14, // Max zoom to cluster points on
-          //     clusterRadius: 50, // Radius of each cluster when clustering points (defaults to 50),
-          //     type: 'geojson',
-          //     data: JSON.parse(res)
-          //   })
-          // ));
+          this._changeArea("political", "political")
         })
 
     }.bind(this))
 
   }
 
-  _simulateDimChange = (newArea) => {
-    console.debug("changing dim " + newArea)
-    // if (map.getLayoutProperty('ruler', 'visibility') !== 'none'){
-    //   activeTextFeat = 'country'
-    //   map.setLayoutProperty('religion', 'visibility', 'visible');
-    //   map.setLayoutProperty('ruler', 'visibility', 'none');
-    // } else {
-    //   activeTextFeat = 'religion'
-      const plCol = utils.addTextFeat(newArea)
+  _changeArea = (newLabel, newColor) => {
+    console.debug("changing area " + newLabel, newColor)
 
-      const prevMapStyle = this.state.mapStyle
-      let mapStyle = prevMapStyle
+    let mapStyle = this.state.mapStyle
+
+    if (typeof newColor !== "undefined") {
+      for (let areaColorLayer of properties.areaColorLayers) {
+        if (areaColorLayer !== newColor) {
+          mapStyle = mapStyle
+            .setIn(['layers', areaColorLayerIndex[areaColorLayer], 'layout', 'visibility'], 'none')
+        } else {
+          mapStyle = mapStyle
+            .setIn(['layers', areaColorLayerIndex[areaColorLayer], 'layout', 'visibility'], 'visible')
+        }
+      }
+    }
+
+    if (typeof newLabel !== "undefined") {
+      const plCol = utils.addTextFeat(newLabel)
+      mapStyle = mapStyle
         .setIn(['sources', 'area-labels', 'data'], fromJS(plCol[0]))
         .setIn(['sources', 'area-outlines', 'data'], fromJS(plCol[2]))
-      console.debug("plCol",plCol)
-      this.setState({mapStyle});
-    // }
-    //   map.setLayoutProperty('ruler', 'visibility', 'visible');
-    //   map.setLayoutProperty('religion', 'visibility', 'none');
-    // }
+    }
+
+    this.setState({mapStyle});
   }
 
   _simulateYearChange = () => {
@@ -352,7 +290,6 @@ class Map extends Component {
     let geojson = prevMapStyle
       .getIn(['sources', sourceId, 'data']).toJS()
 
-    console.debug("simuldadassateYdasearChange", geojson)
 
     let mapStyle = prevMapStyle
       .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function(feature) {
@@ -361,19 +298,19 @@ class Map extends Component {
         return feature
       }))
 
+    console.debug("simuldadassateYdasearChange mapStyle", mapStyle)
     this.setState({mapStyle});
   }
 
   componentWillReceiveProps(nextProps) {
 
-    const {basemap, selectedArea, selectedMarkers} = this.props;
+    const {basemap, activeArea, activeMarkers} = this.props;
 
     console.debug("### MAP componentWillReceiveProps", this.props,nextProps)
 
     /** Acting on store changes **/
 
     // Basemap changed?
-
     if (basemap != nextProps.basemap) {
       console.debug("###### Basemap changed")
       const newMapStyle = this.state.mapStyle.setIn(['layers', basemapLayerIndex, 'source'], nextProps.basemap)
@@ -382,17 +319,28 @@ class Map extends Component {
       });
     }
 
-    // Area changed?
-    if (selectedArea != nextProps.selectedArea) {
-      console.debug("###### Area changed" + nextProps.selectedArea)
-      this._simulateDimChange(nextProps.selectedArea)
+    // Area Label and Color changed?
+    if (activeArea.label != nextProps.activeArea.label && activeArea.color != nextProps.activeArea.color) {
+      console.debug("###### Area Color and Label changed" + nextProps.activeArea.label)
+      this._changeArea(nextProps.activeArea.label, nextProps.activeArea.color)
+    }
 
+    // Area Label changed?
+    else if (activeArea.label != nextProps.activeArea.label) {
+      console.debug("###### Area Label changed" + nextProps.activeArea.label)
+      this._changeArea(nextProps.activeArea.label, undefined)
+    }
+
+    // Area Color changed?
+    else if (activeArea.color != nextProps.activeArea.color) {
+      console.debug("###### Area Color changed" + nextProps.activeArea.color)
+      this._changeArea(undefined, nextProps.activeArea.color)
     }
 
     // Markers changed?
-    if (!_.isEqual(selectedMarkers.sort(), nextProps.selectedMarkers.sort())) {
-      const removedMarkers = _.difference(selectedMarkers, nextProps.selectedMarkers);
-      const addedMarkers = _.difference(nextProps.selectedMarkers, selectedMarkers);
+    if (!_.isEqual(activeMarkers.sort(), nextProps.activeMarkers.sort())) {
+      const removedMarkers = _.difference(activeMarkers, nextProps.activeMarkers);
+      const addedMarkers = _.difference(nextProps.activeMarkers, activeMarkers);
       console.debug("###### Markers changed")
 
       //iterate to remove
@@ -495,6 +443,7 @@ class Map extends Component {
     let countyName = '';
     let hoverInfo = null;
 
+    console.debug(event.features)
     const county = event.features && event.features.find(f => f.layer.id === 'provinces');
     if (county) {
       hoverInfo = {
@@ -622,8 +571,8 @@ const enhance = compose(
     theme: state.theme,
     locale: state.locale,
     basemap: state.basemap,
-    selectedArea: state.selectedArea,
-    selectedMarkers: state.selectedMarkers,
+    activeArea: state.activeArea,
+    activeMarkers: state.activeMarkers,
     selectedItem: state.selectedItem,
     menuDrawerOpen: state.menuDrawerOpen,
     rightDrawerOpen: state.rightDrawerOpen,
