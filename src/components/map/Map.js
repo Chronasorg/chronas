@@ -29,7 +29,6 @@ import BasicInfo from './markers/basic-info'
 import BasicPin from './markers/basic-pin'
 
 class Map extends Component {
-
   state = {
     mapStyle: defaultMapStyle,
     year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
@@ -444,13 +443,23 @@ class Map extends Component {
     let hoverInfo = null;
 
     console.debug(event.features)
-    const county = event.features && event.features.find(f => f.layer.id === 'provinces');
+    const county = event.features && event.features[0]
     if (county) {
       hoverInfo = {
         lngLat: event.lngLat,
         county: county.properties
       };
       countyName = county.properties.name;
+
+      this.setState({mapStyle: this.state.mapStyle
+        .setIn(['sources', 'area-hover', 'data', 'features'], [{
+          "type": "Feature", "properties": {}, "geometry": county.geometry
+        }])});
+    } else {
+      const prevMapStyle = this.state.mapStyle
+      let mapStyle = prevMapStyle
+        .setIn(['sources', 'area-hover', 'data', 'features'], [])
+      this.setState({mapStyle});
     }
 
     this.setState({
@@ -463,7 +472,7 @@ class Map extends Component {
     let itemName = '';
     let itemId = '';
 
-    const item = event.features && event.features.find(f => f.layer.id === 'provinces');
+    const item = event.features && event.features[0] // (f => f.layer.id === state.activeArea.color)    .features.find(f => f.layer.id === ) // event.features.find(f => f.layer.id === 'provinces')
     if (item) {
       itemName = item.properties.name;
       itemId = item.properties.wikiUrl;

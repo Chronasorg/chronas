@@ -36,6 +36,13 @@
         "features": [ ]
       }
     },
+    "area-hover": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [ ]
+      }
+    },
     "markers": {
       "cluster": true,
       "clusterMaxZoom": 14,
@@ -69,7 +76,8 @@
       "layout": {
         "visibility": "none"
       },
-      "paint": {}
+      "paint": {},
+      "interactive": true
     },
     {
       "id": "religion",
@@ -79,6 +87,7 @@
       "layout": {
         "visibility": "none"
       },
+      "interactive": true,
       "paint": {}
     },
     {
@@ -89,6 +98,7 @@
       "layout": {
         "visibility": "none"
       },
+      "interactive": true,
       "paint": {}
     },
     {
@@ -99,6 +109,7 @@
       "layout": {
         "visibility": "none"
       },
+      "interactive": true,
       "paint": {}
     },
     {
@@ -109,6 +120,15 @@
         "visibility": "none"
       },
       "paint": {}
+    },
+    {
+      "id": "area-hover",
+      "type": "fill",
+      "source": "area-hover",
+      "paint": {
+        "fill-color": "black",
+        "fill-opacity": 0.2
+      }
     },
     {
       "id": "area-labels",
