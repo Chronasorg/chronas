@@ -442,7 +442,6 @@ class Map extends Component {
     let countyName = '';
     let hoverInfo = null;
 
-    console.debug(event.features)
     const county = event.features && event.features[0]
     if (county) {
       hoverInfo = {

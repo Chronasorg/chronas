@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import IconButton from 'material-ui/IconButton';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
+import DiscoverIcon from 'material-ui/svg-icons/action/explore';
 import LayersIcon from 'material-ui/svg-icons/maps/layers';
 import { Link } from 'react-router-dom';
 import pure from 'recompose/pure';
@@ -35,6 +36,18 @@ const Menu = ({ toggleMenuDrawer, setActiveMenu, hasDashboard, onMenuTap, resour
       <LayersIcon
         hoverColor={chronasMainColor}
       />
+    </IconButton>
+    <IconButton
+      key={'discover'}
+      containerElement={<Link to="/discover" />}
+      tooltipPosition="bottom-right"
+      tooltip={translate('pos.discover')}
+      tooltipStyles={tooltip}
+      onTouchTap={() => setActiveMenu('discover')}
+      iconStyle={{color: '#fff'}}
+    >
+      <DiscoverIcon
+        hoverColor={chronasMainColor}/>
     </IconButton>
     <IconButton
       key={'configuration'}

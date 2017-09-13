@@ -35,6 +35,7 @@ import { PostList, PostCreate, PostEdit, PostShow } from './components/menu/post
 import { CommentList, CommentEdit, CommentCreate } from './components/menu/comments'
 import { ProductList, ProductEdit, ProductCreate } from './components/menu/products'
 import Configuration from './components/menu/configuration/Configuration'
+import Discover from './components/menu/discover/Discover'
 import CustomTheme from './styles/CustomAdminTheme'
 
 const styles = {
@@ -58,8 +59,7 @@ const styles = {
     backgroundColor: '#fff',
   },
   content: {
-    flex: 1,
-    padding: '2em',
+    flex: 1
   },
   contentSmall: {
     flex: 1,
@@ -139,6 +139,7 @@ class App extends Component {
                       <Switch>
                         <Route exact path="/"/>
                         <Route exact path="/configuration" component={Configuration} />,
+                        <Route exact path="/discover" component={Discover} />,
                         <Route exact path="/posts" hasCreate render={(routeProps) => <PostList resource="posts" {...routeProps} />}/>
                         <Route exact path="/posts/create" render={(routeProps) => <PostCreate resource="posts" {...routeProps} />}/>
                         <Route exact path="/posts/:id" hasShow hasDelete render={(routeProps) => <PostEdit resource="posts" {...routeProps} />}/>

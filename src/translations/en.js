@@ -4,6 +4,7 @@ export default {
         map: '',
         layers: 'Layers',
         configuration: 'Configuration',
+        discover: 'Discover',
         language: 'Language',
         theme: {
             name: 'Theme',
