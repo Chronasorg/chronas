@@ -3,15 +3,18 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Card, CardText } from 'material-ui/Card';
 import Dialog from 'material-ui/Dialog';
-import {GridList, GridTile} from 'material-ui/GridList';
+import { GridList, GridTile } from 'material-ui/GridList';
 import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import StarBorder from 'material-ui/svg-icons/toggle/star-border';
 import CloseIcon from 'material-ui/svg-icons/content/clear';
-import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
-import {Tabs, Tab} from 'material-ui/Tabs';
+import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
+import { Tabs, Tab } from 'material-ui/Tabs';
+import { AutoRotatingCarousel, Slide } from 'material-auto-rotating-carousel'
 import SwipeableViews from 'react-swipeable-views';
 import { translate, ViewTitle } from 'admin-on-rest';
+
+import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 
 
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers';
@@ -34,10 +37,16 @@ const styles = {
     // 'flex-wrap': 'wrap',
     maxWidth:'1024px',
     minWidth:'780px',
+    backgroundColor: 'transparent'
     // margin-left:auto,margin-right:auto,position:absolute,top:0,right:0,bottom:0,left:0
   },
   overlayStyle: {
     background: 'rgba(0,0,0,.8)'
+  },
+  toolbarTitleStyle: {
+    pointerEvents: 'none',
+    color: 'white',
+    zIndex: 1000000
   },
   headline: {
     fontSize: 24,
@@ -128,20 +137,54 @@ class Discover extends PureComponent {
       <div>
         <Toolbar style={{zIndex: 10000, color: "white", boxShadow: "none"}}>
           <ToolbarGroup>
-            <ToolbarTitle text={translate('pos.discover')}/>
+            <ToolbarTitle style={styles.toolbarTitleStyle} text={translate('pos.discover')}/>
           </ToolbarGroup>
-          <ToolbarGroup style={{zIndex: 10000}}>
-            <IconButton touch={true} key={'close'} containerElement={<Link to="/"/>}>
-              <CloseIcon />
+          <ToolbarGroup>
+            <IconButton style={{zIndex: 10000}} touch={true} key={'close'} containerElement={<Link to="/"/>}>
+              <CloseIcon color={styles.toolbarTitleStyle.color} />
             </IconButton>
           </ToolbarGroup>
         </Toolbar>
         <Dialog open={true}
-              contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-              contentStyle={styles.discoverDialogStyle}
-              overlayStyle={styles.overlayStyle}
-              autoScrollBodyContent={true}>
-          Carousel
+                contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
+                contentStyle={styles.discoverDialogStyle}
+
+                bodyStyle={{backgroundColor: 'transparent'}}
+                actionsContainerStyle={{backgroundColor: red400}}
+                overlayStyle={styles.overlayStyle}
+                style={{backgroundColor: 'transparent'}}
+                titleStyle={{backgroundColor: 'transparent'}}
+                autoScrollBodyContent={true}>
+
+          <AutoRotatingCarousel
+            style={{position: 'relative', transform: 'none', backgroundColor: 'none'}}
+            contentStyle={{transform: 'none', backgroundColor: 'none', height: '512px'}}
+            open
+            landscape
+          >
+            <Slide
+              media={<img src="http://www.icons101.com/icon_png/size_256/id_79394/youtube.png" />}
+              mediaBackgroundStyle={{ backgroundColor: red400 }}
+              contentStyle={{ backgroundColor: red600 }}
+              title="This is a very cool feature"
+              subtitle="Just using this will blow your mind."
+            />
+            <Slide
+              media={<img src="http://www.icons101.com/icon_png/size_256/id_80975/GoogleInbox.png" />}
+              mediaBackgroundStyle={{ backgroundColor: blue400 }}
+              contentStyle={{ backgroundColor: blue600 }}
+              title="Ever wanted to be popular?"
+              subtitle="Well just mix two colors and your are good to go!"
+            />
+            <Slide
+              media={<img src="http://www.icons101.com/icon_png/size_256/id_76704/Google_Settings.png" />}
+              mediaBackgroundStyle={{ backgroundColor: green400 }}
+              contentStyle={{ backgroundColor: green600 }}
+              title="May the force be with you"
+              subtitle="The Force is a metaphysical and ubiquitous power in the Star Wars universe."
+            />
+          </AutoRotatingCarousel>
+
           <Tabs
             onChange={this.handleChange}
             value={this.state.slideIndex}

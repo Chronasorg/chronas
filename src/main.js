@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import createStore from './store/createStore'
 import './styles/main.scss'
-import injectTapEventPlugin from 'react-tap-event-plugin'
 
 // Store Initialization
 // ------------------------------------
@@ -26,7 +25,6 @@ let render = () => {
 // ------------------------------------
 if (__DEV__) {
   if (module.hot) {
-    // injectTapEventPlugin();
     const renderApp = render
     const renderError = (error) => {
       const RedBox = require('redbox-react').default
@@ -45,12 +43,12 @@ if (__DEV__) {
 
     // Setup hot module replacement
     module.hot.accept([
-      './App',
-    ], () =>
-      setImmediate(() => {
-        ReactDOM.unmountComponentAtNode(MOUNT_NODE)
-        render()
-      })
+        './App',
+      ], () =>
+        setImmediate(() => {
+          ReactDOM.unmountComponentAtNode(MOUNT_NODE)
+          render()
+        })
     )
   }
 }
