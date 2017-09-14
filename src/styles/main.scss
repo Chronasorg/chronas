@@ -24,3 +24,9 @@ body {
 .classReveal {
   opacity: 1 !important;
 }
+
+.dialogBackgroundHack > div:first-child {
+  background-color: rgba(0,0,0,0) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}

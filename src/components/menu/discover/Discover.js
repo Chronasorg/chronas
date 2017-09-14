@@ -131,13 +131,13 @@ class Discover extends PureComponent {
   }
 
   render() {
-    const {theme, locale, changeTheme, changeLocale, menuItemActive, translate} = this.props;
+    const {theme, locale, changeTheme, changeLocale, menuItemActive, selectedYear, translate} = this.props;
 
     return (
       <div>
         <Toolbar style={{zIndex: 10000, color: "white", boxShadow: "none"}}>
           <ToolbarGroup>
-            <ToolbarTitle style={styles.toolbarTitleStyle} text={translate('pos.discover')}/>
+            <ToolbarTitle style={styles.toolbarTitleStyle} text={translate('pos.discover_label') + selectedYear}/>
           </ToolbarGroup>
           <ToolbarGroup>
             <IconButton style={{zIndex: 10000}} touch={true} key={'close'} containerElement={<Link to="/"/>}>
@@ -146,19 +146,18 @@ class Discover extends PureComponent {
           </ToolbarGroup>
         </Toolbar>
         <Dialog open={true}
-                contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
+                contentClassName={(this.state.hiddenElement) ? "" : "classReveal dialogBackgroundHack"}
                 contentStyle={styles.discoverDialogStyle}
-
-                bodyStyle={{backgroundColor: 'transparent'}}
+                bodyStyle={{backgroundColor: 'transparent', border: 'none'}}
                 actionsContainerStyle={{backgroundColor: red400}}
                 overlayStyle={styles.overlayStyle}
-                style={{backgroundColor: 'transparent'}}
-                titleStyle={{backgroundColor: 'transparent'}}
+                style={{backgroundColor: 'transparent' }}
+                titleStyle={{backgroundColor: 'transparent', borderRadius: 0}}
                 autoScrollBodyContent={true}>
 
           <AutoRotatingCarousel
             style={{position: 'relative', transform: 'none', backgroundColor: 'none'}}
-            contentStyle={{transform: 'none', backgroundColor: 'none', height: '512px'}}
+            contentStyle={{transform: 'none', backgroundColor: 'none', height: '512px', marginTop: '16px', width: '100%'}}
             open
             landscape
           >
@@ -166,6 +165,7 @@ class Discover extends PureComponent {
               media={<img src="http://www.icons101.com/icon_png/size_256/id_79394/youtube.png" />}
               mediaBackgroundStyle={{ backgroundColor: red400 }}
               contentStyle={{ backgroundColor: red600 }}
+              mediaStyle={{borderRadius: 0}}
               title="This is a very cool feature"
               subtitle="Just using this will blow your mind."
             />
@@ -188,8 +188,18 @@ class Discover extends PureComponent {
           <Tabs
             onChange={this.handleChange}
             value={this.state.slideIndex}
+            tabItemContainerStyle={{
+              backgroundColor: 'rgba(0,0,0,0)',
+              margin: '0 auto',
+              maxWidth: '600px'
+            }}
+            style={{
+              margin: '0 auto',
+              width: '600px',
+              marginBottom: '1em',
+              marginTop: '1em'}}
           >
-            <Tab label="EDITOR'S PICKS" value={0} />
+            <Tab label="HIGHLIGHTS" value={0} />
             <Tab label="STORIES" value={1} />
             <Tab label="PEOPLE" value={2} />
             <Tab label="BATTLES" value={3} />
@@ -262,6 +272,7 @@ class Discover extends PureComponent {
 }
 
 const mapStateToProps = state => ({
+  selectedYear: state.selectedYear,
   theme: state.theme,
   locale: state.locale,
   menuItemActive: state.menuItemActive,

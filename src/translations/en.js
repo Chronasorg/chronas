@@ -5,6 +5,7 @@ export default {
         layers: 'Layers',
         configuration: 'Configuration',
         discover: 'Discover',
+        discover_label: 'Discover the year ',
         language: 'Language',
         theme: {
             name: 'Theme',

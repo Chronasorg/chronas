@@ -31,7 +31,7 @@ class MenuDrawer extends PureComponent {
         }
         medium={
           <Drawer
-            containerStyle={{ overflow: 'none', paddingLeft: 56 }} style={{ overflow: 'none', marginLeft: 100, zIndex: 9}} open={menuDrawerOpen}>
+            containerStyle={{ overflow: 'none', paddingLeft: 56 }} style={{ overflow: 'none', zIndex: 9}} open={menuDrawerOpen}>
             <AppBar
               title={
                 <span style={{
