@@ -1,15 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import IconButton from 'material-ui/IconButton';
-import SettingsIcon from 'material-ui/svg-icons/action/settings';
-import DiscoverIcon from 'material-ui/svg-icons/action/explore';
-import LayersIcon from 'material-ui/svg-icons/maps/layers';
-import { Link } from 'react-router-dom';
-import pure from 'recompose/pure';
+import React from 'react'
+import PropTypes from 'prop-types'
+import IconButton from 'material-ui/IconButton'
+import SettingsIcon from 'material-ui/svg-icons/action/settings'
+import DiscoverIcon from 'material-ui/svg-icons/action/explore'
+import DiceIcon from 'material-ui/svg-icons/places/casino'
+import LayersIcon from 'material-ui/svg-icons/maps/layers'
+import { Link } from 'react-router-dom'
+import pure from 'recompose/pure'
 import { connect } from 'react-redux'
-import compose from 'recompose/compose';
-import { translate, defaultTheme } from 'admin-on-rest';
-import { toggleMenuDrawer as toggleMenuDrawerAction, setActiveMenu as setActiveMenuAction } from './actionReducers';
+import compose from 'recompose/compose'
+import { translate, defaultTheme } from 'admin-on-rest'
+import { setItemId as setItemIdAction } from '../map/actionReducers'
+import { toggleMenuDrawer as toggleMenuDrawerAction, setActiveMenu as setActiveMenuAction } from './actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 
@@ -23,7 +25,7 @@ const styles = {
   },
 };
 
-const Menu = ({ toggleMenuDrawer, setActiveMenu, hasDashboard, onMenuTap, resources, translate }) => (
+const Menu = ({ toggleMenuDrawer, setActiveMenu, setItemId, hasDashboard, onMenuTap, resources, translate }) => (
   <div style={styles.main}>
     <IconButton
       key={'layers'}
@@ -47,6 +49,17 @@ const Menu = ({ toggleMenuDrawer, setActiveMenu, hasDashboard, onMenuTap, resour
       iconStyle={{color: '#fff'}}
     >
       <DiscoverIcon
+        hoverColor={chronasMainColor}/>
+    </IconButton>
+    <IconButton
+      key={'random'}
+      tooltipPosition="bottom-right"
+      tooltip={translate('pos.random')}
+      tooltipStyles={tooltip}
+      onTouchTap={() => setItemId("random")}
+      iconStyle={{color: '#fff'}}
+    >
+      <DiceIcon
         hoverColor={chronasMainColor}/>
     </IconButton>
     <IconButton
@@ -97,6 +110,7 @@ const enhance = compose(
   }), {
     toggleMenuDrawer: toggleMenuDrawerAction,
     setActiveMenu: setActiveMenuAction,
+    setItemId: setItemIdAction
   }),
   pure,
   translate,

@@ -28,6 +28,12 @@ import Timeline from './timeline/MapTimeline'
 import BasicInfo from './markers/basic-info'
 import BasicPin from './markers/basic-pin'
 
+const getRandomInt = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
+
 class Map extends Component {
   state = {
     mapStyle: defaultMapStyle,
@@ -47,7 +53,7 @@ class Map extends Component {
     popupInfo: null
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     window.addEventListener('resize', this._resize);
     this._resize();
     this.restoreFetch = fakeRestServer();
@@ -303,11 +309,38 @@ class Map extends Component {
 
   componentWillReceiveProps(nextProps) {
 
-    const {basemap, activeArea, activeMarkers} = this.props;
+    const {basemap, activeArea, activeMarkers, selectedItem} = this.props;
 
     console.debug("### MAP componentWillReceiveProps", this.props,nextProps)
 
     /** Acting on store changes **/
+
+    if (selectedItem != nextProps.selectedItem) {
+      console.debug("###### Item changed")
+      if (nextProps.selectedItem === "random") {
+
+        const prevMapStyle = this.state.mapStyle
+
+        console.debug("active area: " + activeArea.label, prevMapStyle)
+        let dataPool = prevMapStyle
+          .getIn(['sources', 'area-outlines', 'data']).toJS().features.filter((el) => el.properties.n !== "undefined")
+
+        console.debug("data pool: ", dataPool)
+
+        const randomItem = dataPool[getRandomInt(0,dataPool.length-1)]
+        const itemId = rulPlus[randomItem.properties.n][2]
+
+        this.map.getMap().flyTo({
+          center: [
+            randomItem.geometry.coordinates[0][0][0],
+            randomItem.geometry.coordinates[0][0][1]
+          ]
+        })
+
+        this.props.setRightDrawerVisibility(true)
+        this.props.setItemId(itemId)
+      }
+    }
 
     // Basemap changed?
     if (basemap != nextProps.basemap) {
@@ -465,7 +498,7 @@ class Map extends Component {
       hoverInfo
     });
 
-  };
+  }
 
   _onClick = event => {
     let itemName = '';
@@ -490,7 +523,7 @@ class Map extends Component {
 
     this.props.setRightDrawerVisibility(itemName !== '')
     this.props.setItemId(itemId)
-  };
+  }
 
   _renderPopup() {
     const {hoverInfo, popupInfo} = this.state;

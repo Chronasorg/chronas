@@ -30,6 +30,7 @@ const allMarkers = ['People', 'Battles']
 const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setArea, changeLabel, changeColor, toggleMarker }) => (
   <div style={styles.main}>
     <h4>Basemap</h4>
+    <RaisedButton style={styles.button} label="None" primary={basemap === ''} onClick={() => changeBasemap('')} />
     <RaisedButton style={styles.button} label="Watercolor" primary={basemap === 'watercolor'} onClick={() => changeBasemap('watercolor')} />
     <RaisedButton style={styles.button} label="Topographic" primary={basemap === 'topographic'} onClick={() => changeBasemap('topographic')} />
     <br/>

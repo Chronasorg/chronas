@@ -35,13 +35,13 @@ const styles = {
     //   '-ms-flex-wrap': 'wrap',
     // '-webkit-flex-wrap': 'wrap',
     // 'flex-wrap': 'wrap',
-    maxWidth:'1024px',
-    minWidth:'780px',
+    maxWidth: '100%',
     backgroundColor: 'transparent'
     // margin-left:auto,margin-right:auto,position:absolute,top:0,right:0,bottom:0,left:0
   },
   overlayStyle: {
-    background: 'rgba(0,0,0,.8)'
+    background: 'rgba(0,0,0,.8)',
+    pointerEvents: 'none'
   },
   toolbarTitleStyle: {
     pointerEvents: 'none',
@@ -63,6 +63,8 @@ const styles = {
     width: '100%',
     // height: 450,
     overflowY: 'auto',
+    maxWidth: '1024px',
+    margin: '0 auto'
   },
 };
 
@@ -86,13 +88,13 @@ const tilesData = [
   },
   {
     img: 'http://www.material-ui.com/images/grid-list/morning-819362_640.jpg',
-    title: 'Morning',
+    title: 'Morninddg',
     author: 'fancycrave1',
     featured: true,
   },
   {
     img: 'http://www.material-ui.com/images/grid-list/hats-829509_640.jpg',
-    title: 'Hats',
+    title: 'Hadadts',
     author: 'Hans',
   },
   {
@@ -146,18 +148,22 @@ class Discover extends PureComponent {
           </ToolbarGroup>
         </Toolbar>
         <Dialog open={true}
+                autoDetectWindowHeight={false}
+                modal={false}
+
                 contentClassName={(this.state.hiddenElement) ? "" : "classReveal dialogBackgroundHack"}
                 contentStyle={styles.discoverDialogStyle}
                 bodyStyle={{backgroundColor: 'transparent', border: 'none'}}
                 actionsContainerStyle={{backgroundColor: red400}}
                 overlayStyle={styles.overlayStyle}
-                style={{backgroundColor: 'transparent' }}
+                style={{backgroundColor: 'transparent', overflow: 'auto' }}
                 titleStyle={{backgroundColor: 'transparent', borderRadius: 0}}
-                autoScrollBodyContent={true}>
+                autoScrollBodyContent={false}>
 
           <AutoRotatingCarousel
             style={{position: 'relative', transform: 'none', backgroundColor: 'none'}}
-            contentStyle={{transform: 'none', backgroundColor: 'none', height: '512px', marginTop: '16px', width: '100%'}}
+            contentStyle={{transform: 'none', backgroundColor: 'none', height: '512px',
+              maxWidth: '1024px', marginTop: '16px', width: '100%'}}
             open
             landscape
           >
@@ -253,8 +259,28 @@ class Discover extends PureComponent {
               </Card>
             </div>
             {/*TAB 2*/}
-            <div style={styles.slide}>
-              slide n°3
+            <div style={styles.root}>
+              <GridList
+                cols={2}
+                cellHeight={200}
+                padding={1}
+                style={styles.gridList}
+              >
+                {tilesData.map((tile) => (
+                  <GridTile
+                    key={tile.img}
+                    title={tile.title}
+                    actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
+                    actionPosition="left"
+                    titlePosition="top"
+                    titleBackground="linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
+                    cols={tile.featured ? 2 : 1}
+                    rows={tile.featured ? 2 : 1}
+                  >
+                    <img src={tile.img} />
+                  </GridTile>
+                ))}
+              </GridList>
             </div>
             {/*TAB 3*/}
             <div style={styles.slide}>
