@@ -224,7 +224,7 @@ if (__PROD__) {
         screw_ie8: true,
         conditionals: true,
         unused: true,
-        comparisons: true,
+        comparisons: false,
         sequences: true,
         dead_code: true,
         evaluate: true,

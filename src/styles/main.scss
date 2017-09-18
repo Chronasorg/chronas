@@ -1,8 +1,7 @@
 @import 'base';
 @import '~bootstrap/scss/bootstrap.scss';
+@import '~mapbox-gl/dist/mapbox-gl.css';
 
-// Some best-practice CSS that's useful for most apps
-// Just remove them if they're not what you want
 html {
   box-sizing: border-box;
 }
