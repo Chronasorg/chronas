@@ -7,7 +7,7 @@
 
 The upcoming version of Chronas in early development...
 
-Current Development page: [chronasnew26206.azurewebsites.net](http://chronasnew26206.azurewebsites.net/#/)
+Current Development page: [chronasdev.azurewebsites.net](http://chronasdev.azurewebsites.net/)
 
 ## Table of Contents
 1. [Requirements](#requirements)
