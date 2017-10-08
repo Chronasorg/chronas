@@ -29,3 +29,9 @@ body {
   border-radius: 0 !important;
   box-shadow: none !important;
 }
+
+.closeTopRight {
+  position: fixed !important;
+  top: 2rem;
+  right: 2rem;
+}

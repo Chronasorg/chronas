@@ -4,12 +4,13 @@ import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
+import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
 import { Link } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import { translate, defaultTheme } from 'admin-on-rest'
+import { translate, defaultTheme, userLogout } from 'admin-on-rest'
 import { setItemId as setItemIdAction } from '../map/actionReducers'
 import { toggleMenuDrawer as toggleMenuDrawerAction, setActiveMenu as setActiveMenuAction } from './actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
@@ -23,69 +24,90 @@ const styles = {
     height: '100%',
     padding: '8px 4px',
   },
+  bottomMenu: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    height: '100%',
+    padding: '8px 4px'
+  }
 };
 
-const Menu = ({ toggleMenuDrawer, setActiveMenu, setItemId, hasDashboard, onMenuTap, resources, translate }) => (
+const Menu = ({ toggleMenuDrawer, userLogout, setActiveMenu, setItemId, hasDashboard, onMenuTap, resources, translate }) => (
   <div style={styles.main}>
-    <IconButton
-      key={'layers'}
-      tooltipPosition="bottom-right"
-      tooltip={translate('pos.layers')}
-      tooltipStyles={tooltip}
-      onTouchTap={() => toggleMenuDrawer()}
-      iconStyle={{color: '#fff'}}
-    >
-      <LayersIcon
-        hoverColor={chronasMainColor}
-      />
-    </IconButton>
-    <IconButton
-      key={'discover'}
-      containerElement={<Link to="/discover" />}
-      tooltipPosition="bottom-right"
-      tooltip={translate('pos.discover')}
-      tooltipStyles={tooltip}
-      onTouchTap={() => setActiveMenu('discover')}
-      iconStyle={{color: '#fff'}}
-    >
-      <DiscoverIcon
-        hoverColor={chronasMainColor}/>
-    </IconButton>
-    <IconButton
-      key={'random'}
-      tooltipPosition="bottom-right"
-      tooltip={translate('pos.random')}
-      tooltipStyles={tooltip}
-      onTouchTap={() => setItemId("random")}
-      iconStyle={{color: '#fff'}}
-    >
-      <DiceIcon
-        hoverColor={chronasMainColor}/>
-    </IconButton>
-    <IconButton
-      key={'configuration'}
-      containerElement={<Link to="/configuration" />}
-      tooltipPosition="bottom-right"
-      tooltip={translate('pos.configuration')}
-      tooltipStyles={tooltip}
-      onTouchTap={() => setActiveMenu('configuration')}
-      iconStyle={{color: '#fff'}}
-    >
-      <SettingsIcon
-        hoverColor={chronasMainColor}/>
-    </IconButton>
-    <IconButton
-      key={'comments'}
-      containerElement={<Link to="/comments" />}
-      tooltipPosition="bottom-right"
-      tooltip={translate('pos.configuration')}
-      tooltipStyles={defaultTheme.tooltip}
-      onTouchTap={onMenuTap}
-      iconStyle={defaultTheme.icon}
-    >
-      <SettingsIcon
-        hoverColor={chronasMainColor}/>
-    </IconButton>
+    <div className="topMenuItems">
+      <IconButton
+        key={'layers'}
+        tooltipPosition="bottom-right"
+        tooltip={translate('pos.layers')}
+        tooltipStyles={tooltip}
+        onTouchTap={() => toggleMenuDrawer()}
+        iconStyle={{color: '#fff'}}
+      >
+        <LayersIcon
+          hoverColor={chronasMainColor}
+        />
+      </IconButton>
+      <IconButton
+        key={'discover'}
+        containerElement={<Link to="/discover" />}
+        tooltipPosition="bottom-right"
+        tooltip={translate('pos.discover')}
+        tooltipStyles={tooltip}
+        onTouchTap={() => setActiveMenu('discover')}
+        iconStyle={{color: '#fff'}}
+      >
+        <DiscoverIcon
+          hoverColor={chronasMainColor}/>
+      </IconButton>
+      <IconButton
+        key={'random'}
+        tooltipPosition="bottom-right"
+        tooltip={translate('pos.random')}
+        tooltipStyles={tooltip}
+        onTouchTap={() => setItemId("random")}
+        iconStyle={{color: '#fff'}}
+      >
+        <DiceIcon
+          hoverColor={chronasMainColor}/>
+      </IconButton>
+      <IconButton
+        key={'configuration'}
+        containerElement={<Link to="/configuration" />}
+        tooltipPosition="bottom-right"
+        tooltip={translate('pos.configuration')}
+        tooltipStyles={tooltip}
+        onTouchTap={() => setActiveMenu('configuration')}
+        iconStyle={{color: '#fff'}}
+      >
+        <SettingsIcon hoverColor={chronasMainColor}/>
+      </IconButton>
+    </div>
+    <div style={styles.bottomMenu}>
+      <div>
+        <IconButton
+          key={'products'}
+          containerElement={<Link to="/products" />}
+          tooltipPosition="bottom-right"
+          tooltip={translate('pos.products')}
+          tooltipStyles={defaultTheme.tooltip}
+          onTouchTap={onMenuTap}
+          iconStyle={defaultTheme.icon}
+        >
+          <SettingsIcon
+            hoverColor={chronasMainColor}/>
+        </IconButton>
+        <IconButton
+          tooltipPosition="bottom-right"
+          tooltip={translate('aor.auth.logout')}
+          tooltipStyles={tooltip}
+          onTouchTap={userLogout}
+          className="logout"
+          iconStyle={{color: '#fff'}}
+        > <LogoutIcon hoverColor={chronasMainColor}/>
+        </IconButton>
+      </div>
+    </div>
   </div>
 );
 
@@ -110,7 +132,8 @@ const enhance = compose(
   }), {
     toggleMenuDrawer: toggleMenuDrawerAction,
     setActiveMenu: setActiveMenuAction,
-    setItemId: setItemIdAction
+    setItemId: setItemIdAction,
+    userLogout
   }),
   pure,
   translate,

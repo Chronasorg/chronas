@@ -5,7 +5,7 @@ import compose from 'recompose/compose';
 import Drawer from 'material-ui/Drawer';
 import Paper from 'material-ui/Paper';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-
+import { chronasGradient } from '../../styles/chronasColors';
 import Responsive from './Responsive';
 
 const getWidth = width => (typeof width === 'number' ? `${width}px` : width);
@@ -20,11 +20,12 @@ const getStyles = ({ drawer }) => {
       order: -1,
       zIndex: 10,
       borderRadius: 0,
-      color: '#fff', backgroundColor: '#000',
+      backgroundImage: chronasGradient,
+      color: '#fff',
+      backgroundColor: '#110617',
       transition: 'margin 350ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
     },
     sidebarClosed: {
-
       flex: `0 0 ${width}`,
       marginLeft: `-${width}`,
       order: -1,

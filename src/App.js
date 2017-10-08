@@ -13,13 +13,12 @@ import LayerContent from './components/menu/layers/LayersContent'
 import RightContent from './components/content/Content'
 import fakeRestServer from './dummyRest/restServer'
 // prebuilt admin-on-rest features
+import authClient from './components/menu/authentication/authClient'
 import {
-  authClient,
   defaultTheme,
-  crudSaga,
-  simpleRestClient,
   Delete,
   Logout,
+  Restricted,
   TranslationProvider,
 } from 'admin-on-rest';
 
@@ -36,6 +35,7 @@ import { CommentList, CommentEdit, CommentCreate } from './components/menu/comme
 import { ProductList, ProductEdit, ProductCreate } from './components/menu/products'
 import Configuration from './components/menu/configuration/Configuration'
 import Discover from './components/menu/discover/Discover'
+import Login from './components/menu/authentication/Login'
 import CustomTheme from './styles/CustomAdminTheme'
 
 const styles = {
@@ -138,14 +138,15 @@ class App extends Component {
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path="/"/>
-                        <Route exact path="/configuration" component={Configuration} />,
-                        <Route exact path="/discover" component={Discover} />,
+                        <Route exact path="/configuration" component={Configuration} />
+                        <Route exact path="/discover" component={Discover} />
+                        <Route exact path="/login" component={Login} />
                         <Route exact path="/posts" hasCreate render={(routeProps) => <PostList resource="posts" {...routeProps} />}/>
                         <Route exact path="/posts/create" render={(routeProps) => <PostCreate resource="posts" {...routeProps} />}/>
                         <Route exact path="/posts/:id" hasShow hasDelete render={(routeProps) => <PostEdit resource="posts" {...routeProps} />}/>
                         <Route exact path="/posts/:id/show" hasEdit render={(routeProps) => <PostShow resource="posts" {...routeProps} />}/>
                         <Route exact path="/posts/:id/delete" render={(routeProps) => <Delete resource="posts" {...routeProps} />}/>
-                        <Route exact path="/comments" hasCreate render={(routeProps) => <CommentList resource="comments" {...routeProps} />} />
+                        <Route exact path="/comments" hasCreate render={(routeProps) => { console.debug("routeProps",routeProps); return <CommentList resource="comments" {...routeProps} />}} />
                         <Route exact path="/comments/create" render={(routeProps) => <CommentCreate resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id" hasDelete render={(routeProps) => <CommentEdit resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id/delete" render={(routeProps) => <Delete resource="comments" {...routeProps} />} />

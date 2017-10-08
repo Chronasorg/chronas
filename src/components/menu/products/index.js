@@ -42,7 +42,7 @@ export const ProductFilter = props => (
 );
 
 export const ProductList = props => (
-    <List {...props} filters={<ProductFilter />} perPage={20}>
+    <List {...props} perPage={20} style={{background: 'blue'}}>
         <GridList />
     </List>
 );

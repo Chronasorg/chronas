@@ -137,7 +137,7 @@ class Discover extends PureComponent {
 
     return (
       <div>
-        <Toolbar style={{zIndex: 10000, color: "white", boxShadow: "none"}}>
+        <Toolbar style={{zIndex: 10000, color: "white", boxShadow: "rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px"}}>
           <ToolbarGroup>
             <ToolbarTitle style={styles.toolbarTitleStyle} text={translate('pos.discover_label') + selectedYear}/>
           </ToolbarGroup>

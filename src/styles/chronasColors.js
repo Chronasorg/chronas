@@ -12,3 +12,4 @@ export const grey900 = '#212121';
 export const chronasMainColor = '#fc0';
 export const chronasDark = '#000';
 export const chronasBright = '#fff';
+export const chronasGradient = 'linear-gradient(180deg,#383B32 0,#110617)';

@@ -34,6 +34,7 @@
     "d3-scale": "^1.0.6",
     "express": "^4.15.4",
     "font-awesome": "^4.7.0",
+    "jwt-decode": "^2.2.0",
     "material-auto-rotating-carousel": "^1.5.0",
     "material-ui": "^0.19.1",
     "object-assign": "^4.1.1",

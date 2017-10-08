@@ -5,8 +5,10 @@ import { browserHistory } from 'react-router'
 import makeRootReducer from './reducers'
 import { updateLocation } from './location'
 import createHistory from 'history/createHashHistory'
-import { authClient, crudSaga, simpleRestClient } from 'admin-on-rest';
+import authClient from '../components/menu/authentication/authClient'
+import { crudSaga, simpleRestClient, fetchUtils } from 'admin-on-rest';
 import { routerMiddleware } from 'react-router-redux'
+import { fork } from 'redux-saga/effects';
 export const history = createHistory();
 
 const createStore = (initialState = {}) => {
@@ -33,6 +35,23 @@ const createStore = (initialState = {}) => {
 
   const sagaMiddleware = createSagaMiddleware();
 
+  const httpClient = (url, options = {}) => {
+    if (!options.headers) {
+      options.headers = new Headers({ Accept: 'application/json' });
+    }
+    const token = localStorage.getItem('token');
+    options.headers.set('Authorization', `Bearer ${token}`);
+    return fetchUtils.fetchJson(url, options);
+  }
+
+  const restClient = simpleRestClient('http://fakeapi', httpClient);
+
+  const saga = function* rootSaga() {
+    yield [
+      crudSaga(restClient, authClient)
+    ].map(fork);
+  };
+
   const store = createReduxStore(
     makeRootReducer(),
     initialState,
@@ -42,9 +61,7 @@ const createStore = (initialState = {}) => {
     )
   );
 
-  const restClient = simpleRestClient('http://localhost:3000');
-
-  sagaMiddleware.run(crudSaga(restClient, authClient));
+  sagaMiddleware.run(saga);
   store.asyncReducers = {}
 
   // To unsubscribe, invoke `store.unsubscribeHistory()` anytime

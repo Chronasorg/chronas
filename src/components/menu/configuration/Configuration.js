@@ -7,13 +7,23 @@ import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui/svg-icons/content/clear';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
-import { translate, ViewTitle } from 'admin-on-rest';
+import { translate, Restricted } from 'admin-on-rest';
+import { chronasGradient } from '../../../styles/chronasColors';
 
-import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers';
-
+import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
+const location = '/configuration'
 const styles = {
-  label: { width: '10em', display: 'inline-block' },
+  label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
   button: { margin: '1em' },
+  card: {
+    boxShadow: 'none',
+    minWidth: 300,
+    backgroundColor: 'transparent'
+  },
+  toolbar: {
+    background: 'transparent',
+    boxShadow: 'none',
+  }
 };
 
 class Configuration extends PureComponent {
@@ -34,37 +44,39 @@ class Configuration extends PureComponent {
     const {theme, locale, changeTheme, changeLocale, menuItemActive, translate} = this.props;
 
     return (
-      <Dialog open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-              contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}}>
-        <Card style={{boxShadow: "none"}}>
-          <div>
-            <Toolbar style={{background: "white", boxShadow: "none"}}>
-              <ToolbarGroup>
-                <ToolbarTitle text={translate('pos.configuration')}/>
-              </ToolbarGroup>
-              <ToolbarGroup>
-                <IconButton touch={true} key={'close'} containerElement={<Link to="/"/>}>
-                  <CloseIcon />
-                </IconButton>
-              </ToolbarGroup>
-            </Toolbar>
-          </div>
-          <CardText>
-            <div style={styles.label}>{translate('pos.theme.name')}</div>
-            <RaisedButton style={styles.button} label={translate('pos.theme.modern')} primary
-                          onClick={() => changeTheme('modern')}/>
-            <RaisedButton style={styles.button} label={translate('pos.theme.historic')} secondary
-                          onClick={() => changeTheme('historic')}/>
-          </CardText>
-          <CardText>
-            <div style={styles.label}>{translate('pos.language')}</div>
-            <RaisedButton style={styles.button} label="en" primary={locale === 'en'}
-                          onClick={() => changeLocale('en')}/>
-            <RaisedButton style={styles.button} label="fr" primary={locale === 'fr'}
-                          onClick={() => changeLocale('fr')}/>
-          </CardText>
-        </Card>
-      </Dialog>
+      <Restricted authParams={{ foo: 'bar' }} location={location}>
+        <Dialog bodyStyle={{ backgroundImage: chronasGradient }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
+                contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}}>
+          <Card style={styles.card}>
+            <div>
+              <Toolbar style={styles.toolbar}>
+                <ToolbarGroup>
+                  <ToolbarTitle text={translate('pos.configuration')}/>
+                </ToolbarGroup>
+                <ToolbarGroup>
+                  <IconButton touch={true} key={'close'} containerElement={<Link to="/"/>}>
+                    <CloseIcon />
+                  </IconButton>
+                </ToolbarGroup>
+              </Toolbar>
+            </div>
+            <CardText>
+              <div style={styles.label}>{translate('pos.theme.name')}</div>
+              <RaisedButton style={styles.button} label={translate('pos.theme.modern')} primary
+                            onClick={() => changeTheme('modern')}/>
+              <RaisedButton style={styles.button} label={translate('pos.theme.historic')} secondary
+                            onClick={() => changeTheme('historic')}/>
+            </CardText>
+            <CardText>
+              <div style={styles.label}>{translate('pos.language')}</div>
+              <RaisedButton style={styles.button} label="en" primary={locale === 'en'}
+                            onClick={() => changeLocale('en')}/>
+              <RaisedButton style={styles.button} label="fr" primary={locale === 'fr'}
+                            onClick={() => changeLocale('fr')}/>
+            </CardText>
+          </Card>
+        </Dialog>
+      </Restricted>
     );
   }
 }
