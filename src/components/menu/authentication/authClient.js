@@ -2,10 +2,10 @@ import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import decodeJwt from 'jwt-decode';
 
 export default (type, params) => {
-  console.debug("incoming auth type:", type, "params:", params)
+  console.debug("incoming authClient type:", type, "params:", params)
   if (type === AUTH_LOGIN) {
     const { username, password } = params;
-    const request = new Request('https://mydomain.com/authenticate', {
+    const request = new Request('http://localhost:4040/v1/auth/login', {
       method: 'POST',
       body: JSON.stringify({ username, password }),
       headers: new Headers({ 'Content-Type': 'application/json' }),
@@ -18,9 +18,10 @@ export default (type, params) => {
         return response.json();
       })
       .then(({ token }) => {
+      console.debug("received", token)
         const decodedToken = decodeJwt(token);
         localStorage.setItem('token', token);
-        localStorage.setItem('role', decodedToken.role);
+        localStorage.setItem('role', decodedToken.username);
       });
   }
 
@@ -42,7 +43,7 @@ export default (type, params) => {
 
   if (type === AUTH_CHECK) {
     const { resource } = params;
-    console.debug("checking auth for resource " + resource)
+    console.debug("checking auth for resource ", resource)
     return localStorage.getItem('token') ? Promise.resolve() : Promise.reject();
   }
 

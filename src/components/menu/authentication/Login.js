@@ -18,8 +18,8 @@ import LockIcon from 'material-ui/svg-icons/action/lock-outline';
 import { cyan500, pinkA200 } from 'material-ui/styles/colors';
 import { grey300, chronasMainColor, chronasGradient } from '../../../styles/chronasColors'
 import { Notification, translate } from 'admin-on-rest'
-import { userLogin as userLoginAction } from './actionReducers';
-
+// import { userLogin as userLoginAction } from './actionReducers';
+import { userLogin } from 'admin-on-rest';
 const styles = {
   main: {
     display: 'flex',
@@ -80,7 +80,7 @@ class Login extends Component {
   }
 
   login = (auth) => {
-    console.debug("auth",auth)
+    console.debug("auth",auth,this.props.userLogin)
     this.props.userLogin(auth, this.props.location.state ? this.props.location.state.nextPathname : '/');
   }
 
@@ -149,7 +149,7 @@ const enhance = compose(
       return errors;
     },
   }),
-  connect(null, { userLogin: userLoginAction }),
+  connect(null, { userLogin }),
 );
 
 export default enhance(Login);
