@@ -31,7 +31,7 @@ class MenuDrawer extends PureComponent {
         }
         medium={
           <Drawer
-            containerStyle={{ overflow: 'none', paddingLeft: 56 }} style={{ overflow: 'none', zIndex: 9}} open={menuDrawerOpen}>
+            containerStyle={{ overflow: 'none', backgroundColor: '#eceff1', paddingLeft: 56 }} style={{ overflow: 'none', zIndex: 9}} open={menuDrawerOpen}>
             <AppBar
               title={
                 <span style={{
@@ -41,7 +41,7 @@ class MenuDrawer extends PureComponent {
                 >LAYERS</span>
               }
               showMenuIconButton={false}
-              style={{backgroundColor: '#fff'}}
+              style={{backgroundColor: '#eceff1'}}
               iconElementRight={
                 <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
                             onTouchTap={() => this.handleClose()}>

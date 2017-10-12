@@ -1,8 +1,8 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import decodeJwt from 'jwt-decode';
+import { setToken } from './actionReducers'
 
 export default (type, params) => {
-  console.debug("incoming authClient type:", type, "params:", params)
   if (type === AUTH_LOGIN) {
     const { username, password } = params;
     const request = new Request('http://localhost:4040/v1/auth/login', {
@@ -18,10 +18,11 @@ export default (type, params) => {
         return response.json();
       })
       .then(({ token }) => {
-      console.debug("received", token)
+        setToken(token)
         const decodedToken = decodeJwt(token);
         localStorage.setItem('token', token);
         localStorage.setItem('role', decodedToken.username);
+        return Promise.resolve(token);
       });
   }
 

@@ -16,8 +16,8 @@ import TextField from 'material-ui/TextField';
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar';
 import LockIcon from 'material-ui/svg-icons/action/lock-outline';
 import { cyan500, pinkA200 } from 'material-ui/styles/colors';
-import { grey300, chronasMainColor, chronasGradient } from '../../../styles/chronasColors'
-import { Notification, translate } from 'admin-on-rest'
+import { grey50, grey400, chronasMainColor, chronasGradient } from '../../../styles/chronasColors'
+import { Notification, translate, showNotification } from 'admin-on-rest'
 // import { userLogin as userLoginAction } from './actionReducers';
 import { userLogin } from 'admin-on-rest';
 const styles = {
@@ -80,8 +80,13 @@ class Login extends Component {
   }
 
   login = (auth) => {
-    console.debug("auth",auth,this.props.userLogin)
-    this.props.userLogin(auth, this.props.location.state ? this.props.location.state.nextPathname : '/');
+    const { userLogin, showNotification } = this.props;
+    showNotification("Logged in")
+    userLogin(auth, this.props.location.state ? this.props.location.state.nextPathname : '/');
+  }
+
+  handleClose = () => {
+    this.props.history.push('/')
   }
 
   render() {
@@ -90,11 +95,11 @@ class Login extends Component {
     const { primary1Color, accent1Color } = getColorsFromTheme(muiTheme);
     return (
       <Dialog bodyStyle={{ backgroundImage: chronasGradient }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-              contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} >
+              contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} onRequestClose={this.handleClose} >
           <Card style={styles.card}>
-            <IconButton className="closeTopRight" iconStyle={{width: 40, height: 40, color: 'rgba(0,0,0,0.4)'}} touch={true} key={'close'} containerElement={<Link to="/"/>}>
+            <IconButton className="closeTopRight" iconStyle={{width: 24, height: 24, color: grey400}} touch={true} key={'close'} containerElement={<Link to="/"/>}>
               <CloseIcon
-                hoverColor={grey300}/>
+                hoverColor={grey50}/>
             </IconButton>
             <div style={styles.avatar}>
               <Avatar backgroundColor={chronasMainColor} icon={<LockIcon />} size={60} />
@@ -131,7 +136,6 @@ class Login extends Component {
               </CardActions>
             </form>
           </Card>
-          <Notification />
       </Dialog>
     );
   }
@@ -149,7 +153,10 @@ const enhance = compose(
       return errors;
     },
   }),
-  connect(null, { userLogin }),
+  connect(null, {
+    userLogin,
+    showNotification
+  }),
 );
 
 export default enhance(Login);

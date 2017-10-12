@@ -17,10 +17,11 @@ import authClient from './components/menu/authentication/authClient'
 import {
   defaultTheme,
   Delete,
+  Notification,
   Logout,
   Restricted,
   TranslationProvider,
-} from 'admin-on-rest';
+} from 'admin-on-rest'
 
 import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
@@ -102,7 +103,7 @@ class App extends Component {
 
   render() {
     const {
-      width,
+      width
     } = this.props;
 
     const muiTheme = getMuiTheme(defaultTheme);
@@ -167,7 +168,7 @@ class App extends Component {
                         logout})}
                     </Sidebar>
                   </div>
-                  {/*<Notification />*/}
+                  <Notification />
                   {/*{isLoading && <CircularProgress*/}
                     {/*className="app-loader"*/}
                     {/*color="#fff"*/}

@@ -4,6 +4,7 @@ import locationReducer from './location'
 import { adminReducer } from 'admin-on-rest'
 import { localeReducer, themeReducer } from '../components/menu/configuration/actionReducers'
 import { basemapReducer, areaReducer, markerReducer } from '../components/menu/layers/actionReducers'
+import { userReducer } from '../components/menu/authentication/actionReducers'
 import { rightDrawerReducer } from '../components/content/actionReducers'
 import { itemIdReducer } from '../components/map/actionReducers'
 import { yearReducer } from '../components/map/timeline/actionReducers'
@@ -23,19 +24,20 @@ export const makeRootReducer = (asyncReducers) => {
       { name: 'tags' },
       { name: 'users' }
     ]),
-    basemap: basemapReducer(),
-    menuDrawerOpen: menuDrawerReducer(),
-    locale: localeReducer(),
-    theme: themeReducer(),
-    location: locationReducer,
-    menuItemActive: menuIdReducer(),
     activeArea: areaReducer(),
     activeMarkers: markerReducer(),
-    selectedItem: itemIdReducer(),
-    selectedYear: yearReducer(),
+    basemap: basemapReducer(),
     form: formReducer,
+    locale: localeReducer(),
+    location: locationReducer,
+    menuDrawerOpen: menuDrawerReducer(),
+    menuItemActive: menuIdReducer(),
+    userDetails: userReducer(),
     rightDrawerOpen: rightDrawerReducer(),
     routing: routerReducer,
+    selectedItem: itemIdReducer(),
+    selectedYear: yearReducer(),
+    theme: themeReducer(),
     ...asyncReducers
   })
 }

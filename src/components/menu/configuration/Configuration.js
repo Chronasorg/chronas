@@ -11,7 +11,7 @@ import { translate, Restricted } from 'admin-on-rest';
 import { chronasGradient } from '../../../styles/chronasColors';
 
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
-const location = '/configuration'
+
 const styles = {
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
   button: { margin: '1em' },
@@ -40,13 +40,17 @@ class Configuration extends PureComponent {
     this.setState({hiddenElement: true})
   }
 
+  handleClose = () => {
+    this.props.history.push('/')
+  }
+
   render() {
     const {theme, locale, changeTheme, changeLocale, menuItemActive, translate} = this.props;
 
     return (
-      <Restricted authParams={{ foo: 'bar' }} location={location}>
-        <Dialog bodyStyle={{ backgroundImage: chronasGradient }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-                contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}}>
+      <Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'configuration' }}>
+        <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
+                contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} onRequestClose={this.handleClose}>
           <Card style={styles.card}>
             <div>
               <Toolbar style={styles.toolbar}>
