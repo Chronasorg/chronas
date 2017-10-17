@@ -1,4 +1,4 @@
-import { queryParameters, fetchJson } from '../util/fetch';
+import { fetchUtils } from 'admin-on-rest';
 import {
     GET_LIST,
     GET_ONE,
@@ -22,7 +22,7 @@ import {
  * CREATE       => POST http://my.api.url/posts/123
  * DELETE       => DELETE http://my.api.url/posts/123
  */
-export default (apiUrl, httpClient = fetchJson) => {
+export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
     /**
      * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
      * @param {String} resource Name of the resource to fetch, e.g. 'posts'
@@ -41,7 +41,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                 range: JSON.stringify([(page - 1) * perPage, (page * perPage) - 1]),
                 filter: JSON.stringify(params.filter),
             };
-            url = `${apiUrl}/${resource}?${queryParameters(query)}`;
+            url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`;
             break;
         }
         case GET_ONE:
@@ -51,7 +51,7 @@ export default (apiUrl, httpClient = fetchJson) => {
             const query = {
                 filter: JSON.stringify({ id: params.ids }),
             };
-            url = `${apiUrl}/${resource}?${queryParameters(query)}`;
+            url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`;
             break;
         }
         case GET_MANY_REFERENCE: {
@@ -62,7 +62,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                 range: JSON.stringify([(page - 1) * perPage, (page * perPage) - 1]),
                 filter: JSON.stringify({ ...params.filter, [params.target]: params.id }),
             };
-            url = `${apiUrl}/${resource}?${queryParameters(query)}`;
+            url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`;
             break;
         }
         case UPDATE:

@@ -4,6 +4,7 @@ import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
+import UsersIcon from 'material-ui/svg-icons/social/people'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
@@ -110,15 +111,15 @@ class Menu extends PureComponent {
           { isLoggedIn ? (
             <div>
               <IconButton
-                key={'products'}
-                containerElement={<Link to="/products" />}
+                key={'users'}
+                containerElement={<Link to="/users" />}
                 tooltipPosition="bottom-right"
-                tooltip={translate('pos.products')}
-                tooltipStyles={defaultTheme.tooltip}
+                tooltip={translate('pos.users')}
+                tooltipStyles={tooltip}
                 onTouchTap={onMenuTap}
-                iconStyle={defaultTheme.icon}
+                iconStyle={{color: '#fff'}}
               >
-                <SettingsIcon
+                <UsersIcon
                   hoverColor={chronasMainColor}/>
               </IconButton>
               <IconButton

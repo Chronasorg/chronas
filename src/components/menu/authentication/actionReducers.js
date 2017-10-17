@@ -44,7 +44,6 @@ export const logout = () => ({
 
 export const userReducer = (initial = { 'token': '', 'username': '', 'role': '' }) => (
   (prevUser = initial, { type, payload }) => {
-    console.debug(type,payload)
     switch (type) {
       case FLUSH_USER:
       case USER_LOGOUT:

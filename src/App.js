@@ -11,10 +11,9 @@ import Menu from './components/menu/Menu'
 import Map from './components/map/Map'
 import LayerContent from './components/menu/layers/LayersContent'
 import RightContent from './components/content/Content'
-import fakeRestServer from './dummyRest/restServer'
-// prebuilt admin-on-rest features
 import authClient from './components/menu/authentication/authClient'
 import {
+  CrudRoute,
   defaultTheme,
   Delete,
   Notification,
@@ -22,7 +21,6 @@ import {
   Restricted,
   TranslationProvider,
 } from 'admin-on-rest'
-
 import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import RightDrawer from './components/content/RightDrawer'
@@ -31,6 +29,7 @@ import RightDrawer from './components/content/RightDrawer'
 import messages from './translations'
 import { history } from './store/createStore'
 // your app components
+import { UserList, UserEdit, UserDelete, UserIcon } from './components/restricted/users'
 import { PostList, PostCreate, PostEdit, PostShow } from './components/menu/posts'
 import { CommentList, CommentEdit, CommentCreate } from './components/menu/comments'
 import { ProductList, ProductEdit, ProductCreate } from './components/menu/products'
@@ -94,11 +93,11 @@ class App extends Component {
     this.state = { drawerOpen: false };
   }
   componentDidMount() {
-    this.restoreFetch = fakeRestServer();
+    // this.restoreFetch = fakeRestServer();
   }
 
   componentWillUnmount() {
-    this.restoreFetch();
+    // this.restoreFetch();
   }
 
   render() {
@@ -126,6 +125,16 @@ class App extends Component {
     } else {
       prefixedStyles.content.marginLeft = 0
     }
+    // remove={UserDelete} icon={UserIcon}     <Resource name="customers" list={UserList} edit={UserEdit} />
+
+    /*
+     <Route exact path="/products" hasCreate render={(routeProps) => <ProductList resource="products" {...routeProps} />} />
+     <Route exact path="/products/create" render={(routeProps) => <ProductCreate resource="products" {...routeProps} />} />
+     <Route exact path="/products/:id" hasDelete render={(routeProps) => <ProductEdit resource="products" {...routeProps} />} />
+     <Route exact path="/products/:id/delete" render={(routeProps) => <Delete resource="products" {...routeProps} />} />
+
+     {createElement(Map)} l 150
+    */
 
     return (
       <Provider store={this.props.store}>
@@ -151,10 +160,8 @@ class App extends Component {
                         <Route exact path="/comments/create" render={(routeProps) => <CommentCreate resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id" hasDelete render={(routeProps) => <CommentEdit resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id/delete" render={(routeProps) => <Delete resource="comments" {...routeProps} />} />
-                        <Route exact path="/products" hasCreate render={(routeProps) => <ProductList resource="products" {...routeProps} />} />
-                        <Route exact path="/products/create" render={(routeProps) => <ProductCreate resource="products" {...routeProps} />} />
-                        <Route exact path="/products/:id" hasDelete render={(routeProps) => <ProductEdit resource="products" {...routeProps} />} />
-                        <Route exact path="/products/:id/delete" render={(routeProps) => <Delete resource="products" {...routeProps} />} />
+                        <CrudRoute resource="users" list={UserList} />
+                        <CrudRoute resource="products" list={ProductList} create={ProductCreate} edit={ProductEdit} remove={Delete} />
                       </Switch>
                     </div>
                     <MenuDrawer muiTheme={CustomTheme}>

@@ -4,11 +4,14 @@ import thunk from 'redux-thunk'
 import { browserHistory } from 'react-router'
 import makeRootReducer from './reducers'
 import { updateLocation } from './location'
+import jsonServerRestClient from '../restInterface/jsonServer'
 import createHistory from 'history/createHashHistory'
 import authClient from '../components/menu/authentication/authClient'
-import { crudSaga, simpleRestClient, fetchUtils } from 'admin-on-rest';
+import { crudSaga, fetchUtils } from 'admin-on-rest';
 import { routerMiddleware } from 'react-router-redux'
 import { fork } from 'redux-saga/effects';
+import properties from '../properties'
+
 export const history = createHistory();
 
 const createStore = (initialState = {}) => {
@@ -44,7 +47,7 @@ const createStore = (initialState = {}) => {
     return fetchUtils.fetchJson(url, options);
   }
 
-  const restClient = simpleRestClient('http://fakeapi', httpClient);
+  const restClient = jsonServerRestClient(properties.chronasApiHost);
 
   const saga = function* rootSaga() {
     yield [

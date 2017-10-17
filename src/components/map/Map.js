@@ -1,9 +1,5 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import IconButton from 'material-ui/IconButton'
-import SettingsIcon from 'material-ui/svg-icons/action/settings'
-import LayersIcon from 'material-ui/svg-icons/maps/layers'
-import { Link } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
@@ -11,16 +7,12 @@ import { translate, defaultTheme } from 'admin-on-rest'
 import { activeYear, provinceCollection, provArea, adjacent, relPlus, rulPlus } from './data/datadef'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setItemId as setItemIdAction } from './actionReducers'
-import { chronasMainColor } from '../../styles/chronasColors'
-import { tooltip } from '../../styles/chronasStyleComponents'
 import {render} from 'react-dom'
 import {fromJS} from 'immutable'
 import MapGL, {Marker, Popup} from 'react-map-gl'
-import {json as requestJson} from 'd3-request'
 import properties from '../../properties'
 import {defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utils from './utils'
-import fakeRestServer from '../../dummyRest/restServer'
 import _ from 'lodash'
 
 import Timeline from './timeline/MapTimeline'
@@ -56,12 +48,12 @@ class Map extends Component {
   componentDidMount = () => {
     window.addEventListener('resize', this._resize);
     this._resize();
-    this.restoreFetch = fakeRestServer();
+    // this.restoreFetch = fakeRestServer();
 
 
     window.addEventListener('load', function() {
 
-      fetch('http://fakeapi/provinces')
+      fetch(properties.chronasApiHost + "metadata/provinces")
         .then(res => res.text())
         .then(res => this._loadGeoJson('provinces', JSON.parse(res)))
         .then( () => {

@@ -1,4 +1,4 @@
-import { queryParameters, fetchJson } from '../util/fetch';
+import { fetchUtils } from 'admin-on-rest';
 import {
     GET_LIST,
     GET_ONE,
@@ -21,7 +21,7 @@ import {
  * CREATE       => POST http://my.api.url/posts/123
  * DELETE       => DELETE http://my.api.url/posts/123
  */
-export default (apiUrl, httpClient = fetchJson) => {
+export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
     /**
      * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
      * @param {String} resource Name of the resource to fetch, e.g. 'posts'
@@ -42,7 +42,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                 _start: (page - 1) * perPage,
                 _end: page * perPage,
             };
-            url = `${apiUrl}/${resource}?${queryParameters(query)}`;
+            url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`;
             break;
         }
         case GET_ONE:
@@ -59,7 +59,7 @@ export default (apiUrl, httpClient = fetchJson) => {
                 _start: (page - 1) * perPage,
                 _end: page * perPage,
             };
-            url = `${apiUrl}/${resource}?${queryParameters(query)}`;
+            url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`;
             break;
         }
         case UPDATE:
@@ -94,12 +94,13 @@ export default (apiUrl, httpClient = fetchJson) => {
         switch (type) {
         case GET_LIST:
         case GET_MANY_REFERENCE:
-            if (!headers.has('x-total-count')) {
-                throw new Error('The X-Total-Count header is missing in the HTTP Response. The jsonServer REST client expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?');
-            }
+            // if (!headers.has('x-total-count')) {
+            //     throw new Error('The X-Total-Count header is missing in the HTTP Response. The jsonServer REST client expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?');
+            // }
+          console.debug("returning json",json)
             return {
                 data: json,
-                total: parseInt(headers.get('x-total-count').split('/').pop(), 10),
+                total: 11, // TODO: return length parseInt(headers.get('x-total-count').split('/').pop(), 10),
             };
         case CREATE:
             return { data: { ...params.data, id: json.id } };
