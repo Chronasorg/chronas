@@ -1,5 +1,5 @@
 import React from 'react';
-import { GridList as MuiGridList, GridTile } from 'material-ui/GridList';
+import { GridList as MuiGridList, GridTile } from 'material-ui';
 import { NumberField, EditButton, TextField } from 'admin-on-rest';
 
 const styles = {
@@ -13,7 +13,6 @@ const styles = {
 };
 
 const GridList = ({ ids, isLoading, data, currentSort, basePath, rowStyle }) => {
-  console.debug(ids,data)
     return (<div style={styles.root}>
         <MuiGridList cellHeight={180} cols={4} style={styles.gridList}>
             {ids.map((id) => (

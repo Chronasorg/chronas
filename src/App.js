@@ -13,7 +13,6 @@ import LayerContent from './components/menu/layers/LayersContent'
 import RightContent from './components/content/Content'
 import authClient from './components/menu/authentication/authClient'
 import {
-  CrudRoute,
   defaultTheme,
   Delete,
   Notification,
@@ -21,6 +20,7 @@ import {
   Restricted,
   TranslationProvider,
 } from 'admin-on-rest'
+import CrudRoute from './components/restricted/shared/CrudRoute'
 import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import RightDrawer from './components/content/RightDrawer'

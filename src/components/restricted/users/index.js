@@ -1,19 +1,17 @@
 import React from 'react';
 import { List, Datagrid, TextField } from 'admin-on-rest';
 import GridList from './GridList';
-/*
+
 export const UserList = (props) => (
   <List {...props}>
     <Datagrid>
       <TextField source="id" />
-      <TextField source="name" />
       <TextField source="username" />
     </Datagrid>
   </List>
 );
-*/
+/*
 export const UserList = props => {
-  console.debug("received props",props);
   return (
     <List {...props} perPage={20} style={{background: 'blue'}}>
       <GridList />

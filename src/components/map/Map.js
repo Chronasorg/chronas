@@ -554,7 +554,7 @@ class Map extends Component {
 
   render() {
     const {viewport, mapStyle} = this.state;
-
+    console.debug("we are at location", this.state.location, this.props.location)
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
 
@@ -566,7 +566,6 @@ class Map extends Component {
         width: 'calc(100% - 56px)',
         height: '100%',
         overflow: 'hidden',
-        zIndex: 0,
         transition: 'left 300ms cubic-bezier(0.4, 0, 0.2, 1), right 300ms cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
         <MapGL
@@ -603,6 +602,7 @@ const enhance = compose(
   connect(state => ({
     theme: state.theme,
     locale: state.locale,
+    location: state.location,
     basemap: state.basemap,
     activeArea: state.activeArea,
     activeMarkers: state.activeMarkers,

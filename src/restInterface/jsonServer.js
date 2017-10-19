@@ -14,7 +14,7 @@ import {
  *
  * @see https://github.com/typicode/json-server
  * @example
- * GET_LIST     => GET http://my.api.url/posts?_sort=title&_order=ASC&_start=0&_end=24
+ * GET_LIST     => GET http://my.api.url/posts?sort=title&order=ASC&start=0&end=24
  * GET_ONE      => GET http://my.api.url/posts/123
  * GET_MANY     => GET http://my.api.url/posts/123, GET http://my.api.url/posts/456, GET http://my.api.url/posts/789
  * UPDATE       => PUT http://my.api.url/posts/123
@@ -37,10 +37,11 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             const { field, order } = params.sort;
             const query = {
                 ...params.filter,
-                _sort: field,
-                _order: order,
-                _start: (page - 1) * perPage,
-                _end: page * perPage,
+                sort: field,
+                order: order,
+                start: (page - 1) * perPage,
+                end: page * perPage,
+                count: 1,
             };
             url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`;
             break;
@@ -54,10 +55,11 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             const query = {
                 ...params.filter,
                 [params.target]: params.id,
-                _sort: field,
-                _order: order,
-                _start: (page - 1) * perPage,
-                _end: page * perPage,
+                sort: field,
+                order: order,
+                start: (page - 1) * perPage,
+                end: page * perPage,
+                count: 1,
             };
             url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`;
             break;
@@ -92,20 +94,21 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
     const convertHTTPResponseToREST = (response, type, resource, params) => {
         const { headers, json } = response;
         switch (type) {
-        case GET_LIST:
-        case GET_MANY_REFERENCE:
-            // if (!headers.has('x-total-count')) {
-            //     throw new Error('The X-Total-Count header is missing in the HTTP Response. The jsonServer REST client expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?');
-            // }
-          console.debug("returning json",json)
-            return {
-                data: json,
-                total: 11, // TODO: return length parseInt(headers.get('x-total-count').split('/').pop(), 10),
-            };
-        case CREATE:
-            return { data: { ...params.data, id: json.id } };
-        default:
-            return { data: json };
+            case GET_LIST:
+            case GET_MANY_REFERENCE:
+                if (!headers.has('x-total-count')) {
+                    throw new Error(
+                        'The X-Total-Count header is missing in the HTTP Response. The jsonServer REST client expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?'
+                    );
+                }
+                return {
+                    data: json,
+                    total: parseInt(headers.get('x-total-count').split('/').pop(), 10),
+                };
+            case CREATE:
+                return { data: { ...params.data, id: json.id } };
+            default:
+                return { data: json };
         }
     };
 
