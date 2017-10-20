@@ -32,6 +32,9 @@ const config = {
       inProject(project.srcDir),
       'node_modules',
     ],
+    alias: {
+      react: path.resolve('./node_modules/react'),
+    },
     extensions: ['*', '.js', '.jsx', '.json'],
   },
   externals: project.externals,

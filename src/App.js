@@ -102,7 +102,7 @@ class App extends Component {
 
   render() {
     const {
-      width
+      width,
     } = this.props;
 
     const muiTheme = getMuiTheme(defaultTheme);
@@ -135,6 +135,7 @@ class App extends Component {
 
      {createElement(Map)} l 150
     */
+    console.debug("attaching history", history)
 
     return (
       <Provider store={this.props.store}>
@@ -160,8 +161,8 @@ class App extends Component {
                         <Route exact path="/comments/create" render={(routeProps) => <CommentCreate resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id" hasDelete render={(routeProps) => <CommentEdit resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id/delete" render={(routeProps) => <Delete resource="comments" {...routeProps} />} />
-                        <CrudRoute resource="users" list={UserList} />
-                        <CrudRoute resource="products" list={ProductList} create={ProductCreate} edit={ProductEdit} remove={Delete} />
+                        <CrudRoute history={history} resource="users" list={UserList} edit={UserEdit} remove={UserDelete} />
+                        <CrudRoute history={history} resource="products" list={ProductList} create={ProductCreate} edit={ProductEdit} remove={Delete} />
                       </Switch>
                     </div>
                     <MenuDrawer muiTheme={CustomTheme}>

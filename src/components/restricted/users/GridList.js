@@ -1,5 +1,5 @@
 import React from 'react';
-import { GridList as MuiGridList, GridTile } from 'material-ui';
+import { GridList as MuiGridList, GridTile } from 'material-ui/GridList';
 import { NumberField, EditButton, TextField } from 'admin-on-rest';
 
 const styles = {

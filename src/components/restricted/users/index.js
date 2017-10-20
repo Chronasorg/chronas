@@ -1,3 +1,5 @@
+/*
+
 import React from 'react';
 import { List, Datagrid, TextField } from 'admin-on-rest';
 import GridList from './GridList';
@@ -10,7 +12,6 @@ export const UserList = (props) => (
     </Datagrid>
   </List>
 );
-/*
 export const UserList = props => {
   return (
     <List {...props} perPage={20} style={{background: 'blue'}}>
@@ -19,7 +20,8 @@ export const UserList = props => {
   );
 }
 
-/*
+*/
+
 import React from 'react';
 import {
     translate,
@@ -74,6 +76,7 @@ export const UserList = (props) => (
         <Datagrid bodyOptions={{ stripedRows: true, showRowHover: true }}>
           <TextField source="id" />
           <TextField source="username" />
+          <EditButton />
         </Datagrid>
     </List>
 );
@@ -95,15 +98,11 @@ export const UserEdit = (props) => (
     <Edit title={<UserTitle />} {...props}>
         <TabbedForm>
             <FormTab label="resources.customers.tabs.identity">
-                <TextInput source="first_name" style={{ display: 'inline-block' }} />
-                <TextInput source="last_name" style={{ display: 'inline-block', marginLeft: 32 }} />
-                <TextInput type="email" source="email" validation={{ email: true }} options={{ fullWidth: true }} style={{ width: 544 }} />
-                <DateInput source="birthday" />
+                <TextInput source="username" style={{ display: 'inline-block' }} />
             </FormTab>
             <FormTab label="resources.customers.tabs.address">
-                <LongTextInput source="address" style={{ maxWidth: 544 }} />
-                <TextInput source="zipcode" style={{ display: 'inline-block' }} />
-                <TextInput source="city" style={{ display: 'inline-block', marginLeft: 32 }} />
+                <LongTextInput source="email" style={{ maxWidth: 544 }} />
+                <TextInput source="privilege" style={{ display: 'inline-block' }} />
             </FormTab>
             <FormTab label="resources.customers.tabs.orders">
                 <ReferenceManyField addLabel={false} reference="commands" target="customer_id">
@@ -146,4 +145,4 @@ const UserDeleteTitle = translate(({ record, translate }) => <span>
 </span>);
 
 export const UserDelete = (props) => <Delete {...props} title={<UserDeleteTitle />} />;
-*/
+

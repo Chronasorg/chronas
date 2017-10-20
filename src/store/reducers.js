@@ -13,17 +13,7 @@ import { reducer as formReducer } from 'redux-form'
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
-    admin: adminReducer([
-      { name: 'categories' },
-      { name: 'comments' },
-      { name: 'customers' },
-      { name: 'posts' },
-      { name: 'products' },
-      { name: 'reviews' },
-      { name: 'settings' },
-      { name: 'tags' },
-      { name: 'users' }
-    ]),
+    admin: adminReducer,
     activeArea: areaReducer(),
     activeMarkers: markerReducer(),
     basemap: basemapReducer(),

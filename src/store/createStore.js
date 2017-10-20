@@ -1,13 +1,12 @@
 import { applyMiddleware, compose, createStore as createReduxStore } from 'redux'
 import createSagaMiddleware from 'redux-saga'
 import thunk from 'redux-thunk'
-import { browserHistory } from 'react-router'
 import makeRootReducer from './reducers'
 import { updateLocation } from './location'
 import jsonServerRestClient from '../restInterface/jsonServer'
 import createHistory from 'history/createHashHistory'
 import authClient from '../components/menu/authentication/authClient'
-import { crudSaga, fetchUtils } from 'admin-on-rest';
+import { crudSaga, declareResources, fetchUtils } from 'admin-on-rest';
 import { routerMiddleware } from 'react-router-redux'
 import { fork } from 'redux-saga/effects';
 import properties from '../properties'
@@ -64,11 +63,12 @@ const createStore = (initialState = {}) => {
     )
   );
 
+  store.dispatch(declareResources([{ name: 'posts' }, { name: 'comments' }, { name: 'users' }]));
   sagaMiddleware.run(saga);
   store.asyncReducers = {}
 
   // To unsubscribe, invoke `store.unsubscribeHistory()` anytime
-  store.unsubscribeHistory = browserHistory.listen(updateLocation(store))
+  // store.unsubscribeHistory = browserHistory.listen(updateLocation(store))
 
   if (module.hot) {
     module.hot.accept('./reducers', () => {
