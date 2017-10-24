@@ -3,7 +3,7 @@ const properties = {
   areaColorLayers: ["political","religion","sub-religion","culture","population"],
   areaLabelLayers: ["political","religion","sub-religion","culture"],
   provinceThreshold: 4,
-  chronasApiHost: 'http://localhost:4040/v1/',
+  chronasApiHost: 'http://localhost:4040/v1',
 }
 
 export default properties;

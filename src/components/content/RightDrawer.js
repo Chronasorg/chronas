@@ -54,7 +54,7 @@ class RightDrawer extends PureComponent {
               style={{backgroundColor: '#fff'}}
               iconElementRight={
                 <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
-                            onTouchTap={() => this.handleClose()}>
+                            onClick={() => this.handleClose()}>
                   <FontIcon className="fa fa-chevron-right"/>
                 </IconButton>
               }

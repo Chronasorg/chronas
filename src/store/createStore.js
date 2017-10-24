@@ -46,7 +46,7 @@ const createStore = (initialState = {}) => {
     return fetchUtils.fetchJson(url, options);
   }
 
-  const restClient = jsonServerRestClient(properties.chronasApiHost);
+  const restClient = jsonServerRestClient(properties.chronasApiHost, httpClient);
 
   const saga = function* rootSaga() {
     yield [

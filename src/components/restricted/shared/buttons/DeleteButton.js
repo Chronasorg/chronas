@@ -7,7 +7,7 @@ import ActionDelete from 'material-ui/svg-icons/action/delete';
 
 const DeleteButton = ({ basePath = '', record = {} }) => (
     <IconButton
-        containerElement={<Link to={`${basePath}/${record.id}/delete`} />}
+        containerElement={<Link to={`${basePath}/${record["id"]}/delete`} />}
         style={{ overflow: 'inherit' }}
     >
         <ActionDelete color={cyan500} />

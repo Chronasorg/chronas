@@ -43,8 +43,7 @@ class MenuDrawer extends PureComponent {
               showMenuIconButton={false}
               style={{backgroundColor: '#eceff1'}}
               iconElementRight={
-                <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
-                            onTouchTap={() => this.handleClose()}>
+                <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this.handleClose()}>
                   <FontIcon className="fa fa-chevron-left"/>
                 </IconButton>
               }

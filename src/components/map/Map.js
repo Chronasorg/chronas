@@ -53,7 +53,7 @@ class Map extends Component {
 
     window.addEventListener('load', function() {
 
-      fetch(properties.chronasApiHost + "metadata/provinces")
+      fetch(properties.chronasApiHost + "/metadata/provinces")
         .then(res => res.text())
         .then(res => this._loadGeoJson('provinces', JSON.parse(res)))
         .then( () => {

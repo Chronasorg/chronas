@@ -16,7 +16,6 @@ import {
   defaultTheme,
   Delete,
   Notification,
-  Logout,
   Restricted,
   TranslationProvider,
 } from 'admin-on-rest'
@@ -29,7 +28,7 @@ import RightDrawer from './components/content/RightDrawer'
 import messages from './translations'
 import { history } from './store/createStore'
 // your app components
-import { UserList, UserEdit, UserDelete, UserIcon } from './components/restricted/users'
+import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from './components/restricted/users'
 import { PostList, PostCreate, PostEdit, PostShow } from './components/menu/posts'
 import { CommentList, CommentEdit, CommentCreate } from './components/menu/comments'
 import { ProductList, ProductEdit, ProductCreate } from './components/menu/products'
@@ -75,8 +74,6 @@ const styles = {
 };
 
 const prefixedStyles = {};
-
-const logout = authClient ? createElement(Logout) : null;
 
 class App extends Component {
   static propTypes = {
@@ -161,7 +158,7 @@ class App extends Component {
                         <Route exact path="/comments/create" render={(routeProps) => <CommentCreate resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id" hasDelete render={(routeProps) => <CommentEdit resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id/delete" render={(routeProps) => <Delete resource="comments" {...routeProps} />} />
-                        <CrudRoute history={history} resource="users" list={UserList} edit={UserEdit} remove={UserDelete} />
+                        <CrudRoute history={history} resource="users" list={UserList} create={UserCreate} edit={UserEdit} remove={UserDelete} />
                         <CrudRoute history={history} resource="products" list={ProductList} create={ProductCreate} edit={ProductEdit} remove={Delete} />
                       </Switch>
                     </div>
@@ -172,8 +169,7 @@ class App extends Component {
                       {createElement(RightContent)}
                     </RightDrawer>
                     <Sidebar open={true} muiTheme={CustomTheme}>
-                      {createElement(Menu, {
-                        logout})}
+                      {createElement(Menu)}
                     </Sidebar>
                   </div>
                   <Notification />

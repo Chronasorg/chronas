@@ -64,7 +64,7 @@ class Menu extends PureComponent {
           tooltipPosition="bottom-right"
           tooltip={translate('pos.layers')}
           tooltipStyles={tooltip}
-          onTouchTap={() => toggleMenuDrawer()}
+          onClick={() => toggleMenuDrawer()}
           iconStyle={{color: '#fff'}}
         >
           <LayersIcon
@@ -77,7 +77,7 @@ class Menu extends PureComponent {
           tooltipPosition="bottom-right"
           tooltip={translate('pos.discover')}
           tooltipStyles={tooltip}
-          onTouchTap={() => setActiveMenu('discover')}
+          onClick={() => setActiveMenu('discover')}
           iconStyle={{color: '#fff'}}
         >
           <DiscoverIcon
@@ -88,7 +88,7 @@ class Menu extends PureComponent {
           tooltipPosition="bottom-right"
           tooltip={translate('pos.random')}
           tooltipStyles={tooltip}
-          onTouchTap={() => setItemId("random")}
+          onClick={() => setItemId("random")}
           iconStyle={{color: '#fff'}}
         >
           <DiceIcon
@@ -100,7 +100,7 @@ class Menu extends PureComponent {
           tooltipPosition="bottom-right"
           tooltip={translate('pos.configuration')}
           tooltipStyles={tooltip}
-          onTouchTap={() => setActiveMenu('configuration')}
+          onClick={() => setActiveMenu('configuration')}
           iconStyle={{color: '#fff'}}
         >
           <SettingsIcon hoverColor={chronasMainColor}/>
@@ -116,7 +116,7 @@ class Menu extends PureComponent {
                 tooltipPosition="bottom-right"
                 tooltip={translate('pos.users')}
                 tooltipStyles={tooltip}
-                onTouchTap={onMenuTap}
+                onClick={onMenuTap}
                 iconStyle={{color: '#fff'}}
               >
                 <UsersIcon
@@ -128,7 +128,7 @@ class Menu extends PureComponent {
               tooltipPosition="bottom-right"
               tooltip={translate('pos.account')}
               tooltipStyles={tooltip}
-              onTouchTap={onMenuTap}
+              onClick={onMenuTap}
               iconStyle={{color: '#fff'}}
               >
               <AccountIcon
@@ -141,7 +141,7 @@ class Menu extends PureComponent {
             tooltipPosition="bottom-right"
             tooltip={translate(isLoggedIn ? 'aor.auth.logout' : 'aor.auth.login')}
             tooltipStyles={tooltip}
-            onTouchTap={isLoggedIn ? this.handleLogout : userLogout }
+            onClick={isLoggedIn ? this.handleLogout : userLogout }
             className="logout"
             iconStyle={{color: isLoggedIn ? chronasMainColor : '#fff'}}
           > <LogoutIcon hoverColor={chronasMainColor}/>
@@ -154,9 +154,7 @@ class Menu extends PureComponent {
 
 Menu.propTypes = {
   hasDashboard: PropTypes.bool,
-  logout: PropTypes.element,
   onMenuTap: PropTypes.func,
-  // resources: PropTypes.array.isRequired,
   translate: PropTypes.func.isRequired,
 };
 

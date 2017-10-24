@@ -124,6 +124,10 @@ class Discover extends PureComponent {
     this.setState({slideIndex: value})
   }
 
+  handleClose = () => {
+    this.props.history.push('/')
+  }
+
   componentDidMount = () => {
     this.setState({hiddenElement: false})
   }
@@ -150,7 +154,7 @@ class Discover extends PureComponent {
         <Dialog open={true}
                 autoDetectWindowHeight={false}
                 modal={false}
-
+                onRequestClose={this.handleClose}
                 contentClassName={(this.state.hiddenElement) ? "" : "classReveal dialogBackgroundHack"}
                 contentStyle={styles.discoverDialogStyle}
                 bodyStyle={{backgroundColor: 'transparent', border: 'none'}}

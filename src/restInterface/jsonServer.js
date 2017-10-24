@@ -47,14 +47,14 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             break;
         }
         case GET_ONE:
-            url = `${apiUrl}/${resource}/${params.id}`;
+            url = `${apiUrl}/${resource}/${params["id"]}`;
             break;
         case GET_MANY_REFERENCE: {
             const { page, perPage } = params.pagination;
             const { field, order } = params.sort;
             const query = {
                 ...params.filter,
-                [params.target]: params.id,
+                [params.target]: params["_id"],
                 sort: field,
                 order: order,
                 start: (page - 1) * perPage,
@@ -65,7 +65,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             break;
         }
         case UPDATE:
-            url = `${apiUrl}/${resource}/${params.id}`;
+            url = `${apiUrl}/${resource}/${params["id"]}`;
             options.method = 'PUT';
             options.body = JSON.stringify(params.data);
             break;
@@ -75,7 +75,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             options.body = JSON.stringify(params.data);
             break;
         case DELETE:
-            url = `${apiUrl}/${resource}/${params.id}`;
+            url = `${apiUrl}/${resource}/${params["id"]}`;
             options.method = 'DELETE';
             break;
         default:
@@ -92,7 +92,8 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
      * @returns {Object} REST response
      */
     const convertHTTPResponseToREST = (response, type, resource, params) => {
-        const { headers, json } = response;
+        const headers = response.headers
+        const json = ensureId(response.json)
         switch (type) {
             case GET_LIST:
             case GET_MANY_REFERENCE:
@@ -122,10 +123,22 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
         // json-server doesn't handle WHERE IN requests, so we fallback to calling GET_ONE n times instead
         if (type === GET_MANY) {
             return Promise.all(params.ids.map(id => httpClient(`${apiUrl}/${resource}/${id}`)))
-                .then(responses => ({ data: responses.map(response => response.json) }));
+                .then(responses => ({ data: responses.map(response => ensureId(response.json)) }));
         }
         const { url, options } = convertRESTRequestToHTTP(type, resource, params);
         return httpClient(url, options)
             .then(response => convertHTTPResponseToREST(response, type, resource, params));
     };
 };
+
+
+function ensureId (arr) {
+  if (typeof arr === "undefined") return
+  for (let i = 0; i < arr.length; i++){
+    if (arr[i].hasOwnProperty('_id')) {
+      arr[i].id = arr[i]['_id']
+      delete arr[i]['_id']
+    }
+  }
+  return arr
+}

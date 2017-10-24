@@ -1,50 +1,30 @@
-/*
-
-import React from 'react';
-import { List, Datagrid, TextField } from 'admin-on-rest';
-import GridList from './GridList';
-
-export const UserList = (props) => (
-  <List {...props}>
-    <Datagrid>
-      <TextField source="id" />
-      <TextField source="username" />
-    </Datagrid>
-  </List>
-);
-export const UserList = props => {
-  return (
-    <List {...props} perPage={20} style={{background: 'blue'}}>
-      <GridList />
-    </List>
-  );
-}
-
-*/
-
 import React from 'react';
 import {
     translate,
     BooleanField,
+    Create,
     Datagrid,
     DateField,
     DateInput,
-    Delete,
-    Edit,
+    DisabledInput,
     Filter,
     FormTab,
     List,
     LongTextInput,
+    Edit,
+    Delete,
     NullableBooleanInput,
     NumberField,
     ReferenceManyField,
+    SimpleForm,
     TabbedForm,
     TextField,
     TextInput,
 } from 'admin-on-rest';
 import Icon from 'material-ui/svg-icons/social/person';
-
+// import Edit from '../shared/crudComponents/Edit';
 import EditButton from '../shared/buttons/EditButton';
+// import Delete from '../shared/buttons/EditButton';
 import NbItemsField from '../shared/commands/NbItemsField';
 import ProductReferenceField from '../products/ProductReferenceField';
 import StarRatingField from '../reviews/StarRatingField';
@@ -71,29 +51,93 @@ const colored = WrappedComponent => props => props.record[props.source] > 500 ?
 const ColoredNumberField = colored(NumberField);
 ColoredNumberField.defaultProps = NumberField.defaultProps;
 
-export const UserList = (props) => (
-    <List {...props} filters={<UserFilter />} sort={{ field: 'last_seen', order: 'DESC' }} perPage={25}>
-        <Datagrid bodyOptions={{ stripedRows: true, showRowHover: true }}>
-          <TextField source="id" />
-          <TextField source="username" />
-          <EditButton />
-        </Datagrid>
-    </List>
-);
-
-
-
- // <FullNameField />
- // <DateField source="createdAt" type="date" />
- // <NumberField source="edits" label="resources.customers.fields.commands" style={{ color: 'purple' }} />
- // <ColoredNumberField source="karma" options={{ style: 'currency', currency: 'USD' }} />
- // <DateField source="createdAt" showTime />
- // <BooleanField source="has_newsletter" label="News." />
- // <SegmentsField />
- // <EditButton />
+export const UserList = (props) => {
+  console.debug("UserList,props", props)
+  return <List {...props} filters={<UserFilter />} sort={{field: 'username', order: 'DESC'}} perPage={25}>
+    <Datagrid bodyOptions={{stripedRows: true, showRowHover: true}}>
+      <TextField source="username"/>
+      <TextField source="name"/>
+      <EditButton />
+    </Datagrid>
+  </List>
+};
 
 const UserTitle = ({ record }) => record ? <FullNameField record={record} size={32} /> : null;
 
+
+const validateUserCreation = (values) => {
+  const errors = {};
+  if (!values.username) {
+    errors.username = ['Username is required'];
+  }
+  if (!values.name) {
+    errors.name = ['Name is required'];
+  }
+  return errors
+};
+/*
+
+ const PersonEdit = (props) => (
+ <Edit {...props}>
+ <SimpleForm>
+ <SexInput source="sex" />
+ </SimpleForm>
+ </Edit>
+ );
+
+export const UserEdit = translate(({ translate, ...rest }) => (
+  <Edit title={<span>UserEdit</span>} {...rest}>
+    <SimpleForm>
+      <TextField source="username"/>
+      <div>tesst</div>
+    </SimpleForm>
+  </Edit>
+));
+*/
+export const UserEdit = (props) => {
+  console.debug("USEREDIT",props)
+  // var props2 =  Object.assign({}, props);
+  // props2.data = {"_id":"daumann","username":"daumann","name":"Dietmar","__v":0,"comments":0,"edits":0,"karma":0,"createdAt":"2017-10-21T00:27:35.216Z","status":"inactive","privilege":"user"}
+
+  return <Edit title={<span>UserEdit</span>} {...props}>
+    <SimpleForm>
+      <DisabledInput source="username" />
+      <LongTextInput source="name" />
+    </SimpleForm>
+  </Edit>}
+
+/*
+
+ <TabbedForm>
+ <FormTab label="resources.customers.tabs.identity">
+ <TextInput source="id" style={{ display: 'inline-block' }} />
+ </FormTab>
+ </TabbedForm>
+
+export const UserEdit = (props) => {
+  console.debug("UserEdit,props",props)
+  return <Edit {...props}>1
+    <SimpleForm>
+      test
+    </SimpleForm>
+  </Edit>
+};
+
+ <Datagrid bodyOptions={{stripedRows: true, showRowHover: true}}>
+ <TextInput source="username" style={{display: 'inline-block'}}/>
+ 123
+ </Datagrid>*/
+export const UserCreate = (props) => {
+  console.debug("UserEdit,props",props)
+  return <Create {...props}>
+    <SimpleForm validate={validateUserCreation}>
+      <TextInput label="Username" source="username" />
+      <TextInput label="Name" source="name" />
+    </SimpleForm>
+  </Create>
+};
+
+/*
 export const UserEdit = (props) => (
     <Edit title={<UserTitle />} {...props}>
         <TabbedForm>
@@ -104,44 +148,13 @@ export const UserEdit = (props) => (
                 <LongTextInput source="email" style={{ maxWidth: 544 }} />
                 <TextInput source="privilege" style={{ display: 'inline-block' }} />
             </FormTab>
-            <FormTab label="resources.customers.tabs.orders">
-                <ReferenceManyField addLabel={false} reference="commands" target="customer_id">
-                    <Datagrid>
-                        <DateField source="date" />
-                        <TextField source="reference" />
-                        <NbItemsField />
-                        <NumberField source="total" options={{ style: 'currency', currency: 'USD' }} />
-                        <TextField source="status" />
-                        <EditButton />
-                    </Datagrid>
-                </ReferenceManyField>
-            </FormTab>
-            <FormTab label="resources.customers.tabs.reviews">
-                <ReferenceManyField addLabel={false} reference="reviews" target="customer_id">
-                    <Datagrid filter={{ status: 'approved' }}>
-                        <DateField source="date" />
-                        <ProductReferenceField />
-                        <StarRatingField />
-                        <TextField source="comment" style={{ maxWidth: '20em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} />
-                        <EditButton style={{ padding: 0 }} />
-                    </Datagrid>
-                </ReferenceManyField>
-            </FormTab>
-            <FormTab label="resources.customers.tabs.stats">
-                <SegmentsField />
-                <NullableBooleanInput source="has_newsletter" />
-                <DateField source="first_seen" style={{ width: 128, display: 'inline-block' }} />
-                <DateField source="latest_purchase" style={{ width: 128, display: 'inline-block' }} />
-                <DateField source="last_seen" style={{ width: 128, display: 'inline-block' }} />
-            </FormTab>
         </TabbedForm>
     </Edit>
 );
-
+*/
 const UserDeleteTitle = translate(({ record, translate }) => <span>
     {translate('resources.customers.page.delete')}&nbsp;
-    {record && <img src={`${record.avatar}?size=25x25`} width="25" alt="" />}
-    {record && `${record.first_name} ${record.last_name}`}
+    {record && `${record.username} ${record.username}`}
 </span>);
 
 export const UserDelete = (props) => <Delete {...props} title={<UserDeleteTitle />} />;
