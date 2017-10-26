@@ -5,6 +5,7 @@ import SettingsIcon from 'material-ui/svg-icons/action/settings'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import UsersIcon from 'material-ui/svg-icons/social/people'
+import StorageIcon from 'material-ui/svg-icons/device/storage'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
@@ -42,14 +43,14 @@ class Menu extends PureComponent {
     super(props);
     const token = localStorage.getItem('token');
     if (token !== null) {
-      props.showNotification("Logged in")
+      props.showNotification("auth.logged_in")
       props.setToken(token)
     }
   }
 
   handleLogout = () => {
     const { logout, showNotification } = this.props;
-    showNotification("Logged out")
+    showNotification("auth.logged_out")
     logout()
   }
 
@@ -111,15 +112,15 @@ class Menu extends PureComponent {
           { isLoggedIn ? (
             <div>
               <IconButton
-                key={'users'}
-                containerElement={<Link to="/users" />}
+                key={'resources'}
+                containerElement={<Link to="/resources" />}
                 tooltipPosition="bottom-right"
-                tooltip={translate('pos.users')}
+                tooltip={translate('pos.resources')}
                 tooltipStyles={tooltip}
                 onClick={onMenuTap}
                 iconStyle={{color: '#fff'}}
               >
-                <UsersIcon
+                <StorageIcon
                   hoverColor={chronasMainColor}/>
               </IconButton>
               <IconButton
@@ -139,7 +140,7 @@ class Menu extends PureComponent {
           }
           <IconButton
             tooltipPosition="bottom-right"
-            tooltip={translate(isLoggedIn ? 'aor.auth.logout' : 'aor.auth.login')}
+            tooltip={translate(isLoggedIn ? 'auth.logout' : 'auth.login')}
             tooltipStyles={tooltip}
             onClick={isLoggedIn ? this.handleLogout : userLogout }
             className="logout"

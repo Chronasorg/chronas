@@ -89,13 +89,6 @@ class App extends Component {
     super(props);
     this.state = { drawerOpen: false };
   }
-  componentDidMount() {
-    // this.restoreFetch = fakeRestServer();
-  }
-
-  componentWillUnmount() {
-    // this.restoreFetch();
-  }
 
   render() {
     const {
@@ -132,8 +125,14 @@ class App extends Component {
 
      {createElement(Map)} l 150
     */
-    console.debug("attaching history", history)
 
+    const resourceCollection = {
+      users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
+      areas: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
+      markers: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
+      images: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
+      metadata: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
+    }
     return (
       <Provider store={this.props.store}>
         <TranslationProvider messages={messages}>
@@ -158,8 +157,7 @@ class App extends Component {
                         <Route exact path="/comments/create" render={(routeProps) => <CommentCreate resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id" hasDelete render={(routeProps) => <CommentEdit resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id/delete" render={(routeProps) => <Delete resource="comments" {...routeProps} />} />
-                        <CrudRoute history={history} resource="users" list={UserList} create={UserCreate} edit={UserEdit} remove={UserDelete} />
-                        <CrudRoute history={history} resource="products" list={ProductList} create={ProductCreate} edit={ProductEdit} remove={Delete} />
+                        <CrudRoute history={history} resources={resourceCollection} />
                       </Switch>
                     </div>
                     <MenuDrawer muiTheme={CustomTheme}>

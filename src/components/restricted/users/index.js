@@ -52,8 +52,7 @@ const ColoredNumberField = colored(NumberField);
 ColoredNumberField.defaultProps = NumberField.defaultProps;
 
 export const UserList = (props) => {
-  console.debug("UserList,props", props)
-  return <List {...props} filters={<UserFilter />} sort={{field: 'username', order: 'DESC'}} perPage={25}>
+  return <List {...props} filters={<UserFilter />}  sort={{field: 'username', order: 'DESC'}} perPage={25}>
     <Datagrid bodyOptions={{stripedRows: true, showRowHover: true}}>
       <TextField source="username"/>
       <TextField source="name"/>

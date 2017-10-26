@@ -81,7 +81,7 @@ class Login extends Component {
 
   login = (auth) => {
     const { userLogin, showNotification } = this.props;
-    showNotification("Logged in")
+    showNotification("auth.logged_in")
     userLogin(auth, this.props.location.state ? this.props.location.state.nextPathname : '/');
   }
 

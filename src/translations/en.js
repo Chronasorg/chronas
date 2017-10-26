@@ -1,4 +1,10 @@
 export default {
+    auth: {
+      logged_in: 'Logged in',
+      logged_out: 'Logged out',
+      login: 'Login',
+      logout: 'Logout'
+    },
     pos: {
         search: 'Search',
         map: '',
@@ -7,6 +13,10 @@ export default {
         discover: 'Discover',
         discover_label: 'Discover the year ',
         language: 'Language',
+        random: 'Random Article',
+        resources: 'Resources',
+        users: 'Manage Users',
+        account: 'Manage Account',
         theme: {
             name: 'Theme',
             light: 'Light',

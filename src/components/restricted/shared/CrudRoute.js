@@ -1,9 +1,35 @@
 import React, { createElement, PureComponent } from 'react';
 import { Route, Switch } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux';
+import compose from 'recompose/compose';
+import pure from 'recompose/pure'
 
-import { Restricted } from 'admin-on-rest';
+import { Restricted, translate } from 'admin-on-rest';
 import Dialog from 'material-ui/Dialog';
+import Toolbar from 'material-ui/Toolbar'
+import FlatButton from 'material-ui/FlatButton';
+import { tooltip } from '../../../styles/chronasStyleComponents'
+import { chronasMainColor } from '../../../styles/chronasColors'
+
+const styles = {
+  menuButtons: {
+    margin: 12,
+    color: '#fff',
+  },
+  dialogStyle: {
+    width: 'calc(100% - 64px)',
+    height: '800px',
+    maxWidth: 'none',
+    maxHeight: 'none',
+    left: 32,
+    top: 0,
+    transform: '',
+    transition: 'opacity 1s',
+    opacity: 0,
+    paddingTop: 0
+  }
+}
 
 class CrudRoute extends PureComponent {
   constructor(props) {
@@ -24,74 +50,110 @@ class CrudRoute extends PureComponent {
   }
 
   render() {
-    const { resource, list, create, edit, show, remove, options } = this.props;
+    const { resources, list, create, edit, show, remove, options, onMenuTap, translate } = this.props;
+    const resourceList = Object.keys(resources)
 
-    const commonProps = {
-      resource,
-      options,
-      hasList: !!list,
-      hasEdit: !!edit,
-      hasShow: !!show,
-      hasCreate: !!create,
-      hasDelete: !!remove,
-    };
+    const restrictPage = (component, route, commonProps) => {
 
-    const restrictPage = (component, route) => {
       const RestrictedPage = routeProps => (
-        <Restricted authParams={{ resource, route }} {...routeProps}>
-          <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-                  contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} onRequestClose={this.handleClose}>
-          {createElement(component, {
-            ...commonProps,
-            ...routeProps,
-          })}
+        <Restricted authParams={{ routeProps }} {...routeProps}>
+          <Dialog open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
+                  contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
+            <Toolbar>
+              {resourceList.map((resourceKey) => (<div key={"div-" + resourceKey}>
+                <FlatButton
+                  key={resourceKey}
+                  containerElement={<Link to={"/resources/" + resourceKey} />}
+                  tooltipPosition="bottom-right"
+                  tooltip={translate('pos.' + resourceKey)}
+                  tooltipStyles={tooltip}
+                  hoverColor={chronasMainColor}
+                  onClick={onMenuTap}
+                  label={resourceKey}
+                  style={styles.menuButtons} />
+              </div>))
+              }
+            </Toolbar>
+            {component && createElement(component, {
+              ...commonProps,
+              ...routeProps,
+            })}
           </Dialog>
         </Restricted>
       );
       return RestrictedPage;
     };
+
+
     return (
+      <div>
       <Switch style={{zIndex: 20000}}>
-        {list && (
-          <Route
-            exact
-            path={`/${resource}`}
-            render={restrictPage(list, 'list')}
-          />
-        )}
-        {create && (
-          <Route
-            exact
-            path={`/${resource}/create`}
-            render={restrictPage(create, 'create')}
-          />
-        )}
-        {edit && (
-          <Route
-            exact
-            path={`/${resource}/:id`}
-            render={restrictPage(edit, 'edit')}
-          />
-        )}
-        {show && (
-          <Route
-            exact
-            path={`/${resource}/:id/show`}
-            render={restrictPage(show, 'show')}
-          />
-        )}
-        {remove && (
-          <Route
-            exact
-            path={`/${resource}/:id/delete`}
-            render={restrictPage(remove, 'delete')}
-          />
-        )}
+        <Route
+          exact
+          path={'/resources'}
+          render={restrictPage(() => (<span>Select a resource from the menu above.</span>), '')}
+        />
       </Switch>
+        {resourceList.map((resourceKey) => {
+          const commonProps = {
+            options,
+            hasList: !!resources[resourceKey].list,
+            hasEdit: !!resources[resourceKey].edit,
+            hasShow: !!resources[resourceKey].show,
+            hasCreate: !!resources[resourceKey].create,
+            hasDelete: !!resources[resourceKey].remove,
+            resource: resourceKey,
+          }
+
+          console.debug(resourceKey, "commonProps", JSON.stringify(commonProps))
+
+          return (<Switch key={resourceKey} style={{zIndex: 20000}}>
+            {resources[resourceKey].list && (
+              <Route
+                exact
+                path={'/resources/' + resourceKey}
+                render={restrictPage(resources[resourceKey].list, 'list', commonProps)}
+              />
+            )}
+            {resources[resourceKey].create && (
+              <Route
+                exact
+                path={'/resources/' + resourceKey + '/create'}
+                render={restrictPage(resources[resourceKey].create, 'create', commonProps)}
+              />
+            )}
+            {resources[resourceKey].edit && (
+              <Route
+                exact
+                path={'/resources/' + resourceKey + '/:id'}
+                render={restrictPage(resources[resourceKey].edit, 'edit', commonProps)}
+              />
+            )}
+            {resources[resourceKey].show && (
+              <Route
+                exact
+                path={'/resources/' + resourceKey + '/:id/show'}
+                render={restrictPage(resources[resourceKey].show, 'show', commonProps)}
+              />
+            )}
+            {resources[resourceKey].remove && (
+              <Route
+                exact
+                path={'/resources/' + resourceKey + '/:id/delete'}
+                render={restrictPage(resources[resourceKey].remove, 'delete', commonProps)}
+              />
+            )}
+          </Switch>)
+        })}
+      </div>
     );
   }
-};
+}
 
-export default connect(null, {
-})(CrudRoute);
+const enhance = compose(
+  connect(state => ({ }), { }),
+  pure,
+  translate,
+)
 
+export default enhance(CrudRoute);

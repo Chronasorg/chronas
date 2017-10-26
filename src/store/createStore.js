@@ -63,7 +63,7 @@ const createStore = (initialState = {}) => {
     )
   );
 
-  store.dispatch(declareResources([{ name: 'posts' }, { name: 'comments' }, { name: 'users' }]));
+  store.dispatch(declareResources([{ name: 'posts' }, { name: 'comments' }, { name: 'users' }, { name: 'areas' }, { name: 'images' }, { name: 'markers' }, { name: 'metadata' }]));
   sagaMiddleware.run(saga);
   store.asyncReducers = {}
 
