@@ -1,6 +1,6 @@
 export const FLUSH_USER = 'FLUSH_USER'
 export const SET_USER = 'SET_USER'
-export const SET_ROLE = 'SET_ROLE'
+export const SET_PRIVILEGE = 'SET_PRIVILEGE'
 export const SET_USERNAME = 'SET_USERNAME'
 export const SET_TOKEN = 'SET_TOKEN'
 export const USER_LOGIN_SUCCESS = 'AOR/USER_LOGIN_SUCCESS'
@@ -11,9 +11,9 @@ export const CUSTOM_NOTIFICATION = 'AOR/SHOW_NOTIFICATION'
 
 /** Actions **/
 
-export const setUser = (token, user, role) => ({
+export const setUser = (token, user, privilege) => ({
   type: SET_USER,
-  payload: [token, user, role],
+  payload: [token, user, privilege],
 });
 
 export const customNotification = message => ({
@@ -31,9 +31,9 @@ export const setUsername = username => ({
   payload: username,
 });
 
-export const setRole = role => ({
-  type: SET_ROLE,
-  payload: role,
+export const setPrivilege = privilege => ({
+  type: SET_PRIVILEGE,
+  payload: privilege,
 });
 
 export const logout = () => ({
@@ -42,7 +42,7 @@ export const logout = () => ({
 
 /** Reducers **/
 
-export const userReducer = (initial = { 'token': '', 'username': '', 'role': '' }) => (
+export const userReducer = (initial = { 'token': '', 'username': '', 'privilege': '' }) => (
   (prevUser = initial, { type, payload }) => {
     switch (type) {
       case FLUSH_USER:
@@ -54,7 +54,7 @@ export const userReducer = (initial = { 'token': '', 'username': '', 'role': '' 
         return {
           token: payload[0],
           username: payload[1],
-          role: payload[2]
+          privilege: payload[2]
         }
       case USER_LOGIN_SUCCESS:
       case SET_TOKEN:
@@ -67,10 +67,10 @@ export const userReducer = (initial = { 'token': '', 'username': '', 'role': '' 
           ...prevUser,
           username: payload
         }
-      case SET_ROLE:
+      case SET_PRIVILEGE:
         return {
           ...prevUser,
-          role: payload
+          privilege: payload
         };
       default:
         return prevUser;

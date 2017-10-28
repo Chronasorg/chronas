@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux';
 import compose from 'recompose/compose';
 import pure from 'recompose/pure'
-
 import { Restricted, translate } from 'admin-on-rest';
 import Dialog from 'material-ui/Dialog';
 import Toolbar from 'material-ui/Toolbar'
 import FlatButton from 'material-ui/FlatButton';
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../../styles/chronasColors'
+import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../users'
 
 const styles = {
   menuButtons: {
@@ -29,6 +29,14 @@ const styles = {
     opacity: 0,
     paddingTop: 0
   }
+}
+
+const resources = {
+  users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
+  areas: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
+  markers: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
+  images: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
+  metadata: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
 }
 
 class CrudRoute extends PureComponent {
@@ -50,11 +58,13 @@ class CrudRoute extends PureComponent {
   }
 
   render() {
-    const { resources, list, create, edit, show, remove, options, onMenuTap, translate } = this.props;
-    const resourceList = Object.keys(resources)
+    const { list, create, edit, show, remove, options, onMenuTap, translate } = this.props
+    const currPrivilege = +localStorage.getItem("privilege")
+    const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
+
+
 
     const restrictPage = (component, route, commonProps) => {
-
       const RestrictedPage = routeProps => (
         <Restricted authParams={{ routeProps }} {...routeProps}>
           <Dialog open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}

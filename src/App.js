@@ -1,6 +1,7 @@
 import React, { Component, createElement } from 'react'
-import { Provider } from 'react-redux'
+import { Provider, connect } from 'react-redux'
 import PropTypes from 'prop-types'
+import decodeJwt from 'jwt-decode'
 import 'font-awesome/css/font-awesome.css'
 import { Switch, Route } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux'
@@ -11,7 +12,6 @@ import Menu from './components/menu/Menu'
 import Map from './components/map/Map'
 import LayerContent from './components/menu/layers/LayersContent'
 import RightContent from './components/content/Content'
-import authClient from './components/menu/authentication/authClient'
 import {
   defaultTheme,
   Delete,
@@ -28,14 +28,16 @@ import RightDrawer from './components/content/RightDrawer'
 import messages from './translations'
 import { history } from './store/createStore'
 // your app components
-import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from './components/restricted/users'
+
 import { PostList, PostCreate, PostEdit, PostShow } from './components/menu/posts'
 import { CommentList, CommentEdit, CommentCreate } from './components/menu/comments'
 import { ProductList, ProductEdit, ProductCreate } from './components/menu/products'
+import Account from './components/menu/account/Account'
 import Configuration from './components/menu/configuration/Configuration'
 import Discover from './components/menu/discover/Discover'
 import Login from './components/menu/authentication/Login'
 import CustomTheme from './styles/CustomAdminTheme'
+import { setUser } from './components/menu/authentication/actionReducers'
 
 const styles = {
   wrapper: {
@@ -79,6 +81,14 @@ class App extends Component {
   static propTypes = {
     store: PropTypes.object.isRequired,
     // routes: PropTypes.object.isRequired,
+  }
+
+  componentDidMount() {
+    const token = localStorage.getItem('token')
+    if (token) {
+      const decodedToken = decodeJwt(token)
+      this.props.setUser(token, decodedToken.username, decodedToken.privilege)
+    }
   }
 
   shouldComponentUpdate () {
@@ -126,13 +136,6 @@ class App extends Component {
      {createElement(Map)} l 150
     */
 
-    const resourceCollection = {
-      users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
-      areas: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
-      markers: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
-      images: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
-      metadata: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete},
-    }
     return (
       <Provider store={this.props.store}>
         <TranslationProvider messages={messages}>
@@ -145,6 +148,7 @@ class App extends Component {
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path="/"/>
+                        <Route exact path="/account" component={Account} />
                         <Route exact path="/configuration" component={Configuration} />
                         <Route exact path="/discover" component={Discover} />
                         <Route exact path="/login" component={Login} />
@@ -157,7 +161,7 @@ class App extends Component {
                         <Route exact path="/comments/create" render={(routeProps) => <CommentCreate resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id" hasDelete render={(routeProps) => <CommentEdit resource="comments" {...routeProps} />} />
                         <Route exact path="/comments/:id/delete" render={(routeProps) => <Delete resource="comments" {...routeProps} />} />
-                        <CrudRoute history={history} resources={resourceCollection} />
+                        <CrudRoute history={history}/>
                       </Switch>
                     </div>
                     <MenuDrawer muiTheme={CustomTheme}>
@@ -188,4 +192,8 @@ class App extends Component {
   }
 }
 
-export default App
+const mapDispatchToProps = {
+  setUser,
+}
+
+export default connect(null, mapDispatchToProps)(App)

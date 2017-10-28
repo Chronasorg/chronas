@@ -27,6 +27,7 @@ import StarRatingField from '../reviews/StarRatingField';
 import FullNameField from './FullNameField';
 import SegmentsField from './SegmentsField';
 import SegmentsInput from './SegmentsInput';
+import { chronasMainColor } from '../../../styles/chronasColors'
 
 export const VisitorIcon = Icon;
 
@@ -52,7 +53,7 @@ export const VisitorList = (props) => (
         <Datagrid bodyOptions={{ stripedRows: true, showRowHover: true }}>
             <FullNameField />
             <DateField source="last_seen" type="date" />
-            <NumberField source="nb_commands" label="resources.customers.fields.commands" style={{ color: 'purple' }} />
+            <NumberField source="nb_commands" label="resources.customers.fields.commands" style={{ color: chronasMainColor }} />
             <ColoredNumberField source="total_spent" options={{ style: 'currency', currency: 'USD' }} />
             <DateField source="latest_purchase" showTime />
             <BooleanField source="has_newsletter" label="News." />

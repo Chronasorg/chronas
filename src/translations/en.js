@@ -40,13 +40,16 @@ export default {
         },
     },
     resources: {
-        customers: {
-            name: 'Customer |||| Customers',
+        users: {
+            name: 'User |||| Users',
             fields: {
-                commands: 'Orders',
-                groups: 'Segments',
-                last_seen_gte: 'Visited Since',
+                username: 'Username',
                 name: 'Name',
+                createdAt: 'Created at',
+                education: 'Education',
+                email: 'Email',
+                privilege: 'Privilege',
+                karma: 'Karma',
             },
             tabs: {
                 identity: 'Identity',
