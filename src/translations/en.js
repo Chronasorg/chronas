@@ -63,6 +63,32 @@ export default {
             },
 
         },
+      page: {
+        delete: 'Delete Marker',
+      },
+      markers: {
+        name: 'Marker |||| Markers',
+        fields: {
+          name: 'Name',
+          url: 'URL',
+          geo: 'Coordinates',
+          type: 'Type',
+          subtype: 'Subtype',
+          lastUpdated: 'Last Updated',
+          startYear: 'Year Start',
+          endYear: 'Year End',
+          date: 'Date',
+          rating: 'Rating',
+        },
+        tabs: {
+          identity: 'Identity',
+          address: 'Address',
+          orders: 'Orders',
+          reviews: 'Reviews',
+          stats: 'Stats',
+        },
+
+      },
         commands: {
             name: 'Order |||| Orders',
             fields: {

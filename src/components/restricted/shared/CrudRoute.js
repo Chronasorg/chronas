@@ -11,6 +11,7 @@ import FlatButton from 'material-ui/FlatButton';
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../users'
+import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../markers'
 
 const styles = {
   menuButtons: {
@@ -34,10 +35,11 @@ const styles = {
 const resources = {
   users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
   areas: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
-  markers: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
+  markers: { list: MarkerList, create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
   images: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
-  metadata: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
+  metadata: { list: UserList, permission: 1 },
 }
+//, create: UserCreate, edit: UserEdit, remove: UserDelete
 
 class CrudRoute extends PureComponent {
   constructor(props) {
