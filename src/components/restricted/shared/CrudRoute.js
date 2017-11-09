@@ -12,6 +12,7 @@ import { tooltip } from '../../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../users'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../markers'
+import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../revisions'
 
 const styles = {
   menuButtons: {
@@ -33,11 +34,12 @@ const styles = {
 }
 
 const resources = {
-  users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
   areas: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
   markers: { list: MarkerList, create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
-  images: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
+  revisions: { list: RevisionList, create: RevisionCreate, edit: RevisionEdit, remove: RevisionDelete, permission: 1 },
   metadata: { list: UserList, permission: 1 },
+  images: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
+  users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
 }
 //, create: UserCreate, edit: UserEdit, remove: UserDelete
 

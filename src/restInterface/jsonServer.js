@@ -132,13 +132,20 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
 };
 
 
-function ensureId (arr) {
-  if (typeof arr === "undefined") return
-  for (let i = 0; i < arr.length; i++){
-    if (arr[i].hasOwnProperty('_id')) {
-      arr[i].id = arr[i]['_id']
-      delete arr[i]['_id']
+function ensureId (obj) {
+  if (typeof obj === "undefined") return
+  if (typeof obj === "object" && obj.constructor !== Array) {
+    if (obj.hasOwnProperty('_id')) {
+      obj.id = obj['_id']
+      delete obj['_id']
+    }
+  } else {
+    for (let i = 0; i < obj.length; i++){
+      if (obj[i].hasOwnProperty('_id')) {
+        obj[i].id = obj[i]['_id']
+        delete obj[i]['_id']
+      }
     }
   }
-  return arr
+  return obj
 }

@@ -89,6 +89,22 @@ export default {
         },
 
       },
+      revisions: {
+        name: 'Revision |||| Revisions',
+        fields: {
+          name: 'Name',
+          type: 'Type',
+          resource: 'Resource',
+          user: 'User',
+          subtype: 'Subtype',
+          nextBody: 'Next Body',
+          prevBody: 'Prev Body',
+          reverted: 'Reverted',
+          timestamp: 'Timestamp',
+          id: 'Id',
+          entityId: 'Entity Id',
+        },
+      },
         commands: {
             name: 'Order |||| Orders',
             fields: {

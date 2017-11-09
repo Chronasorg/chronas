@@ -63,8 +63,7 @@ export class Edit extends Component {
   }
 
   save = (record, redirect) => {
-
-    console.debug("savedata with record/props", record,this.props)
+    console.debug("savedata with record/props", record,redirect,this.props)
     // this.props.crudUpdate(
     //   this.props.resource,
     //   this.props.id,
