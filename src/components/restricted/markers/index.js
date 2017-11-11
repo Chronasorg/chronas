@@ -86,12 +86,12 @@ export const MarkerEdit = (props) => {
 
 export const MarkerCreate = (props) => {
   return <Create {...props}>
-    <SimpleForm>
+    <SimpleForm redirect="list">
       <TextInput source="name" label="resources.markers.fields.name" />
       <TextInput source="wiki" label="resources.markers.fields.url" validate={required} />
       <NumberInput source="geo[0]" label="resources.markers.fields.lat" />
       <NumberInput source="geo[1]" label="resources.markers.fields.lng" />
-      <TextInput source="type" label="resources.markers.fields.type" />
+      <TextInput source="type" validate={required} label="resources.markers.fields.type" />
       <TextInput source="subtype" label="resources.markers.fields.subtype" />
       <DateInput source="lastUpdated" label="resources.markers.fields.lastUpdated" type="date" />
       <NumberInput source="startYear" label="resources.markers.fields.startYear" type="date" />

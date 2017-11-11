@@ -553,7 +553,7 @@ class Map extends Component {
   }
 
   render() {
-    const {viewport, mapStyle} = this.state;
+    const {viewport, mapStyle} = this.state
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
 

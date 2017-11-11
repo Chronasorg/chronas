@@ -78,9 +78,10 @@ export const RevisionList = (props) => {
     }
   };
   const nextStyle = (record) => (record || {}).reverted ? { color: 'green' } :  { color: 'red' }
-  const prevStyle = (record) => {
-    if((record || {}).reverted) { return { color: 'red' } } else {return { color: 'green' }}
-  }
+  const prevStyle =  { color: 'green' }
+  // {
+  //   if((record || {}).reverted) { return { color: 'red' } } else {return { color: 'green' }}
+  // }
   return <List {...props} filters={<RevisionFilter />}  sort={{field: 'name', order: 'DESC'}} perPage={25}>
     <Datagrid bodyOptions={{ stripedRows: true, showRowHover: true }} rowStyle={rowStyle}>
       <TextField source="id" label="resources.revisions.fields.id" />
@@ -89,7 +90,7 @@ export const RevisionList = (props) => {
       <ChipField source="resource" label="resources.revisions.fields.resource" />
       <TextField source="user" label="resources.revisions.fields.user" />
       <TextField source="nextBody" label="resources.revisions.fields.nextBody" style={rowStyle} />
-      <TextField source="prevBody" label="resources.revisions.fields.prevBody" style={prevStyle} />
+      <TextField source="prevBody" label="resources.revisions.fields.prevBody" elStyle={prevStyle} />
       <BooleanField source="reverted" label="resources.revisions.fields.reverted" />
       <DateField source="timestamp" label="resources.revisions.fields.timestamp" type="date" />
       <RevertButton {...props} isRedo={false} />
@@ -117,7 +118,7 @@ export const RevisionEdit = (props) => {
 
 export const RevisionCreate = (props) => {
   return <Create {...props}>
-    <SimpleForm>
+    <SimpleForm redirect="list">
       <TextInput source="name" label="resources.revisions.fields.name" />
       <TextInput source="wiki" label="resources.revisions.fields.url" validate={required} />
       <NumberInput source="geo[0]" label="resources.revisions.fields.lat" />
