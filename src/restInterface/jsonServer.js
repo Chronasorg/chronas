@@ -67,6 +67,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
         case UPDATE:
             url = `${apiUrl}/${resource}/${params["id"]}`;
             options.method = 'PUT';
+            if (resource === 'areas') params.data.data = saveParse(params.data.data);
             options.body = JSON.stringify(params.data);
             break;
         case CREATE:
@@ -109,6 +110,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
             case CREATE:
                 return { data: { ...params.data, id: json.id } };
             default:
+                if (json && json.data && typeof json.data === 'object') json.data = saveStringify(json.data)
                 return { data: json };
         }
     };
@@ -131,6 +133,21 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
     };
 };
 
+function saveParse(str) {
+  try {
+    return JSON.parse(str)
+  } catch (e) {
+    return {}
+  }
+}
+
+function saveStringify(str) {
+  try {
+    return JSON.stringify(str)
+  } catch (e) {
+    return {}
+  }
+}
 
 function ensureId (obj) {
   if (typeof obj === "undefined") return
