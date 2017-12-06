@@ -6,38 +6,44 @@ export default {
       logout: 'Logout'
     },
     pos: {
-        search: 'Search',
-        map: '',
-        layers: 'Layers',
-        configuration: 'Configuration',
-        discover: 'Discover',
-        discover_label: 'Discover the year ',
-        language: 'Language',
-        random: 'Random Article',
-        resources: 'Resources',
-        users: 'Manage Users',
-        account: 'Manage Account',
-        theme: {
-            name: 'Theme',
-            light: 'Light',
-            dark: 'Dark',
-        },
-        dashboard: {
-            monthly_revenue: 'Monthly Revenue',
-            new_orders: 'New Orders',
-            pending_reviews: 'Pending Reviews',
-            new_customers: 'New Customers',
-            pending_orders: 'Pending Orders',
-            order: {
-                items: 'by %{customer_name}, one item |||| by %{customer_name}, %{nb_items} items',
-            },
-            welcome: {
-                title: 'Welcome to admin-on-rest demo',
-                subtitle: 'This is the admin of an imaginary poster shop. Fell free to explore and modify the data - it\'s local to your computer, and will reset each time you reload.',
-                aor_button: 'Admin-on-rest website',
-                demo_button: 'Source for this demo',
-            },
-        },
+      areas: 'Areas',
+      edit: 'Edit Data',
+      markers: 'Markers',
+      metadata: 'Metadata',
+      revisions: 'Revisions',
+      images: 'Images',
+      search: 'Search',
+      map: '',
+      layers: 'Layers',
+      configuration: 'Configuration',
+      discover: 'Discover',
+      discover_label: 'Discover the year ',
+      language: 'Language',
+      random: 'Random Article',
+      resources: 'Resources',
+      users: 'Manage Users',
+      account: 'Manage Account',
+      theme: {
+          name: 'Theme',
+          light: 'Light',
+          dark: 'Dark',
+      },
+      dashboard: {
+          monthly_revenue: 'Monthly Revenue',
+          new_orders: 'New Orders',
+          pending_reviews: 'Pending Reviews',
+          new_customers: 'New Customers',
+          pending_orders: 'Pending Orders',
+          order: {
+              items: 'by %{customer_name}, one item |||| by %{customer_name}, %{nb_items} items',
+          },
+          welcome: {
+              title: 'Welcome to admin-on-rest demo',
+              subtitle: 'This is the admin of an imaginary poster shop. Fell free to explore and modify the data - it\'s local to your computer, and will reset each time you reload.',
+              aor_button: 'Admin-on-rest website',
+              demo_button: 'Source for this demo',
+          },
+      },
     },
     resources: {
         users: {
@@ -64,7 +70,7 @@ export default {
 
         },
       page: {
-        delete: 'Delete Marker',
+        delete: 'Delete',
       },
       markers: {
         name: 'Marker |||| Markers',

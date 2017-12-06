@@ -27,13 +27,11 @@ import RightDrawer from './components/content/RightDrawer'
 // translations
 import messages from './translations'
 import { history } from './store/createStore'
-// your app components
 
-import { PostList, PostCreate, PostEdit, PostShow } from './components/menu/posts'
-import { CommentList, CommentEdit, CommentCreate } from './components/menu/comments'
-import { ProductList, ProductEdit, ProductCreate } from './components/menu/products'
 import Account from './components/menu/account/Account'
 import Configuration from './components/menu/configuration/Configuration'
+import EditProvinces from './components/content/edit/EditProvinces'
+import RightDrawerRoutes from './components/content/RightDrawerRoutes'
 import Discover from './components/menu/discover/Discover'
 import Login from './components/menu/authentication/Login'
 import CustomTheme from './styles/CustomAdminTheme'
@@ -125,16 +123,6 @@ class App extends Component {
     } else {
       prefixedStyles.content.marginLeft = 0
     }
-    // remove={UserDelete} icon={UserIcon}     <Resource name="customers" list={UserList} edit={UserEdit} />
-
-    /*
-     <Route exact path="/products" hasCreate render={(routeProps) => <ProductList resource="products" {...routeProps} />} />
-     <Route exact path="/products/create" render={(routeProps) => <ProductCreate resource="products" {...routeProps} />} />
-     <Route exact path="/products/:id" hasDelete render={(routeProps) => <ProductEdit resource="products" {...routeProps} />} />
-     <Route exact path="/products/:id/delete" render={(routeProps) => <Delete resource="products" {...routeProps} />} />
-
-     {createElement(Map)} l 150
-    */
 
     return (
       <Provider store={this.props.store}>
@@ -144,7 +132,7 @@ class App extends Component {
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
                   <div className="body" style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
-                    {createElement(Map)}
+                    {createElement(Map, {history: history})}
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path="/"/>
@@ -152,24 +140,15 @@ class App extends Component {
                         <Route exact path="/configuration" component={Configuration} />
                         <Route exact path="/discover" component={Discover} />
                         <Route exact path="/login" component={Login} />
-                        <Route exact path="/posts" hasCreate render={(routeProps) => <PostList resource="posts" {...routeProps} />}/>
-                        <Route exact path="/posts/create" render={(routeProps) => <PostCreate resource="posts" {...routeProps} />}/>
-                        <Route exact path="/posts/:id" hasShow hasDelete render={(routeProps) => <PostEdit resource="posts" {...routeProps} />}/>
-                        <Route exact path="/posts/:id/show" hasEdit render={(routeProps) => <PostShow resource="posts" {...routeProps} />}/>
-                        <Route exact path="/posts/:id/delete" render={(routeProps) => <Delete resource="posts" {...routeProps} />}/>
-                        <Route exact path="/comments" hasCreate render={(routeProps) => { console.debug("routeProps",routeProps); return <CommentList resource="comments" {...routeProps} />}} />
-                        <Route exact path="/comments/create" render={(routeProps) => <CommentCreate resource="comments" {...routeProps} />} />
-                        <Route exact path="/comments/:id" hasDelete render={(routeProps) => <CommentEdit resource="comments" {...routeProps} />} />
-                        <Route exact path="/comments/:id/delete" render={(routeProps) => <Delete resource="comments" {...routeProps} />} />
                         <CrudRoute history={history}/>
+                      </Switch>
+                      <Switch>
+                        <RightDrawerRoutes history={history}/>
                       </Switch>
                     </div>
                     <MenuDrawer muiTheme={CustomTheme}>
                       {createElement(LayerContent)}
                     </MenuDrawer>
-                    <RightDrawer muiTheme={CustomTheme}>
-                      {createElement(RightContent)}
-                    </RightDrawer>
                     <Sidebar open={true} muiTheme={CustomTheme}>
                       {createElement(Menu)}
                     </Sidebar>

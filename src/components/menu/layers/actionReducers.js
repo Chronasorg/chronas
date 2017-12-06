@@ -1,5 +1,7 @@
 export const CHANGE_BASEMAP = 'CHANGE_BASEMAP';
 export const SET_AREA = 'SET_AREA';
+export const SET_AREA_COLOR_LABEL = 'SET_AREA_COLOR_LABEL';
+export const CHANGE_AREA_DATA = 'CHANGE_AREA_DATA';
 export const CHANGE_LABEL = 'CHANGE_LABEL';
 export const CHANGE_COLOR = 'CHANGE_COLOR';
 export const ADD_MARKER = 'ADD_MARKER';
@@ -15,9 +17,19 @@ export const changeBasemap = basemap => ({
   payload: basemap,
 });
 
-export const setArea = (area, label) => ({
+export const setArea = (data, color, label) => ({
   type: SET_AREA,
-  payload: [area, label],
+  payload: [data, color, label],
+});
+
+export const setAreaColorLabel = (color, label) => ({
+  type: SET_AREA_COLOR_LABEL,
+  payload: [color, label],
+});
+
+export const changeAreaData = data => ({
+  type: CHANGE_AREA_DATA,
+  payload: data,
 });
 
 export const changeLabel = text => ({
@@ -64,11 +76,18 @@ export const basemapReducer = (initial = 'watercolor') => (
   }
 );
 
-export const areaReducer = (initial = { 'color': 'political', 'label': 'political'}) => (
+export const areaReducer = (initial = { 'data': {}, 'color': 'political', 'label': 'political'}) => (
   (prevArea = initial, { type, payload }) => {
     switch (type) {
       case SET_AREA:
         return {
+          data: payload[0],
+          color: payload[1],
+          label: payload[2]
+        }
+      case SET_AREA_COLOR_LABEL:
+        return {
+          ...prevArea,
           color: payload[0],
           label: payload[1]
         }
@@ -81,6 +100,11 @@ export const areaReducer = (initial = { 'color': 'political', 'label': 'politica
         return {
           ...prevArea,
           label: payload
+        };
+      case CHANGE_AREA_DATA:
+        return {
+          ...prevArea,
+          data: payload
         };
       default:
         return prevArea;

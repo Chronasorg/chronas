@@ -4,9 +4,10 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
-import { activeYear, provinceCollection, provArea, adjacent, relPlus, rulPlus } from './data/datadef'
+import { provinceCollection, provArea, adjacent, relPlus, rulPlus } from './data/datadef'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setItemId as setItemIdAction } from './actionReducers'
+import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import {render} from 'react-dom'
 import {fromJS} from 'immutable'
 import MapGL, {Marker, Popup} from 'react-map-gl'
@@ -16,7 +17,6 @@ import utils from './utils'
 import _ from 'lodash'
 
 import Timeline from './timeline/MapTimeline'
-
 import BasicInfo from './markers/basic-info'
 import BasicPin from './markers/basic-pin'
 
@@ -56,7 +56,11 @@ class Map extends Component {
       fetch(properties.chronasApiHost + "/metadata/provinces")
         .then(res => res.text())
         .then(res => this._loadGeoJson('provinces', JSON.parse(res)))
-        .then( () => {
+        .then( () => fetch(properties.chronasApiHost + "/areas/123"))
+        .then(res => res.text())
+        .then( (res) => {
+          const areaDefs = JSON.parse(res).data
+          this.props.changeAreaData(areaDefs)
           var rulStops = [],
             relStops = []
 
@@ -246,16 +250,16 @@ class Map extends Component {
            });
            */
 
-          this._simulateYearChange()
-          this._changeArea("political", "political")
+          this._simulateYearChange(areaDefs)
+          this._changeArea(areaDefs, "political", "political")
         })
 
     }.bind(this))
 
   }
 
-  _changeArea = (newLabel, newColor) => {
-    console.debug("changing area " + newLabel, newColor)
+  _changeArea = (areaDefs, newLabel, newColor) => {
+    console.debug("changing area " + newLabel + newColor, areaDefs)
 
     let mapStyle = this.state.mapStyle
 
@@ -272,7 +276,7 @@ class Map extends Component {
     }
 
     if (typeof newLabel !== "undefined") {
-      const plCol = utils.addTextFeat(newLabel)
+      const plCol = utils.addTextFeat(areaDefs, newLabel)
       mapStyle = mapStyle
         .setIn(['sources', 'area-labels', 'data'], fromJS(plCol[0]))
         .setIn(['sources', 'area-outlines', 'data'], fromJS(plCol[2]))
@@ -281,17 +285,17 @@ class Map extends Component {
     this.setState({mapStyle});
   }
 
-  _simulateYearChange = () => {
+  _simulateYearChange = (areaDefs) => {
     const sourceId = "provinces"
     const prevMapStyle = this.state.mapStyle
     let geojson = prevMapStyle
       .getIn(['sources', sourceId, 'data']).toJS()
-
+    const activeYear = {}
 
     let mapStyle = prevMapStyle
       .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function(feature) {
-        feature.properties.r = (activeYear[feature.properties.name] || [])[0]
-        feature.properties.e = (activeYear[feature.properties.name] || [])[2]
+        feature.properties.r = (areaDefs[feature.properties.name] || [])[0]
+        feature.properties.e = (areaDefs[feature.properties.name] || [])[2]
         return feature
       }))
 
@@ -301,18 +305,14 @@ class Map extends Component {
 
   componentWillReceiveProps(nextProps) {
 
-    const {basemap, activeArea, activeMarkers, selectedItem} = this.props;
-
+    const {basemap, activeArea, selectedYear, activeMarkers, selectedItem, areaData} = this.props;
     console.debug("### MAP componentWillReceiveProps", this.props,nextProps)
 
     /** Acting on store changes **/
-
     if (selectedItem != nextProps.selectedItem) {
       console.debug("###### Item changed")
       if (nextProps.selectedItem === "random") {
-
         const prevMapStyle = this.state.mapStyle
-
         console.debug("active area: " + activeArea.label, prevMapStyle)
         let dataPool = prevMapStyle
           .getIn(['sources', 'area-outlines', 'data']).toJS().features.filter((el) => el.properties.n !== "undefined")
@@ -331,7 +331,20 @@ class Map extends Component {
 
         this.props.setRightDrawerVisibility(true)
         this.props.setItemId(itemId)
+        this.props.history.push('/wiki/' + itemId)
       }
+    }
+
+    // Year changed?
+    if (selectedYear != nextProps.selectedYear) {
+      console.debug("###### Year changed from " + selectedYear + " to " + nextProps.selectedYear)
+      fetch(properties.chronasApiHost + "/areas/-123")
+        .then(res => res.text())
+        .then( (res) => {
+          const areaDefs = JSON.parse(res).data
+          this._simulateYearChange(areaDefs)
+          this._changeArea(areaDefs, "political", "political")
+        })
     }
 
     // Basemap changed?
@@ -346,19 +359,19 @@ class Map extends Component {
     // Area Label and Color changed?
     if (activeArea.label != nextProps.activeArea.label && activeArea.color != nextProps.activeArea.color) {
       console.debug("###### Area Color and Label changed" + nextProps.activeArea.label)
-      this._changeArea(nextProps.activeArea.label, nextProps.activeArea.color)
+      this._changeArea(activeArea.data, nextProps.activeArea.label, nextProps.activeArea.color)
     }
 
     // Area Label changed?
     else if (activeArea.label != nextProps.activeArea.label) {
       console.debug("###### Area Label changed" + nextProps.activeArea.label)
-      this._changeArea(nextProps.activeArea.label, undefined)
+      this._changeArea(activeArea.data, nextProps.activeArea.label, undefined)
     }
 
     // Area Color changed?
     else if (activeArea.color != nextProps.activeArea.color) {
       console.debug("###### Area Color changed" + nextProps.activeArea.color)
-      this._changeArea(undefined, nextProps.activeArea.color)
+      this._changeArea(activeArea.data, undefined, nextProps.activeArea.color)
     }
 
     // Markers changed?
@@ -496,10 +509,11 @@ class Map extends Component {
     let itemName = '';
     let itemId = '';
 
-    const item = event.features && event.features[0] // (f => f.layer.id === state.activeArea.color)    .features.find(f => f.layer.id === ) // event.features.find(f => f.layer.id === 'provinces')
+    const item = event.features && event.features[0]
+
     if (item) {
-      itemName = item.properties.name;
-      itemId = item.properties.wikiUrl;
+      itemName = item.properties.name
+      itemId = item.properties.wikiUrl
     }
 
     console.debug(event)
@@ -515,6 +529,7 @@ class Map extends Component {
 
     this.props.setRightDrawerVisibility(itemName !== '')
     this.props.setItemId(itemId)
+    this.props.history.push('/wiki/' + itemId)
   }
 
   _renderPopup() {
@@ -605,12 +620,14 @@ const enhance = compose(
     basemap: state.basemap,
     activeArea: state.activeArea,
     activeMarkers: state.activeMarkers,
+    selectedYear: state.selectedYear,
     selectedItem: state.selectedItem,
     menuDrawerOpen: state.menuDrawerOpen,
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
     setRightDrawerVisibility: setRightDrawerVisibilityAction,
-    setItemId: setItemIdAction
+    setItemId: setItemIdAction,
+    changeAreaData: changeAreaDataAction,
   }),
   pure,
   translate,

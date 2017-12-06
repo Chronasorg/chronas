@@ -65,10 +65,7 @@ const rowStyle = (record) => {
 
 
 export const RevisionList = (props) => {
-  console.debug("props is", this.props)
-
   const prevBodyStyle = (record) => {
-    console.debug("prevBodyStyleprevBodyStyleprevBodyStyle",record)
     if (record.reverted) {
       return { color: 'green', backgroundColor: '#ff0001' }
     }

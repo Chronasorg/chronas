@@ -1,6 +1,7 @@
-import { activeYear, provinceCollection, provArea, adjacent, relPlus, rulPlus } from './data/datadef'
+import { provinceCollection, provArea, adjacent, relPlus, rulPlus } from './data/datadef'
 import * as scale from 'd3-scale'
 
+const turf = require('@turf/turf');
 const turfUnion = require('@turf/union');
 const turfArea = require('@turf/area');
 
@@ -361,7 +362,11 @@ const utils = {
         }
 
         try {
-          var multiLine = turfUnion.apply( this, polyGroups[key][i] );
+          // var multiLine = turfUnion.apply( this, polyGroups[key][i] ); // UNION A LOT OF PROVINCES    2000MS (!)
+          var multiLine = turf.lineString(lineCoordinates)  // EXTREMACENTROIDLINE    200MS
+
+
+          //turfUnion.apply( this, polyGroups[key][i] );
           // console.debug(JSON.stringify(polyGroups[key][i]),"->", JSON.stringify(multiLine))
         }
         catch (err) {
@@ -471,7 +476,7 @@ const utils = {
    }
    },
    */
-  addTextFeat: function (setActiveFeat) {
+  addTextFeat: function (areaDefs, setActiveFeat) {
 
     this.activeTextFeat = setActiveFeat;
 
@@ -489,7 +494,6 @@ const utils = {
 
       var tmpProv, tmpCountry, tmpRel, tmpCul, tmpPop, tmpCap, tmpCoo;
 
-      console.debug("provinceCollection",provinceCollection)
       for (var i = 0; i < provinceCollection.features.length; i++) {  //tmpLength
 
         tmpCoo = undefined;
@@ -503,12 +507,12 @@ const utils = {
         tmpCoo = provinceCollection.features[i].geometry.coordinates[0];
 
 
-        if (activeYear.hasOwnProperty(tmpProv)) {
-          tmpCountry = activeYear[tmpProv][0];
-          tmpCul = activeYear[tmpProv][1];
-          tmpRel = activeYear[tmpProv][2];
-          tmpCap = activeYear[tmpProv][3];
-          tmpPop = activeYear[tmpProv][4];
+        if (areaDefs.hasOwnProperty(tmpProv)) {
+          tmpCountry = areaDefs[tmpProv][0];
+          tmpCul = areaDefs[tmpProv][1];
+          tmpRel = areaDefs[tmpProv][2];
+          tmpCap = areaDefs[tmpProv][3];
+          tmpPop = areaDefs[tmpProv][4];
 
           provinceCollection.features[i].properties.Cul = tmpCul;
           provinceCollection.features[i].properties.Rel = tmpRel;
@@ -536,15 +540,15 @@ const utils = {
 
 
       if (!this.countryIsSetup && (this.activeTextFeat === "political")) {
-        this.countryIsSetup = true;
+        // this.countryIsSetup = true;
         return this.fillCollectionId(countryCollection, null, "co");
       }
       else if (!this.culIsSetup && (this.activeTextFeat === "culture")) {
-        this.culIsSetup = true;
+        // this.culIsSetup = true;
         return this.fillCollectionId(culCollection, null, "cu");
       }
       else if (!this.relIsSetup && (this.activeTextFeat === "religion")) {
-        this.relIsSetup = true;
+        // this.relIsSetup = true;
         return this.fillCollectionId(relCollection, null, "e");
       } else {
         return []

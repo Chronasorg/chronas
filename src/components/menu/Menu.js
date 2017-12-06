@@ -6,6 +6,7 @@ import DiscoverIcon from 'material-ui/svg-icons/action/explore'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import UsersIcon from 'material-ui/svg-icons/social/people'
 import StorageIcon from 'material-ui/svg-icons/device/storage'
+import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
@@ -111,6 +112,18 @@ class Menu extends PureComponent {
         <div>
           { isLoggedIn ? (
             <div>
+              <IconButton
+                key={'edit'}
+                containerElement={<Link to="/edit" />}
+                tooltipPosition="bottom-right"
+                tooltip={translate('pos.edit')}
+                tooltipStyles={tooltip}
+                onClick={onMenuTap}
+                iconStyle={{color: '#fff'}}
+              >
+                <EditIcon
+                  hoverColor={chronasMainColor}/>
+              </IconButton>
               <IconButton
                 key={'resources'}
                 containerElement={<Link to="/resources" />}

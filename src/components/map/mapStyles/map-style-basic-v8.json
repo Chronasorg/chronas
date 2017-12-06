@@ -117,9 +117,13 @@
       "type": "line",
       "source": "area-outlines",
       "layout": {
-        "visibility": "none"
+        "line-join": "round",
+        "line-cap": "round"
       },
-      "paint": {}
+      "paint": {
+        "line-color": "#888",
+        "line-width": 8
+      }
     },
     {
       "id": "area-hover",

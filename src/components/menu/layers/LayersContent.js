@@ -10,7 +10,7 @@ import { chronasMainColor } from '../../../styles/chronasColors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import {
   changeBasemap as changeBasemapAction,
-  setArea as setAreaAction,
+  setAreaColorLabel as setAreaColorLabelAction,
   changeLabel as changeLabelAction,
   changeColor as changeColorAction,
   toggleMarker as toggleMarkerAction } from './actionReducers'
@@ -27,7 +27,7 @@ const styles = {
 
 const allMarkers = ['People', 'Battles']
 
-const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setArea, changeLabel, changeColor, toggleMarker }) => (
+const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker }) => (
   <div style={styles.main}>
     <h4>Basemap</h4>
     <RaisedButton style={styles.button} label="None" primary={basemap === ''} onClick={() => changeBasemap('')} />
@@ -36,9 +36,9 @@ const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, 
     <br/>
     <h4>Area</h4>
     Both:
-    <RaisedButton style={styles.button} label="Political" primary={activeArea.label === 'political' && activeArea.color === 'political'} onClick={() => setArea('political','political')} />
-    <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion' && activeArea.color === 'religion'} onClick={() => setArea('religion','religion')} />
-    {JSON.stringify(activeArea)}
+    <RaisedButton style={styles.button} label="Political" primary={activeArea.label === 'political' && activeArea.color === 'political'} onClick={() => setAreaColorLabel('political','political')} />
+    <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion' && activeArea.color === 'religion'} onClick={() => setAreaColorLabel('religion','religion')} />
+    {JSON.stringify(activeArea.year)}
     Label:
     <RaisedButton style={styles.button} label="Political" primary={activeArea.label === 'political'} onClick={() => changeLabel('political')} />
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion'} onClick={() => changeLabel('religion')} />
@@ -85,7 +85,7 @@ const enhance = compose(
     basemap: state.basemap,
   }), {
     changeBasemap: changeBasemapAction,
-    setArea: setAreaAction,
+    setAreaColorLabel: setAreaColorLabelAction,
     changeLabel: changeLabelAction,
     changeColor: changeColorAction,
     toggleMarker: toggleMarkerAction,

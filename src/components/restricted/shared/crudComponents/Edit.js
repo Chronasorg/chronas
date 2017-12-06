@@ -20,7 +20,6 @@ export class Edit extends Component {
       key: 0,
       record: props.data,
     };
-    console.debug("recordrecordrecordsrecord", this.state.record)
     this.previousKey = 0;
   }
 

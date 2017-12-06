@@ -27,13 +27,14 @@ const styles = {
   }
 };
 
-const Content = ({ toggleRightDrawer, hasDashboard, selectedItem, onRightTap, resources, translate }) => (
-  <div style={styles.main}>
-    <iframe style={styles.iframe} src={"http://en.wikipedia.org/wiki/" + selectedItem + "?printable=yes"}
+const Content = (props) => {
+  console.debug("props", props)
+  return <div style={styles.main}>
+    <iframe style={styles.iframe} src={"http://en.wikipedia.org/wiki/" + props.match.params.id + "?printable=yes"}
             height="100%" frameBorder="0"></iframe>
   </div>
-);
-
+};
+// = ({ toggleRightDrawer, hasDashboard, selectedItem, onRightTap, resources, translate }) => (
 Content.propTypes = {
   translate: PropTypes.func.isRequired,
 };

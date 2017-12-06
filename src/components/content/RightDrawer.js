@@ -8,8 +8,6 @@ import IconButton from 'material-ui/IconButton'
 import FontIcon from 'material-ui/FontIcon'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers';
 import {grey600, grey400, chronasDark} from '../../styles/chronasColors';
-import {backIcon, drawer} from '../../styles/chronasStyleComponents';
-
 import Responsive from '../menu/Responsive';
 
 // We shouldn't need PureComponent here as it's connected
