@@ -30,7 +30,6 @@ import { history } from './store/createStore'
 
 import Account from './components/menu/account/Account'
 import Configuration from './components/menu/configuration/Configuration'
-import EditProvinces from './components/content/edit/EditProvinces'
 import RightDrawerRoutes from './components/content/RightDrawerRoutes'
 import Discover from './components/menu/discover/Discover'
 import Login from './components/menu/authentication/Login'

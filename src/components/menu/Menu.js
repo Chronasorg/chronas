@@ -17,6 +17,7 @@ import compose from 'recompose/compose'
 import { translate, defaultTheme, userLogout, showNotification } from 'admin-on-rest'
 import { setItemId as setItemIdAction } from '../map/actionReducers'
 import { toggleMenuDrawer as toggleMenuDrawerAction, setActiveMenu as setActiveMenuAction } from './actionReducers'
+import { toggleRightDrawer as toggleRightDrawerAction } from '../content/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import { logout, setToken } from './authentication/actionReducers'
@@ -56,7 +57,7 @@ class Menu extends PureComponent {
   }
 
   render() {
-    const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, setItemId, hasDashboard, onMenuTap, resources, translate } = this.props;
+    const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, setItemId, hasDashboard, onMenuTap, resources, translate } = this.props;
     const isLoggedIn = userDetails.token !== ''
 
     return <div style={styles.main}>
@@ -113,12 +114,12 @@ class Menu extends PureComponent {
           { isLoggedIn ? (
             <div>
               <IconButton
-                key={'edit'}
-                containerElement={<Link to="/edit" />}
+                key={'mod'}
+                containerElement={<Link to="/mod" />}
                 tooltipPosition="bottom-right"
-                tooltip={translate('pos.edit')}
+                tooltip={translate('pos.mod')}
                 tooltipStyles={tooltip}
-                onClick={onMenuTap}
+                onClick={() => toggleRightDrawer()}
                 iconStyle={{color: '#fff'}}
               >
                 <EditIcon
@@ -180,6 +181,7 @@ const enhance = compose(
   connect(state => ({
     userDetails: state.userDetails,
   }), {
+    toggleRightDrawer: toggleRightDrawerAction,
     toggleMenuDrawer: toggleMenuDrawerAction,
     setActiveMenu: setActiveMenuAction,
     setItemId: setItemIdAction,

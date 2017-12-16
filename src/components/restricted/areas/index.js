@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component, PropTypes } from 'react';
 import {
     translate,
     BooleanField,
@@ -66,6 +66,12 @@ export const AreaEdit = (props) => {
       <LongTextInput source="data" label="resources.area.fields.data" validation={required} />
     </SimpleForm>
   </Edit>}
+
+
+export const AreaEditAll = (props) => {
+  return <div title={<span>AreaEdit</span>} {...props}>
+    lalalalalalalala
+  </div>}
 
 export const AreaCreate = (props) => {
   return <Create {...props}>

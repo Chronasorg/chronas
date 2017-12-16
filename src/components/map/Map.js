@@ -6,6 +6,7 @@ import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
 import { provinceCollection, provArea, adjacent, relPlus, rulPlus } from './data/datadef'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
+import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import { setItemId as setItemIdAction } from './actionReducers'
 import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import {render} from 'react-dom'
@@ -477,20 +478,24 @@ class Map extends Component {
   };
 
   _onHover = event => {
-    let countyName = '';
+    event.stopPropagation();
+
+    if (this.props.modActive.type === "areas") return
+
+    let provinceName = '';
     let hoverInfo = null;
 
-    const county = event.features && event.features[0]
-    if (county) {
+    const province = event.features && event.features[0]
+    if (province) {
       hoverInfo = {
         lngLat: event.lngLat,
-        county: county.properties
+        province: province.properties
       };
-      countyName = county.properties.name;
+      provinceName = province.properties.name;
 
       this.setState({mapStyle: this.state.mapStyle
         .setIn(['sources', 'area-hover', 'data', 'features'], [{
-          "type": "Feature", "properties": {}, "geometry": county.geometry
+          "type": "Feature", "properties": {}, "geometry": province.geometry
         }])});
     } else {
       const prevMapStyle = this.state.mapStyle
@@ -506,18 +511,53 @@ class Map extends Component {
   }
 
   _onClick = event => {
+    event.stopPropagation();
     let itemName = '';
     let itemId = '';
 
-    const item = event.features && event.features[0]
+    if (this.props.modActive.type === "marker") {
+      this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
+      return
+    }
+    else if (this.props.modActive.type === "areas") {
 
+      let provinceName = '';
+      let hoverInfo = null;
+
+      const province = event.features && event.features[0]
+      const prevModData = this.props.modActive.data
+
+      if (province) {
+        hoverInfo = {
+          lngLat: event.lngLat,
+          province: province.properties
+        };
+        provinceName = province.properties.name;
+
+        if (prevModData.indexOf(provinceName) > -1) {
+          // remove province
+          this.props.removeModData(provinceName)
+          this.setState({ mapStyle: this.state.mapStyle
+            .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
+          })
+        } else {
+          // add province
+          this.props.addModData(provinceName)
+          this.setState({ mapStyle: this.state.mapStyle
+            .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.concat({
+              "type": "Feature", "properties": { n: provinceName }, "geometry": province.geometry
+            }))
+          })
+        }
+      }
+      return
+    }
+
+    const item = event.features && event.features[0]
     if (item) {
       itemName = item.properties.name
       itemId = item.properties.wikiUrl
     }
-
-    console.debug(event)
-
     if (itemName !== '') {
       this.map.getMap().flyTo({
         center: [
@@ -568,9 +608,21 @@ class Map extends Component {
   }
 
   render() {
-    const {viewport, mapStyle} = this.state
+    const { viewport, mapStyle } = this.state
+    const { modActive } = this.props
+
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
+
+    let modMarker = (modActive.type === "marker" && typeof modActive.data[0] !== "undefined") ? <Marker
+        captureClick={false}
+        captureDrag={false}
+        latitude={modActive.data[1]}
+        longitude={modActive.data[0]}
+        offsetLeft={0}
+        offsetTop={0}>
+        <BasicPin size={40} />
+      </Marker> : null
 
     return (
       <div style={{
@@ -590,6 +642,7 @@ class Map extends Component {
           onHover={this._onHover}
           onClick={this._onClick}
         >
+          {modMarker}
 
           {this._renderPopup()}
         </MapGL>
@@ -623,10 +676,14 @@ const enhance = compose(
     selectedYear: state.selectedYear,
     selectedItem: state.selectedItem,
     menuDrawerOpen: state.menuDrawerOpen,
+    modActive: state.modActive,
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
     setRightDrawerVisibility: setRightDrawerVisibilityAction,
     setItemId: setItemIdAction,
+    setModData: setModDataAction,
+    removeModData: removeModDataAction,
+    addModData: addModDataAction,
     changeAreaData: changeAreaDataAction,
   }),
   pure,

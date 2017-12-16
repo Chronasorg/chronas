@@ -2,6 +2,7 @@ import { combineReducers } from 'redux'
 import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-redux'
 import locationReducer from './location'
 import { adminReducer } from 'admin-on-rest'
+import { modActiveReducer } from '../components/restricted/shared/buttons/actionReducers'
 import { localeReducer, themeReducer } from '../components/menu/configuration/actionReducers'
 import { basemapReducer, areaReducer, markerReducer } from '../components/menu/layers/actionReducers'
 import { userReducer } from '../components/menu/authentication/actionReducers'
@@ -22,6 +23,7 @@ export const makeRootReducer = (asyncReducers) => {
     location: locationReducer,
     menuDrawerOpen: menuDrawerReducer(),
     menuItemActive: menuIdReducer(),
+    modActive: modActiveReducer(),
     userDetails: userReducer(),
     rightDrawerOpen: rightDrawerReducer(),
     routing: routerReducer,

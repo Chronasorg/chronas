@@ -8,6 +8,7 @@ export default {
     pos: {
       areas: 'Areas',
       edit: 'Edit Data',
+      mod: 'Modification',
       markers: 'Markers',
       metadata: 'Metadata',
       revisions: 'Revisions',
@@ -74,11 +75,14 @@ export default {
       },
       markers: {
         name: 'Marker |||| Markers',
+        place_marker: 'Place Marker',
         fields: {
           name: 'Name',
           url: 'URL',
           geo: 'Coordinates',
           type: 'Type',
+          lat: 'Latitude',
+          lng: 'Longitude',
           subtype: 'Subtype',
           lastUpdated: 'Last Updated',
           startYear: 'Year Start',

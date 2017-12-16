@@ -1,24 +1,28 @@
-import React, { createElement, PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import compose from 'recompose/compose';
+import React, { createElement, PureComponent } from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import compose from 'recompose/compose'
 import AppBar from 'material-ui/AppBar'
-import Drawer from 'material-ui/Drawer';
+import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
 import FontIcon from 'material-ui/FontIcon'
-import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers';
-import {grey600, grey400, chronasDark} from '../../styles/chronasColors';
-import Responsive from '../menu/Responsive';
-import Content from './Content';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
-import { Restricted, translate } from 'admin-on-rest';
+import { Restricted, translate } from 'admin-on-rest'
+import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
+import {grey600, grey400, chronasDark} from '../../styles/chronasColors'
+import Responsive from '../menu/Responsive'
+import Content from './Content'
 import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../restricted/users'
-import { AreaList, AreaCreate, AreaEdit, AreaDelete, AreaIcon } from '../restricted/areas'
+import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
+// import MarkerCreate from '../restricted/markers/MarkerCreate'
 import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../restricted/metadata'
 import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
-import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from './actionReducers';
+import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from './actionReducers'
+import { ModHome } from './mod/ModHome'
+import { ModAreasAll } from './mod/ModAreasAll'
+import { setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
 
 const styles = {
   menuButtons: {
@@ -40,14 +44,13 @@ const styles = {
 }
 
 const resources = {
-  areas: { list: AreaList, create: AreaCreate, edit: AreaEdit, remove: AreaDelete, permission: 1 },
+  areas: { edit: ModAreasAll, permission: 1 },
   markers: { list: MarkerList, create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
   metadata: { list: MetadataList, create: MetadataCreate, edit: MetadataEdit, remove: MetadataDelete, permission: 1 },
   revisions: { list: RevisionList, create: RevisionCreate, edit: RevisionEdit, remove: RevisionDelete, permission: 1 },
   images: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
   users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
 }
-//, create: UserCreate, edit: UserEdit, remove: UserDelete
 
 class RightDrawerRoutes extends PureComponent {
   constructor(props) {
@@ -56,26 +59,50 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   componentDidMount = () => {
-    this.props.setRightDrawerVisibility(true)
-    this.setState({hiddenElement: false})
+    console.debug("### componentDidMount rightDrawerOpen", this.props)
   }
 
-  componentWillUnmount = () => {
-    this.setState({hiddenElement: true})
+
+  componentWillReceiveProps(nextProps) {
+
+    const {rightDrawerOpen} = this.props
+    console.debug("### MAP rightDrawerOpen", this.props,nextProps)
+
+    /** Acting on store changes **/
+    if (rightDrawerOpen != nextProps.rightDrawerOpen) {
+      if (rightDrawerOpen) {
+        console.debug("rightDrawer Closed")
+        this.setState({hiddenElement: true})
+      } else {
+        console.debug("rightDrawer Opened")
+        this.setState({hiddenElement: false})
+      }
+    }
+
+    if (nextProps.location.pathname.indexOf("/mod") > -1 ||
+      nextProps.location.pathname.indexOf("/wiki") > -1) {
+      if (!nextProps.rightDrawerOpen) {
+        setRightDrawerVisibilityAction(true)
+      }
+    }
+  }
+
+  handleBack = () => {
+    this.props.setRightDrawerVisibility(false)
+    this.props.history.goBack()
   }
 
   handleClose = () => {
-    this.props.toggleRightDrawer()
+    this.props.setRightDrawerVisibility(false)
     this.props.history.push('/')
   }
 
   render() {
-    const { list, create, edit, show, remove, options, onMenuTap, translate } = this.props
+    console.debug("### render rightDrawerOpen", this.props)
+    const { list, create, edit, show, remove, options, onMenuTap, translate, setModDataLng, setModDataLat } = this.props
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
-    const { rightDrawerOpen, setRightDrawerVisibility, children, muiTheme } = this.props;
-
-
+    const { rightDrawerOpen, setRightDrawerVisibility, children, muiTheme } = this.props
 
     const restrictPage = (component, route, commonProps) => {
       const RestrictedPage = routeProps => (
@@ -84,7 +111,7 @@ class RightDrawerRoutes extends PureComponent {
             <Drawer
               docked={false}
               openSecondary={true}
-              open={rightDrawerOpen}
+              open={true}
               onRequestChange={setRightDrawerVisibility}
             >
               {component && createElement(component, {
@@ -96,9 +123,9 @@ class RightDrawerRoutes extends PureComponent {
           medium={
             <Drawer
               openSecondary={true}
+              open={true}
               containerStyle={{ overflow: 'none' }}
               style={{ overflow: 'none', zIndex: 9 }}
-              open={true}
               width={'50%'}
             >
               <AppBar
@@ -107,15 +134,21 @@ class RightDrawerRoutes extends PureComponent {
                     color: chronasDark,
                     fontSize: 20
                   }}
-                  >CONTENT</span>
+                  > </span>
                 }
                 showMenuIconButton={false}
                 style={{backgroundColor: '#fff'}}
                 iconElementRight={
-                  <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
+                  <div>
+                    <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
+                                onClick={() => this.handleBack()}>
+                      <FontIcon className="fa fa-chevron-left"/>
+                    </IconButton>
+                    <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
                               onClick={() => this.handleClose()}>
                     <FontIcon className="fa fa-chevron-right"/>
                   </IconButton>
+                  </div>
                 }
               />
               {component && createElement(component, {
@@ -126,8 +159,8 @@ class RightDrawerRoutes extends PureComponent {
           }
         />
       )
-      return RestrictedPage;
-    };
+      return RestrictedPage
+    }
 
 
     return (
@@ -135,13 +168,13 @@ class RightDrawerRoutes extends PureComponent {
       <Switch>
         <Route
           exact
-          path={'/edit'}
-          render={restrictPage(() => (<span>Select a resource from the menu above.</span>), '')}
+          path={'/wiki/:id'}
+          render={restrictPage(Content)}
         />
         <Route
           exact
-          path={'/wiki/:id'}
-          render={restrictPage(Content)}
+          path={'/mod'}
+          render={restrictPage(ModHome)}
         />
       </Switch>
         {resourceList.map((resourceKey) => {
@@ -159,35 +192,45 @@ class RightDrawerRoutes extends PureComponent {
             {resources[resourceKey].list && (
               <Route
                 exact
-                path={'/edit/' + resourceKey}
+                path={'/mod/' + resourceKey}
                 render={restrictPage(resources[resourceKey].list, 'list', commonProps)}
               />
             )}
             {resources[resourceKey].create && (
               <Route
                 exact
-                path={'/edit/' + resourceKey + '/create'}
-                render={restrictPage(resources[resourceKey].create, 'create', commonProps)}
+                path={'/mod/' + resourceKey + '/create'}
+                render={restrictPage(resources[resourceKey].create, 'create',
+                  (resourceKey === "markers")
+                    ? Object.assign({}, commonProps, { setModDataLng: setModDataLng, setModDataLat: setModDataLat })
+                    : commonProps)}
               />
             )}
             {resources[resourceKey].edit && (
               <Route
                 exact
-                path={'/edit/' + resourceKey + '/:id'}
+                path={'/mod/' + resourceKey + '/:id'}
+                render={restrictPage(resources[resourceKey].edit, 'edit', commonProps)}
+              />
+            )}
+            {resources[resourceKey].edit && resourceKey === "areas" && (
+              <Route
+                exact
+                path={'/mod/' + resourceKey}
                 render={restrictPage(resources[resourceKey].edit, 'edit', commonProps)}
               />
             )}
             {resources[resourceKey].show && (
               <Route
                 exact
-                path={'/edit/' + resourceKey + '/:id/show'}
+                path={'/mod/' + resourceKey + '/:id/show'}
                 render={restrictPage(resources[resourceKey].show, 'show', commonProps)}
               />
             )}
             {resources[resourceKey].remove && (
               <Route
                 exact
-                path={'/edit/' + resourceKey + '/:id/delete'}
+                path={'/mod/' + resourceKey + '/:id/delete'}
                 render={restrictPage(resources[resourceKey].remove, 'delete', commonProps)}
               />
             )}
@@ -200,6 +243,7 @@ class RightDrawerRoutes extends PureComponent {
 
 
 const mapStateToProps = (state, props) => ({
+  modActive: state.modActive,
   rightDrawerOpen: state.rightDrawerOpen,
   locale: state.locale, // force redraw on locale change
   theme: props.theme, // force redraw on theme changes
@@ -210,6 +254,8 @@ const enhance = compose(
   connect(mapStateToProps,
     {
       toggleRightDrawer: toggleRightDrawerAction,
+      setModDataLng: setModDataLngAction,
+      setModDataLat: setModDataLatAction,
       setRightDrawerVisibility: setRightDrawerVisibilityAction
   }),
   pure,
