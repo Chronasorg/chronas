@@ -5,11 +5,19 @@ export const SET_USERNAME = 'SET_USERNAME'
 export const SET_TOKEN = 'SET_TOKEN'
 export const USER_LOGIN_SUCCESS = 'AOR/USER_LOGIN_SUCCESS'
 export const USER_LOGIN_FAILURE = 'AOR/USER_LOGIN_FAILURE'
+export const USER_LOGIN = 'AOR/USER_LOGIN'
+export const USER_SIGNIN = 'AOR/USER_SIGNIN'
+export const USER_SIGNUP = 'USER_SIGNUP'
 export const USER_LOGOUT = 'AUTH_LOGOUT'
 export const CUSTOM_NOTIFICATION = 'AOR/SHOW_NOTIFICATION'
 
-
 /** Actions **/
+
+export const userSignup = (payload, pathName) => ({
+  type: USER_LOGIN,
+  payload,
+  meta: { auth: true, pathName },
+});
 
 export const setUser = (token, user, privilege) => ({
   type: SET_USER,

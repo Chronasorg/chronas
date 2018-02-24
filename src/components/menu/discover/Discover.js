@@ -68,56 +68,58 @@ const styles = {
   },
 };
 
-// TODO: this will be state later
-const tilesData = [
-  {
-    img: 'http://www.material-ui.com/images/grid-list/00-52-29-429_640.jpg',
-    title: 'Breakfast',
-    author: 'jill111',
-    featured: true,
-  },
-  {
-    img: 'http://www.material-ui.com/images/grid-list/burger-827309_640.jpg',
-    title: 'Tasty burger',
-    author: 'pashminu',
-  },
-  {
-    img: 'http://www.material-ui.com/images/grid-list/camera-813814_640.jpg',
-    title: 'Camera',
-    author: 'Danson67',
-  },
-  {
-    img: 'http://www.material-ui.com/images/grid-list/morning-819362_640.jpg',
-    title: 'Morninddg',
-    author: 'fancycrave1',
-    featured: true,
-  },
-  {
-    img: 'http://www.material-ui.com/images/grid-list/hats-829509_640.jpg',
-    title: 'Hadadts',
-    author: 'Hans',
-  },
-  {
-    img: 'http://www.material-ui.com/images/grid-list/honey-823614_640.jpg',
-    title: 'Honey',
-    author: 'fancycravel',
-  },
-  {
-    img: 'http://www.material-ui.com/images/grid-list/vegetables-790022_640.jpg',
-    title: 'Vegetables',
-    author: 'jill111',
-  },
-  {
-    img: 'http://www.material-ui.com/images/grid-list/water-plant-821293_640.jpg',
-    title: 'Water plant',
-    author: 'BkrmadtyaKarki',
-  },
-];
-
 class Discover extends PureComponent {
   constructor(props) {
     super(props)
-    this.state = { slideIndex: 0, hiddenElement: true }
+    this.state = {
+      slideIndex: 0,
+      currentYearLoaded: 3000,
+      hiddenElement: true,
+      tilesData: [
+        {
+          img: 'http://www.material-ui.com/images/grid-list/00-52-29-429_640.jpg',
+          title: 'Breakfast',
+          author: 'jill111',
+          featured: true,
+        },
+        {
+          img: 'http://www.material-ui.com/images/grid-list/burger-827309_640.jpg',
+          title: 'Tasty burger',
+          author: 'pashminu',
+        },
+        {
+          img: 'http://www.material-ui.com/images/grid-list/camera-813814_640.jpg',
+          title: 'Camera',
+          author: 'Danson67',
+        },
+        {
+          img: 'http://www.material-ui.com/images/grid-list/morning-819362_640.jpg',
+          title: 'Morninddg',
+          author: 'fancycrave1',
+          featured: true,
+        },
+        {
+          img: 'http://www.material-ui.com/images/grid-list/hats-829509_640.jpg',
+          title: 'Hadadts',
+          author: 'Hans',
+        },
+        {
+          img: 'http://www.material-ui.com/images/grid-list/honey-823614_640.jpg',
+          title: 'Honey',
+          author: 'fancycravel',
+        },
+        {
+          img: 'http://www.material-ui.com/images/grid-list/vegetables-790022_640.jpg',
+          title: 'Vegetables',
+          author: 'jill111',
+        },
+        {
+          img: 'http://www.material-ui.com/images/grid-list/water-plant-821293_640.jpg',
+          title: 'Water plant',
+          author: 'BkrmadtyaKarki',
+        },
+      ]
+    }
   }
 
   handleChange = (value) => {
@@ -136,8 +138,43 @@ class Discover extends PureComponent {
     this.setState({hiddenElement: true})
   }
 
+  componentWillMount() {
+
+    const { basemap, activeArea, selectedYear, activeMarkers, selectedItem, areaData } = this.props;
+    console.debug("### MAP componentWillReceiveProps", this.props)
+
+    /** Acting on store changes **/
+    if (this.state.currentYearLoaded !== selectedYear) {
+      console.debug("DISCOVER.js ### new year changed to " + selectedYear)
+      const newTilesData = []
+
+      fetch('https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages%7Cpageterms&generator=prefixsearch&redirects=1&formatversion=2&piprop=thumbnail&pithumbsize=250&pilimit=20&wbptterms=description&gpssearch=year' + selectedYear + '&gpslimit=40')
+        .then(res => {
+          return res.json() })
+        .then(res => {
+          console.debug("res!!", res)
+          for (var i = 0; i < 40; i++) {
+            if (res.query.pages[i].hasOwnProperty("thumbnail") === true) {
+              newTilesData.push({
+                img: res.query.pages[i].thumbnail.source,
+                title: res.query.pages[i].title,
+                author: res.query.pages[i].title,
+              })
+            } else {
+              console.log("no image found for ")
+            }
+          }
+          this.setState({
+             currentYearLoaded: selectedYear,
+            tilesData: newTilesData })
+        })
+    }
+  }
+
   render() {
-    const {theme, locale, changeTheme, changeLocale, menuItemActive, selectedYear, translate} = this.props;
+    console.debug("rendering discoverjs")
+    const { theme, locale, changeTheme, changeLocale, menuItemActive, selectedYear, translate } = this.props
+    const { tilesData } = this.state
 
     return (
       <div>

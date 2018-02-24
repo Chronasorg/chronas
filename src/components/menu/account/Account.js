@@ -98,7 +98,7 @@ class Account extends PureComponent {
       hasDelete: false,
       resource: 'users',
     }
-    const username = localStorage.getItem('username')
+    const username = localStorage.getItem('id')
     const routeProps = {
       "match": {
         "path":"/account",

@@ -573,7 +573,7 @@ class Map extends Component {
   }
 
   _renderPopup() {
-    const {hoverInfo, popupInfo} = this.state;
+    const {hoverInfo, popupInfo} = this.state
     if (hoverInfo) {
       return (
         <Popup longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>

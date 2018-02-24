@@ -3,7 +3,9 @@ export default {
       logged_in: 'Logged in',
       logged_out: 'Logged out',
       login: 'Login',
-      logout: 'Logout'
+      logout: 'Logout',
+      sign_in: 'Sign In',
+      sign_up: 'Join'
     },
     pos: {
       areas: 'Areas',
