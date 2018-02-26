@@ -152,10 +152,11 @@ class App extends Component {
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path="/"/>
-                        <Route exact path="/account" component={Account} />
+                        {/*<Route exact path="/account" component={Account} />*/}
                         <Route exact path="/configuration" component={Configuration} />
                         <Route exact path="/discover" component={Discover} />
                         <Route exact path="/login" component={Login} />
+                        <Account history={history}/>
                         <CrudRoute history={history}/>
                       </Switch>
                       <Switch>

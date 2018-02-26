@@ -51,7 +51,6 @@ class Map extends Component {
     this._resize();
     // this.restoreFetch = fakeRestServer();
 
-
     window.addEventListener('load', function() {
 
       fetch(properties.chronasApiHost + "/metadata/provinces")

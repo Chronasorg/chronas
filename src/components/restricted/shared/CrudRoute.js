@@ -1,13 +1,13 @@
-import React, { createElement, PureComponent } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import React, { createElement, PureComponent } from 'react'
+import { Route, Switch } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { connect } from 'react-redux';
-import compose from 'recompose/compose';
+import { connect } from 'react-redux'
+import compose from 'recompose/compose'
 import pure from 'recompose/pure'
-import { Restricted, translate } from 'admin-on-rest';
-import Dialog from 'material-ui/Dialog';
+import { Restricted, translate } from 'admin-on-rest'
+import Dialog from 'material-ui/Dialog'
 import Toolbar from 'material-ui/Toolbar'
-import FlatButton from 'material-ui/FlatButton';
+import FlatButton from 'material-ui/FlatButton'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../users'
@@ -68,8 +68,6 @@ class CrudRoute extends PureComponent {
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
 
-
-
     const restrictPage = (component, route, commonProps) => {
       const RestrictedPage = routeProps => (
         <Restricted authParams={{ routeProps }} {...routeProps}>
@@ -104,10 +102,9 @@ class CrudRoute extends PureComponent {
             })}
           </Dialog>
         </Restricted>
-      );
-      return RestrictedPage;
-    };
-
+      )
+      return RestrictedPage
+    }
 
     return (
       <div>
@@ -168,7 +165,7 @@ class CrudRoute extends PureComponent {
           </Switch>)
         })}
       </div>
-    );
+    )
   }
 }
 
@@ -178,4 +175,4 @@ const enhance = compose(
   translate,
 )
 
-export default enhance(CrudRoute);
+export default enhance(CrudRoute)
