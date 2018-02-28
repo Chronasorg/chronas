@@ -1,23 +1,22 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { Card, CardText } from 'material-ui/Card';
-import Dialog from 'material-ui/Dialog';
-import { GridList, GridTile } from 'material-ui/GridList';
-import RaisedButton from 'material-ui/RaisedButton';
-import IconButton from 'material-ui/IconButton';
-import StarBorder from 'material-ui/svg-icons/toggle/star-border';
-import CloseIcon from 'material-ui/svg-icons/content/clear';
-import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar';
-import { Tabs, Tab } from 'material-ui/Tabs';
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { Card, CardText } from 'material-ui/Card'
+import Dialog from 'material-ui/Dialog'
+import { GridList, GridTile } from 'material-ui/GridList'
+import RaisedButton from 'material-ui/RaisedButton'
+import IconButton from 'material-ui/IconButton'
+import StarBorder from 'material-ui/svg-icons/toggle/star-border'
+import CloseIcon from 'material-ui/svg-icons/content/clear'
+import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
+import { Tabs, Tab } from 'material-ui/Tabs'
 import { AutoRotatingCarousel, Slide } from 'material-auto-rotating-carousel'
-import SwipeableViews from 'react-swipeable-views';
-import { translate, ViewTitle } from 'admin-on-rest';
+import SwipeableViews from 'react-swipeable-views'
+import { translate, ViewTitle } from 'admin-on-rest'
 
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 
-
-import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers';
+import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 
 const styles = {
   label: { width: '10em', display: 'inline-block' },
@@ -66,10 +65,10 @@ const styles = {
     maxWidth: '1024px',
     margin: '0 auto'
   },
-};
+}
 
 class Discover extends PureComponent {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       slideIndex: 0,
@@ -123,7 +122,7 @@ class Discover extends PureComponent {
   }
 
   handleChange = (value) => {
-    this.setState({slideIndex: value})
+    this.setState({ slideIndex: value })
   }
 
   handleClose = () => {
@@ -131,104 +130,107 @@ class Discover extends PureComponent {
   }
 
   componentDidMount = () => {
-    this.setState({hiddenElement: false})
+    this.setState({ hiddenElement: false })
   }
 
   componentWillUnmount = () => {
-    this.setState({hiddenElement: true})
+    this.setState({ hiddenElement: true })
   }
 
-  componentWillMount() {
-
-    const { basemap, activeArea, selectedYear, activeMarkers, selectedItem, areaData } = this.props;
-    console.debug("### MAP componentWillReceiveProps", this.props)
+  componentWillMount () {
+    const { basemap, activeArea, selectedYear, activeMarkers, selectedItem, areaData } = this.props
+    console.debug('### MAP componentWillReceiveProps', this.props)
 
     /** Acting on store changes **/
     if (this.state.currentYearLoaded !== selectedYear) {
-      console.debug("DISCOVER.js ### new year changed to " + selectedYear)
+      console.debug('DISCOVER.js ### new year changed to ' + selectedYear)
       const newTilesData = []
 
       fetch('https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages%7Cpageterms&generator=prefixsearch&redirects=1&formatversion=2&piprop=thumbnail&pithumbsize=250&pilimit=20&wbptterms=description&gpssearch=year' + selectedYear + '&gpslimit=40')
         .then(res => {
-          return res.json() })
+          return res.json()
+        })
         .then(res => {
-          console.debug("res!!", res)
           for (var i = 0; i < 40; i++) {
-            if (res.query.pages[i].hasOwnProperty("thumbnail") === true) {
+            if (res.query.pages[i].hasOwnProperty('thumbnail') === true) {
               newTilesData.push({
                 img: res.query.pages[i].thumbnail.source,
                 title: res.query.pages[i].title,
                 author: res.query.pages[i].title,
               })
             } else {
-              console.log("no image found for ")
+              console.log('no image found for ')
             }
           }
           this.setState({
-             currentYearLoaded: selectedYear,
+            currentYearLoaded: selectedYear,
             tilesData: newTilesData })
         })
     }
   }
 
-  render() {
-    console.debug("rendering discoverjs")
+  render () {
+    console.debug('rendering discoverjs')
     const { theme, locale, changeTheme, changeLocale, menuItemActive, selectedYear, translate } = this.props
     const { tilesData } = this.state
 
     return (
       <div>
-        <Toolbar style={{zIndex: 10000, color: "white", boxShadow: "rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px"}}>
+        <Toolbar style={{ zIndex: 10000, color: 'white', boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px' }}>
           <ToolbarGroup>
-            <ToolbarTitle style={styles.toolbarTitleStyle} text={translate('pos.discover_label') + selectedYear}/>
+            <ToolbarTitle style={styles.toolbarTitleStyle} text={translate('pos.discover_label') + selectedYear} />
           </ToolbarGroup>
           <ToolbarGroup>
-            <IconButton style={{zIndex: 10000}} touch={true} key={'close'} containerElement={<Link to="/"/>}>
+            <IconButton style={{ zIndex: 10000 }} touch key={'close'} containerElement={<Link to='/' />}>
               <CloseIcon color={styles.toolbarTitleStyle.color} />
             </IconButton>
           </ToolbarGroup>
         </Toolbar>
-        <Dialog open={true}
-                autoDetectWindowHeight={false}
-                modal={false}
-                onRequestClose={this.handleClose}
-                contentClassName={(this.state.hiddenElement) ? "" : "classReveal dialogBackgroundHack"}
-                contentStyle={styles.discoverDialogStyle}
-                bodyStyle={{backgroundColor: 'transparent', border: 'none'}}
-                actionsContainerStyle={{backgroundColor: red400}}
-                overlayStyle={styles.overlayStyle}
-                style={{backgroundColor: 'transparent', overflow: 'auto' }}
-                titleStyle={{backgroundColor: 'transparent', borderRadius: 0}}
-                autoScrollBodyContent={false}>
+        <Dialog open
+          autoDetectWindowHeight={false}
+          modal={false}
+          onRequestClose={this.handleClose}
+          contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogBackgroundHack'}
+          contentStyle={styles.discoverDialogStyle}
+          bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
+          actionsContainerStyle={{ backgroundColor: red400 }}
+          overlayStyle={styles.overlayStyle}
+          style={{ backgroundColor: 'transparent', overflow: 'auto' }}
+          titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
+          autoScrollBodyContent={false}>
 
           <AutoRotatingCarousel
-            style={{position: 'relative', transform: 'none', backgroundColor: 'none'}}
-            contentStyle={{transform: 'none', backgroundColor: 'none', height: '512px',
-              maxWidth: '1024px', marginTop: '16px', width: '100%'}}
+            style={{ position: 'relative', transform: 'none', backgroundColor: 'none' }}
+            contentStyle={{ transform: 'none',
+              backgroundColor: 'none',
+              height: '512px',
+              maxWidth: '1024px',
+              marginTop: '16px',
+              width: '80%' }}
             open
             landscape
           >
             <Slide
-              media={<img src="http://www.icons101.com/icon_png/size_256/id_79394/youtube.png" />}
+              media={<img src='http://www.icons101.com/icon_png/size_256/id_79394/youtube.png' />}
               mediaBackgroundStyle={{ backgroundColor: red400 }}
               contentStyle={{ backgroundColor: red600 }}
-              mediaStyle={{borderRadius: 0}}
-              title="This is a very cool feature"
-              subtitle="Just using this will blow your mind."
+              mediaStyle={{ borderRadius: 0 }}
+              title='This is a very cool feature'
+              subtitle='Just using this will blow your mind.'
             />
             <Slide
-              media={<img src="http://www.icons101.com/icon_png/size_256/id_80975/GoogleInbox.png" />}
+              media={<img src='http://www.icons101.com/icon_png/size_256/id_80975/GoogleInbox.png' />}
               mediaBackgroundStyle={{ backgroundColor: blue400 }}
               contentStyle={{ backgroundColor: blue600 }}
-              title="Ever wanted to be popular?"
-              subtitle="Well just mix two colors and your are good to go!"
+              title='Ever wanted to be popular?'
+              subtitle='Well just mix two colors and your are good to go!'
             />
             <Slide
-              media={<img src="http://www.icons101.com/icon_png/size_256/id_76704/Google_Settings.png" />}
+              media={<img src='http://www.icons101.com/icon_png/size_256/id_76704/Google_Settings.png' />}
               mediaBackgroundStyle={{ backgroundColor: green400 }}
               contentStyle={{ backgroundColor: green600 }}
-              title="May the force be with you"
-              subtitle="The Force is a metaphysical and ubiquitous power in the Star Wars universe."
+              title='May the force be with you'
+              subtitle='The Force is a metaphysical and ubiquitous power in the Star Wars universe.'
             />
           </AutoRotatingCarousel>
 
@@ -244,19 +246,19 @@ class Discover extends PureComponent {
               margin: '0 auto',
               width: '600px',
               marginBottom: '1em',
-              marginTop: '1em'}}
+              marginTop: '1em' }}
           >
-            <Tab label="HIGHLIGHTS" value={0} />
-            <Tab label="STORIES" value={1} />
-            <Tab label="PEOPLE" value={2} />
-            <Tab label="BATTLES" value={3} />
-            <Tab label="CITIES" value={4} />
-            <Tab label="OTHER" value={5} />
+            <Tab label='HIGHLIGHTS' value={0} />
+            <Tab label='STORIES' value={1} />
+            <Tab label='PEOPLE' value={2} />
+            <Tab label='BATTLES' value={3} />
+            <Tab label='CITIES' value={4} />
+            <Tab label='OTHER' value={5} />
           </Tabs>
           <SwipeableViews
             index={this.state.slideIndex}
             onChangeIndex={this.handleChange}>
-            {/*// TAB 0*/}
+            {/* // TAB 0 */}
             <div style={styles.root}>
               <GridList
                 cols={2}
@@ -268,10 +270,10 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
-                    actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
-                    actionPosition="left"
-                    titlePosition="top"
-                    titleBackground="linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
+                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
+                    actionPosition='left'
+                    titlePosition='top'
+                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
                     cols={tile.featured ? 2 : 1}
                     rows={tile.featured ? 2 : 1}
                   >
@@ -280,26 +282,26 @@ class Discover extends PureComponent {
                 ))}
               </GridList>
             </div>
-            {/*TAB 1*/}
+            {/* TAB 1 */}
             <div style={styles.slide}>
-              <Card style={{boxShadow: "none"}}>
+              <Card style={{ boxShadow: 'none' }}>
                 <CardText>
                   <div style={styles.label}>{translate('pos.theme.name')}</div>
                   <RaisedButton style={styles.button} label={translate('pos.theme.modern')} primary
-                                onClick={() => changeTheme('modern')}/>
+                    onClick={() => changeTheme('modern')} />
                   <RaisedButton style={styles.button} label={translate('pos.theme.historic')} secondary
-                                onClick={() => changeTheme('historic')}/>
+                    onClick={() => changeTheme('historic')} />
                 </CardText>
                 <CardText>
                   <div style={styles.label}>{translate('pos.language')}</div>
-                  <RaisedButton style={styles.button} label="en" primary={locale === 'en'}
-                                onClick={() => changeLocale('en')}/>
-                  <RaisedButton style={styles.button} label="fr" primary={locale === 'fr'}
-                                onClick={() => changeLocale('fr')}/>
+                  <RaisedButton style={styles.button} label='en' primary={locale === 'en'}
+                    onClick={() => changeLocale('en')} />
+                  <RaisedButton style={styles.button} label='fr' primary={locale === 'fr'}
+                    onClick={() => changeLocale('fr')} />
                 </CardText>
               </Card>
             </div>
-            {/*TAB 2*/}
+            {/* TAB 2 */}
             <div style={styles.root}>
               <GridList
                 cols={2}
@@ -311,10 +313,10 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
-                    actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
-                    actionPosition="left"
-                    titlePosition="top"
-                    titleBackground="linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)"
+                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
+                    actionPosition='left'
+                    titlePosition='top'
+                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
                     cols={tile.featured ? 2 : 1}
                     rows={tile.featured ? 2 : 1}
                   >
@@ -323,18 +325,18 @@ class Discover extends PureComponent {
                 ))}
               </GridList>
             </div>
-            {/*TAB 3*/}
+            {/* TAB 3 */}
             <div style={styles.slide}>
               slide n°4
             </div>
-            {/*TAB 5*/}
+            {/* TAB 5 */}
             <div style={styles.slide}>
               slide n°5
             </div>
           </SwipeableViews>
         </Dialog>
       </div>
-    );
+    )
   }
 }
 
@@ -343,9 +345,9 @@ const mapStateToProps = state => ({
   theme: state.theme,
   locale: state.locale,
   menuItemActive: state.menuItemActive,
-});
+})
 
 export default connect(mapStateToProps, {
   changeLocale: changeLocaleAction,
   changeTheme: changeThemeAction,
-})(translate(Discover));
+})(translate(Discover))

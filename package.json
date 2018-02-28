@@ -37,6 +37,7 @@
     "jwt-decode": "^2.2.0",
     "material-auto-rotating-carousel": "^1.7.0",
     "material-ui": "~0.20.0",
+    "node-mandrill": "^1.0.1",
     "object-assign": "^4.1.1",
     "promise": "^8.0.1",
     "prop-types": "^15.6.1",
