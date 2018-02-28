@@ -47,6 +47,7 @@ export default {
               demo_button: 'Source for this demo',
           },
       },
+      welcome: 'Welcome',
     },
     resources: {
         users: {

@@ -187,6 +187,7 @@ class Login extends Component {
               <div style={styles.input} >
                 <Field
                   name='email'
+                  type='email'
                   component={renderInput}
                   floatingLabelText={translate('aor.auth.email')}
                   disabled={submitting}
@@ -236,6 +237,7 @@ class Login extends Component {
               <div style={styles.input}>
                 <Field
                   name='website'
+                  type='URL'
                   component={renderInput}
                   floatingLabelText={translate('aor.auth.website')}
                   disabled={submitting}

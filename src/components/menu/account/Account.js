@@ -12,7 +12,6 @@ import {
   Datagrid,
   DateField,
   DateInput,
-  Delete,
   DisabledInput,
   Edit,
   EditButton,
@@ -32,6 +31,7 @@ import {
 } from 'admin-on-rest'
 import { Card } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
+import Delete from '../../restricted/shared/crudComponents/Delete'
 import Toolbar from 'material-ui/Toolbar'
 import FlatButton from 'material-ui/FlatButton'
 import { tooltip } from '../../../styles/chronasStyleComponents'
@@ -99,11 +99,10 @@ class Account extends PureComponent {
       resource: 'users',
     }
     const username = localStorage.getItem('id')
-    console.debug('username is', username)
     const routeProps = {
       'match': {
         'path':'/account',
-        'url':'/resources/users/' + username,
+        'url':'/resources/users/' + window.encodeURIComponent(username),
         'isExact': true,
         'params': {
           'id': username
@@ -134,10 +133,13 @@ class Account extends PureComponent {
           <TextInput source='name' />
           <TextInput source='education' />
           <TextInput type='email' label='resources.users.fields.email' source='email' validation={{ email: true }} options={{ fullWidth: true }} style={{ width: 544 }} />
-          <NumberInput source='privilege' label='resources.users.fields.privilege' elStyle={{ width: '5em' }} />
-          <NumberInput source='karma' elStyle={{ width: '5em' }} />
-          <LongTextInput source='password' type='password' />
+          <DisabledInput source='privilege' label='resources.users.fields.privilege' elStyle={{ width: '5em' }} />
+          <DisabledInput source='karma' elStyle={{ width: '5em' }} />
+          <TextInput source='website' type='URL' />
+          <DisabledInput source='loginCount' label='resources.users.fields.loginCount' type='number' />
           <DisabledInput source='createdAt' label='resources.users.fields.createdAt' type='date' />
+          <DisabledInput source='lastUpdated' label='resources.users.fields.lastUpdated' type='date' />
+          <TextInput source='password' type='password' />
         </SimpleForm>
       </Edit>
     }
@@ -150,7 +152,7 @@ class Account extends PureComponent {
     const UserDelete = (props) =>{
       console.debug(props)
       const tt = {...props, ...routeProps}
-      return <Delete {...tt} title={<UserDeleteTitle />} />
+      return <Delete account={true} history={props.history} {...tt} title={<UserDeleteTitle />} />
     }
 
     const restrictPage = (component, route, commonProps) => {
@@ -178,67 +180,20 @@ class Account extends PureComponent {
                   exact
                   path={'/account/'}
                   render={restrictPage(UserEdit, username, {...commonProps,...routeProps})}
-                  // render={UserEdit && createElement(UserEdit, {
-                  //   ...commonProps,
-                  //   ...routeProps,
-                  // })}
                 />
               )}
               {UserDelete && (
                 <Route
                   exact
-                  path={'/account/delete'}
+                  path={'/' + window.encodeURIComponent(username) + '/delete'}
                   render={restrictPage(UserDelete, 'delete', {...commonProps,...routeProps})}
-                  // render={UserEdit && createElement(UserEdit, {
-                  //   ...commonProps,
-                  //   ...routeProps,
-                  // })}
                 />
               )}
-              {/*{UserEdit && (*/}
-                {/*<Route*/}
-                  {/*exact*/}
-                  {/*path={'/'}*/}
-                  {/*render={restrictPage(UserEdit, 'show')}*/}
-                {/*/>*/}
-              {/*)}*/}
-              {/*{UserDelete && (*/}
-                {/*<Route*/}
-                  {/*exact*/}
-                  {/*path={'/account/delete'}*/}
-                  {/*render={restrictPage(UserDelete, 'delete')}*/}
-                {/*/>*/}
-              {/*)}*/}
             </Switch>
     )
   }
 }
 
-
-/*
-
- <Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'account' }}>
-        <Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'account' }}>
-          <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-                  contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
-            <Card style={styles.card}>
-              {UserEdit && createElement(UserEdit, {
-                ...commonProps,
-                ...routeProps,
-              })}
-            </Card>
-          </Dialog>
-        </Restricted>
-      </Restricted>
-
- */
-/**
- *
- *
-
-
- *
- */
 const enhance = compose(
   connect(state => ({
     userDetails: state.userDetails
