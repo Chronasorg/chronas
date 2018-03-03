@@ -10,14 +10,16 @@ import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
-import { setModType as setModTypeAction } from '../buttons/actionReducers'
+import { setModType , setModData } from '../buttons/actionReducers'
 
 const formStyle = { padding: '0 1em 1em 1em' };
 
 export class AreaForm extends Component {
-  handleSubmitWithRedirect = (redirect = this.props.redirect, value) => {
-    this.props.handleSubmit(values => {
-      this.props.save(values, redirect)
+  handleSubmitWithRedirect = (redirect = this.props.redirect) => {
+    console.debug('do area range query with only changed values', this.props)
+    return this.props.handleSubmit(values => {
+      console.debug(values);
+      return null; //  this.props.save(values, redirect)
     });
   }
 
@@ -27,12 +29,14 @@ export class AreaForm extends Component {
   }
 
   componentWillUnmount() {
-    const { setModType } = this.props;
+    const { setModType } = this.props
     setModType("")
   }
 
   componentDidMount() {
-    const { setModType } = this.props;
+    const { setModType, selectedItem, setModData } = this.props
+    const selectedProvince = selectedItem.province
+    if (selectedProvince) setModData([selectedProvince])
     setModType("areas")
   }
 
@@ -96,8 +100,12 @@ const enhance = compose(
   connect((state, props) => ({
     initialValues: getDefaultValues(state, props),
     modActive: state.modActive,
+    selectedItem: state.selectedItem,
     }),
-    { setModType: setModTypeAction }),
+    {
+      setModType,
+      setModData
+    }),
   reduxForm({
     form: 'record-form',
     enableReinitialize: true,

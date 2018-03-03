@@ -34,6 +34,8 @@ import Login from './components/menu/authentication/Login'
 import CustomTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
 
+import utilsQuery from './components/map/utils/query'
+
 const styles = {
   wrapper: {
     // Avoid IE bug with Flexbox, see #467
@@ -76,6 +78,19 @@ class App extends Component {
   static propTypes = {
     store: PropTypes.object.isRequired,
     // routes: PropTypes.object.isRequired,
+  }
+
+  componentWillMount() {
+
+    // initialize queryparameters
+    window.history.pushState('', '',
+      '?year=' + (utilsQuery.getURLParameter('year') || 1000) +
+      '&type=' + (utilsQuery.getURLParameter('type') || '') +
+      '&fill=' + (utilsQuery.getURLParameter('fill') || '') +
+      '&label=' + (utilsQuery.getURLParameter('label') || '') +
+      '&province=' + (utilsQuery.getURLParameter('province') || '') +
+      '&wiki=' + (utilsQuery.getURLParameter('wiki') || '')
+    + window.location.hash)
   }
 
   componentDidMount() {

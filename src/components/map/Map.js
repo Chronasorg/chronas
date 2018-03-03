@@ -4,17 +4,18 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
-import { provinceCollection, provArea, adjacent, relPlus, rulPlus } from './data/datadef'
+import { provinceCollection, provArea, adjacent, metadata } from './data/datadef'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
-import { setItemId as setItemIdAction } from './actionReducers'
+import { selectAreaItem as selectAreaItemAction } from './actionReducers'
 import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import {render} from 'react-dom'
 import {fromJS} from 'immutable'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import properties from '../../properties'
 import {defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, areaColorLayerIndex } from './mapStyles/map-style.js'
-import utils from './utils'
+import utilsMapping from './utils/mapping'
+import utilsQuery from './utils/query'
 import _ from 'lodash'
 
 import Timeline from './timeline/MapTimeline'
@@ -71,14 +72,14 @@ class Map extends Component {
            });
            */
 
-          var rulKeys = Object.keys(rulPlus)
+          var rulKeys = Object.keys(metadata['political'])
           for (var i=0; i < rulKeys.length; i++) {
-            rulStops.push([rulKeys[i], rulPlus[rulKeys[i]][1]])
+            rulStops.push([rulKeys[i], metadata['political'][rulKeys[i]][1]])
           }
 
-          var relKeys = Object.keys(relPlus)
+          var relKeys = Object.keys(metadata['religion'])
           for (var i=0; i < relKeys.length; i++) {
-            relStops.push([relKeys[i], relPlus[relKeys[i]][1]])
+            relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
           }
 
 
@@ -276,7 +277,7 @@ class Map extends Component {
     }
 
     if (typeof newLabel !== "undefined") {
-      const plCol = utils.addTextFeat(areaDefs, newLabel)
+      const plCol = utilsMapping.addTextFeat(areaDefs, newLabel)
       mapStyle = mapStyle
         .setIn(['sources', 'area-labels', 'data'], fromJS(plCol[0]))
         .setIn(['sources', 'area-outlines', 'data'], fromJS(plCol[2]))
@@ -305,7 +306,7 @@ class Map extends Component {
 
   componentWillReceiveProps(nextProps) {
 
-    const {basemap, activeArea, selectedYear, activeMarkers, selectedItem, areaData} = this.props;
+    const {basemap, activeArea, selectedYear, activeMarkers, selectedItem, modActive, areaData} = this.props;
     console.debug("### MAP componentWillReceiveProps", this.props,nextProps)
 
     /** Acting on store changes **/
@@ -320,7 +321,8 @@ class Map extends Component {
         console.debug("data pool: ", dataPool)
 
         const randomItem = dataPool[getRandomInt(0,dataPool.length-1)]
-        const itemId = rulPlus[randomItem.properties.n][2]
+        const provinceId = randomItem.properties.n
+        const itemId = metadata['political'][randomItem.properties.n][2]
 
         this.map.getMap().flyTo({
           center: [
@@ -330,11 +332,44 @@ class Map extends Component {
         })
 
         this.props.setRightDrawerVisibility(true)
-        this.props.setItemId(itemId)
-        this.props.history.push('/wiki/' + itemId)
+        this.props.selectAreaItem(itemId, provinceId) // set query url
+        this.props.history.push('/article')
       }
     }
 
+
+    if (nextProps.modActive.type === "areas") {
+      // Mod Provinces changed?
+      if (!_.isEqual(modActive.data.sort(), nextProps.modActive.data.sort())) {
+        const removedProvinces = _.difference(modActive.data, nextProps.modActive.data);
+        const addedProvinces = _.difference(nextProps.modActive.data, modActive.data);
+
+          for (const provinceName of removedProvinces) {
+            // remove province
+            this.setState({
+              mapStyle: this.state.mapStyle
+                .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
+            })
+          }
+
+          for (const provinceName of addedProvinces) {
+            // add province
+            this.setState({
+              mapStyle: this.state.mapStyle
+                .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.concat({
+                  "type": "Feature", "properties": {n: provinceName}, "geometry": ((this.state.mapStyle
+                    .getIn(['sources', 'area-outlines', 'data']).toJS().features.filter((el) => el.properties.n !== provinceName) || {})[0] || {}).geometry
+                }))
+            })
+          }
+      }
+    } else if (modActive.type === "areas") {
+      // clean up mod select
+      const prevMapStyle = this.state.mapStyle
+      let mapStyle = prevMapStyle
+        .setIn(['sources', 'area-mod', 'data', 'features'], [])
+      this.setState({mapStyle})
+    }
     // Year changed?
     if (selectedYear != nextProps.selectedYear) {
       console.debug("###### Year changed from " + selectedYear + " to " + nextProps.selectedYear)
@@ -344,6 +379,8 @@ class Map extends Component {
           const areaDefs = JSON.parse(res).data
           this._simulateYearChange(areaDefs)
           this._changeArea(areaDefs, "political", "political")
+
+          utilsQuery.updateQueryStringParameter('year', nextProps.selectedYear)
         })
     }
 
@@ -360,18 +397,22 @@ class Map extends Component {
     if (activeArea.label != nextProps.activeArea.label && activeArea.color != nextProps.activeArea.color) {
       console.debug("###### Area Color and Label changed" + nextProps.activeArea.label)
       this._changeArea(activeArea.data, nextProps.activeArea.label, nextProps.activeArea.color)
+      utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
+      utilsQuery.updateQueryStringParameter('label', nextProps.activeArea.label)
     }
 
     // Area Label changed?
     else if (activeArea.label != nextProps.activeArea.label) {
       console.debug("###### Area Label changed" + nextProps.activeArea.label)
       this._changeArea(activeArea.data, nextProps.activeArea.label, undefined)
+      utilsQuery.updateQueryStringParameter('label', nextProps.activeArea.label)
     }
 
     // Area Color changed?
     else if (activeArea.color != nextProps.activeArea.color) {
       console.debug("###### Area Color changed" + nextProps.activeArea.color)
       this._changeArea(activeArea.data, undefined, nextProps.activeArea.color)
+      utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
     }
 
     // Markers changed?
@@ -414,7 +455,7 @@ class Map extends Component {
   };
 
   _loadGeoJson = (sourceId, sourceData) => {
-    // utils.updatePercentiles(data, f => f.properties.income[this.state.year]);
+    // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
     const prevMapStyle = this.state.mapStyle
     let mapStyle = prevMapStyle
       .setIn(['sources', sourceId, 'data', 'features'], sourceData.features)
@@ -469,7 +510,7 @@ class Map extends Component {
 
       const {data, mapStyle} = this.state;
       if (data) {
-        // utils.updatePercentiles(data, f => f.properties.income[value]);
+        // utilsMapping.updatePercentiles(data, f => f.properties.income[value]);
         const newMapStyle = mapStyle.setIn(['sources', 'incomeByState', 'data'], fromJS(data));
         this.setState({mapStyle: newMapStyle});
       }
@@ -500,7 +541,7 @@ class Map extends Component {
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
         .setIn(['sources', 'area-hover', 'data', 'features'], [])
-      this.setState({mapStyle});
+      this.setState({mapStyle})
     }
 
     this.setState({
@@ -512,7 +553,7 @@ class Map extends Component {
   _onClick = event => {
     event.stopPropagation();
     let itemName = '';
-    let itemId = '';
+    let wikiId = '';
 
     if (this.props.modActive.type === "marker") {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
@@ -527,23 +568,19 @@ class Map extends Component {
       const prevModData = this.props.modActive.data
 
       if (province) {
-        hoverInfo = {
-          lngLat: event.lngLat,
-          province: province.properties
-        };
         provinceName = province.properties.name;
 
         if (prevModData.indexOf(provinceName) > -1) {
           // remove province
           this.props.removeModData(provinceName)
           this.setState({ mapStyle: this.state.mapStyle
-            .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
+            .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
           })
         } else {
           // add province
           this.props.addModData(provinceName)
           this.setState({ mapStyle: this.state.mapStyle
-            .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.concat({
+            .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.concat({
               "type": "Feature", "properties": { n: provinceName }, "geometry": province.geometry
             }))
           })
@@ -553,10 +590,12 @@ class Map extends Component {
     }
 
     const item = event.features && event.features[0]
+
     if (item) {
       itemName = item.properties.name
-      itemId = item.properties.wikiUrl
+      wikiId = item.properties.wikiUrl
     }
+
     if (itemName !== '') {
       this.map.getMap().flyTo({
         center: [
@@ -567,8 +606,15 @@ class Map extends Component {
     }
 
     this.props.setRightDrawerVisibility(itemName !== '')
-    this.props.setItemId(itemId)
-    this.props.history.push('/wiki/' + itemId)
+    this.props.selectAreaItem(wikiId, itemName)
+
+    if (item.layer === "markers") {
+
+    } else {
+      // Assume it is an area clicked //TODO: handle other cases then markers and areas
+      this.props.history.push('/article')
+    }
+
   }
 
   _renderPopup() {
@@ -679,7 +725,7 @@ const enhance = compose(
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
     setRightDrawerVisibility: setRightDrawerVisibilityAction,
-    setItemId: setItemIdAction,
+    selectAreaItem: selectAreaItemAction,
     setModData: setModDataAction,
     removeModData: removeModDataAction,
     addModData: addModDataAction,

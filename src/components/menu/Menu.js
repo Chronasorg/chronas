@@ -15,7 +15,7 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme, userLogout, showNotification } from 'admin-on-rest'
-import { setItemId as setItemIdAction } from '../map/actionReducers'
+import { selectAreaItem as selectAreaItemAction } from '../map/actionReducers'
 import { toggleMenuDrawer as toggleMenuDrawerAction, setActiveMenu as setActiveMenuAction } from './actionReducers'
 import { toggleRightDrawer as toggleRightDrawerAction } from '../content/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
@@ -57,7 +57,7 @@ class Menu extends PureComponent {
   }
 
   render() {
-    const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, setItemId, hasDashboard, onMenuTap, resources, translate } = this.props;
+    const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, hasDashboard, onMenuTap, resources, translate } = this.props;
     const isLoggedIn = userDetails.token !== ''
 
     return <div style={styles.main}>
@@ -91,7 +91,7 @@ class Menu extends PureComponent {
           tooltipPosition="bottom-right"
           tooltip={translate('pos.random')}
           tooltipStyles={tooltip}
-          onClick={() => setItemId("random")}
+          onClick={() => selectAreaItem("random")}
           iconStyle={{color: '#fff'}}
         >
           <DiceIcon
@@ -184,7 +184,7 @@ const enhance = compose(
     toggleRightDrawer: toggleRightDrawerAction,
     toggleMenuDrawer: toggleMenuDrawerAction,
     setActiveMenu: setActiveMenuAction,
-    setItemId: setItemIdAction,
+    selectAreaItem: selectAreaItemAction,
     userLogout,
     setToken,
     showNotification,

@@ -7,7 +7,7 @@ import { localeReducer, themeReducer } from '../components/menu/configuration/ac
 import { basemapReducer, areaReducer, markerReducer } from '../components/menu/layers/actionReducers'
 import { userReducer } from '../components/menu/authentication/actionReducers'
 import { rightDrawerReducer } from '../components/content/actionReducers'
-import { itemIdReducer } from '../components/map/actionReducers'
+import { selectedItemReducer } from '../components/map/actionReducers'
 import { yearReducer } from '../components/map/timeline/actionReducers'
 import { menuDrawerReducer, menuIdReducer } from '../components/menu/actionReducers'
 import { reducer as formReducer } from 'redux-form'
@@ -27,7 +27,7 @@ export const makeRootReducer = (asyncReducers) => {
     userDetails: userReducer(),
     rightDrawerOpen: rightDrawerReducer(),
     routing: routerReducer,
-    selectedItem: itemIdReducer(),
+    selectedItem: selectedItemReducer(),
     selectedYear: yearReducer(),
     theme: themeReducer(),
     ...asyncReducers
