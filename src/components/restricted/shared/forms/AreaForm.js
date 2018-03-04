@@ -9,18 +9,62 @@ import compose from 'recompose/compose';
 import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
+// import { crudUpdate as crudUpdateAction } from 'admin-on-rest'
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 import { setModType , setModData } from '../buttons/actionReducers'
+import {setToken} from "../../../menu/authentication/actionReducers";
+import properties from "../../../../properties";
+import decodeJwt from "jwt-decode";
 
-const formStyle = { padding: '0 1em 1em 1em' };
+const formStyle = { padding: '0 1em 1em 1em' }
 
 export class AreaForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect) => {
     console.debug('do area range query with only changed values', this.props)
     return this.props.handleSubmit(values => {
-      console.debug(values);
-      return null; //  this.props.save(values, redirect)
-    });
+      //
+      // const payload = {
+      //   "provinces": typeof values.provinces !== "object" ? [values.provinces] : values.provinces,
+      //   "start": values.start,
+      //   "end": values.end,
+      //   "nextBody": { ...values.ruler, ...values.culture, ...values.religion, ...values.capital, ...values.population }
+      // }
+      //
+      // const { basePath = '/resources/revisions', record = {}, isRedo = false } = this.props;
+      // console.debug(record, this.props)
+      // this.props.crudUpdate(
+      //   'areas',
+      //   '',
+      //   payload,
+      //   payload,
+      //   '/resources/areas',
+      //   redirect//'list'
+      // );
+
+
+      // const token = localStorage.getItem('token')
+      // const request = new Request(properties.chronasApiHost + '/areas', {
+      //   method: 'PUT',
+      //   body: JSON.stringify({ values }),
+      //   headers: new Headers(
+      //     {
+      //       'Content-Type': 'application/json',
+      //       'Authorization': `Bearer ${token}`
+      //     }),
+      // })
+      //
+      // return fetch(request)
+      //   .then(response => {
+      //     if (response.status < 200 || response.status >= 300) {
+      //       throw new Error(response.statusText)
+      //     }
+      //     console.debug("returned ", response.json())
+      //   })
+      //
+      // console.debug(values,this.props)
+      // // return null //
+      this.props.save(values, redirect)
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -103,6 +147,7 @@ const enhance = compose(
     selectedItem: state.selectedItem,
     }),
     {
+      // crudUpdate: crudUpdateAction,
       setModType,
       setModData
     }),

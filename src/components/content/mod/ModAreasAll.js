@@ -65,11 +65,10 @@ export const ModAreasAll = (props) => {
     return { id: religionId, name: metadata['religion'][religionId][0]}
   })
 
-  console.debug(props)
   return <Create {...props}>
       <AreaForm>
           <Subheader>Provinces</Subheader>
-          <LongTextInput defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.provinceList" validation={{ id: true }} />
+          <DisabledInput elStyle={{width: '60%', minWidth: '300px'}} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.provinceList" validation={{ id: true }} />
           <Divider />
           <Subheader>Data</Subheader>
           <AutocompleteInput source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />

@@ -52,7 +52,7 @@ export default {
     resources: {
       areas: {
         fields: {
-          provinceList: 'Apply to provinces',
+          provinceList: 'Click on provinces to selecect/ deselect',
           ruler: 'Ruler',
           culture: 'Culture',
           religion: 'Religion',
