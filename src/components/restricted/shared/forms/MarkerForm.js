@@ -14,8 +14,10 @@ import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
 const formStyle = { padding: '0 1em 1em 1em' };
 
 export class SimpleForm extends Component {
-  handleSubmitWithRedirect = (redirect = this.props.redirect) =>
-    this.props.handleSubmit(values => this.props.save(values, redirect))
+  handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
+    this.props.handleSubmit(values => {
+      this.props.save(values, redirect)
+    });
 
   componentWillReceiveProps(nextProps) {
     if (this.props.modActive.data[0] !== nextProps.modActive.data[0])

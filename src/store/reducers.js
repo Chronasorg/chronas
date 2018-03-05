@@ -3,6 +3,7 @@ import { ConnectedRouter, routerReducer, routerMiddleware } from 'react-router-r
 import locationReducer from './location'
 import { adminReducer } from 'admin-on-rest'
 import { modActiveReducer } from '../components/restricted/shared/buttons/actionReducers'
+import { loadingReducer } from '../components/map/data/actionReducers'
 import { localeReducer, themeReducer } from '../components/menu/configuration/actionReducers'
 import { basemapReducer, areaReducer, markerReducer } from '../components/menu/layers/actionReducers'
 import { userReducer } from '../components/menu/authentication/actionReducers'
@@ -19,6 +20,7 @@ export const makeRootReducer = (asyncReducers) => {
     activeMarkers: markerReducer(),
     basemap: basemapReducer(),
     form: formReducer,
+    loading: loadingReducer(),
     locale: localeReducer(),
     location: locationReducer,
     menuDrawerOpen: menuDrawerReducer(),

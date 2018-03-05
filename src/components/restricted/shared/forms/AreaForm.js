@@ -19,57 +19,28 @@ import decodeJwt from "jwt-decode";
 const formStyle = { padding: '0 1em 1em 1em' }
 
 export class AreaForm extends Component {
-  handleSubmitWithRedirect = (redirect = this.props.redirect) => {
-    console.debug('do area range query with only changed values', this.props)
-    return this.props.handleSubmit(values => {
-      //
-      // const payload = {
-      //   "provinces": typeof values.provinces !== "object" ? [values.provinces] : values.provinces,
-      //   "start": values.start,
-      //   "end": values.end,
-      //   "nextBody": { ...values.ruler, ...values.culture, ...values.religion, ...values.capital, ...values.population }
-      // }
-      //
-      // const { basePath = '/resources/revisions', record = {}, isRedo = false } = this.props;
-      // console.debug(record, this.props)
-      // this.props.crudUpdate(
-      //   'areas',
-      //   '',
-      //   payload,
-      //   payload,
-      //   '/resources/areas',
-      //   redirect//'list'
-      // );
-
-
-      // const token = localStorage.getItem('token')
-      // const request = new Request(properties.chronasApiHost + '/areas', {
-      //   method: 'PUT',
-      //   body: JSON.stringify({ values }),
-      //   headers: new Headers(
-      //     {
-      //       'Content-Type': 'application/json',
-      //       'Authorization': `Bearer ${token}`
-      //     }),
-      // })
-      //
-      // return fetch(request)
-      //   .then(response => {
-      //     if (response.status < 200 || response.status >= 300) {
-      //       throw new Error(response.statusText)
-      //     }
-      //     console.debug("returned ", response.json())
-      //   })
-      //
-      // console.debug(values,this.props)
-      // // return null //
-      this.props.save(values, redirect)
-    })
-  }
+  handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
+    this.props.handleSubmit(values => {
+      const token = localStorage.getItem('token');
+      fetch(properties.chronasApiHost + "/areas", {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        //make sure to serialize your JSON body
+        body: JSON.stringify(values)
+      })
+      // this.props.save(values, redirect)
+    });
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.modActive.type === "areas" && this.props.modActive.data.length !== nextProps.modActive.data.length)
+    if (this.props.modActive.type === "areas" && this.props.modActive.data.length !== nextProps.modActive.data.length) {
       this.props.change ("provinces" , nextProps.modActive.data )
+    }
+    if (this.props.selectedYear !== nextProps.selectedYear)
+      this.props.change ("start" , nextProps.selectedYear )
   }
 
   componentWillUnmount() {
@@ -82,6 +53,13 @@ export class AreaForm extends Component {
     const selectedProvince = selectedItem.province
     if (selectedProvince) setModData([selectedProvince])
     setModType("areas")
+
+    const currLocation = this.props.location.pathname
+    const selectedProvinces = currLocation.split("/mod/areas/")[1]
+    if (typeof selectedProvinces !== "undefined" && selectedProvinces !== "") {
+      this.props.change ("provinces" , selectedProvinces)
+      selectedProvinces.split(",").forEach( (prov) => this.props.addModData(prov) )
+    }
   }
 
   render() {
@@ -142,9 +120,10 @@ AreaForm.defaultProps = {
 
 const enhance = compose(
   connect((state, props) => ({
-    initialValues: getDefaultValues(state, props),
-    modActive: state.modActive,
-    selectedItem: state.selectedItem,
+      initialValues: getDefaultValues(state, props),
+      modActive: state.modActive,
+      selectedYear: state.selectedYear,
+      selectedItem: state.selectedItem,
     }),
     {
       // crudUpdate: crudUpdateAction,
@@ -155,5 +134,5 @@ const enhance = compose(
     form: 'record-form',
     enableReinitialize: true,
   }),
-);
-export default enhance(AreaForm);
+)
+export default enhance(AreaForm)

@@ -27,7 +27,7 @@ const styles = {
     padding: '2px 8px',
     border: 'none'
   }
-};
+}
 
 const Content = (props) => {
 
