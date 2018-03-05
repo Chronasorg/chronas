@@ -487,6 +487,10 @@ const utils = {
         tmpCoo = provinceGeojson.features[i].geometry.coordinates[0]
 
         if (areaDefs.hasOwnProperty(tmpProv)) {
+          // TODO: remove again + add security check when updating
+          if (areaDefs[tmpProv] === null) {
+            areaDefs[tmpProv] = ["SWE",null,null,null,null]
+          }
           tmpCountry = areaDefs[tmpProv][0]
           tmpCul = areaDefs[tmpProv][1]
           tmpRel = areaDefs[tmpProv][2]

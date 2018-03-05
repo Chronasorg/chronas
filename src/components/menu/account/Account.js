@@ -149,7 +149,7 @@ class Account extends PureComponent {
       {username}
     </span>)
 
-    const UserDelete = (props) =>{
+    const UserDelete = (props) => {
       console.debug(props)
       const tt = {...props, ...routeProps}
       return <Delete account={true} history={props.history} {...tt} title={<UserDeleteTitle />} />

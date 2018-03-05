@@ -82,11 +82,10 @@ export const ModAreasAll = (props) => {
     return errors
   };
 
-  console.debug(props)
   return <Create {...props}>
       <AreaForm validate={validateValueInput} >
           <Subheader>Provinces</Subheader>
-          <LongTextInput validation={required} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.provinceList" validation={{ id: true }} />
+          <DisabledInput validation={required} elStyle={{width: '60%', minWidth: '300px'}} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.provinceList" />
           <Divider />
           <Subheader>Data</Subheader>
           <AutocompleteInput source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />
@@ -101,4 +100,3 @@ export const ModAreasAll = (props) => {
     </AreaForm>
   </Create>
 };
-

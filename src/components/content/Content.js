@@ -36,7 +36,6 @@ const Content = (props) => {
   const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
   const selectedWiki = (metadata[activeAreaDim][activeprovinceDim] || {})[2]
 
-  console.debug("props", props)
   return <div style={styles.main}>
     <iframe style={styles.iframe} src={"http://en.wikipedia.org/wiki/" + selectedWiki + "?printable=yes"}
             height="100%" frameBorder="0"></iframe>

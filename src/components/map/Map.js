@@ -233,8 +233,17 @@ class Map extends Component {
       })
     }
 
-
     if (nextProps.modActive.type === "areas") {
+      if (modActive.type === "") {
+        const prevMapStyle = this.state.mapStyle
+        let mapStyle = prevMapStyle
+          .setIn(['sources', 'area-hover', 'data', 'features'], [])
+        this.setState({
+          hoverInfo: null
+        })
+        this.setState({mapStyle})
+      }
+
       // Mod Provinces changed?
       if (!_.isEqual(modActive.data.sort(), nextProps.modActive.data.sort())) {
         const removedProvinces = _.difference(modActive.data, nextProps.modActive.data);
@@ -244,7 +253,7 @@ class Map extends Component {
             // remove province
             this.setState({
               mapStyle: this.state.mapStyle
-                .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
+                .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.filter((obj) => (obj.properties.name !== provinceName)))
             })
           }
 
@@ -253,8 +262,9 @@ class Map extends Component {
             this.setState({
               mapStyle: this.state.mapStyle
                 .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.concat({
-                  "type": "Feature", "properties": {n: provinceName}, "geometry": ((this.state.mapStyle
-                    .getIn(['sources', 'area-outlines', 'data']).toJS().features.filter((el) => el.properties.n !== provinceName) || {})[0] || {}).geometry
+                  "type": "Feature", "properties": {name: provinceName}, "geometry": ((this.state.mapStyle
+                    .getIn(['sources', 'provinces', 'data']).toJS().features
+                    .filter((el) => el.properties.name === provinceName) || {})[0] || {}).geometry
                 }))
             })
           }
@@ -421,21 +431,21 @@ class Map extends Component {
 
     if (this.props.modActive.type === "areas") return
 
-    let provinceName = '';
-    let hoverInfo = null;
+    let provinceName = ''
+    let hoverInfo = null
 
     const province = event.features && event.features[0]
     if (province) {
       hoverInfo = {
         lngLat: event.lngLat,
         province: province.properties
-      };
-      provinceName = province.properties.name;
+      }
+      provinceName = province.properties.name
 
       this.setState({mapStyle: this.state.mapStyle
         .setIn(['sources', 'area-hover', 'data', 'features'], [{
           "type": "Feature", "properties": {}, "geometry": province.geometry
-        }])});
+        }])})
     } else {
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
@@ -459,27 +469,24 @@ class Map extends Component {
       return
     }
     else if (this.props.modActive.type === "areas") {
-
-      let provinceName = '';
-      let hoverInfo = null;
-
+      let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = this.props.modActive.data
 
       if (province) {
-        provinceName = province.properties.name;
+        provinceName = province.properties.name
 
         if (prevModData.indexOf(provinceName) > -1) {
           // remove province
           this.props.removeModData(provinceName)
           this.setState({ mapStyle: this.state.mapStyle
-            .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
+            .updateIn(['sources', 'area-outline', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
           })
         } else {
           // add province
           this.props.addModData(provinceName)
           this.setState({ mapStyle: this.state.mapStyle
-            .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.concat({
+            .updateIn(['sources', 'area-outline', 'data', 'features'], list => list.concat({
               "type": "Feature", "properties": { n: provinceName }, "geometry": province.geometry
             }))
           })
@@ -493,6 +500,16 @@ class Map extends Component {
     if (item) {
       itemName = item.properties.name
       wikiId = item.properties.wikiUrl
+      utilsQuery.updateQueryStringParameter('type', 'areas')
+      utilsQuery.updateQueryStringParameter('province', itemName)
+
+      const prevMapStyle = this.state.mapStyle
+      let mapStyle = prevMapStyle
+        .setIn(['sources', 'area-hover', 'data', 'features'], [])
+      this.setState({
+        hoverInfo: null,
+        mapStyle
+      })
     }
 
     if (itemName !== '') {

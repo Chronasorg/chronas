@@ -12,7 +12,7 @@ import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { Restricted, translate } from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
-import {grey600, grey400, chronasDark} from '../../styles/chronasColors'
+import { grey600, grey400, chronasDark } from '../../styles/chronasColors'
 import Responsive from '../menu/Responsive'
 import Content from './Content'
 import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../restricted/users'
@@ -26,6 +26,7 @@ import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from './ac
 import { deselectItem as deselectItemAction } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
+import utilsQuery from '../map/utils/query'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../styles/chronasColors'
 
@@ -58,32 +59,32 @@ const resources = {
 }
 
 class RightDrawerRoutes extends PureComponent {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = { hiddenElement: true }
   }
 
   componentDidMount = () => {
-    console.debug("### componentDidMount rightDrawerOpen", this.props)
+    console.debug('### componentDidMount rightDrawerOpen', this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {rightDrawerOpen} = this.props
-    console.debug("### MAP rightDrawerOpen", this.props,nextProps)
+  componentWillReceiveProps (nextProps) {
+    const { rightDrawerOpen } = this.props
+    console.debug('### MAP rightDrawerOpen', this.props, nextProps)
 
     /** Acting on store changes **/
     if (rightDrawerOpen != nextProps.rightDrawerOpen) {
       if (rightDrawerOpen) {
-        console.debug("rightDrawer Closed")
-        this.setState({hiddenElement: true})
+        console.debug('rightDrawer Closed')
+        this.setState({ hiddenElement: true })
       } else {
-        console.debug("rightDrawer Opened")
-        this.setState({hiddenElement: false})
+        console.debug('rightDrawer Opened')
+        this.setState({ hiddenElement: false })
       }
     }
 
-    if (nextProps.location.pathname.indexOf("/mod") > -1 ||
-      nextProps.location.pathname.indexOf("/article/") > -1) {
+    if (nextProps.location.pathname.indexOf('/mod') > -1 ||
+      nextProps.location.pathname.indexOf('/article/') > -1) {
       if (!nextProps.rightDrawerOpen) {
         setRightDrawerVisibilityAction(true)
       }
@@ -96,6 +97,8 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   handleClose = () => {
+    utilsQuery.updateQueryStringParameter('type', '')
+    utilsQuery.updateQueryStringParameter('province', '')
     this.props.deselectItem()
     this.props.setRightDrawerVisibility(false)
     this.props.history.push('/')
@@ -111,7 +114,6 @@ class RightDrawerRoutes extends PureComponent {
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
-
     const defaultHeader = <AppBar
       title={
         <span style={{
@@ -121,21 +123,20 @@ class RightDrawerRoutes extends PureComponent {
         > {JSON.stringify(this.props.location.pathname)} tata</span>
       }
       showMenuIconButton={false}
-      style={{backgroundColor: '#fff'}}
+      style={{ backgroundColor: '#fff' }}
       iconElementRight={
         <div>
-          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
-                      onClick={() => this.handleBack()}>
-            <FontIcon className="fa fa-chevron-left"/>
+          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+            onClick={() => this.handleBack()}>
+            <FontIcon className='fa fa-chevron-left' />
           </IconButton>
-          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
-                      onClick={() => this.handleClose()}>
-            <FontIcon className="fa fa-chevron-right"/>
+          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+            onClick={() => this.handleClose()}>
+            <FontIcon className='fa fa-chevron-right' />
           </IconButton>
         </div>
       }
     />
-
 
     const modUrl = '/mod/' + this.props.selectedItem.type
     const articletHeader = <AppBar
@@ -147,20 +148,20 @@ class RightDrawerRoutes extends PureComponent {
         > {JSON.stringify(this.props.location.pathname)}</span>
       }
       showMenuIconButton={false}
-      style={{backgroundColor: '#fff'}}
+      style={{ backgroundColor: '#fff' }}
       iconElementRight={
         <div>
-          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
-                      containerElement={<Link to={modUrl} />}>
-            <FontIcon className="fa fa-edit"/>
+          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+            containerElement={<Link to={modUrl} />}>
+            <FontIcon className='fa fa-edit' />
           </IconButton>
-          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
-                      onClick={() => this.handleBack()}>
-            <FontIcon className="fa fa-chevron-left"/>
+          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+            onClick={() => this.handleBack()}>
+            <FontIcon className='fa fa-chevron-left' />
           </IconButton>
-          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
-                      onClick={() => this.handleClose()}>
-            <FontIcon className="fa fa-chevron-right"/>
+          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+            onClick={() => this.handleClose()}>
+            <FontIcon className='fa fa-chevron-right' />
           </IconButton>
         </div>
       }
@@ -172,8 +173,8 @@ class RightDrawerRoutes extends PureComponent {
           small={
             <Drawer
               docked={false}
-              openSecondary={true}
-              open={true}
+              openSecondary
+              open
               onRequestChange={setRightDrawerVisibility}
             >
               {component && createElement(component, {
@@ -184,8 +185,8 @@ class RightDrawerRoutes extends PureComponent {
           }
           medium={
             <Drawer
-              openSecondary={true}
-              open={true}
+              openSecondary
+              open
               containerStyle={{ overflow: 'none' }}
               style={{ overflow: 'none', zIndex: 9 }}
               width={'50%'}
@@ -204,18 +205,18 @@ class RightDrawerRoutes extends PureComponent {
 
     return (
       <div>
-      <Switch>
-        <Route
-          exact
-          path={'/article'}
-          render={restrictPage(articletHeader, Content)}
+        <Switch>
+          <Route
+            exact
+            path={'/article'}
+            render={restrictPage(articletHeader, Content)}
         />
-        <Route
-          exact
-          path={'/mod'}
-          render={restrictPage(defaultHeader, ModHome)}
+          <Route
+            exact
+            path={'/mod'}
+            render={restrictPage(defaultHeader, ModHome)}
         />
-      </Switch>
+        </Switch>
         {resourceList.map((resourceKey) => {
           const commonProps = {
             options,
@@ -227,7 +228,14 @@ class RightDrawerRoutes extends PureComponent {
             resource: resourceKey,
           }
 
-          return (<Switch key={"rightDrawer_"+resourceKey} style={{zIndex: 20000}}>
+          return (<Switch key={'rightDrawer_' + resourceKey} style={{ zIndex: 20000 }}>
+            {resources[resourceKey].create && resourceKey === 'areas' && (
+              <Route
+                exact
+                path={'/mod/' + resourceKey}
+                render={restrictPage(defaultHeader, resources[resourceKey].create, 'create', { ...commonProps, setModData, selectedYear, selectedItem, activeArea })}
+              />
+            )}
             {resources[resourceKey].list && (
               <Route
                 exact
@@ -240,7 +248,7 @@ class RightDrawerRoutes extends PureComponent {
                 exact
                 path={'/mod/' + resourceKey + '/create'}
                 render={restrictPage(defaultHeader, resources[resourceKey].create, 'create',
-                  (resourceKey === "markers")
+                  (resourceKey === 'markers')
                     ? Object.assign({}, commonProps, { setModDataLng, setModDataLat })
                     : commonProps)}
               />
@@ -276,7 +284,7 @@ class RightDrawerRoutes extends PureComponent {
           </Switch>)
         })}
       </div>
-    );
+    )
   }
 }
 
@@ -299,7 +307,7 @@ const enhance = compose(
       setModDataLng: setModDataLngAction,
       setModDataLat: setModDataLatAction,
       setRightDrawerVisibility: setRightDrawerVisibilityAction
-  }),
+    }),
   pure,
   translate,
 )

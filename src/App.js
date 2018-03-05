@@ -88,10 +88,9 @@ class App extends Component {
     window.history.pushState('', '',
       '?year=' + (utilsQuery.getURLParameter('year') || 1000) +
       '&type=' + (utilsQuery.getURLParameter('type') || '') +
-      '&fill=' + (utilsQuery.getURLParameter('fill') || '') +
-      '&label=' + (utilsQuery.getURLParameter('label') || '') +
-      '&province=' + (utilsQuery.getURLParameter('province') || '') +
-      '&wiki=' + (utilsQuery.getURLParameter('wiki') || '')
+      '&fill=' + (utilsQuery.getURLParameter('fill') || 'ruler') +
+      '&label=' + (utilsQuery.getURLParameter('label') || 'ruler') +
+      '&province=' + (utilsQuery.getURLParameter('province') || '')
     + window.location.hash)
   }
 

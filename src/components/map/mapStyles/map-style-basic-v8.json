@@ -137,7 +137,6 @@
       "type": "fill",
       "source": "area-hover",
       "paint": {
-        "fill-color": "black",
         "fill-opacity": 0.2
       }
     },
@@ -146,8 +145,8 @@
       "type": "fill",
       "source": "area-mod",
       "paint": {
-        "fill-color": "black",
-        "fill-opacity": 0.8
+        "fill-opacity": 0.5,
+        "fill-outline-color": "red"
       }
     },
     {
