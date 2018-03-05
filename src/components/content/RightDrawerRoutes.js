@@ -5,7 +5,9 @@ import compose from 'recompose/compose'
 import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
+import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import FontIcon from 'material-ui/FontIcon'
+import CloseIcon from 'material-ui/svg-icons/content/clear'
 import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { Restricted, translate } from 'admin-on-rest'
@@ -14,6 +16,7 @@ import {grey600, grey400, chronasDark} from '../../styles/chronasColors'
 import Responsive from '../menu/Responsive'
 import Content from './Content'
 import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../restricted/users'
+import { ModAreasAll } from './mod/ModAreasAll'
 import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
 // import MarkerCreate from '../restricted/markers/MarkerCreate'
@@ -22,8 +25,9 @@ import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIco
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from './actionReducers'
 import { deselectItem as deselectItemAction } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
-import { ModAreasAll } from './mod/ModAreasAll'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
+import { tooltip } from '../../styles/chronasStyleComponents'
+import { chronasMainColor } from '../../styles/chronasColors'
 
 const styles = {
   menuButtons: {
@@ -99,7 +103,12 @@ class RightDrawerRoutes extends PureComponent {
 
   render() {
     console.debug("### render rightDrawerOpen", this.props)
-    const { rightDrawerOpen, deselectItem, options, setRightDrawerVisibility, selectedYear, selectedItem, activeArea, children, muiTheme , setModData, setModDataLng, setModDataLat } = this.props
+
+    const { list, create, edit, show, remove, options, onMenuTap,
+      translate, rightDrawerOpen, deselectItem, setRightDrawerVisibility,
+      selectedYear, selectedItem, activeArea, children, muiTheme,
+      setModData, setModDataLng, setModDataLat  } = this.props
+
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
 
@@ -247,7 +256,7 @@ class RightDrawerRoutes extends PureComponent {
               <Route
                 exact
                 path={'/mod/' + resourceKey}
-                render={restrictPage(defaultHeader, resources[resourceKey].create, 'create', { ...commonProps, setModData, selectedYear, selectedItem, activeArea})}
+                render={restrictPage(defaultHeader, resources[resourceKey].edit, 'edit', Object.assign({}, { ...commonProps, setModData, selectedYear, selectedItem, activeArea}, { selectedYear: selectedYear }))}
               />
             )}
             {resources[resourceKey].show && (
@@ -271,7 +280,6 @@ class RightDrawerRoutes extends PureComponent {
   }
 }
 
-
 const mapStateToProps = (state, props) => ({
   modActive: state.modActive,
   activeArea: state.activeArea,
@@ -281,7 +289,6 @@ const mapStateToProps = (state, props) => ({
   locale: state.locale, // force redraw on locale change
   theme: props.theme, // force redraw on theme changes
 })
-
 
 const enhance = compose(
   connect(mapStateToProps,
@@ -297,4 +304,4 @@ const enhance = compose(
   translate,
 )
 
-export default enhance(RightDrawerRoutes);
+export default enhance(RightDrawerRoutes)

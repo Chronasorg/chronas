@@ -36,11 +36,9 @@ import ModButton from '../../restricted/shared/buttons/ModButton'
 import AreaForm from '../../restricted/shared/forms/AreaForm'
 import utils from "../../map/utils/general"
 import { metadata } from '../../map/data/datadef'
-// import {SimpleForm} from "../../restricted/shared/forms/MarkerForm";
 
 
 export const ModAreasAll = (props) => {
-
   const selectedProvince = props.selectedItem.province
   // const activeAreaDim = props.activeArea.color
   // const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
@@ -65,11 +63,30 @@ export const ModAreasAll = (props) => {
     return { id: religionId, name: metadata['religion'][religionId][0]}
   })
 
+  const validateValueInput = (values) => {
+    const errors = {};
+
+    if (values.ruler === defaultValues.dataRuler &&
+      values.culture === defaultValues.dataCulture &&
+      values.religion === defaultValues.dataReligion &&
+      values.capital === defaultValues.dataCapital &&
+      values.population === defaultValues.dataPopulation) {
+      errors.ruler = ['At least one of ruler, culture, religion, capital or population is required']
+    }
+    if (!values.start) {
+      errors.start = ['Start value is required']
+    }
+    if (values.start && values.end && values.start > values.end  ) {
+      errors.end = ['End year must be higher than start year']
+    }
+    return errors
+  };
+
   console.debug(props)
   return <Create {...props}>
-      <AreaForm>
+      <AreaForm validate={validateValueInput} >
           <Subheader>Provinces</Subheader>
-          <LongTextInput defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.provinceList" validation={{ id: true }} />
+          <LongTextInput validation={required} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.provinceList" validation={{ id: true }} />
           <Divider />
           <Subheader>Data</Subheader>
           <AutocompleteInput source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />
@@ -79,7 +96,7 @@ export const ModAreasAll = (props) => {
           <NumberInput source="population" defaultValue={+defaultValues.dataPopulation} label="resources.areas.fields.population" />
           <Divider />
           <Subheader>Year Range</Subheader>
-          <NumberInput source="start" defaultValue={defaultValues.yearStart} label="resources.areas.fields.startYear" />
+          <NumberInput validation={required} source="start" defaultValue={defaultValues.yearStart} label="resources.areas.fields.startYear" />
           <NumberInput source="end" defaultValue={defaultValues.yearEnd} label="resources.areas.fields.endYear" />
     </AreaForm>
   </Create>

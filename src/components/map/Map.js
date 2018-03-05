@@ -4,6 +4,7 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
+import { provinceGeojson } from './data/metadata'
 import { provinceCollection, provArea, adjacent, metadata } from './data/datadef'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
@@ -48,16 +49,15 @@ class Map extends Component {
   }
 
   componentDidMount = () => {
+    console.debug("didMount!")
     window.addEventListener('resize', this._resize);
     this._resize();
     // this.restoreFetch = fakeRestServer();
+    // window.addEventListener('load', function() {
+    this._loadGeoJson('provinces', provinceGeojson)
 
-    window.addEventListener('load', function() {
-
-      fetch(properties.chronasApiHost + "/metadata/provinces")
-        .then(res => res.text())
-        .then(res => this._loadGeoJson('provinces', JSON.parse(res)))
-        .then( () => fetch(properties.chronasApiHost + "/areas/123"))
+    console.debug('loaded done')
+      fetch(properties.chronasApiHost + "/areas/" + this.props.selectedYear)
         .then(res => res.text())
         .then( (res) => {
           const areaDefs = JSON.parse(res).data
@@ -82,124 +82,7 @@ class Map extends Component {
             relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
           }
 
-
-          /*
-           layers.push({
-           "id": "realm-lines",
-           "type": "line",
-           "source": "realm-lines",
-           "paint": {
-           'line-color': {
-           'property': 'n',
-           'type': 'categorical',
-           'stops': rulStops,
-           'default': "rgba(1,1,1,0.3)"
-           },
-           'line-width': 6,
-           'line-opacity': .6,
-           'line-blur': 6,
-           // 'fill-outline-color': 'rgba(0,0,0,.2)'
-           }
-           })
-           */
-
-/*
-          layers.push({
-            id: 'ruler-hover',
-            type: 'fill',
-            source: 'provinces',
-            "layout": {
-              "visibility": "none"
-            },
-            paint: {
-              'fill-color': {
-                'property': 'r',
-                'type': 'categorical',
-                'stops': rulStops,
-                'default': "rgba(1,1,1,0.3)"
-              },
-              'fill-opacity': 0.9,
-              'fill-outline-color': 'rgba(0,0,0,.2)'
-            }
-          })
-            // ,
-            // "filter": ["==", "r", ""]
-          // layers.push({
-          //   "id": "area-labels",
-          //   "type": "symbol",
-          //   "source": "area-labels",
-          //   "layout": {
-          //     "symbol-spacing": 100,
-          //     "icon-allow-overlap": false,
-          //     "text-field": "{n}",
-          //     "text-font": ["Cinzel Regular"],
-          //     "text-size": //20//20,//{"type": "identity", "property": "d" }
-          //       {
-          //         "type": "exponential",
-          //         "stops": [
-          //           // zoom is 0 and "rating" is 0 -> circle radius will be 0px
-          //           [{zoom: 0, value: 100}, 0],
-          //
-          //           // zoom is 0 and "rating" is 5 -> circle radius will be 5px
-          //           [{zoom: 0, value: 800}, 2],
-          //
-          //           // zoom is 20 and "rating" is 0 -> circle radius will be 0px
-          //           [{zoom: 20, value: 100}, 50],
-          //
-          //           // zoom is 20 and "rating" is 5 -> circle radius will be 20px
-          //           [{zoom: 20, value: 800}, 250]
-          //
-          //         ], "property": "d"
-          //         // type": "identity", "property": "d" }
-          //       },
-          //     "text-transform": "uppercase",
-          //     // "text-max-width": +"{d}",
-          //     "text-rotate": {"type": "identity", "property": "ro" }
-          //   },
-          //   "paint": {
-          //     "text-color": "#333",
-          //     "text-halo-width": 1,
-          //     "text-halo-blur": 1,
-          //     "text-halo-color": "#FFFBE5"
-          //   }
-          // })
-
-          layers.push({
-            "id": "area-outlines",
-            "type": "line",
-            "source": "area-outlines",
-            "layout": {
-              "visibility": "none"
-            },
-            "paint": {
-              "line-color": {
-                "property": "n",
-                "type": "categorical",
-                "stops": rulStops,
-                "default": "rgba(1,1,1,0.5)"
-              },
-              "line-width": 4,
-              "line-opacity": .6,
-              "line-blur": 2,
-              // "fill-outline-color": "rgba(0,0,0,.2)"
-            }
-          })
-          */
-
           const mapStyle = this.state.mapStyle
-            // .setIn(['layers', areaColorLayerIndex['area-outlines'], 'paint'], fromJS(
-            //   {
-            //     "line-color": {
-            //       "property": "n",
-            //       "type": "categorical",
-            //       "stops": rulStops,
-            //       "default": "rgba(1,1,1,0.5)"
-            //     },
-            //     "line-width": 4,
-            //     "line-opacity": 0.6,
-            //     "line-blur": 2
-            //   }
-            // )
             .setIn(['layers', areaColorLayerIndex['political'], 'paint'], fromJS(
               {
                 'fill-color': {
@@ -225,38 +108,12 @@ class Map extends Component {
               }
             ))
 
-          this.setState({mapStyle});
-
-
-
-          // Update data source
-
-          var delay=100, setTimeoutConst, isActive = false;
-
-          /*
-           map.on("mousemove", "ruler", function(e) {
-           if (!isActive) {
-           isActive = true;
-           map.setFilter("ruler-hover", ["==", "r", (activeYear[e.features[0].properties.name] || [])[0]]);
-           setTimeout(function(){
-           isActive = false;
-           }, delay);
-           }
-           });
-           */
-          /*
-           // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
-           map.on("mouseleave", "ruler", function() {
-           map.setFilter("ruler-hover", ["==", "r", ""]);
-           });
-           */
-
+          this.setState({mapStyle})
           this._simulateYearChange(areaDefs)
           this._changeArea(areaDefs, "political", "political")
         })
 
-    }.bind(this))
-
+    // }.bind(this))
   }
 
   _changeArea = (areaDefs, newLabel, newColor) => {
@@ -305,8 +162,8 @@ class Map extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-
-    const {basemap, activeArea, selectedYear, activeMarkers, selectedItem, modActive, areaData} = this.props;
+    //TODO: move all unneccesary logic to specific components (this gets executed a lot!)
+    const {basemap, activeArea, selectedYear, modActive, activeMarkers, selectedItem} = this.props;
     console.debug("### MAP componentWillReceiveProps", this.props,nextProps)
 
     /** Acting on store changes **/
@@ -326,8 +183,8 @@ class Map extends Component {
 
         this.map.getMap().flyTo({
           center: [
-            randomItem.geometry.coordinates[0][0][0],
-            randomItem.geometry.coordinates[0][0][1]
+            randomItem.geometry.coordinates[0][0],
+            randomItem.geometry.coordinates[0][1]
           ]
         })
 
@@ -335,6 +192,45 @@ class Map extends Component {
         this.props.selectAreaItem(itemId, provinceId) // set query url
         this.props.history.push('/article')
       }
+      else if (selectedItem === "") {
+        // clicked on item!
+        this.setState({
+          mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data', 'features'], []),
+          hoverInfo: null
+        });
+      }
+    }
+
+    // Leaving Area Mod?
+    if (modActive.type === "areas" && nextProps.modActive.type === "") {
+      // reload
+      console.debug("reload year", selectedYear)
+      this._changeYear(nextProps.selectedYear)
+    }
+
+    // Highlight mod area
+    if (nextProps.modActive.type === "areas" && !_.isEqual(modActive.data, nextProps.modActive.data)) {
+      // reload
+      const removedProvinces = _.difference(modActive.data, nextProps.modActive.data);
+      const addedProvinces = _.difference(nextProps.modActive.data, modActive.data);
+
+      removedProvinces.forEach( (removedProv) => {
+        this.setState({ mapStyle: this.state.mapStyle
+          .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== removedProv)))
+        })
+      })
+
+      addedProvinces.forEach( (addedProv) => {
+        // add province
+        const provGeometry = (this.state.mapStyle.getIn(['sources', 'provinces', 'data']).toJS().features.find( (prov) => prov.properties.name === addedProv) || {}).geometry
+        if (typeof provGeometry !== "undefined") {
+          this.setState({ mapStyle: this.state.mapStyle
+            .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.concat({
+              "type": "Feature", "properties": { n: addedProv }, "geometry": provGeometry
+            }))
+          })
+        }
+      })
     }
 
 
@@ -373,15 +269,7 @@ class Map extends Component {
     // Year changed?
     if (selectedYear != nextProps.selectedYear) {
       console.debug("###### Year changed from " + selectedYear + " to " + nextProps.selectedYear)
-      fetch(properties.chronasApiHost + "/areas/-123")
-        .then(res => res.text())
-        .then( (res) => {
-          const areaDefs = JSON.parse(res).data
-          this._simulateYearChange(areaDefs)
-          this._changeArea(areaDefs, "political", "political")
-
-          utilsQuery.updateQueryStringParameter('year', nextProps.selectedYear)
-        })
+      this._changeYear(nextProps.selectedYear)
     }
 
     // Basemap changed?
@@ -491,6 +379,17 @@ class Map extends Component {
       this._renderBasicMarker(markerData, iter)
     ))
   };
+
+  _changeYear = (year) => {
+    fetch(properties.chronasApiHost + "/areas/" + year)
+      .then(res => res.text())
+      .then( (res) => {
+        const areaDefs = JSON.parse(res).data
+        this._simulateYearChange(areaDefs)
+        this._changeArea(areaDefs, "political", "political")
+        utilsQuery.updateQueryStringParameter('year', year)
+      })
+  }
 
   _renderBasicMarker = (markerData, index) => {
     return (

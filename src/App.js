@@ -8,6 +8,8 @@ import { ConnectedRouter } from 'react-router-redux'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
+import { setLoadStatus } from './components/map/data/actionReducers'
+import { initializeData } from './components/map/data/metadata'
 import queryString from 'query-string'
 import {
   defaultTheme,
@@ -94,6 +96,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    initializeData({ setLoadStatus: this.props.setLoadStatus })
     console.debug(history)
     const parsedQuery = queryString.parse(location.search)
     let token = parsedQuery.token
@@ -107,7 +110,6 @@ class App extends Component {
       localStorage.setItem('id', decodedToken.id)
       localStorage.setItem('token', token)
       window.history.pushState(null, null, (target ? (target + '/') : '') + queryString.stringify(parsedQuery) || '/')
-      // history.push('/ttt')// + (target ? (target + '/') : '') + queryString.stringify(parsedQuery))
     } else {
       token = localStorage.getItem('token')
     }
@@ -120,9 +122,9 @@ class App extends Component {
     }
   }
 
-  shouldComponentUpdate () {
-    return false
-  }
+  // shouldComponentUpdate () {
+  //   return false
+  // }
 
   constructor(props) {
     super(props);
@@ -155,6 +157,8 @@ class App extends Component {
       prefixedStyles.content.marginLeft = 0
     }
 
+    console.debug("?loading", this.props.loading)
+
     return (
       <Provider store={this.props.store}>
         <TranslationProvider messages={messages}>
@@ -163,7 +167,7 @@ class App extends Component {
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
                   <div className="body" style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
-                    {createElement(Map, {history: history})}
+                    {this.props.loading ? <span>loading...</span> : createElement(Map, {history: history, loading: this.props.loading})}
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path="/"/>
@@ -206,8 +210,13 @@ class App extends Component {
   }
 }
 
+const mapStateToProps = (state, props) => ({
+  loading: state.loading,
+})
+
 const mapDispatchToProps = {
   setUser,
+  setLoadStatus
 }
 
-export default connect(null, mapDispatchToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(App)
