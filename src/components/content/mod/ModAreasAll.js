@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  AutocompleteInput,
   translate,
   BooleanField,
   Create,
@@ -13,7 +14,7 @@ import {
   Filter,
   FormTab,
   Edit,
-  Delete,
+  Delete,SimpleForm,
   UrlField,
   NullableBooleanInput,
   NumberField,
@@ -33,43 +34,70 @@ import Divider from 'material-ui/Divider';
 import Subheader from 'material-ui/Subheader';
 import ModButton from '../../restricted/shared/buttons/ModButton'
 import AreaForm from '../../restricted/shared/forms/AreaForm'
-import MarkerForm from '../../restricted/shared/forms/MarkerForm'
+import utils from "../../map/utils/general"
+import { metadata } from '../../map/data/datadef'
+
 
 export const ModAreasAll = (props) => {
+  const selectedProvince = props.selectedItem.province
+  // const activeAreaDim = props.activeArea.color
+  // const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
+  // const selectedWiki = (metadata[activeAreaDim][activeprovinceDim] || {})[2]
+
+  const defaultValues = {
+    'provinces': selectedProvince,
+    'dataRuler': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('political')],
+    'dataCulture': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')],
+    'dataReligion': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')],
+    'dataCapital': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('capital')],
+    'dataPopulation': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('population')],
+    'yearStart': props.selectedYear,
+    'yearEnd': props.selectedYear,
+  }
+
+  const choicesRuler = Object.keys(metadata['political']).map((rulerId) => {
+    return { id: rulerId, name: metadata['political'][rulerId][0]}
+  })
+
+  const choicesReligion = Object.keys(metadata['religion']).map((religionId) => {
+    return { id: religionId, name: metadata['religion'][religionId][0]}
+  })
+
   const validateValueInput = (values) => {
     const errors = {};
-    if (!values.ruler &&
-      !values.culture &&
-      !values.religion &&
-      !values.capital &&
-      !values.population) {
-      errors.ruler = ['At least one of ruler, culture, religion, capital or population is required'];
+
+    if (values.ruler === defaultValues.dataRuler &&
+      values.culture === defaultValues.dataCulture &&
+      values.religion === defaultValues.dataReligion &&
+      values.capital === defaultValues.dataCapital &&
+      values.population === defaultValues.dataPopulation) {
+      errors.ruler = ['At least one of ruler, culture, religion, capital or population is required']
     }
     if (!values.start) {
-      errors.start = ['Start value is required'];
+      errors.start = ['Start value is required']
     }
     if (values.start && values.end && values.start > values.end  ) {
-      errors.end = ['End year must be higher than start year'];
+      errors.end = ['End year must be higher than start year']
     }
     return errors
   };
 
-
+  console.debug(props)
   return <Create {...props}>
-    <AreaForm  validate={validateValueInput} redirect="list" {...props}>
-        <Subheader>Provinces</Subheader>
-        <LongTextInput source="provinces" label="resources.areas.provinceList" validation={required} onChange={(val,v) => { props.setModData(v)}} />
-      <Divider />
-        <Subheader>Data</Subheader>
-        <TextInput source="ruler" label="resources.areas.fields.ruler" />
-        <TextInput source="culture" label="resources.areas.fields.culture" />
-        <TextInput source="religion" label="resources.areas.fields.religion" />
-        <TextInput source="capital" label="resources.areas.fields.capital" />
-        <NumberInput source="population" label="resources.areas.fields.population" />
-      <Divider />
-        <Subheader>Year Range</Subheader>
-        <NumberInput source="start" defaultValue={props.selectedYear} validation={required} label="resources.areas.fields.start_year" />
-        <NumberInput source="end" label="resources.areas.fields.end_year" />
+      <AreaForm validate={validateValueInput} >
+          <Subheader>Provinces</Subheader>
+          <LongTextInput validation={required} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.provinceList" validation={{ id: true }} />
+          <Divider />
+          <Subheader>Data</Subheader>
+          <AutocompleteInput source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />
+          <TextInput source="culture" defaultValue={defaultValues.dataCulture} label="resources.areas.fields.culture" />
+          <AutocompleteInput source="religion" choices={choicesReligion} label="resources.areas.fields.religion" defaultValue={defaultValues.dataReligion} />
+          <TextInput source="capital" defaultValue={defaultValues.dataCapital} label="resources.areas.fields.capital" />
+          <NumberInput source="population" defaultValue={+defaultValues.dataPopulation} label="resources.areas.fields.population" />
+          <Divider />
+          <Subheader>Year Range</Subheader>
+          <NumberInput validation={required} source="start" defaultValue={defaultValues.yearStart} label="resources.areas.fields.startYear" />
+          <NumberInput source="end" defaultValue={defaultValues.yearEnd} label="resources.areas.fields.endYear" />
     </AreaForm>
   </Create>
 };

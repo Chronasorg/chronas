@@ -8,12 +8,9 @@ import { ConnectedRouter } from 'react-router-redux'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
-import Menu from './components/menu/Menu'
-import Map from './components/map/Map'
-import LayerContent from './components/menu/layers/LayersContent'
-import RightContent from './components/content/Content'
 import { setLoadStatus } from './components/map/data/actionReducers'
 import { initializeData } from './components/map/data/metadata'
+import queryString from 'query-string'
 import {
   defaultTheme,
   Delete,
@@ -21,15 +18,16 @@ import {
   Restricted,
   TranslationProvider,
 } from 'admin-on-rest'
+import Menu from './components/menu/Menu'
+import Map from './components/map/Map'
+import LayerContent from './components/menu/layers/LayersContent'
 import CrudRoute from './components/restricted/shared/CrudRoute'
 import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
-import RightDrawer from './components/content/RightDrawer'
 
 // translations
 import messages from './translations'
 import { history } from './store/createStore'
-
 import Account from './components/menu/account/Account'
 import Configuration from './components/menu/configuration/Configuration'
 import RightDrawerRoutes from './components/content/RightDrawerRoutes'
@@ -37,6 +35,8 @@ import Discover from './components/menu/discover/Discover'
 import Login from './components/menu/authentication/Login'
 import CustomTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
+
+import utilsQuery from './components/map/utils/query'
 
 const styles = {
   wrapper: {
@@ -82,12 +82,43 @@ class App extends Component {
     // routes: PropTypes.object.isRequired,
   }
 
+  componentWillMount() {
+
+    // initialize queryparameters
+    window.history.pushState('', '',
+      '?year=' + (utilsQuery.getURLParameter('year') || 1000) +
+      '&type=' + (utilsQuery.getURLParameter('type') || '') +
+      '&fill=' + (utilsQuery.getURLParameter('fill') || '') +
+      '&label=' + (utilsQuery.getURLParameter('label') || '') +
+      '&province=' + (utilsQuery.getURLParameter('province') || '') +
+      '&wiki=' + (utilsQuery.getURLParameter('wiki') || '')
+    + window.location.hash)
+  }
+
   componentDidMount() {
     initializeData({ setLoadStatus: this.props.setLoadStatus })
-    const token = localStorage.getItem('token')
+    console.debug(history)
+    const parsedQuery = queryString.parse(location.search)
+    let token = parsedQuery.token
+
+    if (typeof token !== "undefined") {
+      delete parsedQuery.token
+      let target = parsedQuery.target
+      delete parsedQuery.target
+
+      const decodedToken = decodeJwt(token)
+      localStorage.setItem('id', decodedToken.id)
+      localStorage.setItem('token', token)
+      window.history.pushState(null, null, (target ? (target + '/') : '') + queryString.stringify(parsedQuery) || '/')
+    } else {
+      token = localStorage.getItem('token')
+    }
+
     if (token) {
       const decodedToken = decodeJwt(token)
-      this.props.setUser(token, decodedToken.username, decodedToken.privilege)
+      localStorage.setItem('id', decodedToken.id)
+      localStorage.setItem('token', token)
+      this.props.setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege)
     }
   }
 
@@ -140,11 +171,15 @@ class App extends Component {
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path="/"/>
-                        <Route exact path="/account" component={Account} />
                         <Route exact path="/configuration" component={Configuration} />
                         <Route exact path="/discover" component={Discover} />
                         <Route exact path="/login" component={Login} />
+                      </Switch>
+                      <Switch>
                         <CrudRoute history={history}/>
+                      </Switch>
+                      <Switch>
+                        <Account history={history}/>
                       </Switch>
                       <Switch>
                         <RightDrawerRoutes history={history}/>

@@ -3,7 +3,9 @@ export default {
       logged_in: 'Logged in',
       logged_out: 'Logged out',
       login: 'Login',
-      logout: 'Logout'
+      logout: 'Logout',
+      sign_in: 'Sign In',
+      sign_up: 'Join'
     },
     pos: {
       areas: 'Areas',
@@ -45,31 +47,44 @@ export default {
               demo_button: 'Source for this demo',
           },
       },
+      welcome: 'Welcome',
     },
     resources: {
-        users: {
-            name: 'User |||| Users',
-            fields: {
-                username: 'Username',
-                name: 'Name',
-                createdAt: 'Created at',
-                education: 'Education',
-                email: 'Email',
-                privilege: 'Privilege',
-                karma: 'Karma',
-            },
-            tabs: {
-                identity: 'Identity',
-                address: 'Address',
-                orders: 'Orders',
-                reviews: 'Reviews',
-                stats: 'Stats',
-            },
-            page: {
-                delete: 'Delete Customer',
-            },
+      areas: {
+        fields: {
+          provinceList: 'Apply to provinces',
+          ruler: 'Ruler',
+          culture: 'Culture',
+          religion: 'Religion',
+          capital: 'Capital',
+          population: 'Population',
+          startYear: 'From Year',
+          endYear: 'Until Year'
+        }
+      },
+      users: {
+          name: 'User |||| Users',
+          fields: {
+              username: 'Username',
+              name: 'Name',
+              createdAt: 'Created at',
+              education: 'Education',
+              email: 'Email',
+              privilege: 'Privilege',
+              karma: 'Karma',
+          },
+          tabs: {
+              identity: 'Identity',
+              address: 'Address',
+              orders: 'Orders',
+              reviews: 'Reviews',
+              stats: 'Stats',
+          },
+          page: {
+              delete: 'Delete Customer',
+          },
 
-        },
+      },
       page: {
         delete: 'Delete',
       },
@@ -115,92 +130,92 @@ export default {
           entityId: 'Entity Id',
         },
       },
-        commands: {
-            name: 'Order |||| Orders',
-            fields: {
-                basket: {
-                    delivery: 'Delivery',
-                    reference: 'Reference',
-                    quantity: 'Quantity',
-                    sum: 'Sum',
-                    tax_rate: 'Tax Rate',
-                    total: 'Total',
-                    unit_price: 'Unit Price',
-                },
-                customer_id: 'Customer',
-                date_gte: 'Passed Since',
-                date_lte: 'Passed Before',
-                total_gte: 'Min amount',
-            },
-        },
-        products: {
-            name: 'Poster |||| Posters',
-            fields: {
-                category_id: 'Category',
-                height_gte: 'Min height',
-                height_lte: 'Max height',
-                height: 'Height',
-                image: 'Image',
-                price: 'Price',
-                reference: 'Reference',
-                stock_lte: 'Low Stock',
-                stock: 'Stock',
-                thumbnail: 'Thumbnail',
-                width_gte: 'Min width',
-                width_lte: 'mx_width',
-                width: 'Width',
-            },
-            tabs: {
-                image: 'Image',
-                details: 'Details',
-                description: 'Description',
-                reviews: 'Reviews',
-            },
-        },
-        categories: {
-            name: 'Category |||| Categories',
-            fields: {
-                products: 'Products',
-            },
+      commands: {
+          name: 'Order |||| Orders',
+          fields: {
+              basket: {
+                  delivery: 'Delivery',
+                  reference: 'Reference',
+                  quantity: 'Quantity',
+                  sum: 'Sum',
+                  tax_rate: 'Tax Rate',
+                  total: 'Total',
+                  unit_price: 'Unit Price',
+              },
+              customer_id: 'Customer',
+              date_gte: 'Passed Since',
+              date_lte: 'Passed Before',
+              total_gte: 'Min amount',
+          },
+      },
+      products: {
+          name: 'Poster |||| Posters',
+          fields: {
+              category_id: 'Category',
+              height_gte: 'Min height',
+              height_lte: 'Max height',
+              height: 'Height',
+              image: 'Image',
+              price: 'Price',
+              reference: 'Reference',
+              stock_lte: 'Low Stock',
+              stock: 'Stock',
+              thumbnail: 'Thumbnail',
+              width_gte: 'Min width',
+              width_lte: 'mx_width',
+              width: 'Width',
+          },
+          tabs: {
+              image: 'Image',
+              details: 'Details',
+              description: 'Description',
+              reviews: 'Reviews',
+          },
+      },
+      categories: {
+          name: 'Category |||| Categories',
+          fields: {
+              products: 'Products',
+          },
 
-        },
-        reviews: {
-            name: 'Review |||| Reviews',
-            fields: {
-                customer_id: 'Customer',
-                command_id: 'Order',
-                product_id: 'Product',
-                date_gte: 'Posted since',
-                date_lte: 'Posted before',
-                date: 'Date',
-                comment: 'Comment',
-                rating: 'Rating',
-            },
-            action: {
-                accept: 'Accept',
-                reject: 'Reject',
-            },
-            notification: {
-                approved_success: 'Review approved',
-                approved_error: 'Error: Review not approved',
-                rejected_success: 'Review rejected',
-                rejected_error: 'Error: Review not rejected',
-            },
-        },
-        segments: {
-            name: 'Segments',
-            fields: {
-                customers: 'Customers',
-                name: 'Name',
-            },
-            data: {
-                compulsive: 'Compulsive',
-                collector: 'Collector',
-                ordered_once: 'Ordered once',
-                regular: 'Regular',
-                returns: 'Returns',
-                reviewer: 'Reviewer',
-            },
-        },
+      },
+      reviews: {
+          name: 'Review |||| Reviews',
+          fields: {
+              customer_id: 'Customer',
+              command_id: 'Order',
+              product_id: 'Product',
+              date_gte: 'Posted since',
+              date_lte: 'Posted before',
+              date: 'Date',
+              comment: 'Comment',
+              rating: 'Rating',
+          },
+          action: {
+              accept: 'Accept',
+              reject: 'Reject',
+          },
+          notification: {
+              approved_success: 'Review approved',
+              approved_error: 'Error: Review not approved',
+              rejected_success: 'Review rejected',
+              rejected_error: 'Error: Review not rejected',
+          },
+      },
+      segments: {
+          name: 'Segments',
+          fields: {
+              customers: 'Customers',
+              name: 'Name',
+          },
+          data: {
+              compulsive: 'Compulsive',
+              collector: 'Collector',
+              ordered_once: 'Ordered once',
+              regular: 'Regular',
+              returns: 'Returns',
+              reviewer: 'Reviewer',
+          },
+      },
     },
 };

@@ -11,7 +11,7 @@ import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import properties from '../../../../../src/properties'
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
-import { setModType as setModTypeAction, addModData as addModDataAction } from '../buttons/actionReducers'
+import { setModType , setModData } from '../buttons/actionReducers'
 
 const formStyle = { padding: '0 1em 1em 1em' };
 
@@ -41,12 +41,14 @@ export class AreaForm extends Component {
   }
 
   componentWillUnmount() {
-    const { setModType } = this.props;
+    const { setModType } = this.props
     setModType("")
   }
 
   componentDidMount() {
-    const { setModType } = this.props;
+    const { setModType, selectedItem, setModData } = this.props
+    const selectedProvince = selectedItem.province
+    if (selectedProvince) setModData([selectedProvince])
     setModType("areas")
 
     const currLocation = this.props.location.pathname
@@ -115,17 +117,18 @@ AreaForm.defaultProps = {
 
 const enhance = compose(
   connect((state, props) => ({
-    initialValues: getDefaultValues(state, props),
-    modActive: state.modActive,
-    selectedYear: state.selectedYear,
-  }),
+      initialValues: getDefaultValues(state, props),
+      modActive: state.modActive,
+      selectedYear: state.selectedYear,
+      selectedItem: state.selectedItem,
+    }),
     {
-      setModType: setModTypeAction,
-      addModData: addModDataAction
+      setModType,
+      setModData
     }),
   reduxForm({
     form: 'record-form',
     enableReinitialize: true,
   }),
-);
-export default enhance(AreaForm);
+)
+export default enhance(AreaForm)

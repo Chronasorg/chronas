@@ -4,13 +4,15 @@ import IconButton from 'material-ui/IconButton';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import LayersIcon from 'material-ui/svg-icons/maps/layers';
 import { Link } from 'react-router-dom';
-import pure from 'recompose/pure';
+import pure from 'recompose/pure'
 import { connect } from 'react-redux'
-import compose from 'recompose/compose';
-import { translate, defaultTheme } from 'admin-on-rest';
-import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers';
+import compose from 'recompose/compose'
+import { translate, defaultTheme } from 'admin-on-rest'
+import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
+import { provinceCollection, provArea, adjacent, metadata } from '../map/data/datadef'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
+import utils from '../map/utils/general'
 
 const styles = {
   main: {
@@ -25,12 +27,18 @@ const styles = {
     padding: '2px 8px',
     border: 'none'
   }
-};
+}
 
 const Content = (props) => {
+
+  const selectedProvince = props.selectedItem.province
+  const activeAreaDim = props.activeArea.color
+  const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
+  const selectedWiki = (metadata[activeAreaDim][activeprovinceDim] || {})[2]
+
   console.debug("props", props)
   return <div style={styles.main}>
-    <iframe style={styles.iframe} src={"http://en.wikipedia.org/wiki/" + props.match.params.id + "?printable=yes"}
+    <iframe style={styles.iframe} src={"http://en.wikipedia.org/wiki/" + selectedWiki + "?printable=yes"}
             height="100%" frameBorder="0"></iframe>
   </div>
 };
@@ -48,6 +56,7 @@ const enhance = compose(
     theme: state.theme,
     locale: state.locale,
     selectedItem: state.selectedItem,
+    activeArea: state.activeArea,
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
     toggleRightDrawer: toggleRightDrawerAction,

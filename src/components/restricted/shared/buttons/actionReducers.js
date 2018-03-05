@@ -7,9 +7,9 @@ export const ADD_MODDATA = 'ADD_MODDATA';
 
 /** Actions **/
 
-export const setModType = modType => ({
+export const setModType = (modType, data) => ({
   type: SET_MODACTIVE,
-  payload: modType,
+  payload: [modType, data],
 });
 
 export const setModData = modData => ({
@@ -44,15 +44,20 @@ export const modActiveReducer = (defaultState = { 'data': [], 'type': ''}) => (
   (previousState = defaultState, { type, payload }) => {
     switch (type) {
       case SET_MODACTIVE:
-        if (payload === '')
+        if (payload[0] === '')
           return {
             data: [],
-            type: payload
+            type: payload[0]
+          };
+        else if (typeof payload[1] !== 'undefined')
+          return {
+            data: payload[1],
+            type: payload[0]
           };
         else
           return {
             ...previousState,
-            type: payload
+            type: payload[0]
           };
       case SET_MODDATA:
         return {

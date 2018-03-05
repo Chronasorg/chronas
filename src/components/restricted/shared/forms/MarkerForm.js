@@ -19,7 +19,6 @@ export class SimpleForm extends Component {
       this.props.save(values, redirect)
     });
 
-
   componentWillReceiveProps(nextProps) {
     if (this.props.modActive.data[0] !== nextProps.modActive.data[0])
       this.props.change ("geo[0]" , nextProps.modActive.data[0] )

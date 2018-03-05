@@ -19,4 +19,4 @@ export const initializeData = (props) => {
     })
 
   return 1
-};
+}

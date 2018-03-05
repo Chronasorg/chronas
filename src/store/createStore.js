@@ -6,12 +6,12 @@ import { updateLocation } from './location'
 import jsonServerRestClient from '../restInterface/jsonServer'
 import createHistory from 'history/createHashHistory'
 import authClient from '../components/menu/authentication/authClient'
-import { crudSaga, declareResources, fetchUtils } from 'admin-on-rest';
+import { crudSaga, declareResources, fetchUtils } from 'admin-on-rest'
 import { routerMiddleware } from 'react-router-redux'
-import { fork } from 'redux-saga/effects';
+import { fork } from 'redux-saga/effects'
 import properties from '../properties'
 
-export const history = createHistory();
+export const history = createHistory()
 
 const createStore = (initialState = {}) => {
   // ======================================================

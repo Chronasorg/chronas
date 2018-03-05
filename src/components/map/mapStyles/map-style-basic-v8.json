@@ -43,6 +43,13 @@
         "features": [ ]
       }
     },
+    "area-mod": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [ ]
+      }
+    },
     "markers": {
       "cluster": true,
       "clusterMaxZoom": 14,
@@ -132,6 +139,15 @@
       "paint": {
         "fill-color": "black",
         "fill-opacity": 0.2
+      }
+    },
+    {
+      "id": "area-mod",
+      "type": "fill",
+      "source": "area-mod",
+      "paint": {
+        "fill-color": "black",
+        "fill-opacity": 0.8
       }
     },
     {
