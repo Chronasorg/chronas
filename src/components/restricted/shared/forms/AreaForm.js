@@ -1,29 +1,43 @@
-import React, { Children, Component } from 'react';
-import PropTypes from 'prop-types';
-import { reduxForm } from 'redux-form';
-import { connect } from 'react-redux';
-import compose from 'recompose/compose';
-// import getDefaultValues from './getDefaultValues';
-// import FormInput from './FormInput';
-// import Toolbar from './Toolbar';
-import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
-import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
-import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
+import React, { Children, Component } from 'react'
+import PropTypes from 'prop-types'
+import { reduxForm } from 'redux-form'
+import { connect } from 'react-redux'
+import compose from 'recompose/compose'
+// import getDefaultValues from './getDefaultValues'
+// import FormInput from './FormInput'
+// import Toolbar from './Toolbar'
+import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
+import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
+import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
+import properties from '../../../../../src/properties'
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
-import { setModType as setModTypeAction } from '../buttons/actionReducers'
+import { setModType as setModTypeAction, addModData as addModDataAction } from '../buttons/actionReducers'
 
 const formStyle = { padding: '0 1em 1em 1em' };
 
 export class AreaForm extends Component {
-  handleSubmitWithRedirect = (redirect = this.props.redirect, value) => {
+  handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      this.props.save(values, redirect)
+      const token = localStorage.getItem('token');
+      fetch(properties.chronasApiHost + "/areas", {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        //make sure to serialize your JSON body
+        body: JSON.stringify(values)
+      })
+      // this.props.save(values, redirect)
     });
-  }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.modActive.type === "areas" && this.props.modActive.data.length !== nextProps.modActive.data.length)
+    if (this.props.modActive.type === "areas" && this.props.modActive.data.length !== nextProps.modActive.data.length) {
       this.props.change ("provinces" , nextProps.modActive.data )
+    }
+    if (this.props.selectedYear !== nextProps.selectedYear)
+      this.props.change ("start" , nextProps.selectedYear )
   }
 
   componentWillUnmount() {
@@ -34,6 +48,13 @@ export class AreaForm extends Component {
   componentDidMount() {
     const { setModType } = this.props;
     setModType("areas")
+
+    const currLocation = this.props.location.pathname
+    const selectedProvinces = currLocation.split("/mod/areas/")[1]
+    if (typeof selectedProvinces !== "undefined" && selectedProvinces !== "") {
+      this.props.change ("provinces" , selectedProvinces)
+      selectedProvinces.split(",").forEach( (prov) => this.props.addModData(prov) )
+    }
   }
 
   render() {
@@ -96,8 +117,12 @@ const enhance = compose(
   connect((state, props) => ({
     initialValues: getDefaultValues(state, props),
     modActive: state.modActive,
+    selectedYear: state.selectedYear,
+  }),
+    {
+      setModType: setModTypeAction,
+      addModData: addModDataAction
     }),
-    { setModType: setModTypeAction }),
   reduxForm({
     form: 'record-form',
     enableReinitialize: true,

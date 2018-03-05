@@ -12,6 +12,8 @@ import Menu from './components/menu/Menu'
 import Map from './components/map/Map'
 import LayerContent from './components/menu/layers/LayersContent'
 import RightContent from './components/content/Content'
+import { setLoadStatus } from './components/map/data/actionReducers'
+import { initializeData } from './components/map/data/metadata'
 import {
   defaultTheme,
   Delete,
@@ -81,6 +83,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    initializeData({ setLoadStatus: this.props.setLoadStatus })
     const token = localStorage.getItem('token')
     if (token) {
       const decodedToken = decodeJwt(token)
@@ -88,9 +91,9 @@ class App extends Component {
     }
   }
 
-  shouldComponentUpdate () {
-    return false
-  }
+  // shouldComponentUpdate () {
+  //   return false
+  // }
 
   constructor(props) {
     super(props);
@@ -123,6 +126,8 @@ class App extends Component {
       prefixedStyles.content.marginLeft = 0
     }
 
+    console.debug("?loading", this.props.loading)
+
     return (
       <Provider store={this.props.store}>
         <TranslationProvider messages={messages}>
@@ -131,7 +136,7 @@ class App extends Component {
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
                   <div className="body" style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
-                    {createElement(Map, {history: history})}
+                    {this.props.loading ? <span>loading...</span> : createElement(Map, {history: history, loading: this.props.loading})}
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path="/"/>
@@ -170,8 +175,13 @@ class App extends Component {
   }
 }
 
+const mapStateToProps = (state, props) => ({
+  loading: state.loading,
+})
+
 const mapDispatchToProps = {
   setUser,
+  setLoadStatus
 }
 
-export default connect(null, mapDispatchToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(App)

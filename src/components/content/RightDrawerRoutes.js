@@ -1,11 +1,14 @@
 import React, { createElement, PureComponent } from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
+import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import FontIcon from 'material-ui/FontIcon'
+import CloseIcon from 'material-ui/svg-icons/content/clear'
 import { Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { Restricted, translate } from 'admin-on-rest'
@@ -14,6 +17,7 @@ import {grey600, grey400, chronasDark} from '../../styles/chronasColors'
 import Responsive from '../menu/Responsive'
 import Content from './Content'
 import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../restricted/users'
+import { ModAreasAll } from './mod/ModAreasAll'
 import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
 // import MarkerCreate from '../restricted/markers/MarkerCreate'
@@ -21,8 +25,9 @@ import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIco
 import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from './actionReducers'
 import { ModHome } from './mod/ModHome'
-import { ModAreasAll } from './mod/ModAreasAll'
 import { setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
+import { tooltip } from '../../styles/chronasStyleComponents'
+import { chronasMainColor } from '../../styles/chronasColors'
 
 const styles = {
   menuButtons: {
@@ -62,9 +67,7 @@ class RightDrawerRoutes extends PureComponent {
     console.debug("### componentDidMount rightDrawerOpen", this.props)
   }
 
-
   componentWillReceiveProps(nextProps) {
-
     const {rightDrawerOpen} = this.props
     console.debug("### MAP rightDrawerOpen", this.props,nextProps)
 
@@ -99,7 +102,7 @@ class RightDrawerRoutes extends PureComponent {
 
   render() {
     console.debug("### render rightDrawerOpen", this.props)
-    const { list, create, edit, show, remove, options, onMenuTap, translate, setModDataLng, setModDataLat } = this.props
+    const { list, create, edit, show, remove, options, onMenuTap, translate, selectedYear, setModDataLng, setModDataLat } = this.props
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
     const { rightDrawerOpen, setRightDrawerVisibility, children, muiTheme } = this.props
@@ -140,13 +143,25 @@ class RightDrawerRoutes extends PureComponent {
                 style={{backgroundColor: '#fff'}}
                 iconElementRight={
                   <div>
+                    <IconButton
+                      key={'mod'}
+                      containerElement={<Link to={"/mod/areas/" + this.props.selectedItem} />}
+                      tooltipPosition="bottom-right"
+                      tooltip={translate('pos.mod')}
+                      tooltipStyles={tooltip}
+                    >
+                      <EditIcon
+                        hoverColor={chronasMainColor}/>
+                    </IconButton>
+
                     <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
                                 onClick={() => this.handleBack()}>
                       <FontIcon className="fa fa-chevron-left"/>
                     </IconButton>
                     <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
                               onClick={() => this.handleClose()}>
-                    <FontIcon className="fa fa-chevron-right"/>
+                      <CloseIcon
+                        hoverColor={chronasMainColor}/>
                   </IconButton>
                   </div>
                 }
@@ -161,7 +176,6 @@ class RightDrawerRoutes extends PureComponent {
       )
       return RestrictedPage
     }
-
 
     return (
       <div>
@@ -217,7 +231,7 @@ class RightDrawerRoutes extends PureComponent {
               <Route
                 exact
                 path={'/mod/' + resourceKey}
-                render={restrictPage(resources[resourceKey].edit, 'edit', commonProps)}
+                render={restrictPage(resources[resourceKey].edit, 'edit',Object.assign({}, commonProps, { selectedYear: selectedYear }))}
               />
             )}
             {resources[resourceKey].show && (
@@ -241,14 +255,14 @@ class RightDrawerRoutes extends PureComponent {
   }
 }
 
-
 const mapStateToProps = (state, props) => ({
   modActive: state.modActive,
   rightDrawerOpen: state.rightDrawerOpen,
   locale: state.locale, // force redraw on locale change
   theme: props.theme, // force redraw on theme changes
-});
-
+  selectedYear: state.selectedYear,
+  selectedItem: state.selectedItem,
+})
 
 const enhance = compose(
   connect(mapStateToProps,
@@ -262,4 +276,4 @@ const enhance = compose(
   translate,
 )
 
-export default enhance(RightDrawerRoutes);
+export default enhance(RightDrawerRoutes)

@@ -1,4 +1,5 @@
-import { provinceCollection, provArea, adjacent, relPlus, rulPlus } from './data/datadef'
+import { provArea, adjacent } from './data/datadef'
+import { relPlus, rulPlus, provinceGeojson } from './data/metadata'
 import * as scale from 'd3-scale'
 
 const turf = require('@turf/turf');
@@ -322,15 +323,15 @@ const utils = {
               groups[key][i1] = [];
               polyGroups[key][i1] = [];
             }
-            groups[key][i1].push(provinceCollection.features[myId[key][i1][i2]].geometry.coordinates[0])
-            polyGroups[key][i1].push(provinceCollection.features[myId[key][i1][i2]])
+            groups[key][i1].push(provinceGeojson.features[myId[key][i1][i2]].geometry.coordinates[0])
+            polyGroups[key][i1].push(provinceGeojson.features[myId[key][i1][i2]])
           }
           else {
             groups[key] = [
-              [provinceCollection.features[myId[key][i1][i2]].geometry.coordinates[0]]
+              [provinceGeojson.features[myId[key][i1][i2]].geometry.coordinates[0]]
             ];
             polyGroups[key] = [
-              [provinceCollection.features[myId[key][i1][i2]]]
+              [provinceGeojson.features[myId[key][i1][i2]]]
             ];
           }
         }
@@ -402,9 +403,9 @@ const utils = {
    switch (activeAreaFeat) {
    case "country":
 
-   for (var i = 0; i < provinceCollection.features.length; i++) {
+   for (var i = 0; i < provinceGeojson.features.length; i++) {
    tmpCountry = "undefined";
-   tmpProv = provinceCollection.features[i].properties.name;
+   tmpProv = provinceGeojson.features[i].properties.name;
 
    if (activeYear.hasOwnProperty(tmpProv)) {
    tmpCountry = activeYear[tmpProv][0];
@@ -412,9 +413,9 @@ const utils = {
 
 
    if (tmpCountry != "undefined")
-   provinceCollection.features[i].properties.Acolor = rulPlus[tmpCountry][1];
+   provinceGeojson.features[i].properties.Acolor = rulPlus[tmpCountry][1];
    else {
-   provinceCollection.features[i].properties.Acolor = undefinedColor;
+   provinceGeojson.features[i].properties.Acolor = undefinedColor;
    }
 
    }
@@ -423,27 +424,27 @@ const utils = {
    break;
    case "culture":
 
-   for (var i = 0; i < provinceCollection.features.length; i++) {
-   provinceCollection.features[i].properties.Acolor = (culPlus[provinceCollection.features[i].properties.Cul] !== undefined) ? culPlus[provinceCollection.features[i].properties.Cul][1] : undefinedColor;
+   for (var i = 0; i < provinceGeojson.features.length; i++) {
+   provinceGeojson.features[i].properties.Acolor = (culPlus[provinceGeojson.features[i].properties.Cul] !== undefined) ? culPlus[provinceGeojson.features[i].properties.Cul][1] : undefinedColor;
    }
    //        activeFeatureCollection = jQuery.extend({}, culArea);
    break;
    case "religion":
 
-   for (var i = 0; i < provinceCollection.features.length; i++) {
+   for (var i = 0; i < provinceGeojson.features.length; i++) {
 
-   provinceCollection.features[i].properties.Acolor = (relPlus[provinceCollection.features[i].properties.Rel] !== undefined) ? relPlus[provinceCollection.features[i].properties.Rel][1] : undefinedColor;
+   provinceGeojson.features[i].properties.Acolor = (relPlus[provinceGeojson.features[i].properties.Rel] !== undefined) ? relPlus[provinceGeojson.features[i].properties.Rel][1] : undefinedColor;
    }
    break;
 
 
    case "religionGeneral":
 
-   for (var i = 0; i < provinceCollection.features.length; i++) {
+   for (var i = 0; i < provinceGeojson.features.length; i++) {
 
-   provinceCollection.features[i].properties.Acolor =
-   (relGen[provinceCollection.features[i].properties.Rel] !== undefined)
-   ? relGen[provinceCollection.features[i].properties.Rel][1]
+   provinceGeojson.features[i].properties.Acolor =
+   (relGen[provinceGeojson.features[i].properties.Rel] !== undefined)
+   ? relGen[provinceGeojson.features[i].properties.Rel][1]
    : undefinedColor;
    }
 
@@ -452,16 +453,16 @@ const utils = {
    case "population":
 
    var max = 1000;
-   for (var i = 0; i < provinceCollection.features.length; i++) {
-   if (provinceCollection.features[i].properties.Pop > max)
-   max = provinceCollection.features[i].properties.Pop;
+   for (var i = 0; i < provinceGeojson.features.length; i++) {
+   if (provinceGeojson.features[i].properties.Pop > max)
+   max = provinceGeojson.features[i].properties.Pop;
    }
    max = Math.log(max / 1000);
    var fraction = 0
-   for (var i = 0; i < provinceCollection.features.length; i++) {
-   fraction = Math.log(provinceCollection.features[i].properties.Pop / 1000) / max;
+   for (var i = 0; i < provinceGeojson.features.length; i++) {
+   fraction = Math.log(provinceGeojson.features[i].properties.Pop / 1000) / max;
 
-   provinceCollection.features[i].properties.Acolor = "rgb(" + Math.round(200 + fraction * 55) + "," + Math.round(200 - fraction * 200) + "," + Math.round(200 - fraction * 200) + ")";
+   provinceGeojson.features[i].properties.Acolor = "rgb(" + Math.round(200 + fraction * 55) + "," + Math.round(200 - fraction * 200) + "," + Math.round(200 - fraction * 200) + ")";
    }
    //         activeFeatureCollection = jQuery.extend({}, popArea);
    break;
@@ -494,7 +495,7 @@ const utils = {
 
       var tmpProv, tmpCountry, tmpRel, tmpCul, tmpPop, tmpCap, tmpCoo;
 
-      for (var i = 0; i < provinceCollection.features.length; i++) {  //tmpLength
+      for (var i = 0; i < provinceGeojson.features.length; i++) {  //tmpLength
 
         tmpCoo = undefined;
         tmpCountry = undefined;
@@ -503,8 +504,8 @@ const utils = {
         tmpPop = undefined;
         tmpCap = undefined;
 
-        tmpProv = provinceCollection.features[i].properties.name;
-        tmpCoo = provinceCollection.features[i].geometry.coordinates[0];
+        tmpProv = provinceGeojson.features[i].properties.name;
+        tmpCoo = provinceGeojson.features[i].geometry.coordinates[0];
 
 
         if (areaDefs.hasOwnProperty(tmpProv)) {
@@ -514,16 +515,16 @@ const utils = {
           tmpCap = areaDefs[tmpProv][3];
           tmpPop = areaDefs[tmpProv][4];
 
-          provinceCollection.features[i].properties.Cul = tmpCul;
-          provinceCollection.features[i].properties.Rel = tmpRel;
-          provinceCollection.features[i].properties.Pop = tmpPop;
-          provinceCollection.features[i].properties.Cap = tmpCap;
+          provinceGeojson.features[i].properties.Cul = tmpCul;
+          provinceGeojson.features[i].properties.Rel = tmpRel;
+          provinceGeojson.features[i].properties.Pop = tmpPop;
+          provinceGeojson.features[i].properties.Cap = tmpCap;
 
           if (this.activeTextFeat == "political" && rulPlus[tmpCountry]) {
-            provinceCollection.features[i].properties.nameLabel = rulPlus[tmpCountry][0];
+            provinceGeojson.features[i].properties.nameLabel = rulPlus[tmpCountry][0];
           }
           else if (this.activeTextFeat == "religion" && relPlus[tmpCountry]) {
-            provinceCollection.features[i].properties.nameLabel = relPlus[tmpCountry][0];
+            provinceGeojson.features[i].properties.nameLabel = relPlus[tmpCountry][0];
           }
         }
 
