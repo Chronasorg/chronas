@@ -81,17 +81,18 @@ export const ModMetaAdd = (props) => {
 
     // displayname and wiki must be unique
 
+    console.debug(values)
+
     const errors = {}
 
-    if (values.ruler === defaultValues.dataRuler &&
-      values.culture === defaultValues.dataCulture &&
-      values.religion === defaultValues.dataReligion &&
-      values.capital === defaultValues.dataCapital &&
-      values.population === defaultValues.dataPopulation) {
-      errors.ruler = ['At least one of ruler, culture, religion, capital or population is required']
+    if (values.url === '') {
+      errors.url = ["This url already exists, if you like to edit an existing resource click Edit Meta on top."]
     }
-    if (!values.start) {
-      errors.start = ['Start value is required']
+    if (values.name === '') {
+      errors.name = ["This name already exists, if you like to edit an existing resource click Edit Meta on top."]
+    }
+    if (!values.color) {
+      errors.color = ['Color value is required']
     }
 
     return errors
@@ -101,10 +102,10 @@ export const ModMetaAdd = (props) => {
     'ruler':
       <MetaForm validate={validateValueInput} {...props} >
         <SelectInput validate={required} source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-      <AutocompleteDisallowInput validate={required}  source="name" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.display_name" />
-      {/*<AutocompleteInput validate={required} source="parentname" choices={choicesMainRuler} label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues.dataReligion} />*/}
-      <ColorInput validate={required} source="color" label="resources.areas.fields.color" picker="Circle"/>
-      <AutocompleteDisallowInput validate={required} source="url" choices={choicesReligion} label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataReligion} />
+        <AutocompleteDisallowInput source="name" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.display_name" />
+        {/*<AutocompleteInput validate={required} source="parentname" choices={choicesMainRuler} label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues.dataReligion} />*/}
+        <ColorInput source="color" label="resources.areas.fields.color" picker="Circle" />
+        <AutocompleteDisallowInput source="url" choices={choicesReligion} defaultValue={defaultValues.dataReligion} label="resources.areas.fields.wiki_url" />
     </MetaForm>,
     'religion':
       <MetaForm validate={validateValueInput} {...props} >

@@ -72,10 +72,16 @@ import { FieldTitle, translate} from 'admin-on-rest'
  * <AutocompleteDisallowInput source="author_id" options={{ fullWidth: true }} />
  */
 export class AutocompleteDisallowInput extends Component {
-  state = {};
+
+  constructor (props) {
+    super(props)
+    this.state = {
+      isValid: 0
+    }
+  }
 
   componentWillMount() {
-    this.setSearchText(this.props);
+    this.setSearchText(this.props)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -84,57 +90,72 @@ export class AutocompleteDisallowInput extends Component {
     }
 
     if (this.props.input.value !== nextProps.input.value) {
-      this.setSearchText(nextProps);
+      this.setSearchText(nextProps)
     }
   }
 
   setSearchText(props) {
-    const { choices, input, optionValue, translate } = props;
+    const { choices, input, optionValue, translate } = props
 
     const selectedSource = choices.find(
       choice => get(choice, optionValue) === input.value
-    );
-    const searchText =
-      (selectedSource && this.getSuggestion(selectedSource)) ||
-      translate('aor.input.autocomplete.none');
-    this.setState({ searchText });
+    )
+
+    if (typeof selectedSource !== "undefined") {
+
+    }
+    // const searchText =
+    //   (selectedSource && this.getSuggestion(selectedSource)) ||
+    //   translate('aor.input.autocomplete.none')
+    // this.setState({ searchText })
   }
 
   handleNewRequest = (chosenRequest, index) => {
     console.debug('wants to handle new request chosenRequest, index', chosenRequest, index)
-    const { allowEmpty, choices, input, optionValue } = this.props;
-    let choiceIndex = allowEmpty ? index - 1 : index;
+    const { allowEmpty, choices, input, optionValue } = this.props
+    let choiceIndex = allowEmpty ? index - 1 : index
 
     // The empty item is always at first position
     if (index !== 0) {
+      this.setState({ isValid: 0 })
       return input.onChange('')
     }
 
-    console.debug('wants to set value to (choices[choiceIndex][optionValue]',choices[choiceIndex][optionValue],choices[choiceIndex],optionValue)
-
-    input.onChange(optionValue);
+    this.setState({ isValid: 1 })
+    input.onChange(optionValue)
   };
 
   handleUpdateInput = searchText => {
-    console.debug('wants to update input to ', searchText)
-    this.setState({ searchText });
-    const { setFilter } = this.props;
-    setFilter && setFilter(searchText);
+    const { input, setFilter } = this.props
+    const found = this.props.choices.filter(function(el) {
+      return el.name === searchText
+    }).length !== 0
+
+    this.setState({ searchText })
+    setFilter && setFilter(searchText)
+
+    if (found) {
+      this.setState({ isValid: 0 })
+      return input.onChange('')
+    } else {
+      this.setState({ isValid: 1 })
+      input.onChange(searchText)
+    }
   };
 
   getSuggestion(choice) {
-    const { optionText, translate, translateChoice } = this.props;
+    const { optionText, translate, translateChoice } = this.props
     const choiceName =
       typeof optionText === 'function'
         ? optionText(choice)
-        : get(choice, optionText);
+        : get(choice, optionText)
     return translateChoice
       ? translate(choiceName, { _: choiceName })
-      : choiceName;
+      : choiceName
   }
 
   addAllowEmpty = choices => {
-    const { allowEmpty, translate } = this.props;
+    const { allowEmpty, translate } = this.props
 
     if (allowEmpty) {
       return [
@@ -146,7 +167,7 @@ export class AutocompleteDisallowInput extends Component {
       ];
     }
 
-    return choices;
+    return choices
   };
 
   render() {
@@ -176,10 +197,16 @@ export class AutocompleteDisallowInput extends Component {
       }))
     );
 
+    const validCode = {
+      0: '#c500002e',
+      1: '#c5000000',
+    }
+
     return (
       <AutoComplete
-        searchText={this.state.searchText || ''}
+        searchText={this.state.searchText}
         dataSource={dataSource}
+        textFieldStyle={{ color: 'red' }}
         floatingLabelText={
           <FieldTitle
             label={label}
@@ -192,7 +219,7 @@ export class AutocompleteDisallowInput extends Component {
         onNewRequest={this.handleNewRequest}
         onUpdateInput={this.handleUpdateInput}
         openOnFocus
-        style={elStyle}
+        style={{ background: validCode[this.state.isValid] }}//{elStyle}
         errorText={touched && error}
         {...options}
       />
