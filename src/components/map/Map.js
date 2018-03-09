@@ -54,10 +54,13 @@ class Map extends Component {
     this._resize();
     // this.restoreFetch = fakeRestServer();
     // window.addEventListener('load', function() {
-    this._loadGeoJson('provinces', provinceGeojson)
+    // this._loadGeoJson('provinces', provinceGeojson)
 
-    console.debug('loaded done')
-      fetch(properties.chronasApiHost + "/areas/" + this.props.selectedYear)
+    window.addEventListener('load', function() {
+      fetch(properties.chronasApiHost + "/metadata/provinces")
+        .then(res => res.text())
+        .then(res => this._loadGeoJson('provinces', JSON.parse(res)))
+        .then( () => fetch(properties.chronasApiHost + "/areas/" + this.props.selectedYear))
         .then(res => res.text())
         .then( (res) => {
           const areaDefs = JSON.parse(res).data
@@ -113,7 +116,7 @@ class Map extends Component {
           this._changeArea(areaDefs, "political", "political")
         })
 
-    // }.bind(this))
+    }.bind(this))
   }
 
   _changeArea = (areaDefs, newLabel, newColor) => {
@@ -395,6 +398,7 @@ class Map extends Component {
       .then(res => res.text())
       .then( (res) => {
         const areaDefs = JSON.parse(res).data
+        this.props.changeAreaData(areaDefs)
         this._simulateYearChange(areaDefs)
         this._changeArea(areaDefs, "political", "political")
         utilsQuery.updateQueryStringParameter('year', year)

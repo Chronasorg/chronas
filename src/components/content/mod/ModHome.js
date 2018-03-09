@@ -40,9 +40,6 @@ export const ModHome = () => {
       <ListItem
         containerElement={<Link to="/mod/areas/" />}
         primaryText="Edit Area" />
-      <ListItem
-        containerElement={<Link to="/mod/areas/" />}
-        primaryText="Edit Provinces" />
     </List>
     <Divider />
     <List>
@@ -51,18 +48,18 @@ export const ModHome = () => {
         containerElement={<Link to="/mod/markers/create" />}
         primaryText="Add Marker">
       </ListItem>
-      <ListItem
-        containerElement={<Link to="/mod/markers/edit" />}
-        primaryText="Edit Marker" />
+      {/*<ListItem*/}
+        {/*containerElement={<Link to="/mod/markers/edit" />}*/}
+        {/*primaryText="Edit Marker" />*/}
     </List>
     <Divider />
     <List>
       <Subheader>Meta</Subheader>
       <ListItem
-        containerElement={<Link to="/mod/add/meta/" />}
+        containerElement={<Link to="/mod/metadata/create" />}
         primaryText="Add Meta" />
       <ListItem
-        containerElement={<Link to="/mod/edit/meta/" />}
+        containerElement={<Link to="/mod/metadata" />}
         primaryText="Edit Meta" />
     </List>
   </div>

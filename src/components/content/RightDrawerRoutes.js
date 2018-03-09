@@ -17,6 +17,8 @@ import Responsive from '../menu/Responsive'
 import Content from './Content'
 import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../restricted/users'
 import { ModAreasAll } from './mod/ModAreasAll'
+import { ModMetaAdd } from './mod/ModMetaAdd'
+import { ModMetaEdit } from './mod/ModMetaEdit'
 import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
 // import MarkerCreate from '../restricted/markers/MarkerCreate'
@@ -50,18 +52,17 @@ const styles = {
 }
 
 const resources = {
-  areas: { create: ModAreasAll, permission: 1 },
-  markers: { list: MarkerList, create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
-  metadata: { list: MetadataList, create: MetadataCreate, edit: MetadataEdit, remove: MetadataDelete, permission: 1 },
-  revisions: { list: RevisionList, create: RevisionCreate, edit: RevisionEdit, remove: RevisionDelete, permission: 1 },
-  images: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
+  areas: { edit: ModAreasAll, permission: 1 },
+  markers: { create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
+  metadata: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
+  images: { create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
   users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
 }
 
 class RightDrawerRoutes extends PureComponent {
   constructor (props) {
     super(props)
-    this.state = { hiddenElement: true }
+    this.state = { hiddenElement: true, metadataType: '' }
   }
 
   componentDidMount = () => {
@@ -91,26 +92,28 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
 
+  setMetadataType = (metadataType) => {
+    this.setState({ metadataType })
+  }
+
   handleBack = () => {
     this.props.setRightDrawerVisibility(false)
     this.props.history.goBack()
   }
 
   handleClose = () => {
+    this.props.history.push('/')
     utilsQuery.updateQueryStringParameter('type', '')
     utilsQuery.updateQueryStringParameter('province', '')
     this.props.deselectItem()
     this.props.setRightDrawerVisibility(false)
-    this.props.history.push('/')
   }
 
   render() {
-    console.debug("### render rightDrawerOpen", this.props)
-
     const { list, create, edit, show, remove, options, onMenuTap,
       translate, rightDrawerOpen, deselectItem, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme,
-      setModData, setModDataLng, setModDataLat  } = this.props
+      setModData, setModDataLng, setModDataLat, location, history } = this.props
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
@@ -120,7 +123,7 @@ class RightDrawerRoutes extends PureComponent {
           color: chronasDark,
           fontSize: 20
         }}
-        > {JSON.stringify(this.props.location.pathname)} tata</span>
+        > {JSON.stringify(location.pathname)} tata</span>
       }
       showMenuIconButton={false}
       style={{ backgroundColor: '#fff' }}
@@ -138,14 +141,14 @@ class RightDrawerRoutes extends PureComponent {
       }
     />
 
-    const modUrl = '/mod/' + this.props.selectedItem.type
+    const modUrl = '/mod/' + selectedItem.type
     const articletHeader = <AppBar
       title={
         <span style={{
           color: chronasDark,
           fontSize: 20
         }}
-        > {JSON.stringify(this.props.location.pathname)}</span>
+        > {JSON.stringify(location.pathname)}</span>
       }
       showMenuIconButton={false}
       style={{ backgroundColor: '#fff' }}
@@ -203,6 +206,7 @@ class RightDrawerRoutes extends PureComponent {
       return RestrictedPage
     }
 
+
     return (
       <div>
         <Switch>
@@ -228,57 +232,45 @@ class RightDrawerRoutes extends PureComponent {
             resource: resourceKey,
           }
 
+          let finalProps
+
+          if (resourceKey === 'areas') {
+            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, handleClose: this.handleClose }
+          } else if (resourceKey === 'metadata') {
+            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadataType: this.state.metadataType, setMetadataType: this.setMetadataType }
+          } else if (resourceKey === 'markers') {
+            finalProps = { ...commonProps, setModDataLng, setModDataLat }
+          } else {
+            finalProps = commonProps
+          }
+
           return (<Switch key={'rightDrawer_' + resourceKey} style={{ zIndex: 20000 }}>
-            {resources[resourceKey].create && resourceKey === 'areas' && (
-              <Route
-                exact
-                path={'/mod/' + resourceKey}
-                render={restrictPage(defaultHeader, resources[resourceKey].create, 'create', { ...commonProps, setModData, selectedYear, selectedItem, activeArea })}
-              />
-            )}
-            {resources[resourceKey].list && (
-              <Route
-                exact
-                path={'/mod/' + resourceKey}
-                render={restrictPage(defaultHeader, resources[resourceKey].list, 'list', commonProps)}
-              />
-            )}
             {resources[resourceKey].create && (
               <Route
                 exact
                 path={'/mod/' + resourceKey + '/create'}
-                render={restrictPage(defaultHeader, resources[resourceKey].create, 'create',
-                  (resourceKey === 'markers')
-                    ? Object.assign({}, commonProps, { setModDataLng, setModDataLat })
-                    : commonProps)}
+                render={restrictPage(defaultHeader, resources[resourceKey].create, 'create', finalProps)}
               />
             )}
             {resources[resourceKey].edit && (
               <Route
                 exact
-                path={'/mod/' + resourceKey + '/:id'}
-                render={restrictPage(defaultHeader, resources[resourceKey].edit, 'edit', commonProps)}
-              />
-            )}
-            {resources[resourceKey].create && resourceKey === "areas" && (
-              <Route
-                exact
-                path={'/mod/' + resourceKey}
-                render={restrictPage(defaultHeader, resources[resourceKey].edit, 'edit', Object.assign({}, { ...commonProps, setModData, selectedYear, selectedItem, activeArea}, { selectedYear: selectedYear }))}
+                path={'/mod/' + resourceKey }
+                render={restrictPage(defaultHeader, resources[resourceKey].edit, 'edit', finalProps)}
               />
             )}
             {resources[resourceKey].show && (
               <Route
                 exact
                 path={'/mod/' + resourceKey + '/:id/show'}
-                render={restrictPage(defaultHeader, resources[resourceKey].show, 'show', commonProps)}
+                render={restrictPage(defaultHeader, resources[resourceKey].show, 'show', finalProps)}
               />
             )}
             {resources[resourceKey].remove && (
               <Route
                 exact
                 path={'/mod/' + resourceKey + '/:id/delete'}
-                render={restrictPage(defaultHeader, resources[resourceKey].remove, 'delete', commonProps)}
+                render={restrictPage(defaultHeader, resources[resourceKey].remove, 'delete', finalProps)}
               />
             )}
           </Switch>)

@@ -166,7 +166,8 @@ class App extends Component {
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
                   <div className="body" style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
-                    {this.props.loading ? <span>loading...</span> : createElement(Map, {history: history, loading: this.props.loading})}
+                    {createElement(Map, {history: history, loading: true})}
+                    {/*{this.props.loading ? <span>loading...</span> : createElement(Map, {history: history, loading: this.props.loading})}*/}
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path="/"/>

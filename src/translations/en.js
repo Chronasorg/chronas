@@ -52,7 +52,12 @@ export default {
     resources: {
       areas: {
         fields: {
-          provinceList: 'Click on provinces to selecect/ deselect',
+          province_list: 'Click on provinces to selecect/ deselect',
+          display_name: 'Display Name',
+          main_ruler_name: 'Main Ruler Name',
+          color: 'Area Color',
+          main_religion_name: 'Main Religion Name',
+          wiki_url: 'Full Wikipedia URL',
           ruler: 'Ruler',
           culture: 'Culture',
           religion: 'Religion',

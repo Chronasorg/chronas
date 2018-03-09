@@ -18,20 +18,21 @@ import decodeJwt from "jwt-decode";
 import { showNotification } from 'admin-on-rest';
 const formStyle = { padding: '0 1em 1em 1em' }
 
-export class AreaForm extends Component {
+export class MetaForm extends Component {
 
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
+
       const { initialValues } = this.props
 
-      if (values.ruler === initialValues.ruler) delete values.ruler
-      if (values.religion === initialValues.religion) delete values.religion
-      if (values.capital === initialValues.capital) delete values.capital
-      if (values.culture === initialValues.culture) delete values.culture
-      if (values.population === initialValues.population) delete values.population
+      // if (values.parentname === initialValues.name) delete values.parentname
+      // if (values.religion === initialValues.religion) delete values.religion
+      // if (values.capital === initialValues.capital) delete values.capital
+      // if (values.culture === initialValues.culture) delete values.culture
+      // if (values.population === initialValues.population) delete values.population
 
       const token = localStorage.getItem('token')
-      fetch(properties.chronasApiHost + "/areas", {
+      fetch(properties.chronasApiHost + "/metadata/single", {
         method: 'PUT',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -47,20 +48,20 @@ export class AreaForm extends Component {
             this.props.showNotification("Area Updated")
             setModType("")
             this.props.history.goBack()
+            // this.props.save(values, redirect)
+            // // this.props.history.push('/article')
+            // this.props.handleClose()
+            // this.forceUpdate()
           }
           else {
             this.props.showNotification("Area Not Updated")
           }
-        })
-    });
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.modActive.type === "areas" && this.props.modActive.data.length !== nextProps.modActive.data.length) {
-      this.props.change ("provinces" , nextProps.modActive.data )
-    }
-    if (this.props.selectedYear !== nextProps.selectedYear)
-      this.props.change ("start" , nextProps.selectedYear )
-  }
+          // window.history.go(-1)
+          // if response code good     shownotification, setmod off and go back
+        })
+      // this.props.save(values, redirect)
+    });
 
   componentWillUnmount() {
     const { setModType } = this.props
@@ -71,7 +72,7 @@ export class AreaForm extends Component {
     const { setModType, selectedItem, setModData } = this.props
     const selectedProvince = selectedItem.province
     if (selectedProvince) setModData([selectedProvince])
-    setModType("areas")
+    setModType("metadata")
 
     // const currLocation = this.props.location.pathname
     // const selectedProvinces = currLocation.split("/mod/areas/")[1]
@@ -116,7 +117,7 @@ export class AreaForm extends Component {
   }
 }
 
-AreaForm.propTypes = {
+MetaForm.propTypes = {
   basePath: PropTypes.string,
   children: PropTypes.node,
   defaultValue: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
@@ -132,7 +133,7 @@ AreaForm.propTypes = {
   version: PropTypes.number,
 };
 
-AreaForm.defaultProps = {
+MetaForm.defaultProps = {
   submitOnEnter: true,
   toolbar: <Toolbar />,
 };
@@ -155,4 +156,4 @@ const enhance = compose(
     enableReinitialize: true,
   }),
 )
-export default enhance(AreaForm)
+export default enhance(MetaForm)
