@@ -86,14 +86,16 @@ export const ModMetaAdd = (props) => {
     const errors = {}
 
     if (values.url === '') {
-      errors.url = ["This url already exists, if you like to edit an existing resource click Edit Meta on top."]
+      errors.url = ["This url already exists. If you like to edit an existing resource click Edit Meta on top."]
     }
     if (values.name === '') {
-      errors.name = ["This name already exists, if you like to edit an existing resource click Edit Meta on top."]
+      errors.name = ["This name already exists. If you like to edit an existing resource click Edit Meta on top."]
     }
     if (!values.color) {
       errors.color = ['Color value is required']
     }
+
+    console.debug('errors', errors)
 
     return errors
   }
@@ -104,7 +106,7 @@ export const ModMetaAdd = (props) => {
         <SelectInput validate={required} source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteDisallowInput source="name" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.display_name" />
         {/*<AutocompleteInput validate={required} source="parentname" choices={choicesMainRuler} label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues.dataReligion} />*/}
-        <ColorInput source="color" label="resources.areas.fields.color" picker="Compact" />
+        <ColorInput validate={required} source="color" label="resources.areas.fields.color" picker="Compact" />
         <AutocompleteDisallowInput source="url" choices={choicesReligion} defaultValue={defaultValues.dataReligion} label="resources.areas.fields.wiki_url" />
     </MetaForm>,
     'religion':

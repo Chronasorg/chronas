@@ -5,9 +5,12 @@ import compose from 'recompose/compose'
 import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
+import FlatButton from 'material-ui/FlatButton'
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import FontIcon from 'material-ui/FontIcon'
+import {Tabs, Tab} from 'material-ui/Tabs';
 import CloseIcon from 'material-ui/svg-icons/content/clear'
+import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { Restricted, translate } from 'admin-on-rest'
@@ -121,16 +124,38 @@ class RightDrawerRoutes extends PureComponent {
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
-    const defaultHeader = <AppBar
-      title={
-        <span style={{
-          color: chronasDark,
-          fontSize: 20
-        }}
-        > {JSON.stringify(location.pathname)} tata</span>
+    const modHeader = <AppBar
+      // title={
+      //   <span style={{
+      //     color: chronasDark,
+      //     fontSize: 20
+      //   }}
+      //   > {JSON.stringify(location.pathname)} tata</span>
+      // }
+      // showMenuIconButton={false}
+      // style={{ backgroundColor: '#fff' }}
+
+      // iconElementLeft={<IconButton><NavigationClose />test1</IconButton>}
+      // iconElementRight={this.state.logged ? <NavigationClose /> : <NavigationClose />}
+      iconElementLeft={
+        <Tabs
+          onChange={this.handleChange}
+          value={this.state.slideIndex}
+        >
+          <Tab label="Add Marker" value={1} />
+          <Tab label="Add Meta" value={0} />
+          <Tab label="Edit Area" value={2} />
+          <Tab label="Edit Marker" value={3} />
+          <Tab label="Edit Meta" value={4} />
+        </Tabs>
+        // <div>
+        //   <FlatButton label="Add Meta" />
+        //   <FlatButton label="Add Marker" />
+        //   <FlatButton label="Edit Meta" />
+        //   <FlatButton label="Edit Area" />
+        //   <FlatButton label="Edit Marker" />
+        // </div>
       }
-      showMenuIconButton={false}
-      style={{ backgroundColor: '#fff' }}
       iconElementRight={
         <div>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
@@ -222,7 +247,7 @@ class RightDrawerRoutes extends PureComponent {
           <Route
             exact
             path={'/mod'}
-            render={restrictPage(defaultHeader, ModHome)}
+            render={restrictPage(modHeader, ModHome)}
         />
         </Switch>
         {resourceList.map((resourceKey) => {
@@ -253,28 +278,28 @@ class RightDrawerRoutes extends PureComponent {
               <Route
                 exact
                 path={'/mod/' + resourceKey + '/create'}
-                render={restrictPage(defaultHeader, resources[resourceKey].create, 'create', finalProps)}
+                render={restrictPage(modHeader, resources[resourceKey].create, 'create', {...finalProps, redirect: 'create'})}
               />
             )}
             {resources[resourceKey].edit && (
               <Route
                 exact
                 path={'/mod/' + resourceKey }
-                render={restrictPage(defaultHeader, resources[resourceKey].edit, 'edit', finalProps)}
+                render={restrictPage(modHeader, resources[resourceKey].edit, 'edit', finalProps)}
               />
             )}
             {resources[resourceKey].show && (
               <Route
                 exact
                 path={'/mod/' + resourceKey + '/:id/show'}
-                render={restrictPage(defaultHeader, resources[resourceKey].show, 'show', finalProps)}
+                render={restrictPage(modHeader, resources[resourceKey].show, 'show', finalProps)}
               />
             )}
             {resources[resourceKey].remove && (
               <Route
                 exact
                 path={'/mod/' + resourceKey + '/:id/delete'}
-                render={restrictPage(defaultHeader, resources[resourceKey].remove, 'delete', finalProps)}
+                render={restrictPage(modHeader, resources[resourceKey].remove, 'delete', finalProps)}
               />
             )}
           </Switch>)
