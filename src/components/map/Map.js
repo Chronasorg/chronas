@@ -75,9 +75,9 @@ class Map extends Component {
            });
            */
 
-          var rulKeys = Object.keys(metadata['political'])
+          var rulKeys = Object.keys(metadata['ruler'])
           for (var i=0; i < rulKeys.length; i++) {
-            rulStops.push([rulKeys[i], metadata['political'][rulKeys[i]][1]])
+            rulStops.push([rulKeys[i], metadata['ruler'][rulKeys[i]][1]])
           }
 
           var relKeys = Object.keys(metadata['religion'])
@@ -86,7 +86,7 @@ class Map extends Component {
           }
 
           const mapStyle = this.state.mapStyle
-            .setIn(['layers', areaColorLayerIndex['political'], 'paint'], fromJS(
+            .setIn(['layers', areaColorLayerIndex['ruler'], 'paint'], fromJS(
               {
                 'fill-color': {
                   'property': 'r',
@@ -113,7 +113,7 @@ class Map extends Component {
 
           this.setState({mapStyle})
           this._simulateYearChange(areaDefs)
-          this._changeArea(areaDefs, "political", "political")
+          this._changeArea(areaDefs, "ruler", "ruler")
         })
 
     }.bind(this))
@@ -182,7 +182,7 @@ class Map extends Component {
 
         const randomItem = dataPool[getRandomInt(0,dataPool.length-1)]
         const provinceId = randomItem.properties.n
-        const itemId = metadata['political'][randomItem.properties.n][2]
+        const itemId = metadata['ruler'][randomItem.properties.n][2]
 
         this.map.getMap().flyTo({
           center: [
@@ -400,7 +400,7 @@ class Map extends Component {
         const areaDefs = JSON.parse(res).data
         this.props.changeAreaData(areaDefs)
         this._simulateYearChange(areaDefs)
-        this._changeArea(areaDefs, "political", "political")
+        this._changeArea(areaDefs, "ruler", "ruler")
         utilsQuery.updateQueryStringParameter('year', year)
       })
   }

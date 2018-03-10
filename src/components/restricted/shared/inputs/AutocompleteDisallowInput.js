@@ -197,9 +197,9 @@ export class AutocompleteDisallowInput extends Component {
       }))
     );
 
-    const validCode = {
-      0: '#c500002e',
-      1: '#c5000000',
+    const validMessage = {
+      0: 'Specify an original value, if you like to edit an existing resource click Edit Meta on top.',
+      1: ''
     }
 
     return (
@@ -219,8 +219,8 @@ export class AutocompleteDisallowInput extends Component {
         onNewRequest={this.handleNewRequest}
         onUpdateInput={this.handleUpdateInput}
         openOnFocus
-        style={{ background: validCode[this.state.isValid] }}//{elStyle}
-        errorText={touched && error}
+        style={elStyle}
+        errorText={validMessage[this.state.isValid]}
         {...options}
       />
     );

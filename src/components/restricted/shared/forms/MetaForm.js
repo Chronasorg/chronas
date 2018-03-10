@@ -1,60 +1,60 @@
-import React, { Children, Component } from 'react';
-import PropTypes from 'prop-types';
-import { reduxForm } from 'redux-form';
-import { connect } from 'react-redux';
-import compose from 'recompose/compose';
+import React, { Children, Component } from 'react'
+import PropTypes from 'prop-types'
+import { reduxForm } from 'redux-form'
+import { connect } from 'react-redux'
+import compose from 'recompose/compose'
 // import getDefaultValues from './getDefaultValues';
 // import FormInput from './FormInput';
 // import Toolbar from './Toolbar';
-import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
-import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
-import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
+import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
+import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
+import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 // import { crudUpdate as crudUpdateAction } from 'admin-on-rest'
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
-import { setModType , setModData } from '../buttons/actionReducers'
-import {setToken} from "../../../menu/authentication/actionReducers";
-import properties from "../../../../properties";
-import decodeJwt from "jwt-decode";
-import { showNotification } from 'admin-on-rest';
+import { setModType, setModData } from '../buttons/actionReducers'
+import { setToken } from '../../../menu/authentication/actionReducers'
+import properties from '../../../../properties'
+import decodeJwt from 'jwt-decode'
+import { showNotification } from 'admin-on-rest'
 const formStyle = { padding: '0 1em 1em 1em' }
 
 export class MetaForm extends Component {
-
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
+      console.debug(this.props)
 
       const { initialValues } = this.props
 
-      // if (values.parentname === initialValues.name) delete values.parentname
-      // if (values.religion === initialValues.religion) delete values.religion
-      // if (values.capital === initialValues.capital) delete values.capital
-      // if (values.culture === initialValues.culture) delete values.culture
-      // if (values.population === initialValues.population) delete values.population
+      if (redirect === 'edit') {
+        // edit meta cleanup
+
+      } else {
+        // add meta cleanup
+
+      }
 
       const token = localStorage.getItem('token')
-      fetch(properties.chronasApiHost + "/metadata/single", {
-        method: 'PUT',
+      fetch(properties.chronasApiHost + '/metadata/single', {
+        method: (redirect === 'edit') ? 'PUT' : 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        //make sure to serialize your JSON body
         body: JSON.stringify(values)
       })
         .then((res) => {
           if (res.status === 200) {
             console.debug(res, this.props)
-            this.props.showNotification("Area Updated")
-            setModType("")
+            this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
+            setModType('')
             this.props.history.goBack()
             // this.props.save(values, redirect)
             // // this.props.history.push('/article')
             // this.props.handleClose()
             // this.forceUpdate()
-          }
-          else {
-            this.props.showNotification("Area Not Updated")
+          } else {
+            this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
           }
 
           // window.history.go(-1)
@@ -63,16 +63,16 @@ export class MetaForm extends Component {
       // this.props.save(values, redirect)
     });
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { setModType } = this.props
-    setModType("")
+    setModType('')
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { setModType, selectedItem, setModData } = this.props
     const selectedProvince = selectedItem.province
     if (selectedProvince) setModData([selectedProvince])
-    setModType("metadata")
+    setModType('metadata')
 
     // const currLocation = this.props.location.pathname
     // const selectedProvinces = currLocation.split("/mod/areas/")[1]
@@ -82,7 +82,7 @@ export class MetaForm extends Component {
     // }
   }
 
-  render() {
+  render () {
     const {
       basePath,
       children,
@@ -95,7 +95,7 @@ export class MetaForm extends Component {
     } = this.props
 
     return (
-      <form className="simple-form">
+      <form className='simple-form'>
         <div style={formStyle} key={version}>
           {Children.map(children, input => (
             <FormInput
@@ -131,20 +131,20 @@ MetaForm.propTypes = {
   toolbar: PropTypes.element,
   validate: PropTypes.func,
   version: PropTypes.number,
-};
+}
 
 MetaForm.defaultProps = {
   submitOnEnter: true,
   toolbar: <Toolbar />,
-};
+}
 
 const enhance = compose(
   connect((state, props) => ({
-      initialValues: getDefaultValues(state, props),
-      modActive: state.modActive,
-      selectedYear: state.selectedYear,
-      selectedItem: state.selectedItem,
-    }),
+    initialValues: getDefaultValues(state, props),
+    modActive: state.modActive,
+    selectedYear: state.selectedYear,
+    selectedItem: state.selectedItem,
+  }),
     {
       // crudUpdate: crudUpdateAction,
       setModType,

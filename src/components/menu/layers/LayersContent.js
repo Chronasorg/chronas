@@ -36,15 +36,15 @@ const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, 
     <br/>
     <h4>Area</h4>
     Both:
-    <RaisedButton style={styles.button} label="Political" primary={activeArea.label === 'political' && activeArea.color === 'political'} onClick={() => setAreaColorLabel('political','political')} />
+    <RaisedButton style={styles.button} label="Ruler" primary={activeArea.label === 'ruler' && activeArea.color === 'ruler'} onClick={() => setAreaColorLabel('ruler','ruler')} />
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion' && activeArea.color === 'religion'} onClick={() => setAreaColorLabel('religion','religion')} />
     {JSON.stringify(activeArea.year)}
     Label:
-    <RaisedButton style={styles.button} label="Political" primary={activeArea.label === 'political'} onClick={() => changeLabel('political')} />
+    <RaisedButton style={styles.button} label="Ruler" primary={activeArea.label === 'ruler'} onClick={() => changeLabel('ruler')} />
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion'} onClick={() => changeLabel('religion')} />
     {activeArea.label}
     Color:
-    <RaisedButton style={styles.button} label="Political" primary={activeArea.color === 'political'} onClick={() => changeColor('political')} />
+    <RaisedButton style={styles.button} label="Ruler" primary={activeArea.color === 'ruler'} onClick={() => changeColor('ruler')} />
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.color === 'religion'} onClick={() => changeColor('religion')} />
     {activeArea.color}
     <br/>

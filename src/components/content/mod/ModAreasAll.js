@@ -42,7 +42,7 @@ export const ModAreasAll = (props) => {
 
   const defaultValues = {
     'provinces': [selectedProvince] || [],
-    'dataRuler': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('political')] || '',
+    'dataRuler': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')] || '',
     'dataCulture': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')] || '',
     'dataReligion': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')] || '',
     'dataCapital': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('capital')] || '',
@@ -51,8 +51,8 @@ export const ModAreasAll = (props) => {
     'yearEnd': props.selectedYear || 1000,
   }
 
-  const choicesRuler = Object.keys(metadata['political']).map((rulerId) => {
-    return { id: rulerId, name: metadata['political'][rulerId][0]}
+  const choicesRuler = Object.keys(metadata['ruler']).map((rulerId) => {
+    return { id: rulerId, name: metadata['ruler'][rulerId][0]}
   }) || {}
 
   const choicesReligion = Object.keys(metadata['religion']).map((religionId) => {

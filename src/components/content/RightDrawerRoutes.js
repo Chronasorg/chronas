@@ -62,7 +62,7 @@ const resources = {
 class RightDrawerRoutes extends PureComponent {
   constructor (props) {
     super(props)
-    this.state = { hiddenElement: true, metadataType: '' }
+    this.state = { hiddenElement: true, metadataType: '', metadataEntity: '' }
   }
 
   componentDidMount = () => {
@@ -94,6 +94,10 @@ class RightDrawerRoutes extends PureComponent {
 
   setMetadataType = (metadataType) => {
     this.setState({ metadataType })
+  }
+
+  setMetadataEntity = (metadataEntity) => {
+    this.setState({ metadataEntity })
   }
 
   handleBack = () => {
@@ -237,7 +241,7 @@ class RightDrawerRoutes extends PureComponent {
           if (resourceKey === 'areas') {
             finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, handleClose: this.handleClose }
           } else if (resourceKey === 'metadata') {
-            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadataType: this.state.metadataType, setMetadataType: this.setMetadataType }
+            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType }
           } else if (resourceKey === 'markers') {
             finalProps = { ...commonProps, setModDataLng, setModDataLat }
           } else {

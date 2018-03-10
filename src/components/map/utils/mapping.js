@@ -6,8 +6,8 @@ const turf = require('@turf/turf')
 
 const utils = {
 
-  activeTextFeat: 'political',
-  activeAreaFeat: 'political',
+  activeTextFeat: 'ruler',
+  activeAreaFeat: 'ruler',
 
   countryIsSetup: false,
   culIsSetup: false,
@@ -280,7 +280,7 @@ const utils = {
     for (var key in myId) {
       if (postfix == 'co') {
         tmpName = ''
-        if (metadata['political'][key]) tmpName = metadata['political'][key][0]
+        if (metadata['ruler'][key]) tmpName = metadata['ruler'][key][0]
       } else if (postfix == 'rg') {
         tmpName = key
       } else if (postfix == 'cu') {
@@ -462,7 +462,7 @@ const utils = {
   addTextFeat: function (areaDefs, setActiveFeat) {
     this.activeTextFeat = setActiveFeat
 
-    if ((this.activeTextFeat === 'political' && !this.countryIsSetup) ||
+    if ((this.activeTextFeat === 'ruler' && !this.countryIsSetup) ||
       (this.activeTextFeat === 'culture' && !this.culIsSetup) ||
       (this.activeTextFeat === 'religion' && !this.relIsSetup) ||
       (this.activeTextFeat === 'religionGeneral' && !this.relGenIsSetup)) {
@@ -502,22 +502,22 @@ const utils = {
           provinceGeojson.features[i].properties.Pop = tmpPop
           provinceGeojson.features[i].properties.Cap = tmpCap
 
-          if (this.activeTextFeat == "political" && metadata['political'][tmpCountry]) {
-            provinceGeojson.features[i].properties.nameLabel = metadata['political'][tmpCountry][0]
+          if (this.activeTextFeat == "ruler" && metadata['ruler'][tmpCountry]) {
+            provinceGeojson.features[i].properties.nameLabel = metadata['ruler'][tmpCountry][0]
           }
           else if (this.activeTextFeat == "religion" && metadata['religion'][tmpCountry]) {
             provinceGeojson.features[i].properties.nameLabel = metadata['religion'][tmpCountry][0]
           }
         }
 
-        if (this.activeTextFeat === 'political' && !this.countryIsSetup) { this.prepareCollectionIDs(countryCollection, tmpCountry, i) }
+        if (this.activeTextFeat === 'ruler' && !this.countryIsSetup) { this.prepareCollectionIDs(countryCollection, tmpCountry, i) }
         if (this.activeTextFeat === 'culture' && !this.culIsSetup) { this.prepareCollectionIDs(culCollection, tmpCul, i) }
         if (this.activeTextFeat === 'religion' && !this.relIsSetup) { this.prepareCollectionIDs(relCollection, tmpRel, i) }
         // if (!relGenIsSetup)
         //     prepareCollectionIDs(relGenIdCollection, relGen[tmpRel][0], i);
       }
 
-      if (!this.countryIsSetup && (this.activeTextFeat === 'political')) {
+      if (!this.countryIsSetup && (this.activeTextFeat === 'ruler')) {
         // this.countryIsSetup = true;
         return this.fillCollectionId(countryCollection, null, 'co')
       } else if (!this.culIsSetup && (this.activeTextFeat === 'culture')) {
