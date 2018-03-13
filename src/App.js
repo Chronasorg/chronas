@@ -8,8 +8,7 @@ import { ConnectedRouter } from 'react-router-redux'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
-import { setLoadStatus } from './components/map/data/actionReducers'
-import { initializeData } from './components/map/data/metadata'
+import { setLoadStatus, setMetadata } from './components/map/data/actionReducers'
 import queryString from 'query-string'
 import {
   defaultTheme,
@@ -37,6 +36,7 @@ import CustomTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
 
 import utilsQuery from './components/map/utils/query'
+import properties from "./properties";
 
 const styles = {
   wrapper: {
@@ -83,6 +83,14 @@ class App extends Component {
   }
 
   componentWillMount() {
+    fetch(properties.chronasApiHost + "/metadata?f=provinces,ruler,culture,religion,capital,province,religionGeneral")
+      .then(res => res.json())
+      .then( (metadata) => {
+        this.props.setMetadata(metadata)
+      })
+      .then( () => {
+        this.props.setLoadStatus(false)
+      })
 
     // initialize queryparameters
     window.history.pushState('', '',
@@ -95,8 +103,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    initializeData({ setLoadStatus: this.props.setLoadStatus })
-    console.debug(history)
     const parsedQuery = queryString.parse(location.search)
     let token = parsedQuery.token
 
@@ -166,8 +172,7 @@ class App extends Component {
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
                   <div className="body" style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
-                    {createElement(Map, {history: history, loading: true})}
-                    {/*{this.props.loading ? <span>loading...</span> : createElement(Map, {history: history, loading: this.props.loading})}*/}
+                    {this.props.loading ? <span>loading...</span> : createElement(Map, {history: history, loading: this.props.loading})}
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path="/"/>
@@ -216,7 +221,8 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = {
   setUser,
-  setLoadStatus
+  setLoadStatus,
+  setMetadata
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)

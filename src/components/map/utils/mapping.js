@@ -1,5 +1,4 @@
-import { relPlus, rulPlus, provinceGeojson } from '../data/metadata'
-import { provinceCollection, provArea, adjacent, metadata } from '../data/datadef'
+import { adjacent } from '../data/datadef'
 import * as scale from 'd3-scale'
 
 const turf = require('@turf/turf')
@@ -262,7 +261,7 @@ const utils = {
     return helper
   },
 
-  fillCollectionId: function (myId, addTo, postfix) {
+  fillCollectionId: function (myId, addTo, postfix, metadata) {
     // addto = d3 gActiveCouLabels
     var tmpName = ''
     var groups = {}
@@ -312,15 +311,15 @@ const utils = {
               groups[key][i1] = []
               polyGroups[key][i1] = []
             }
-            groups[key][i1].push(provinceGeojson.features[myId[key][i1][i2]].geometry.coordinates[0])
-            polyGroups[key][i1].push(provinceGeojson.features[myId[key][i1][i2]])
+            groups[key][i1].push(metadata.provinces.features[myId[key][i1][i2]].geometry.coordinates[0])
+            polyGroups[key][i1].push(metadata.provinces.features[myId[key][i1][i2]])
           }
           else {
             groups[key] = [
-              [provinceGeojson.features[myId[key][i1][i2]].geometry.coordinates[0]]
+              [metadata.provinces.features[myId[key][i1][i2]].geometry.coordinates[0]]
             ];
             polyGroups[key] = [
-              [provinceGeojson.features[myId[key][i1][i2]]]
+              [metadata.provinces.features[myId[key][i1][i2]]]
             ];
           }
         }
@@ -459,7 +458,7 @@ const utils = {
    },
    */
 
-  addTextFeat: function (areaDefs, setActiveFeat) {
+  addTextFeat: function (areaDefs, setActiveFeat, metadata) {
     this.activeTextFeat = setActiveFeat
 
     if ((this.activeTextFeat === 'ruler' && !this.countryIsSetup) ||
@@ -475,7 +474,7 @@ const utils = {
 
       var tmpProv, tmpCountry, tmpRel, tmpCul, tmpPop, tmpCap, tmpCoo
 
-      for (var i = 0; i < provinceCollection.features.length; i++) {  // tmpLength
+      for (var i = 0; i < metadata.provinces.features.length; i++) {  // tmpLength
         tmpCoo = undefined
         tmpCountry = undefined
         tmpRel = undefined
@@ -483,8 +482,8 @@ const utils = {
         tmpPop = undefined
         tmpCap = undefined
 
-        tmpProv = provinceGeojson.features[i].properties.name
-        tmpCoo = provinceGeojson.features[i].geometry.coordinates[0]
+        tmpProv = metadata.provinces.features[i].properties.name
+        tmpCoo = metadata.provinces.features[i].geometry.coordinates[0]
 
         if (areaDefs.hasOwnProperty(tmpProv)) {
           // TODO: remove again + add security check when updating
@@ -497,16 +496,16 @@ const utils = {
           tmpCap = areaDefs[tmpProv][3]
           tmpPop = areaDefs[tmpProv][4]
 
-          provinceGeojson.features[i].properties.Cul = tmpCul
-          provinceGeojson.features[i].properties.Rel = tmpRel
-          provinceGeojson.features[i].properties.Pop = tmpPop
-          provinceGeojson.features[i].properties.Cap = tmpCap
+          metadata.provinces.features[i].properties.Cul = tmpCul
+          metadata.provinces.features[i].properties.Rel = tmpRel
+          metadata.provinces.features[i].properties.Pop = tmpPop
+          metadata.provinces.features[i].properties.Cap = tmpCap
 
           if (this.activeTextFeat == "ruler" && metadata['ruler'][tmpCountry]) {
-            provinceGeojson.features[i].properties.nameLabel = metadata['ruler'][tmpCountry][0]
+            metadata.provinces.features[i].properties.nameLabel = metadata['ruler'][tmpCountry][0]
           }
           else if (this.activeTextFeat == "religion" && metadata['religion'][tmpCountry]) {
-            provinceGeojson.features[i].properties.nameLabel = metadata['religion'][tmpCountry][0]
+            metadata.provinces.features[i].properties.nameLabel = metadata['religion'][tmpCountry][0]
           }
         }
 
@@ -519,13 +518,13 @@ const utils = {
 
       if (!this.countryIsSetup && (this.activeTextFeat === 'ruler')) {
         // this.countryIsSetup = true;
-        return this.fillCollectionId(countryCollection, null, 'co')
+        return this.fillCollectionId(countryCollection, null, 'co', metadata)
       } else if (!this.culIsSetup && (this.activeTextFeat === 'culture')) {
         // this.culIsSetup = true;
-        return this.fillCollectionId(culCollection, null, 'cu')
+        return this.fillCollectionId(culCollection, null, 'cu', metadata)
       } else if (!this.relIsSetup && (this.activeTextFeat === 'religion')) {
         // this.relIsSetup = true;
-        return this.fillCollectionId(relCollection, null, 'e')
+        return this.fillCollectionId(relCollection, null, 'e', metadata)
       } else {
         return []
       }

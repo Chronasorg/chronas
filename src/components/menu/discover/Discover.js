@@ -13,7 +13,7 @@ import { Tabs, Tab } from 'material-ui/Tabs'
 import { AutoRotatingCarousel, Slide } from 'material-auto-rotating-carousel'
 import SwipeableViews from 'react-swipeable-views'
 import { translate, ViewTitle } from 'admin-on-rest'
-
+import axios from 'axios'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
@@ -146,11 +146,9 @@ class Discover extends PureComponent {
       console.debug('DISCOVER.js ### new year changed to ' + selectedYear)
       const newTilesData = []
 
-      fetch('https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages%7Cpageterms&generator=prefixsearch&redirects=1&formatversion=2&piprop=thumbnail&pithumbsize=250&pilimit=20&wbptterms=description&gpssearch=year' + selectedYear + '&gpslimit=40')
-        .then(res => {
-          return res.json()
-        })
-        .then(res => {
+      axios.get('https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages%7Cpageterms&generator=prefixsearch&redirects=1&formatversion=2&piprop=thumbnail&pithumbsize=250&pilimit=20&wbptterms=description&gpssearch=year' + selectedYear + '&gpslimit=40')
+        .then(response => {
+          const res = response.data
           for (var i = 0; i < 40; i++) {
             if (res.query.pages[i].hasOwnProperty('thumbnail') === true) {
               newTilesData.push({

@@ -4,13 +4,11 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
-import { provinceGeojson } from './data/metadata'
-import { provinceCollection, provArea, adjacent, metadata } from './data/datadef'
+import axios from 'axios'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import { selectAreaItem as selectAreaItemAction } from './actionReducers'
 import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
-import {render} from 'react-dom'
 import {fromJS} from 'immutable'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import properties from '../../properties'
@@ -49,74 +47,73 @@ class Map extends Component {
   }
 
   componentDidMount = () => {
-    console.debug("didMount!")
+    const { metadata } = this.props
     window.addEventListener('resize', this._resize);
     this._resize();
     // this.restoreFetch = fakeRestServer();
     // window.addEventListener('load', function() {
     // this._loadGeoJson('provinces', provinceGeojson)
 
-    window.addEventListener('load', function() { //todo: first, why does it not work anymore - second, api should only return data, not .data - third, remove this res.text(), - fourth stop printing output to standard
-      fetch(properties.chronasApiHost + "/metadata/provinces")
-        .then(res => res.text())
-        .then(res => this._loadGeoJson('provinces', JSON.parse(res)))
-        .then( () => fetch(properties.chronasApiHost + "/areas/" + this.props.selectedYear))
-        .then(res => res.text())
-        .then( (res) => {
-          const areaDefs = JSON.parse(res).data
-          this.props.changeAreaData(areaDefs)
-          var rulStops = [],
-            relStops = []
+    // window.addEventListener('load', function() { // fourth stop printing output to standard
+    //   axios.get(properties.chronasApiHost + "/metadata/provinces")
+    //     .then( (provinceRequest) => {
+          this._loadGeoJson('provinces', metadata.provinces)
+          fetch(properties.chronasApiHost + "/areas/" + this.props.selectedYear).then(response => response.json())
+            .then( (areaDefsRequest) => {
+              this.props.changeAreaData(areaDefsRequest)
+              var rulStops = [],
+                relStops = []
 
-          /*
-           map.addSource('realm-lines', {
-           'type': 'geojson',
-           'data': provinceCollection
-           });
-           */
+              /*
+               map.addSource('realm-lines', {
+               'type': 'geojson',
+               'data': provinceCollection
+               });
+               */
 
-          var rulKeys = Object.keys(metadata['ruler'])
-          for (var i=0; i < rulKeys.length; i++) {
-            rulStops.push([rulKeys[i], metadata['ruler'][rulKeys[i]][1]])
-          }
-
-          var relKeys = Object.keys(metadata['religion'])
-          for (var i=0; i < relKeys.length; i++) {
-            relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
-          }
-
-          const mapStyle = this.state.mapStyle
-            .setIn(['layers', areaColorLayerIndex['ruler'], 'paint'], fromJS(
-              {
-                'fill-color': {
-                  'property': 'r',
-                  'type': 'categorical',
-                  'stops': rulStops,
-                  'default': "rgba(1,1,1,0.3)"
-                },
-                'fill-opacity': 0.6,
-                'fill-outline-color': 'rgba(0,0,0,.2)'
+              var rulKeys = Object.keys(metadata['ruler'])
+              for (var i=0; i < rulKeys.length; i++) {
+                rulStops.push([rulKeys[i], metadata['ruler'][rulKeys[i]][1]])
               }
-            ))
-            .setIn(['layers', areaColorLayerIndex['religion'], 'paint'], fromJS(
-              {
-                "fill-color": {
-                  "property": "e",
-                  "type": "categorical",
-                  "stops": relStops,
-                  "default": "rgba(1,1,1,0.3)"
-                },
-                "fill-opacity": 0.6,
-                "fill-outline-color": "rgba(0,0,0,.2)"
+
+              var relKeys = Object.keys(metadata['religion'])
+              for (var i=0; i < relKeys.length; i++) {
+                relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
               }
-            ))
 
-          this.setState({mapStyle})
-          this._simulateYearChange(areaDefs)
-          this._changeArea(areaDefs, "ruler", "ruler")
-        })
+              const mapStyle = this.state.mapStyle
+                .setIn(['layers', areaColorLayerIndex['ruler'], 'paint'], fromJS(
+                  {
+                    'fill-color': {
+                      'property': 'r',
+                      'type': 'categorical',
+                      'stops': rulStops,
+                      'default': "rgba(1,1,1,0.3)"
+                    },
+                    'fill-opacity': 0.6,
+                    'fill-outline-color': 'rgba(0,0,0,.2)'
+                  }
+                ))
+                .setIn(['layers', areaColorLayerIndex['religion'], 'paint'], fromJS(
+                  {
+                    "fill-color": {
+                      "property": "e",
+                      "type": "categorical",
+                      "stops": relStops,
+                      "default": "rgba(1,1,1,0.3)"
+                    },
+                    "fill-opacity": 0.6,
+                    "fill-outline-color": "rgba(0,0,0,.2)"
+                  }
+                ))
 
-    }.bind(this))
+              this.setState({mapStyle})
+              this._simulateYearChange(areaDefsRequest)
+              this._changeArea(areaDefsRequest, "ruler", "ruler")
+            })
+        // })
+
+    // }.bind(this))
   }
 
   _changeArea = (areaDefs, newLabel, newColor) => {
@@ -137,7 +134,7 @@ class Map extends Component {
     }
 
     if (typeof newLabel !== "undefined") {
-      const plCol = utilsMapping.addTextFeat(areaDefs, newLabel)
+      const plCol = utilsMapping.addTextFeat(areaDefs, newLabel, this.props.metadata)
       mapStyle = mapStyle
         .setIn(['sources', 'area-labels', 'data'], fromJS(plCol[0]))
         .setIn(['sources', 'area-outlines', 'data'], fromJS(plCol[2]))
@@ -160,7 +157,6 @@ class Map extends Component {
         return feature
       }))
 
-    console.debug("simuldadassateYdasearChange mapStyle", mapStyle)
     this.setState({mapStyle});
   }
 
@@ -332,8 +328,8 @@ class Map extends Component {
       for (const addedMarker of addedMarkers) {
         console.log("addedMarker",addedMarker);
         fetch('http://fakeapi/markers_' + addedMarker)
-          .then(res => res.text())
-          .then(res => this._loadGeoJson('markers', JSON.parse(res)));
+          .then(res => res.json())
+          .then(res => this._loadGeoJson('markers', res));
       }
     }
 
@@ -394,13 +390,11 @@ class Map extends Component {
   };
 
   _changeYear = (year) => {
-    fetch(properties.chronasApiHost + "/areas/" + year)
-      .then(res => res.text())
-      .then( (res) => {
-        const areaDefs = JSON.parse(res).data
-        this.props.changeAreaData(areaDefs)
-        this._simulateYearChange(areaDefs)
-        this._changeArea(areaDefs, "ruler", "ruler")
+    axios.get(properties.chronasApiHost + "/areas/" + year)
+      .then( (areaDefsRequest) => {
+        this.props.changeAreaData(areaDefsRequest.data)
+        this._simulateYearChange(areaDefsRequest.data)
+        this._changeArea(areaDefsRequest.data, "ruler", "ruler")
         utilsQuery.updateQueryStringParameter('year', year)
       })
   }
@@ -640,6 +634,7 @@ const enhance = compose(
     activeMarkers: state.activeMarkers,
     selectedYear: state.selectedYear,
     selectedItem: state.selectedItem,
+    metadata: state.metadata,
     menuDrawerOpen: state.menuDrawerOpen,
     modActive: state.modActive,
     rightDrawerOpen: state.rightDrawerOpen,
