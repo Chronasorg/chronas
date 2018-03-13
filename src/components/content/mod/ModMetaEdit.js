@@ -60,7 +60,6 @@ export const ModMetaEdit = (props) => {
     },
     capital: {
       name: (metadata['capital'][props.metadataEntity] || {})[0] || '',
-      color: (metadata['capital'][props.metadataEntity] || {})[1] || '',
       url: (metadata['capital'][props.metadataEntity] || {})[2] || '',
     }
   }
@@ -113,12 +112,7 @@ export const ModMetaEdit = (props) => {
       </MetaForm>,
     'religion':
       <MetaForm validate={validateValueInput} {...props} >
-        <SelectInput source="type" choices={[
-          { id: 'ruler', name: 'Ruler' },
-          { id: 'culture', name: 'Culture' },
-          { id: 'religion', name: 'Religion' },
-          { id: 'capital', name: 'Capital' },
-        ]} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
+        <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesReligion} onChange={(val,v) => { props.setMetadataEntity(v) }} defaultValue={defaultValues.dataReligion} label="resources.areas.fields.display_name" />
 
         {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataReligion} label="resources.areas.fields.display_name" /> : null}

@@ -25,23 +25,28 @@ export class MetaForm extends Component {
 
       const { initialValues } = this.props
 
-      if (redirect === 'edit') {
-        // edit meta cleanup
-
-      } else {
-        // add meta cleanup
-
+      const nextBodyByType = {
+        ruler: [values.name, values.color, values.url],
+        culture: [values.name, values.color, values.url],
+        religion: [values.name, values.color, values.url],
+        capital: values.url,
+        province: values.url
       }
 
+      const bodyToSend = {}
+      const metadataItem = values.type
+      bodyToSend['subEntityId'] = values.select || values.name
+      bodyToSend['nextBody'] = nextBodyByType[metadataItem]
+
       const token = localStorage.getItem('token')
-      fetch(properties.chronasApiHost + '/metadata/single', {
-        method: (redirect === 'edit') ? 'PUT' : 'POST',
+      fetch(properties.chronasApiHost + '/metadata/' + metadataItem + '/single', {
+        method: 'PUT',
         headers: {
           'Authorization': 'Bearer ' + token,
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(values)
+        body: JSON.stringify(bodyToSend)
       })
         .then((res) => {
           if (res.status === 200) {
@@ -56,11 +61,7 @@ export class MetaForm extends Component {
           } else {
             this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
           }
-
-          // window.history.go(-1)
-          // if response code good     shownotification, setmod off and go back
         })
-      // this.props.save(values, redirect)
     });
 
   componentWillUnmount () {

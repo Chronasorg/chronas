@@ -41,17 +41,17 @@ export class AreaForm extends Component {
         //make sure to serialize your JSON body
         body: JSON.stringify(values)
       })
-        .then((res) => {
-          if (res.status === 200) {
-            console.debug(res, this.props)
-            this.props.showNotification("Area Updated")
-            setModType("")
-            this.props.history.goBack()
-          }
-          else {
-            this.props.showNotification("Area Not Updated")
-          }
-        })
+      .then((res) => {
+        if (res.status === 200) {
+          console.debug(res, this.props)
+          this.props.showNotification("Area Updated")
+          setModType("")
+          this.props.history.goBack()
+        }
+        else {
+          this.props.showNotification("Area Not Updated")
+        }
+      })
     });
 
   componentWillReceiveProps(nextProps) {

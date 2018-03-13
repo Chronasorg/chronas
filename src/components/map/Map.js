@@ -56,7 +56,7 @@ class Map extends Component {
     // window.addEventListener('load', function() {
     // this._loadGeoJson('provinces', provinceGeojson)
 
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function() { //todo: first, why does it not work anymore - second, api should only return data, not .data - third, remove this res.text(), - fourth stop printing output to standard
       fetch(properties.chronasApiHost + "/metadata/provinces")
         .then(res => res.text())
         .then(res => this._loadGeoJson('provinces', JSON.parse(res)))
