@@ -76,7 +76,7 @@
       }
     },
     {
-      "id": "political",
+      "id": "ruler",
       "type": "fill",
       "maxzoom": 4,
       "source": "provinces",

@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import {render} from 'react-dom'
 import compose from 'recompose/compose'
@@ -37,6 +38,10 @@ class MapTimeline extends Component {
   }
 
   componentDidMount() {
+    // Hack for issue https://github.com/Lighthouse-io/react-visjs-timeline/issues/40
+    ReactDOM.findDOMNode(this).children[0].style.visibility = 'visible'
+    ReactDOM.findDOMNode(this).children[0].style.width = '100%'
+
     let timelineOptions = this.state.timelineOptions
     delete timelineOptions.start
 

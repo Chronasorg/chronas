@@ -150,13 +150,11 @@ class Account extends PureComponent {
     </span>)
 
     const UserDelete = (props) => {
-      console.debug(props)
       const tt = {...props, ...routeProps}
       return <Delete account={true} history={props.history} {...tt} title={<UserDeleteTitle />} />
     }
 
     const restrictPage = (component, route, commonProps) => {
-      console.debug(commonProps,routeProps)
       const RestrictedPage = routeProps => (
         <Restricted location={{ pathname: 'account' }} authParams={{ routeProps }} {...routeProps}>
           <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}

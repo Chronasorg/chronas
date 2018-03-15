@@ -2,7 +2,7 @@ export default {
 
   activeAreaDataAccessor: function (activeAreaDim) {
     switch (activeAreaDim) {
-      case 'political':
+      case 'ruler':
         return 0
       case 'culture':
         return 1

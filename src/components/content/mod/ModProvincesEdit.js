@@ -24,7 +24,6 @@ import {
   TextField,
   TextInput,
   LongTextInput,
-  SelectArrayInput,
   required,
   minLength
 } from 'admin-on-rest'
@@ -36,11 +35,15 @@ import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import AreaForm from '../../restricted/shared/forms/AreaForm'
 import utils from "../../map/utils/general"
 
-export const ModAreasAll = (props) => {
+export const ModProvincesEdit = (props) => {
+  const { metadata } = props
   const selectedProvince = props.selectedItem.province || ''
+  // const activeAreaDim = props.activeArea.color
+  // const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
+  // const selectedWiki = (metadata[activeAreaDim][activeprovinceDim] || {})[2]
 
   const defaultValues = {
-    'provinces': [selectedProvince] || [],
+    'provinces': selectedProvince || '',
     'dataRuler': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')] || '',
     'dataCulture': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')] || '',
     'dataReligion': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')] || '',
@@ -50,12 +53,12 @@ export const ModAreasAll = (props) => {
     'yearEnd': props.selectedYear || 1000,
   }
 
-  const choicesRuler = Object.keys(props.metadata['ruler']).map((rulerId) => {
-    return { id: rulerId, name: props.metadata['ruler'][rulerId][0]}
+  const choicesRuler = Object.keys(metadata['ruler']).map((rulerId) => {
+    return { id: rulerId, name: metadata['ruler'][rulerId][0]}
   }) || {}
 
-  const choicesReligion = Object.keys(props.metadata['religion']).map((religionId) => {
-    return { id: religionId, name: props.metadata['religion'][religionId][0]}
+  const choicesReligion = Object.keys(metadata['religion']).map((religionId) => {
+    return { id: religionId, name: metadata['religion'][religionId][0]}
   }) || {}
 
   const validateValueInput = (values) => {
@@ -77,10 +80,12 @@ export const ModAreasAll = (props) => {
     return errors
   }
 
-  return <Create title='Modify area mapping' {...props}>
+  console.debug("modareasall AreaForm", props, choicesRuler, defaultValues.dataRuler)
+
+  return <Create {...props}>
       <AreaForm validate={validateValueInput} {...props} >
           <Subheader>Provinces</Subheader>
-          <SelectArrayInput onChange={(val,v) => { props.setModData(v) }} validation={required} elStyle={{width: '60%', minWidth: '300px'}} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.province_list" />
+          <DisabledInput validation={required} elStyle={{width: '60%', minWidth: '300px'}} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.province_list" />
           <Divider />
           <Subheader>Data</Subheader>
         {/*<TextInput source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />*/}

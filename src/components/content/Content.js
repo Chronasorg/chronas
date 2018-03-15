@@ -9,7 +9,6 @@ import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
-import { provinceCollection, provArea, adjacent, metadata } from '../map/data/datadef'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
@@ -34,12 +33,10 @@ const Content = (props) => {
   const selectedProvince = props.selectedItem.province
   const activeAreaDim = props.activeArea.color
   const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
-  const selectedWiki = (metadata[activeAreaDim][activeprovinceDim] || {})[2]
+  const selectedWiki = (props.metadata[activeAreaDim][activeprovinceDim] || {})[2]
 
-  return <div style={styles.main}>
-    <iframe style={styles.iframe} src={"http://en.wikipedia.org/wiki/" + selectedWiki + "?printable=yes"}
-            height="100%" frameBorder="0"></iframe>
-  </div>
+  return <div style={styles.main}><iframe style={styles.iframe} src={"http://en.wikipedia.org/wiki/" + selectedWiki + "?printable=yes"}
+            height="100%" frameBorder="0"></iframe></div>
 };
 // = ({ toggleRightDrawer, hasDashboard, selectedItem, onRightTap, resources, translate }) => (
 Content.propTypes = {

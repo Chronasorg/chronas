@@ -76,7 +76,7 @@ export const basemapReducer = (initial = 'watercolor') => (
   }
 );
 
-export const areaReducer = (initial = { 'data': {}, 'color': 'political', 'label': 'political'}) => (
+export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': 'ruler'}) => (
   (prevArea = initial, { type, payload }) => {
     switch (type) {
       case SET_AREA:

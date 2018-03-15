@@ -4,13 +4,11 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
-import { provinceGeojson } from './data/metadata'
-import { provinceCollection, provArea, adjacent, metadata } from './data/datadef'
+import axios from 'axios'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import { selectAreaItem as selectAreaItemAction } from './actionReducers'
 import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
-import {render} from 'react-dom'
 import {fromJS} from 'immutable'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import properties from '../../properties'
@@ -49,71 +47,67 @@ class Map extends Component {
   }
 
   componentDidMount = () => {
-    console.debug("didMount!")
     window.addEventListener('resize', this._resize);
     this._resize();
-    // this.restoreFetch = fakeRestServer();
-    // window.addEventListener('load', function() {
-    this._loadGeoJson('provinces', provinceGeojson)
+  }
 
-    console.debug('loaded done')
-      fetch(properties.chronasApiHost + "/areas/" + this.props.selectedYear)
-        .then(res => res.text())
-        .then( (res) => {
-          const areaDefs = JSON.parse(res).data
-          this.props.changeAreaData(areaDefs)
-          var rulStops = [],
-            relStops = []
+  _initializeMap = () => {
+    console.log('### initializing map')
+    const { metadata } = this.props
+    this._loadGeoJson('provinces', metadata.provinces)
+    this._updateMetaMapStyle()
 
-          /*
-           map.addSource('realm-lines', {
-           'type': 'geojson',
-           'data': provinceCollection
-           });
-           */
+    fetch(properties.chronasApiHost + "/areas/" + this.props.selectedYear).then(response => response.json())
+      .then( (areaDefsRequest) => {
+        this.props.changeAreaData(areaDefsRequest)
+        this._simulateYearChange(areaDefsRequest)
+        this._changeArea(areaDefsRequest, "ruler", "ruler")
+      })
+  }
 
-          var rulKeys = Object.keys(metadata['political'])
-          for (var i=0; i < rulKeys.length; i++) {
-            rulStops.push([rulKeys[i], metadata['political'][rulKeys[i]][1]])
-          }
+  _updateMetaMapStyle = () => {
+    console.log('### updating metadata mapstyles')
+    const { metadata } = this.props
 
-          var relKeys = Object.keys(metadata['religion'])
-          for (var i=0; i < relKeys.length; i++) {
-            relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
-          }
+    var rulStops = [],
+      relStops = []
 
-          const mapStyle = this.state.mapStyle
-            .setIn(['layers', areaColorLayerIndex['political'], 'paint'], fromJS(
-              {
-                'fill-color': {
-                  'property': 'r',
-                  'type': 'categorical',
-                  'stops': rulStops,
-                  'default': "rgba(1,1,1,0.3)"
-                },
-                'fill-opacity': 0.6,
-                'fill-outline-color': 'rgba(0,0,0,.2)'
-              }
-            ))
-            .setIn(['layers', areaColorLayerIndex['religion'], 'paint'], fromJS(
-              {
-                "fill-color": {
-                  "property": "e",
-                  "type": "categorical",
-                  "stops": relStops,
-                  "default": "rgba(1,1,1,0.3)"
-                },
-                "fill-opacity": 0.6,
-                "fill-outline-color": "rgba(0,0,0,.2)"
-              }
-            ))
+    var rulKeys = Object.keys(metadata['ruler'])
+    for (var i=0; i < rulKeys.length; i++) {
+      rulStops.push([rulKeys[i], metadata['ruler'][rulKeys[i]][1]])
+    }
 
-          this.setState({mapStyle})
-          this._simulateYearChange(areaDefs)
-          this._changeArea(areaDefs, "political", "political")
-        })
+    var relKeys = Object.keys(metadata['religion'])
+    for (var i=0; i < relKeys.length; i++) {
+      relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
+    }
 
-    // }.bind(this))
+    const mapStyle = this.state.mapStyle
+      .setIn(['layers', areaColorLayerIndex['ruler'], 'paint'], fromJS(
+        {
+          'fill-color': {
+            'property': 'r',
+            'type': 'categorical',
+            'stops': rulStops,
+            'default': "rgba(1,1,1,0.3)"
+          },
+          'fill-opacity': 0.6,
+          'fill-outline-color': 'rgba(0,0,0,.2)'
+        }
+      ))
+      .setIn(['layers', areaColorLayerIndex['religion'], 'paint'], fromJS(
+        {
+          "fill-color": {
+            "property": "e",
+            "type": "categorical",
+            "stops": relStops,
+            "default": "rgba(1,1,1,0.3)"
+          },
+          "fill-opacity": 0.6,
+          "fill-outline-color": "rgba(0,0,0,.2)"
+        }
+      ))
+    this.setState({mapStyle})
   }
 
   _changeArea = (areaDefs, newLabel, newColor) => {
@@ -134,7 +128,7 @@ class Map extends Component {
     }
 
     if (typeof newLabel !== "undefined") {
-      const plCol = utilsMapping.addTextFeat(areaDefs, newLabel)
+      const plCol = utilsMapping.addTextFeat(areaDefs, newLabel, this.props.metadata)
       mapStyle = mapStyle
         .setIn(['sources', 'area-labels', 'data'], fromJS(plCol[0]))
         .setIn(['sources', 'area-outlines', 'data'], fromJS(plCol[2]))
@@ -157,7 +151,6 @@ class Map extends Component {
         return feature
       }))
 
-    console.debug("simuldadassateYdasearChange mapStyle", mapStyle)
     this.setState({mapStyle});
   }
 
@@ -179,7 +172,7 @@ class Map extends Component {
 
         const randomItem = dataPool[getRandomInt(0,dataPool.length-1)]
         const provinceId = randomItem.properties.n
-        const itemId = metadata['political'][randomItem.properties.n][2]
+        const itemId = metadata['ruler'][randomItem.properties.n][2]
 
         this.map.getMap().flyTo({
           center: [
@@ -204,8 +197,16 @@ class Map extends Component {
     // Leaving Area Mod?
     if (modActive.type === "areas" && nextProps.modActive.type === "") {
       // reload
-      console.debug("reload year", selectedYear)
-      this._changeYear(nextProps.selectedYear)
+      if (nextProps.modActive.toUpdate === 'area'){
+        // refresh this year data
+        this._changeYear(nextProps.selectedYear)
+      }
+    } else if (modActive.type === "metadata" && nextProps.modActive.type === "") {
+      // Leaving Metadata Mod
+      if (nextProps.modActive.toUpdate !== ''){
+        // refresh mapstyles and links
+        this._updateMetaMapStyle(modActive.toUpdate)
+      }
     }
 
     // Highlight mod area
@@ -329,8 +330,8 @@ class Map extends Component {
       for (const addedMarker of addedMarkers) {
         console.log("addedMarker",addedMarker);
         fetch('http://fakeapi/markers_' + addedMarker)
-          .then(res => res.text())
-          .then(res => this._loadGeoJson('markers', JSON.parse(res)));
+          .then(res => res.json())
+          .then(res => this._loadGeoJson('markers', res));
       }
     }
 
@@ -391,12 +392,11 @@ class Map extends Component {
   };
 
   _changeYear = (year) => {
-    fetch(properties.chronasApiHost + "/areas/" + year)
-      .then(res => res.text())
-      .then( (res) => {
-        const areaDefs = JSON.parse(res).data
-        this._simulateYearChange(areaDefs)
-        this._changeArea(areaDefs, "political", "political")
+    axios.get(properties.chronasApiHost + "/areas/" + year)
+      .then( (areaDefsRequest) => {
+        this.props.changeAreaData(areaDefsRequest.data)
+        this._simulateYearChange(areaDefsRequest.data)
+        this._changeArea(areaDefsRequest.data, "ruler", "ruler")
         utilsQuery.updateQueryStringParameter('year', year)
       })
   }
@@ -602,6 +602,7 @@ class Map extends Component {
           onViewportChange={this._onViewportChange}
           onHover={this._onHover}
           onClick={this._onClick}
+          onLoad={this._initializeMap}
         >
           {modMarker}
 
@@ -636,6 +637,7 @@ const enhance = compose(
     activeMarkers: state.activeMarkers,
     selectedYear: state.selectedYear,
     selectedItem: state.selectedItem,
+    metadata: state.metadata,
     menuDrawerOpen: state.menuDrawerOpen,
     modActive: state.modActive,
     rightDrawerOpen: state.rightDrawerOpen,

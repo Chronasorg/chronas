@@ -15,13 +15,22 @@ import { setModType , setModData } from '../buttons/actionReducers'
 import {setToken} from "../../../menu/authentication/actionReducers";
 import properties from "../../../../properties";
 import decodeJwt from "jwt-decode";
-
+import { showNotification } from 'admin-on-rest';
 const formStyle = { padding: '0 1em 1em 1em' }
 
 export class AreaForm extends Component {
+
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const token = localStorage.getItem('token');
+      const { initialValues, setModType } = this.props
+
+      if (values.ruler === initialValues.ruler) delete values.ruler
+      if (values.religion === initialValues.religion) delete values.religion
+      if (values.capital === initialValues.capital) delete values.capital
+      if (values.culture === initialValues.culture) delete values.culture
+      if (values.population === initialValues.population) delete values.population
+
+      const token = localStorage.getItem('token')
       fetch(properties.chronasApiHost + "/areas", {
         method: 'PUT',
         headers: {
@@ -32,7 +41,18 @@ export class AreaForm extends Component {
         //make sure to serialize your JSON body
         body: JSON.stringify(values)
       })
-      // this.props.save(values, redirect)
+      .then((res) => {
+        if (res.status === 200) {
+          console.debug(res, this.props)
+          this.props.showNotification("Area Updated")
+          setModType("", [], 'area')
+          this.props.history.goBack()
+        }
+        else {
+          this.props.showNotification("Area Not Updated")
+          setModType("", [], '')
+        }
+      })
     });
 
   componentWillReceiveProps(nextProps) {
@@ -43,7 +63,7 @@ export class AreaForm extends Component {
       this.props.change ("start" , nextProps.selectedYear )
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { setModType } = this.props
     setModType("")
   }
@@ -52,14 +72,7 @@ export class AreaForm extends Component {
     const { setModType, selectedItem, setModData } = this.props
     const selectedProvince = selectedItem.province
     if (selectedProvince) setModData([selectedProvince])
-    setModType("areas")
-
-    const currLocation = this.props.location.pathname
-    const selectedProvinces = currLocation.split("/mod/areas/")[1]
-    if (typeof selectedProvinces !== "undefined" && selectedProvinces !== "") {
-      this.props.change ("provinces" , selectedProvinces)
-      selectedProvinces.split(",").forEach( (prov) => this.props.addModData(prov) )
-    }
+    setModType("areas", selectedProvince ? [selectedProvince] : [])
   }
 
   render() {
@@ -72,7 +85,7 @@ export class AreaForm extends Component {
       submitOnEnter,
       toolbar,
       version,
-    } = this.props;
+    } = this.props
 
     return (
       <form className="simple-form">
@@ -93,7 +106,7 @@ export class AreaForm extends Component {
           submitOnEnter,
         })}
       </form>
-    );
+    )
   }
 }
 
@@ -128,7 +141,8 @@ const enhance = compose(
     {
       // crudUpdate: crudUpdateAction,
       setModType,
-      setModData
+      setModData,
+      showNotification
     }),
   reduxForm({
     form: 'record-form',
