@@ -85,7 +85,7 @@ export const ModMetaAdd = (props) => {
 
     const errors = {}
 
-    if (values.url.indexOf('.wikipedia.org/wiki/') === -1) {
+    if (values.url && values.url.indexOf('.wikipedia.org/wiki/') === -1) {
       errors.url = ["The URL needs to be a full Wikipedia URL"]
     }
     if (values.name === '') {

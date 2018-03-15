@@ -25,6 +25,12 @@ import { ModMetaEdit } from './mod/ModMetaEdit'
 import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
 // import MarkerCreate from '../restricted/markers/MarkerCreate'
+import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
+import Paper from 'material-ui/Paper';
+import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
+
+const nearbyIcon = <IconLocationOn />;
+
 import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../restricted/metadata'
 import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from './actionReducers'
@@ -62,10 +68,22 @@ const resources = {
   users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
 }
 
+const menuIndexByLocation = {
+  '/mod/markers/create': 0,
+  '/mod/metadata/create': 1,
+  '/mod/areas': 2,
+  '/mod/markers': 3,
+  '/mod/metadata': 4,
+}
 class RightDrawerRoutes extends PureComponent {
   constructor (props) {
     super(props)
-    this.state = { hiddenElement: true, metadataType: '', metadataEntity: '' }
+    this.state = {
+      hiddenElement: true,
+      metadataType: '',
+      metadataEntity: '',
+      selectedIndex: 0,
+    }
   }
 
   componentDidMount = () => {
@@ -73,8 +91,16 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   componentWillReceiveProps (nextProps) {
+
+    if (this.props.location.pathname !== nextProps.location.pathname) {
+      this.setState({
+        selectedIndex: menuIndexByLocation[nextProps.location.pathname] || 0
+      })
+    }
+
     const { rightDrawerOpen } = this.props
     console.debug('### MAP rightDrawerOpen', this.props, nextProps)
+
 
     /** Acting on store changes **/
     if (rightDrawerOpen != nextProps.rightDrawerOpen) {
@@ -116,6 +142,8 @@ class RightDrawerRoutes extends PureComponent {
     this.props.setRightDrawerVisibility(false)
   }
 
+  select = (index) => this.setState({selectedIndex: index});
+
   render() {
     const { list, create, edit, show, remove, options, onMenuTap,
       translate, rightDrawerOpen, deselectItem, setRightDrawerVisibility,
@@ -137,8 +165,10 @@ class RightDrawerRoutes extends PureComponent {
 
       // iconElementLeft={<IconButton><NavigationClose />test1</IconButton>}
       // iconElementRight={this.state.logged ? <NavigationClose /> : <NavigationClose />}
-      iconElementLeft={
-        <Tabs
+
+      /*
+
+      <Tabs
           onChange={this.handleChange}
           value={this.state.slideIndex}
         >
@@ -148,6 +178,45 @@ class RightDrawerRoutes extends PureComponent {
           <Tab label="Edit Marker" value={3} />
           <Tab label="Edit Meta" value={4} />
         </Tabs>
+
+       */
+
+      iconElementLeft={
+        <BottomNavigation
+        onChange={this.handleChange}
+        value={this.state.slideIndex}
+        selectedIndex={ this.state.selectedIndex }>
+          <BottomNavigationItem
+            containerElement={<Link to="/mod/markers/create" />}
+            label="Add Marker"
+            icon={nearbyIcon}
+            // onClick={() => this.select(0)}
+          />
+          <BottomNavigationItem
+            containerElement={<Link to="/mod/metadata/create" />}
+            label="Add Meta"
+            icon={nearbyIcon}
+            // onClick={() => this.select(1)}
+          />
+          <BottomNavigationItem
+            containerElement={<Link to="/mod/areas" />}
+            label="Edit Area"
+            icon={nearbyIcon}
+            // onClick={() => this.select(2)}
+          />
+          <BottomNavigationItem
+            containerElement={<Link to="/mod/markers" />}
+            label="Edit Marker"
+            icon={nearbyIcon}
+            // onClick={() => this.select(3)}
+          />
+          <BottomNavigationItem
+            containerElement={<Link to="/mod/metadata" />}
+            label="Edit Meta"
+            icon={nearbyIcon}
+            // onClick={() => this.select(4)}
+          />
+        </BottomNavigation>
       }
       iconElementRight={
         <div>

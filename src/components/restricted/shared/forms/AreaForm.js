@@ -63,6 +63,11 @@ export class AreaForm extends Component {
       this.props.change ("start" , nextProps.selectedYear )
   }
 
+  componentWillUnmount () {
+    const { setModType } = this.props
+    setModType("")
+  }
+
   componentDidMount() {
     const { setModType, selectedItem, setModData } = this.props
     const selectedProvince = selectedItem.province
