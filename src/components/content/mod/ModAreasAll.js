@@ -35,7 +35,6 @@ import Subheader from 'material-ui/Subheader';
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import AreaForm from '../../restricted/shared/forms/AreaForm'
 import utils from "../../map/utils/general"
-import { metadata } from '../../map/data/datadef'
 
 export const ModAreasAll = (props) => {
   const selectedProvince = props.selectedItem.province || ''
@@ -51,12 +50,12 @@ export const ModAreasAll = (props) => {
     'yearEnd': props.selectedYear || 1000,
   }
 
-  const choicesRuler = Object.keys(metadata['ruler']).map((rulerId) => {
-    return { id: rulerId, name: metadata['ruler'][rulerId][0]}
+  const choicesRuler = Object.keys(props.metadata['ruler']).map((rulerId) => {
+    return { id: rulerId, name: props.metadata['ruler'][rulerId][0]}
   }) || {}
 
-  const choicesReligion = Object.keys(metadata['religion']).map((religionId) => {
-    return { id: religionId, name: metadata['religion'][religionId][0]}
+  const choicesReligion = Object.keys(props.metadata['religion']).map((religionId) => {
+    return { id: religionId, name: props.metadata['religion'][religionId][0]}
   }) || {}
 
   const validateValueInput = (values) => {

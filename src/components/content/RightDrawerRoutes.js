@@ -69,7 +69,7 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   componentDidMount = () => {
-    console.debug('### componentDidMount rightDrawerOpen', this.props)
+    console.debug('### RightDrawerRoutes mounted with props', this.props)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -120,7 +120,7 @@ class RightDrawerRoutes extends PureComponent {
     const { list, create, edit, show, remove, options, onMenuTap,
       translate, rightDrawerOpen, deselectItem, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme,
-      setModData, setModDataLng, setModDataLat, location, history } = this.props
+      setModData, setModDataLng, setModDataLat, location, history, metadata } = this.props
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
@@ -148,13 +148,6 @@ class RightDrawerRoutes extends PureComponent {
           <Tab label="Edit Marker" value={3} />
           <Tab label="Edit Meta" value={4} />
         </Tabs>
-        // <div>
-        //   <FlatButton label="Add Meta" />
-        //   <FlatButton label="Add Marker" />
-        //   <FlatButton label="Edit Meta" />
-        //   <FlatButton label="Edit Area" />
-        //   <FlatButton label="Edit Marker" />
-        // </div>
       }
       iconElementRight={
         <div>
@@ -242,7 +235,7 @@ class RightDrawerRoutes extends PureComponent {
           <Route
             exact
             path={'/article'}
-            render={restrictPage(articletHeader, Content)}
+            render={restrictPage(articletHeader, Content, '', { metadata } )}
         />
           <Route
             exact
@@ -264,9 +257,9 @@ class RightDrawerRoutes extends PureComponent {
           let finalProps
 
           if (resourceKey === 'areas') {
-            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, handleClose: this.handleClose }
+            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, handleClose: this.handleClose }
           } else if (resourceKey === 'metadata') {
-            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType }
+            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType }
           } else if (resourceKey === 'markers') {
             finalProps = { ...commonProps, setModDataLng, setModDataLat }
           } else {
@@ -315,6 +308,7 @@ const mapStateToProps = (state, props) => ({
   rightDrawerOpen: state.rightDrawerOpen,
   selectedItem: state.selectedItem,
   selectedYear: state.selectedYear,
+  metadata: state.metadata,
   locale: state.locale, // force redraw on locale change
   theme: props.theme, // force redraw on theme changes
 })

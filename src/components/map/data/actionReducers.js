@@ -1,6 +1,6 @@
 export const SET_LOAD_STATUS = 'SET_LOAD_STATUS'
 export const SET_METADATA = 'SET_METADATA'
-export const UPDATE_SINGLE_METADATA = 'SET_METADATA'
+export const UPDATE_SINGLE_METADATA = 'UPDATE_SINGLE_METADATA'
 
 /** Actions **/
 
@@ -37,6 +37,7 @@ export const metadataReducer = (defaultState = {}) =>
       case SET_METADATA:
         return payload
       case UPDATE_SINGLE_METADATA:
+        console.debug('reducer',previousState,payload,{ ...previousState, [payload[0]]: payload[1] })
         return { ...previousState, [payload[0]]: payload[1] }
       default:
         return previousState

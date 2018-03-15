@@ -3,32 +3,40 @@ import PropTypes from 'prop-types'
 import { reduxForm } from 'redux-form'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-// import getDefaultValues from './getDefaultValues';
-// import FormInput from './FormInput';
-// import Toolbar from './Toolbar';
 import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
-// import { crudUpdate as crudUpdateAction } from 'admin-on-rest'
-// import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 import { setModType, setModData } from '../buttons/actionReducers'
-import { setToken } from '../../../menu/authentication/actionReducers'
+import { updateSingleMetadata } from './../../../map/data/actionReducers'
 import properties from '../../../../properties'
-import decodeJwt from 'jwt-decode'
 import { showNotification } from 'admin-on-rest'
 const formStyle = { padding: '0 1em 1em 1em' }
 
 export class MetaForm extends Component {
+  state = {
+    metaToUpdate: '',
+    successFullyUpdated: false
+  }
+
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
       console.debug(this.props)
 
       const { initialValues } = this.props
 
+      const wikiURL = values.url
+      const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
+      let newWikiURL
+      if (wikiIndex > -1) {
+        newWikiURL = wikiURL.substring(wikiIndex + 20, wikiURL.length)
+      } else {
+        return 'Not a full Wikipedia URL'
+      }
+
       const nextBodyByType = {
-        ruler: [values.name, values.color, values.url],
-        culture: [values.name, values.color, values.url],
-        religion: [values.name, values.color, values.url],
+        ruler: [values.name, values.color, newWikiURL],
+        culture: [values.name, values.color, newWikiURL],
+        religion: [values.name, values.color, newWikiURL],
         capital: values.url,
         province: values.url
       }
@@ -51,22 +59,41 @@ export class MetaForm extends Component {
         .then((res) => {
           if (res.status === 200) {
             console.debug(res, this.props)
+
+            this.setState({
+              metaToUpdate: metadataItem,
+              successFullyUpdated: true
+            })
             this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
-            setModType('')
             this.props.history.goBack()
             // this.props.save(values, redirect)
-            // // this.props.history.push('/article')
+            // this.props.history.push('/article')
             // this.props.handleClose()
             // this.forceUpdate()
           } else {
+            this.setState({
+              metaToUpdate: '',
+              successFullyUpdated: false
+            })
             this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
           }
         })
     });
 
   componentWillUnmount () {
-    const { setModType } = this.props
-    setModType('')
+    const { metaToUpdate } = this.state
+    const { setModType, updateSingleMetadata } = this.props
+
+    // only update relevant
+    fetch(properties.chronasApiHost + "/metadata/" + metaToUpdate)
+      .then(res => res.json())
+      .then( (metadata) => {
+        updateSingleMetadata(metaToUpdate, metadata)
+      })
+      .then( () => {
+        setModType('', [], metaToUpdate)
+      })
+      .catch((err) => setModType(''))
   }
 
   componentDidMount () {
@@ -150,6 +177,7 @@ const enhance = compose(
       // crudUpdate: crudUpdateAction,
       setModType,
       setModData,
+      updateSingleMetadata,
       showNotification
     }),
   reduxForm({

@@ -34,9 +34,9 @@ import Subheader from 'material-ui/Subheader';
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import AreaForm from '../../restricted/shared/forms/AreaForm'
 import utils from "../../map/utils/general"
-import { metadata } from '../../map/data/datadef'
 
-export const ModAreasAll = (props) => {
+export const ModProvincesEdit = (props) => {
+  const { metadata } = props
   const selectedProvince = props.selectedItem.province || ''
   // const activeAreaDim = props.activeArea.color
   // const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]

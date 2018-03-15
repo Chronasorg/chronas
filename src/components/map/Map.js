@@ -47,73 +47,67 @@ class Map extends Component {
   }
 
   componentDidMount = () => {
-    const { metadata } = this.props
     window.addEventListener('resize', this._resize);
     this._resize();
-    // this.restoreFetch = fakeRestServer();
-    // window.addEventListener('load', function() {
-    // this._loadGeoJson('provinces', provinceGeojson)
+  }
 
-    // window.addEventListener('load', function() { // fourth stop printing output to standard
-    //   axios.get(properties.chronasApiHost + "/metadata/provinces")
-    //     .then( (provinceRequest) => {
-          this._loadGeoJson('provinces', metadata.provinces)
-          fetch(properties.chronasApiHost + "/areas/" + this.props.selectedYear).then(response => response.json())
-            .then( (areaDefsRequest) => {
-              this.props.changeAreaData(areaDefsRequest)
-              var rulStops = [],
-                relStops = []
+  _initializeMap = () => {
+    console.log('### initializing map')
+    const { metadata } = this.props
+    this._loadGeoJson('provinces', metadata.provinces)
+    this._updateMetaMapStyle()
 
-              /*
-               map.addSource('realm-lines', {
-               'type': 'geojson',
-               'data': provinceCollection
-               });
-               */
+    fetch(properties.chronasApiHost + "/areas/" + this.props.selectedYear).then(response => response.json())
+      .then( (areaDefsRequest) => {
+        this.props.changeAreaData(areaDefsRequest)
+        this._simulateYearChange(areaDefsRequest)
+        this._changeArea(areaDefsRequest, "ruler", "ruler")
+      })
+  }
 
-              var rulKeys = Object.keys(metadata['ruler'])
-              for (var i=0; i < rulKeys.length; i++) {
-                rulStops.push([rulKeys[i], metadata['ruler'][rulKeys[i]][1]])
-              }
+  _updateMetaMapStyle = () => {
+    console.log('### updating metadata mapstyles')
+    const { metadata } = this.props
 
-              var relKeys = Object.keys(metadata['religion'])
-              for (var i=0; i < relKeys.length; i++) {
-                relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
-              }
+    var rulStops = [],
+      relStops = []
 
-              const mapStyle = this.state.mapStyle
-                .setIn(['layers', areaColorLayerIndex['ruler'], 'paint'], fromJS(
-                  {
-                    'fill-color': {
-                      'property': 'r',
-                      'type': 'categorical',
-                      'stops': rulStops,
-                      'default': "rgba(1,1,1,0.3)"
-                    },
-                    'fill-opacity': 0.6,
-                    'fill-outline-color': 'rgba(0,0,0,.2)'
-                  }
-                ))
-                .setIn(['layers', areaColorLayerIndex['religion'], 'paint'], fromJS(
-                  {
-                    "fill-color": {
-                      "property": "e",
-                      "type": "categorical",
-                      "stops": relStops,
-                      "default": "rgba(1,1,1,0.3)"
-                    },
-                    "fill-opacity": 0.6,
-                    "fill-outline-color": "rgba(0,0,0,.2)"
-                  }
-                ))
+    var rulKeys = Object.keys(metadata['ruler'])
+    for (var i=0; i < rulKeys.length; i++) {
+      rulStops.push([rulKeys[i], metadata['ruler'][rulKeys[i]][1]])
+    }
 
-              this.setState({mapStyle})
-              this._simulateYearChange(areaDefsRequest)
-              this._changeArea(areaDefsRequest, "ruler", "ruler")
-            })
-        // })
+    var relKeys = Object.keys(metadata['religion'])
+    for (var i=0; i < relKeys.length; i++) {
+      relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
+    }
 
-    // }.bind(this))
+    const mapStyle = this.state.mapStyle
+      .setIn(['layers', areaColorLayerIndex['ruler'], 'paint'], fromJS(
+        {
+          'fill-color': {
+            'property': 'r',
+            'type': 'categorical',
+            'stops': rulStops,
+            'default': "rgba(1,1,1,0.3)"
+          },
+          'fill-opacity': 0.6,
+          'fill-outline-color': 'rgba(0,0,0,.2)'
+        }
+      ))
+      .setIn(['layers', areaColorLayerIndex['religion'], 'paint'], fromJS(
+        {
+          "fill-color": {
+            "property": "e",
+            "type": "categorical",
+            "stops": relStops,
+            "default": "rgba(1,1,1,0.3)"
+          },
+          "fill-opacity": 0.6,
+          "fill-outline-color": "rgba(0,0,0,.2)"
+        }
+      ))
+    this.setState({mapStyle})
   }
 
   _changeArea = (areaDefs, newLabel, newColor) => {
@@ -203,8 +197,16 @@ class Map extends Component {
     // Leaving Area Mod?
     if (modActive.type === "areas" && nextProps.modActive.type === "") {
       // reload
-      console.debug("reload year", selectedYear)
-      this._changeYear(nextProps.selectedYear)
+      if (nextProps.modActive.toUpdate === 'area'){
+        // refresh this year data
+        this._changeYear(nextProps.selectedYear)
+      }
+    } else if (modActive.type === "metadata" && nextProps.modActive.type === "") {
+      // Leaving Metadata Mod
+      if (nextProps.modActive.toUpdate !== ''){
+        // refresh mapstyles and links
+        this._updateMetaMapStyle(modActive.toUpdate)
+      }
     }
 
     // Highlight mod area
@@ -600,6 +602,7 @@ class Map extends Component {
           onViewportChange={this._onViewportChange}
           onHover={this._onHover}
           onClick={this._onClick}
+          onLoad={this._initializeMap}
         >
           {modMarker}
 

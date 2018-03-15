@@ -35,11 +35,11 @@ import Subheader from 'material-ui/Subheader';
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import MetaForm from '../../restricted/shared/forms/MetaForm'
 import utils from "../../map/utils/general"
-import { metadata } from '../../map/data/datadef'
 import ColorInput from 'aor-color-input'
 import AutocompleteDisallowInput from "../../restricted/shared/inputs/AutocompleteDisallowInput"
 
 export const ModMetaAdd = (props) => {
+  const { metadata } = props
   const selectedProvince = (props.selectedItem || {}).province || ''
   const activeArea = props.activeArea || { data: {} }
   // const activeAreaDim = props.activeArea.color
@@ -49,7 +49,7 @@ export const ModMetaAdd = (props) => {
   const defaultValues = {
     'provinces': selectedProvince || '',
     'dataRuler': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')] || '',
-    'dataCulture': (a-apizxzxzxzxzxzxzxzxzzxzctiveArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')] || '',
+    'dataCulture': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')] || '',
     'dataReligion': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')] || '',
     'dataCapital': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('capital')] || '',
     'dataPopulation': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('population')] || 1000,
@@ -85,8 +85,8 @@ export const ModMetaAdd = (props) => {
 
     const errors = {}
 
-    if (values.url === '') {
-      errors.url = ["This url already exists. If you like to edit an existing resource click Edit Meta on top."]
+    if (values.url.indexOf('.wikipedia.org/wiki/') === -1) {
+      errors.url = ["The URL needs to be a full Wikipedia URL"]
     }
     if (values.name === '') {
       errors.name = ["This name already exists. If you like to edit an existing resource click Edit Meta on top."]

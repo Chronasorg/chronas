@@ -35,10 +35,10 @@ import Subheader from 'material-ui/Subheader';
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import MetaForm from '../../restricted/shared/forms/MetaForm'
 import utils from "../../map/utils/general"
-import { metadata } from '../../map/data/datadef'
 import ColorInput from 'aor-color-input'
 
 export const ModMetaEdit = (props) => {
+  const { metadata } = props
   const selectedProvince = (props.selectedItem || {}).province || ''
   const activeArea = props.activeArea || { data: {} }
 
@@ -86,7 +86,9 @@ export const ModMetaEdit = (props) => {
   const choicesMainReligion = [ { id: 'todo', name: 'todo' } ]
 
   const validateValueInput = (values) => {
-    const errors = {}
+    if (values.url !== defaultValues['ruler'].url && values.url.indexOf('.wikipedia.org/wiki/') === -1) {
+      errors.url = ["The URL needs to be a full Wikipedia URL"]
+    }
 
     // if (values.ruler === defaultValues.dataRuler &&
     //   values.culture === defaultValues.dataCulture &&

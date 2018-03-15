@@ -22,7 +22,7 @@ export class AreaForm extends Component {
 
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const { initialValues } = this.props
+      const { initialValues, setModType } = this.props
 
       if (values.ruler === initialValues.ruler) delete values.ruler
       if (values.religion === initialValues.religion) delete values.religion
@@ -45,11 +45,12 @@ export class AreaForm extends Component {
         if (res.status === 200) {
           console.debug(res, this.props)
           this.props.showNotification("Area Updated")
-          setModType("")
+          setModType("", [], 'area')
           this.props.history.goBack()
         }
         else {
           this.props.showNotification("Area Not Updated")
+          setModType("", [], '')
         }
       })
     });
@@ -62,23 +63,11 @@ export class AreaForm extends Component {
       this.props.change ("start" , nextProps.selectedYear )
   }
 
-  componentWillUnmount() {
-    const { setModType } = this.props
-    setModType("")
-  }
-
   componentDidMount() {
     const { setModType, selectedItem, setModData } = this.props
     const selectedProvince = selectedItem.province
     if (selectedProvince) setModData([selectedProvince])
-    setModType("areas")
-
-    // const currLocation = this.props.location.pathname
-    // const selectedProvinces = currLocation.split("/mod/areas/")[1]
-    // if (typeof selectedProvinces !== "undefined" && selectedProvinces !== "") {
-    //   this.props.change ("provinces" , selectedProvinces)
-    //   selectedProvinces.split(",").forEach( (prov) => this.props.addModData(prov) )
-    // }
+    setModType("areas", selectedProvince ? [selectedProvince] : [])
   }
 
   render() {
