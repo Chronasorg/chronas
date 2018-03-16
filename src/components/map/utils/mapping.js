@@ -8,7 +8,7 @@ const utils = {
   activeTextFeat: 'ruler',
   activeAreaFeat: 'ruler',
 
-  countryIsSetup: false,
+  rulIsSetup: false,
   culIsSetup: false,
   relIsSetup: false,
   relGenIsSetup: false,
@@ -17,8 +17,8 @@ const utils = {
   relStops: [],
 
   _scaleLogText: scale.scaleLog()
-    .domain([500, 15000])
-    .range([0, 700]),
+    .domain([1, 10000])
+    .range([0, 5000]),
 
   isTouching: function (array1, array2) {
     for (var i = 0; i < array1.length; i++) {
@@ -277,17 +277,18 @@ const utils = {
     }
 
     for (var key in myId) {
-      if (postfix == 'co') {
+      if (postfix === 'r') {
         tmpName = ''
         if (metadata['ruler'][key]) tmpName = metadata['ruler'][key][0]
-      } else if (postfix == 'rg') {
-        tmpName = key
-      } else if (postfix == 'cu') {
-        tmpName = ''
-        if (culPlus[key]) tmpName = culPlus[key][0]
-      } else if (postfix == 'e') {
+      } else if (postfix === 'e') {
         tmpName = ''
         if (metadata['religion'][key]) tmpName = metadata['religion'][key][0]
+      } else if (postfix === 'g') {
+        tmpName = ''
+        if (metadata['religionGeneral'][key]) tmpName = metadata['religionGeneral'][key][0]
+      } else if (postfix === 'c') {
+        tmpName = ''
+        if (metadata['culture'][key]) tmpName = metadata['culture'][key][0]
       }
 
       for (var i1 = 1; i1 < myId[key].length; i1++) {
@@ -358,11 +359,11 @@ const utils = {
 
         }
 
-        multiLine.properties.n = key
-        multiLine.properties.d = this._scaleLogText(turf.area(multiLine) / 100000000) //
+        multiLine.properties.n = tmpName
+        multiLine.properties.d = this._scaleLogText(turf.lineDistance(multiLine)) //
         myLineColl.features.push(multiLine)
 
-        var angleDeg = Math.atan2(lineCoordinates[2][1] - lineCoordinates[0][1], lineCoordinates[2][0] - lineCoordinates[0][0]) * 180 / Math.PI
+        // var angleDeg = Math.atan2(lineCoordinates[2][1] - lineCoordinates[0][1], lineCoordinates[2][0] - lineCoordinates[0][0]) * 180 / Math.PI
         // var line = turf.lineString(lineCoordinates)
         // point.properties.n = tmpName
         // point.properties.d = Math.round(Math.sqrt(turf.lineDistance(line))) * 10
@@ -387,15 +388,15 @@ const utils = {
    case "country":
 
    for (var i = 0; i < provinceGeojson.features.length; i++) {
-   tmpCountry = "undefined";
+   tmpRul = "undefined";
    tmpProv = provinceGeojson.features[i].properties.name;
 
    if (activeYear.hasOwnProperty(tmpProv)) {
-   tmpCountry = activeYear[tmpProv][0];
+   tmpRul = activeYear[tmpProv][0];
    }
 
-   if (tmpCountry != "undefined")
-   provinceGeojson.features[i].properties.Acolor = rulPlus[tmpCountry][1];
+   if (tmpRul != "undefined")
+   provinceGeojson.features[i].properties.Acolor = rulPlus[tmpRul][1];
    else {
    provinceGeojson.features[i].properties.Acolor = undefinedColor;
    }
@@ -461,23 +462,23 @@ const utils = {
   addTextFeat: function (areaDefs, setActiveFeat, metadata) {
     this.activeTextFeat = setActiveFeat
 
-    if ((this.activeTextFeat === 'ruler' && !this.countryIsSetup) ||
+    if ((this.activeTextFeat === 'ruler' && !this.rulIsSetup) ||
       (this.activeTextFeat === 'culture' && !this.culIsSetup) ||
       (this.activeTextFeat === 'religion' && !this.relIsSetup) ||
       (this.activeTextFeat === 'religionGeneral' && !this.relGenIsSetup)) {
-      var countryCollection = {}
+      var rulCollection = {}
       var relCollection = {}
-
-      var relGenIdCollection = {}
+      var relGenCollection = {}
       var culCollection = {}
       var popCollection = {}
 
-      var tmpProv, tmpCountry, tmpRel, tmpCul, tmpPop, tmpCap, tmpCoo
+      var tmpProv, tmpRul, tmpRel, tmpRelGen, tmpCul, tmpPop, tmpCap, tmpCoo
 
       for (var i = 0; i < metadata.provinces.features.length; i++) {  // tmpLength
         tmpCoo = undefined
-        tmpCountry = undefined
+        tmpRul = undefined
         tmpRel = undefined
+        tmpRelGen = undefined
         tmpCul = undefined
         tmpPop = undefined
         tmpCap = undefined
@@ -490,42 +491,55 @@ const utils = {
           if (areaDefs[tmpProv] === null) {
             areaDefs[tmpProv] = ["SWE",null,null,null,null]
           }
-          tmpCountry = areaDefs[tmpProv][0]
+          tmpRul = areaDefs[tmpProv][0]
           tmpCul = areaDefs[tmpProv][1]
           tmpRel = areaDefs[tmpProv][2]
+          tmpRelGen = (metadata['religion'][tmpRel] || [])[3]
           tmpCap = areaDefs[tmpProv][3]
           tmpPop = areaDefs[tmpProv][4]
 
-          metadata.provinces.features[i].properties.Cul = tmpCul
-          metadata.provinces.features[i].properties.Rel = tmpRel
-          metadata.provinces.features[i].properties.Pop = tmpPop
-          metadata.provinces.features[i].properties.Cap = tmpCap
+          metadata.provinces.features[i].properties.c = tmpCul
+          metadata.provinces.features[i].properties.e = tmpRel
+          metadata.provinces.features[i].properties.g = tmpPop
+          metadata.provinces.features[i].properties.c = tmpCap
 
-          if (this.activeTextFeat == "ruler" && metadata['ruler'][tmpCountry]) {
-            metadata.provinces.features[i].properties.nameLabel = metadata['ruler'][tmpCountry][0]
+          if (this.activeTextFeat === "ruler" && metadata['ruler'][tmpRul]) {
+            metadata.provinces.features[i].properties.nameLabel = metadata['ruler'][tmpRul][0]
           }
-          else if (this.activeTextFeat == "religion" && metadata['religion'][tmpCountry]) {
-            metadata.provinces.features[i].properties.nameLabel = metadata['religion'][tmpCountry][0]
+          else if (this.activeTextFeat === "religion" && metadata['religion'][tmpRel]) {
+            metadata.provinces.features[i].properties.nameLabel = metadata['religion'][tmpRel][0]
+          }
+          else if (this.activeTextFeat === "religionGeneral" && metadata['religionGeneral'][tmpRelGen]) {
+            metadata.provinces.features[i].properties.nameLabel = metadata['religionGeneral'][tmpRelGen][0]
+          }
+          else if (this.activeTextFeat === "culture" && metadata['culture'][tmpCul]) {
+            metadata.provinces.features[i].properties.nameLabel = metadata['culture'][tmpCul][0]
           }
         }
 
-        if (this.activeTextFeat === 'ruler' && !this.countryIsSetup) { this.prepareCollectionIDs(countryCollection, tmpCountry, i) }
-        if (this.activeTextFeat === 'culture' && !this.culIsSetup) { this.prepareCollectionIDs(culCollection, tmpCul, i) }
+        if (this.activeTextFeat === 'ruler' && !this.rulIsSetup) { this.prepareCollectionIDs(rulCollection, tmpRul, i) }
         if (this.activeTextFeat === 'religion' && !this.relIsSetup) { this.prepareCollectionIDs(relCollection, tmpRel, i) }
-        // if (!relGenIsSetup)
-        //     prepareCollectionIDs(relGenIdCollection, relGen[tmpRel][0], i);
+        if (this.activeTextFeat === 'religionGeneral' && !this.relGenIsSetup) { this.prepareCollectionIDs(relGenCollection, tmpRelGen, i) }
+        if (this.activeTextFeat === 'culture' && !this.culIsSetup) { this.prepareCollectionIDs(culCollection, tmpCul, i) }
       }
 
-      if (!this.countryIsSetup && (this.activeTextFeat === 'ruler')) {
-        // this.countryIsSetup = true;
-        return this.fillCollectionId(countryCollection, null, 'co', metadata)
-      } else if (!this.culIsSetup && (this.activeTextFeat === 'culture')) {
+      if (!this.rulIsSetup && (this.activeTextFeat === 'ruler')) {
+        // this.rulIsSetup = true;
+        return this.fillCollectionId(rulCollection, null, 'r', metadata)
+      }
+      else if (!this.culIsSetup && (this.activeTextFeat === 'culture')) {
         // this.culIsSetup = true;
-        return this.fillCollectionId(culCollection, null, 'cu', metadata)
-      } else if (!this.relIsSetup && (this.activeTextFeat === 'religion')) {
+        return this.fillCollectionId(culCollection, null, 'c', metadata)
+      }
+      else if (!this.relIsSetup && (this.activeTextFeat === 'religion')) {
         // this.relIsSetup = true;
         return this.fillCollectionId(relCollection, null, 'e', metadata)
-      } else {
+      }
+      else if (!this.relGenIsSetup && (this.activeTextFeat === 'religionGeneral')) {
+        // this.relGenIsSetup = true;
+        return this.fillCollectionId(relGenCollection, null, 'g', metadata)
+      }
+      else {
         return []
       }
     }
@@ -536,9 +550,9 @@ const utils = {
   },
 
   prepareCollectionIDs: function (targetC, attr, provId) {
-    if (attr !== 'na' && attr != undefined) {
+    if (attr && attr !== 'na') {
       if (targetC.hasOwnProperty(attr)) {
-        if (targetC[attr][0].length == 0 || this.isTouching(targetC[attr][0], adjacent[provId])) {
+        if (targetC[attr][0].length === 0 || this.isTouching(targetC[attr][0], adjacent[provId])) {
           targetC[attr][0].push(provId)
         } else {
           let it = 1

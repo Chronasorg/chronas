@@ -7,11 +7,12 @@ export default {
       case 'culture':
         return 1
       case 'religion':
+      case 'religionGeneral':
         return 2
       case 'capital':
         return 3
       case 'population':
-        return 4
+        return 3
       default:
         return 0
     }

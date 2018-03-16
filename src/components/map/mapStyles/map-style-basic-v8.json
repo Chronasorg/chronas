@@ -98,7 +98,7 @@
       "paint": {}
     },
     {
-      "id": "main-religion",
+      "id": "religionGeneral",
       "type": "fill",
       "maxzoom": 4,
       "source": "provinces",
@@ -112,6 +112,16 @@
       "id": "culture",
       "type": "fill",
       "maxzoom": 4,
+      "source": "provinces",
+      "layout": {
+        "visibility": "none"
+      },
+      "interactive": true,
+      "paint": {}
+    },
+    {
+      "id": "population",
+      "type": "fill-extrusion",
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -156,7 +166,7 @@
       "layout": {
         "symbol-spacing": 1000,
         "icon-allow-overlap": false,
-        "text-field": "{nameLabel}",
+        "text-field": "{n}",
         "text-font": ["Cinzel Regular"],
         "text-transform": "uppercase",
         "text-size":
@@ -164,9 +174,9 @@
           "type": "exponential",
           "stops": [
             [{"zoom": 0, "value": 100}, 0],
-            [{"zoom": 0, "value": 800}, 2],
+            [{"zoom": 0, "value": 5000}, 5],
             [{"zoom": 20, "value": 100}, 50],
-            [{"zoom": 20, "value": 800}, 250]
+            [{"zoom": 20, "value": 5000}, 500]
 
           ], "property": "d",
           "default": 50

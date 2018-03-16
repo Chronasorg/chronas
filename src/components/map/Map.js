@@ -12,7 +12,7 @@ import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionRed
 import {fromJS} from 'immutable'
 import MapGL, {Marker, Popup} from 'react-map-gl'
 import properties from '../../properties'
-import {defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, areaColorLayerIndex } from './mapStyles/map-style.js'
+import {defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, populationOpacityScale, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
 import _ from 'lodash'
@@ -61,16 +61,20 @@ class Map extends Component {
       .then( (areaDefsRequest) => {
         this.props.changeAreaData(areaDefsRequest)
         this._simulateYearChange(areaDefsRequest)
-        this._changeArea(areaDefsRequest, "ruler", "ruler")
+        this._changeArea(areaDefsRequest, this.props.activeArea.label, this.props.activeArea.color)
       })
   }
 
   _updateMetaMapStyle = () => {
     console.log('### updating metadata mapstyles')
-    const { metadata } = this.props
+    const { metadata, activeArea } = this.props
 
     var rulStops = [],
-      relStops = []
+      relStops = [],
+      relGenStops = [],
+      culStops = [],
+      populationStops = [[0, populationColorScale[0]]],
+      populationOpacityStops = [[0, populationOpacityScale[0]]]
 
     var rulKeys = Object.keys(metadata['ruler'])
     for (var i=0; i < rulKeys.length; i++) {
@@ -81,6 +85,22 @@ class Map extends Component {
     for (var i=0; i < relKeys.length; i++) {
       relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
     }
+
+    var relGenKeys = Object.keys(metadata['religionGeneral'])
+    for (var i=0; i < relGenKeys.length; i++) {
+      relGenStops.push([relGenKeys[i], metadata['religionGeneral'][relGenKeys[i]][1]])
+    }
+
+    var culKeys = Object.keys(metadata['culture'])
+    for (var i=0; i < culKeys.length; i++) {
+      culStops.push([culKeys[i], metadata['culture'][culKeys[i]][1]])
+    }
+
+    // set colorscale ceiling to max on map
+    //populationStops.push([Math.max.apply(Math,Object.keys( activeArea.data ).map(function ( key ) { return activeArea.data[key][4] })), populationColorScale[1]])
+    populationStops.push([500000, populationColorScale[1]])
+    populationOpacityStops.push([500000, populationOpacityScale[1]])
+
 
     const mapStyle = this.state.mapStyle
       .setIn(['layers', areaColorLayerIndex['ruler'], 'paint'], fromJS(
@@ -107,12 +127,81 @@ class Map extends Component {
           "fill-outline-color": "rgba(0,0,0,.2)"
         }
       ))
+      .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint'], fromJS(
+        {
+          "fill-color": {
+            "property": "g",
+            "type": "categorical",
+            "stops": relGenStops,
+            "default": "rgba(1,1,1,0.3)"
+          },
+          "fill-opacity": 0.6,
+          "fill-outline-color": "rgba(0,0,0,.2)"
+        }
+      ))
+      .setIn(['layers', areaColorLayerIndex['culture'], 'paint'], fromJS(
+        {
+          "fill-color": {
+            "property": "c",
+            "type": "categorical",
+            "stops": culStops,
+            "default": "rgba(1,1,1,0.3)"
+          },
+          "fill-opacity": 0.6,
+          "fill-outline-color": "rgba(0,0,0,.2)"
+        }
+      ))
+      .setIn(['layers', areaColorLayerIndex['population'], 'paint'], fromJS(
+        {
+          "fill-extrusion-color": {
+            "property": "p",
+            "type": "exponential",
+            "stops": populationStops,
+            "default": "rgba(1,1,1,0.3)"
+          },
+          "fill-extrusion-opacity": 0.3,
+            "fill-extrusion-height": {
+            "property": "p",
+            "type": "identity",
+            "default": 1000
+          },
+        }
+      ))
+
+    /*
+    {
+            "property": "p",
+            "type": "exponential",
+            "stops": populationOpacityStops,
+            "default": 0.2
+          }
+     */
+    console.debug("populationOpacityStops",populationOpacityStops)
+
+    // ["get", "p"]
+    // "fill-extrusion-height": {
+    //   "property": "p",
+    //   "type": "exponential",
+    //   "stops": populationStops,
+    //   "default": "rgba(1,1,1,0.3)"
+    // },
+
+      // .setIn(['layers', areaColorLayerIndex['population'], 'paint'], fromJS(
+      //   {
+      //     "extrusion-height": {
+      //       "property": "p",
+      //       "type": "exponential",
+      //       "stops": populationStops,
+      //       "default": "rgba(1,1,1,0.3)"
+      //     },
+      //     "fill-opacity": 0.6,
+      //     "fill-outline-color": "rgba(0,0,0,.2)"
+      //   }
+      // ))
     this.setState({mapStyle})
   }
 
   _changeArea = (areaDefs, newLabel, newColor) => {
-    console.debug("changing area " + newLabel + newColor, areaDefs)
-
     let mapStyle = this.state.mapStyle
 
     if (typeof newColor !== "undefined") {
@@ -138,16 +227,19 @@ class Map extends Component {
   }
 
   _simulateYearChange = (areaDefs) => {
+    const { religionGeneral, religion } = this.props.metadata
     const sourceId = "provinces"
     const prevMapStyle = this.state.mapStyle
     let geojson = prevMapStyle
       .getIn(['sources', sourceId, 'data']).toJS()
-    const activeYear = {}
 
     let mapStyle = prevMapStyle
       .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function(feature) {
         feature.properties.r = (areaDefs[feature.properties.name] || [])[0]
+        feature.properties.c = (areaDefs[feature.properties.name] || [])[1]
         feature.properties.e = (areaDefs[feature.properties.name] || [])[2]
+        feature.properties.g = (religionGeneral[(religion[(areaDefs[feature.properties.name] || [])[2]] || [])[3]] || "undefined")[0]
+        feature.properties.p = (areaDefs[feature.properties.name] || [])[4]
         return feature
       }))
 
@@ -277,6 +369,7 @@ class Map extends Component {
         .setIn(['sources', 'area-mod', 'data', 'features'], [])
       this.setState({mapStyle})
     }
+
     // Year changed?
     if (selectedYear != nextProps.selectedYear) {
       console.debug("###### Year changed from " + selectedYear + " to " + nextProps.selectedYear)
@@ -396,7 +489,7 @@ class Map extends Component {
       .then( (areaDefsRequest) => {
         this.props.changeAreaData(areaDefsRequest.data)
         this._simulateYearChange(areaDefsRequest.data)
-        this._changeArea(areaDefsRequest.data, "ruler", "ruler")
+        this._changeArea(areaDefsRequest.data, this.props.activeArea.label, this.props.activeArea.color)
         utilsQuery.updateQueryStringParameter('year', year)
       })
   }

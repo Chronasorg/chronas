@@ -38,14 +38,22 @@ const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, 
     Both:
     <RaisedButton style={styles.button} label="Ruler" primary={activeArea.label === 'ruler' && activeArea.color === 'ruler'} onClick={() => setAreaColorLabel('ruler','ruler')} />
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion' && activeArea.color === 'religion'} onClick={() => setAreaColorLabel('religion','religion')} />
+    <RaisedButton style={styles.button} label="ReligionGeneral" primary={activeArea.label === 'religionGeneral' && activeArea.color === 'religionGeneral'} onClick={() => setAreaColorLabel('religionGeneral','religionGeneral')} />
+    <RaisedButton style={styles.button} label="Culture" primary={activeArea.label === 'culture' && activeArea.color === 'culture'} onClick={() => setAreaColorLabel('culture','culture')} />
+    <RaisedButton style={styles.button} label="Population" primary={activeArea.label === '' && activeArea.color === 'population'} onClick={() => setAreaColorLabel('population','')} />
     {JSON.stringify(activeArea.year)}
     Label:
     <RaisedButton style={styles.button} label="Ruler" primary={activeArea.label === 'ruler'} onClick={() => changeLabel('ruler')} />
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion'} onClick={() => changeLabel('religion')} />
+    <RaisedButton style={styles.button} label="ReligionGeneral" primary={activeArea.label === 'religionGeneral'} onClick={() => changeLabel('religionGeneral')} />
+    <RaisedButton style={styles.button} label="Culture" primary={activeArea.label === 'culture'} onClick={() => changeLabel('culture')} />
     {activeArea.label}
     Color:
     <RaisedButton style={styles.button} label="Ruler" primary={activeArea.color === 'ruler'} onClick={() => changeColor('ruler')} />
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.color === 'religion'} onClick={() => changeColor('religion')} />
+    <RaisedButton style={styles.button} label="ReligionGeneral" primary={activeArea.color === 'religionGeneral'} onClick={() => changeColor('religionGeneral')} />
+    <RaisedButton style={styles.button} label="Culture" primary={activeArea.color === 'culture'} onClick={() => changeColor('culture')} />
+    <RaisedButton style={styles.button} label="population" primary={activeArea.color === 'population'} onClick={() => changeColor('population')} />
     {activeArea.color}
     <br/>
     <h4>Marker</h4>

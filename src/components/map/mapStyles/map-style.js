@@ -100,3 +100,8 @@ export const areaColorLayerIndex = properties.areaColorLayers.reduce(function(ac
   acc[cur] = MAP_STYLE.layers.findIndex(layer => layer.id === cur);
   return acc;
 }, {});
+
+// export const populationColorScale = [0, 3000]
+export const populationColorScale = ['rgba(0,0,2,0)', 'rgba(199,0,2,1)']
+export const populationOpacityScale = [0.2, 1]
+//['rgba(199,0,2,0)', 'rgba(199,0,2,100)']
