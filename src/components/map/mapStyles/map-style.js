@@ -102,6 +102,4 @@ export const areaColorLayerIndex = properties.areaColorLayers.reduce(function(ac
 }, {});
 
 // export const populationColorScale = [0, 3000]
-export const populationColorScale = ['rgba(0,0,2,0)', 'rgba(199,0,2,1)']
-export const populationOpacityScale = [0.2, 1]
-//['rgba(199,0,2,0)', 'rgba(199,0,2,100)']
+export const populationColorScale = ['rgba(255,255,255,0.1)', 'rgba(199,0,2,1)']

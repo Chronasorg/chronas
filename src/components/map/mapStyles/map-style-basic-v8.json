@@ -57,7 +57,106 @@
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [ ]
+        "features": [{
+          "properties": {
+            "yearOfOcc": "1812",
+            "name": "Battle of Queenston Heights",
+            "wikiUrl": "Battle%20of%20Queenston%20Heights",
+            "age": -171,
+            "_storage_options": {
+              "iconClass": "Drop",
+              "iconUrl": "/static/i/b0.png"
+            }
+          },
+          "geometry": {
+            "coordinates": [
+              -79.05049,
+              43.16192
+            ],
+            "type": "Point"
+          },
+          "type": "Feature"
+        },
+          {
+            "properties": {
+              "yearOfOcc": "1642",
+              "name": "Battle of Lerida (1642)",
+              "wikiUrl": "Battle%20of%20Lerida%20%281642%29",
+              "age": -1,
+              "_storage_options": {
+                "iconClass": "Drop",
+                "iconUrl": "/static/i/b0.png"
+              }
+            },
+            "geometry": {
+              "coordinates": [
+                0.63333333,
+                41.61666667
+              ],
+              "type": "Point"
+            },
+            "type": "Feature"
+          },
+          {
+            "properties": {
+              "yearOfOcc": "1690",
+              "name": "Battle of Cromdale",
+              "wikiUrl": "Battle%20of%20Cromdale",
+              "age": -49,
+              "_storage_options": {
+                "iconClass": "Drop",
+                "iconUrl": "/static/i/b0.png"
+              }
+            },
+            "geometry": {
+              "coordinates": [
+                -3.48916667,
+                57.33166667
+              ],
+              "type": "Point"
+            },
+            "type": "Feature"
+          },
+          {
+            "properties": {
+              "yearOfOcc": "1634",
+              "name": "Battle of NÃ¶rdlingen (1634)",
+              "wikiUrl": "Battle%20of%20NÃ¶rdlingen%20%281634%29",
+              "age": 7,
+              "_storage_options": {
+                "iconClass": "Drop",
+                "iconUrl": "/static/i/b2.png"
+              }
+            },
+            "geometry": {
+              "coordinates": [
+                10.492802,
+                48.805026
+              ],
+              "type": "Point"
+            },
+            "type": "Feature"
+          },
+          {
+            "properties": {
+              "yearOfOcc": "1644",
+              "name": "Battle of Marston Moor",
+              "wikiUrl": "Battle%20of%20Marston%20Moor",
+              "age": -3,
+              "_storage_options": {
+                "iconClass": "Drop",
+                "iconUrl": "/static/i/b0.png"
+              }
+            },
+            "geometry": {
+              "coordinates": [
+                -1.2619,
+                53.9637
+              ],
+              "type": "Point"
+            },
+            "type": "Feature"
+          }]
       }
     }
   },
@@ -76,9 +175,25 @@
       }
     },
     {
+      "id": "provinces",
+      "type": "fill",
+      "minzoom": 5,
+      "source": "provinces",
+      "paint": {
+        "fill-color": {
+          "property": "color",
+          "type": "identity",
+          "default": "rgba(0,0,0,.2)"
+        },
+        "fill-opacity": 0.3,
+        "fill-outline-color": "rgba(0,0,0,1)"
+      },
+      "interactive": true
+    },
+    {
       "id": "ruler",
       "type": "fill",
-      "maxzoom": 4,
+      "maxzoom": 5,
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -89,7 +204,7 @@
     {
       "id": "religion",
       "type": "fill",
-      "maxzoom": 4,
+      "maxzoom": 5,
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -100,7 +215,7 @@
     {
       "id": "religionGeneral",
       "type": "fill",
-      "maxzoom": 4,
+      "maxzoom": 5,
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -111,7 +226,7 @@
     {
       "id": "culture",
       "type": "fill",
-      "maxzoom": 4,
+      "maxzoom": 5,
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -121,7 +236,8 @@
     },
     {
       "id": "population",
-      "type": "fill-extrusion",
+      "type": "fill",
+      "maxzoom": 5,
       "source": "provinces",
       "layout": {
         "visibility": "none"

@@ -546,7 +546,13 @@ const utils = {
 
     // activeLoaded = false;
 
-    return []
+    return [{
+      'type': 'FeatureCollection',
+      'features': []
+    }, [], {
+      'type': 'FeatureCollection',
+      'features': []
+    }]
   },
 
   prepareCollectionIDs: function (targetC, attr, provId) {

@@ -2,12 +2,14 @@ import React, { createElement, PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
+import Avatar from 'material-ui/Avatar'
 import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
 import FlatButton from 'material-ui/FlatButton'
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import FontIcon from 'material-ui/FontIcon'
+import Chip from 'material-ui/Chip'
 import {Tabs, Tab} from 'material-ui/Tabs';
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import NavigationClose from 'material-ui/svg-icons/navigation/close';
@@ -57,6 +59,8 @@ const styles = {
     transition: 'opacity 1s',
     opacity: 0,
     paddingTop: 0
+  },
+  chip: {
   }
 }
 
@@ -234,15 +238,67 @@ class RightDrawerRoutes extends PureComponent {
 
     const modUrl = '/mod/' + selectedItem.type
     const articletHeader = <AppBar
-      title={
-        <span style={{
-          color: chronasDark,
-          fontSize: 20
-        }}
-        > {JSON.stringify(location.pathname)}</span>
+      iconElementLeft={
+        <BottomNavigation
+          onChange={this.handleChange}
+          value={this.state.slideIndex}
+          selectedIndex={ this.state.selectedIndex }>
+          <BottomNavigationItem
+            icon={<Chip
+              style={styles.chip}
+            >
+              <Avatar src="images/uxceo-128.jpg" />
+              King
+            </Chip>}
+            // onClick={() => this.select(0)}
+          />
+          <BottomNavigationItem
+            icon={<Chip
+              style={styles.chip}
+            >
+              <Avatar src="images/uxceo-128.jpg" />
+              Ruler
+            </Chip>}
+            // onClick={() => this.select(0)}
+          />
+          <BottomNavigationItem
+            icon={<Chip
+              style={styles.chip}
+            >
+              <Avatar src="images/uxceo-128.jpg" />
+              Culture
+            </Chip>}
+            // onClick={() => this.select(0)}
+          />
+          <BottomNavigationItem
+            icon={<Chip
+              style={styles.chip}
+            >
+              <Avatar src="images/uxceo-128.jpg" />
+              Religion
+            </Chip>}
+            // onClick={() => this.select(0)}
+          />
+          <BottomNavigationItem
+            icon={<Chip
+              style={styles.chip}
+            >
+              <Avatar src="images/uxceo-128.jpg" />
+              Capital
+            </Chip>}
+            // onClick={() => this.select(0)}
+          />
+          <BottomNavigationItem
+            icon={<Chip
+              style={styles.chip}
+            >
+              <Avatar src="images/uxceo-128.jpg" />
+              Population
+            </Chip>}
+            // onClick={() => this.select(0)}
+          />
+        </BottomNavigation>
       }
-      showMenuIconButton={false}
-      style={{ backgroundColor: '#fff' }}
       iconElementRight={
         <div>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
