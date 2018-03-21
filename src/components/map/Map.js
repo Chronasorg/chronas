@@ -7,7 +7,7 @@ import { translate, defaultTheme } from 'admin-on-rest'
 import axios from 'axios'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
-import { selectAreaItem as selectAreaItemAction, selectMarkerItem as selectMarkerItemAction } from './actionReducers'
+import { TYPE_MARKER, selectAreaItem as selectAreaItemAction, selectMarkerItem as selectMarkerItemAction } from './actionReducers'
 import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import { fromJS } from 'immutable'
 import MapGL, { Marker, Popup } from 'react-map-gl'
@@ -378,7 +378,7 @@ class Map extends Component {
     // Markers changed?
     if (!_.isEqual(activeMarkers.sort(), nextProps.activeMarkers.sort())) { // expensive comparison! // TODO
       console.debug('###### Markers changed')
-      utilsQuery.updateQueryStringParameter('markers', nextProps.activeMarkers)
+      utilsQuery.updateQueryStringParameter('marker', nextProps.activeMarkers)
       const removedMarkers = _.difference(activeMarkers, nextProps.activeMarkers)
       const addedMarkers = _.difference(nextProps.activeMarkers, activeMarkers)
 
@@ -547,7 +547,7 @@ class Map extends Component {
     let itemName = ''
     let wikiId = ''
 
-    if (this.props.modActive.type === 'marker') {
+    if (this.props.modActive.type === TYPE_MARKER) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
     }
@@ -584,7 +584,7 @@ class Map extends Component {
       if (layerClicked.layer.id === "markers") {
         itemName = layerClicked.properties.n
         wikiId = layerClicked.properties.w
-        utilsQuery.updateQueryStringParameter('type', 'markers')
+        utilsQuery.updateQueryStringParameter('type', 'marker')
         utilsQuery.updateQueryStringParameter('province', '')
 
         const prevMapStyle = this.state.mapStyle
@@ -669,7 +669,7 @@ class Map extends Component {
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
 
-    let modMarker = (modActive.type === 'marker' && typeof modActive.data[0] !== 'undefined') ? <Marker
+    let modMarker = (modActive.type === TYPE_MARKER && typeof modActive.data[0] !== 'undefined') ? <Marker
       captureClick={false}
       captureDrag={false}
       latitude={modActive.data[1]}

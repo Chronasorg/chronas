@@ -25,7 +25,7 @@ const styles = {
   },
 };
 
-const allMarkers = ['Politician', 'Battles']
+const allMarkers = ['Politicians', 'Battles']
 
 const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker }) => (
   <div style={styles.main}>

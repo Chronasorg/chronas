@@ -98,7 +98,7 @@ class RightDrawerRoutes extends PureComponent {
 
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.setState({
-        selectedIndex: menuIndexByLocation[nextProps.location.pathname] || 0
+        selectedIndex: menuIndexByLocation[nextProps.location.pathname] || -1
       })
     }
 
@@ -386,7 +386,7 @@ class RightDrawerRoutes extends PureComponent {
           } else if (resourceKey === 'metadata') {
             finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType }
           } else if (resourceKey === 'markers') {
-            finalProps = { ...commonProps, setModDataLng, setModDataLat }
+            finalProps = { ...commonProps, selectedItem, setModDataLng, setModDataLat }
           } else {
             finalProps = commonProps
           }

@@ -10,6 +10,7 @@ import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
 import {setModType} from "../buttons/actionReducers";
+import { TYPE_MARKER } from '../../../map/actionReducers'
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
 const formStyle = { padding: '0 1em 1em 1em' };
@@ -28,6 +29,13 @@ export class SimpleForm extends Component {
       this.props.save(values, redirect)
     });
 
+  componentWillUnmount () {
+    this.props.setModType("")
+  }
+
+  componentWillMount () {
+    this.props.setModType(TYPE_MARKER)
+  }
   componentWillReceiveProps(nextProps) {
     if (this.props.modActive.data[0] !== nextProps.modActive.data[0])
       this.props.change ("coo[0]" , nextProps.modActive.data[0] )
