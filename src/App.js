@@ -95,6 +95,7 @@ class App extends Component {
     // initialize queryparameters
     window.history.pushState('', '',
       '?year=' + (utilsQuery.getURLParameter('year') || 1000) +
+      '&marker=' + (utilsQuery.getURLParameter('marker') || '') +
       '&type=' + (utilsQuery.getURLParameter('type') || '') +
       '&fill=' + (utilsQuery.getURLParameter('fill') || 'ruler') +
       '&label=' + (utilsQuery.getURLParameter('label') || 'ruler') +

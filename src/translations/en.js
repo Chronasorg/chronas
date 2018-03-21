@@ -106,7 +106,7 @@ export default {
       fields: {
         name: 'Name',
         url: 'URL',
-        geo: 'Coordinates',
+        coo: 'Coordinates',
         type: 'Type',
         lat: 'Latitude',
         lng: 'Longitude',
@@ -114,6 +114,7 @@ export default {
         lastUpdated: 'Last Updated',
         startYear: 'Year Start',
         endYear: 'Year End',
+        year: 'Year',
         date: 'Date',
         rating: 'Rating',
       },

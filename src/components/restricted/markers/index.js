@@ -22,6 +22,7 @@ import {
     NumberInput,
     ReferenceManyField,
     ReferenceArrayField,
+    SelectInput,
     SimpleForm,
     TabbedForm,
     TextField,
@@ -38,6 +39,40 @@ import ArrayField from './ArrayField'
 import MarkerForm from '../shared/forms/MarkerForm'
 export const MarkerIcon = Icon
 
+const markerTypes = [
+  { name: 'People -> Military', id: 'military' },
+  { name: 'People -> Politicians', id: 'politicians' },
+  { name: 'People -> Explorers', id: 'explorers' },
+  { name: 'People -> Scientists', id: 'scientists' },
+  { name: 'People -> Artists', id: 'artists' },
+  { name: 'People -> Religious', id: 'religious' },
+  { name: 'People -> Athletes', id: 'athletes' },
+  { name: 'People -> Unclassified', id: 'unclassified' },
+  { name: 'Cities -> Cities', id: 'cities' },
+  { name: 'Cities -> Castles', id: 'castles' },
+  { name: 'Battles -> Battles', id: 'battles' },
+  { name: 'Battles -> Sieges', id: 'sieges' },
+  { name: 'People -> Artifacts', id: 'artifacts' },
+  { name: 'Other -> Area Info', id: 'areainfo' },
+  { name: 'Other -> Unknown', id: 'unknown' },
+]
+//
+// const validateWiki = (value) => {
+//   if (value && value.indexOf('.wikipedia.org/wiki/') === -1) {
+//     return "The URL needs to be a full Wikipedia URL"
+//   }
+//   return [];
+// }
+
+const validateWiki = (values) => {
+  const errors = {};
+  if (values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) {
+    errors.wiki = ["The URL needs to be a full Wikipedia URL"]
+  }
+  return errors
+};
+
+
 const MarkerFilter = (props) => (
     <Filter {...props}>
         <TextInput label="pos.search" source="q" alwaysOn />
@@ -53,56 +88,41 @@ const ColoredNumberField = colored(NumberField);
 ColoredNumberField.defaultProps = NumberField.defaultProps;
 
 export const MarkerList = (props) => {
-  return <List {...props} filters={<MarkerFilter />}  sort={{field: 'name', order: 'DESC'}} perPage={25}>
+  return <List {...props} filters={<MarkerFilter />}  sort={{ field: 'name', order: 'DESC' }} perPage={25}>
     <Datagrid bodyOptions={{ stripedRows: true, showRowHover: true }}>
       <TextField source="name" label="resources.markers.fields.name" />
       <UrlField source="id" label="resources.markers.fields.url" />
-      <ArrayField source="geo" label="resources.markers.fields.geo" />
+      <ArrayField source="coo" label="resources.markers.fields.coo" />
       <ChipField source="type" label="resources.markers.fields.type" />
-      <ChipField source="subtype" label="resources.markers.fields.subtype" />
-      <DateField source="lastUpdated" label="resources.markers.fields.lastUpdated" type="date" />
-      <NumberField source="startYear" label="resources.markers.fields.startYear" type="date" />
-      <NumberField source="endYear" label="resources.markers.fields.endYear" />
-      <DateField source="date" label="resources.markers.fields.date" type="date" />
-      <NumberField source="rating" label="resources.markers.fields.rating" style={{ color: chronasMainColor }} />
+      <NumberField source="year" label="resources.markers.fields.year" />
       <EditButton />
     </Datagrid>
   </List>
-};
+}
 
 export const MarkerEdit = (props) => {
   console.debug(props)
   return <Edit title={<span>MarkerEdit</span>} {...props}>
-    <SimpleForm>
+    <SimpleForm >
       <TextInput source="name" label="resources.markers.fields.name" />
-      <TextInput source="id" label="resources.markers.fields.url" validation={{ id: true }} />
-      <TextInput source="geo[0]" label="resources.markers.fields.lat" />
-      <TextInput source="geo[1]" label="resources.markers.fields.lng" />
-      <TextInput source="type" label="resources.markers.fields.type" />
-      <TextInput source="subtype" label="resources.markers.fields.subtype" />
-      <DateInput source="lastUpdated" label="resources.markers.fields.lastUpdated" type="date" />
-      <NumberInput source="startYear" label="resources.markers.fields.startYear" type="date" />
-      <NumberInput source="endYear" label="resources.markers.fields.endYear" />
-      <DateInput source="date" label="resources.markers.fields.date" type="date" />
-      <NumberInput source="rating" label="resources.markers.fields.rating" style={{ width: '5em', color: chronasMainColor }} />
+      <TextInput source="wiki" label="resources.markers.fields.url" />
+      <TextInput source="coo[0]" label="resources.markers.fields.lat" />
+      <TextInput source="coo[1]" label="resources.markers.fields.lng" />
+      <SelectInput validate={required} choices={markerTypes} label="resources.markers.fields.type" />
+      <NumberInput source="year" label="resources.markers.fields.year" type="number" />
     </SimpleForm>
   </Edit>}
 
 export const MarkerCreate = (props) => {
   return <Create {...props}>
-    <MarkerForm redirect="list">
+    <MarkerForm validate={validateWiki} redirect="">
       <TextInput source="name" label="resources.markers.fields.name" />
-      <TextInput source="wiki" label="resources.markers.fields.url" validate={required} />
+      <TextInput source="wiki" label="resources.markers.fields.url" type="url" />
       <ModButton modType="marker" />
-      <NumberInput onChange={(val,v) => { props.setModDataLng(+v)}} source="geo[0]" label="resources.markers.fields.lat" />
-      <NumberInput onChange={(val,v) => { props.setModDataLat(+v)}} source="geo[1]" label="resources.markers.fields.lng" />
-      <TextInput source="type" validate={required} label="resources.markers.fields.type" />
-      <TextInput source="subtype" label="resources.markers.fields.subtype" />
-      <DateInput source="lastUpdated" label="resources.markers.fields.lastUpdated" type="date" />
-      <NumberInput source="startYear" label="resources.markers.fields.startYear" type="date" />
-      <NumberInput source="endYear" label="resources.markers.fields.endYear" />
-      <DateInput source="date" label="resources.markers.fields.date" type="date" />
-      <NumberInput source="rating" label="resources.markers.fields.rating" style={{ width: '5em', color: chronasMainColor }} />
+      <NumberInput onChange={(val,v) => { props.setModDataLng(+v) }} source="coo[0]" label="resources.markers.fields.lat" />
+      <NumberInput onChange={(val,v) => { props.setModDataLat(+v) }} source="coo[1]" label="resources.markers.fields.lng" />
+      <SelectInput source="type" validate={required}  choices={markerTypes} label="resources.markers.fields.type" />
+      <NumberInput source="year" label="resources.markers.fields.year" />
     </MarkerForm>
   </Create>
 };

@@ -9,6 +9,7 @@ import compose from 'recompose/compose';
 import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
+import {setModType} from "../buttons/actionReducers";
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
 const formStyle = { padding: '0 1em 1em 1em' };
@@ -16,14 +17,22 @@ const formStyle = { padding: '0 1em 1em 1em' };
 export class SimpleForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
+      const wikiURL = values.wiki
+      const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
+      if (wikiIndex > -1) {
+        values.wiki = wikiURL.substring(wikiIndex + 20, wikiURL.length)
+      } else {
+        return 'Not a full Wikipedia URL'
+      }
+      this.props.setModType("")
       this.props.save(values, redirect)
     });
 
   componentWillReceiveProps(nextProps) {
     if (this.props.modActive.data[0] !== nextProps.modActive.data[0])
-      this.props.change ("geo[0]" , nextProps.modActive.data[0] )
+      this.props.change ("coo[0]" , nextProps.modActive.data[0] )
     if (this.props.modActive.data[1] !== nextProps.modActive.data[1])
-      this.props.change ("geo[1]" , nextProps.modActive.data[1] )
+      this.props.change ("coo[1]" , nextProps.modActive.data[1] )
   }
 
   render() {
@@ -38,7 +47,6 @@ export class SimpleForm extends Component {
       version,
     } = this.props;
 
-    console.debug("markerform render", this.props)
     return (
       <form className="simple-form">
         <div style={formStyle} key={version}>
@@ -87,7 +95,10 @@ const enhance = compose(
   connect((state, props) => ({
     initialValues: getDefaultValues(state, props),
     modActive: state.modActive,
-  })),
+    }),
+    {
+      setModType,
+    }),
   reduxForm({
     form: 'record-form',
     enableReinitialize: true,

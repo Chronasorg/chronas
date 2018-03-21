@@ -7,13 +7,12 @@ import { translate, defaultTheme } from 'admin-on-rest'
 import axios from 'axios'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
-import { selectAreaItem as selectAreaItemAction } from './actionReducers'
+import { selectAreaItem as selectAreaItemAction, selectMarkerItem as selectMarkerItemAction } from './actionReducers'
 import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import { fromJS } from 'immutable'
 import MapGL, { Marker, Popup } from 'react-map-gl'
 import properties from '../../properties'
-import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex,
-  basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
+import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
 import _ from 'lodash'
@@ -181,8 +180,9 @@ class Map extends Component {
     let geojson = prevMapStyle
       .getIn(['sources', sourceId, 'data']).toJS()
 
-    populationStops.push([Math.max.apply(Math,Object.keys( areaDefs ).map(function ( key ) {
-      return (areaDefs[key] !== null) ? +areaDefs[key][4] : 0 })), populationColorScale[1]])
+    populationStops.push([Math.max.apply(Math, Object.keys(areaDefs).map(function (key) {
+      return (areaDefs[key] !== null) ? +areaDefs[key][4] : 0
+    })), populationColorScale[1]])
 
     let mapStyle = prevMapStyle
       .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function (feature) {
@@ -195,7 +195,7 @@ class Map extends Component {
       }))
       .setIn(['layers', areaColorLayerIndex['population'], 'paint'], fromJS(
         {
-          'fill-color': ["interpolate", ["linear"], ["get", "p"],
+          'fill-color': ['interpolate', ['linear'], ['get', 'p'],
             populationStops[0][0], populationStops[0][1],
             populationStops[1][0], populationStops[1][1]
           ],
@@ -220,7 +220,7 @@ class Map extends Component {
     console.debug('### MAP componentWillReceiveProps', this.props, nextProps)
 
     /** Acting on store changes **/
-    if (selectedItem != nextProps.selectedItem) {
+    if (selectedItem !== nextProps.selectedItem) {
       console.debug('###### Item changed')
       if (nextProps.selectedItem.wiki === 'random') {
         const selectedDim = activeArea.color
@@ -339,13 +339,13 @@ class Map extends Component {
     }
 
     // Year changed?
-    if (selectedYear != nextProps.selectedYear) {
+    if (selectedYear !== nextProps.selectedYear) {
       console.debug('###### Year changed from ' + selectedYear + ' to ' + nextProps.selectedYear)
       this._changeYear(nextProps.selectedYear)
     }
 
     // Basemap changed?
-    if (basemap != nextProps.basemap) {
+    if (basemap !== nextProps.basemap) {
       console.debug('###### Basemap changed')
       const newMapStyle = this.state.mapStyle.setIn(['layers', basemapLayerIndex, 'source'], nextProps.basemap)
       this.setState({
@@ -354,7 +354,7 @@ class Map extends Component {
     }
 
     // Area Label and Color changed?
-    if (activeArea.label != nextProps.activeArea.label && activeArea.color != nextProps.activeArea.color) {
+    if (activeArea.label !== nextProps.activeArea.label && activeArea.color !== nextProps.activeArea.color) {
       console.debug('###### Area Color and Label changed' + nextProps.activeArea.label)
       this._changeArea(activeArea.data, nextProps.activeArea.label, nextProps.activeArea.color)
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
@@ -362,14 +362,14 @@ class Map extends Component {
     }
 
     // Area Label changed?
-    else if (activeArea.label != nextProps.activeArea.label) {
+    else if (activeArea.label !== nextProps.activeArea.label) {
       console.debug('###### Area Label changed' + nextProps.activeArea.label)
       this._changeArea(activeArea.data, nextProps.activeArea.label, undefined)
       utilsQuery.updateQueryStringParameter('label', nextProps.activeArea.label)
     }
 
     // Area Color changed?
-    else if (activeArea.color != nextProps.activeArea.color) {
+    else if (activeArea.color !== nextProps.activeArea.color) {
       console.debug('###### Area Color changed' + nextProps.activeArea.color)
       this._changeArea(activeArea.data, undefined, nextProps.activeArea.color)
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
@@ -377,9 +377,10 @@ class Map extends Component {
 
     // Markers changed?
     if (!_.isEqual(activeMarkers.sort(), nextProps.activeMarkers.sort())) { // expensive comparison! // TODO
+      console.debug('###### Markers changed')
+      utilsQuery.updateQueryStringParameter('markers', nextProps.activeMarkers)
       const removedMarkers = _.difference(activeMarkers, nextProps.activeMarkers)
       const addedMarkers = _.difference(nextProps.activeMarkers, activeMarkers)
-      console.debug('###### Markers changed')
 
       // iterate to remove
       for (const removedMarker of removedMarkers) {
@@ -390,9 +391,9 @@ class Map extends Component {
       // iterate to add
       for (const addedMarker of addedMarkers) {
         console.log('addedMarker', addedMarker)
-        fetch(properties.chronasApiHost + '/metadata/' + addedMarker) // TODO: change to markers after API endpoint is ready
+        fetch(properties.chronasApiHost + '/markers?types=' + addedMarker + '&year=' + selectedYear) // TODO: change to markers after API endpoint is ready
           .then(res => res.json())
-          .then(res => this._updateFeatures('markers', res.features || []))
+          .then(features => this._addGeoJson('markers', features || []))
       }
     }
 
@@ -424,41 +425,17 @@ class Map extends Component {
     this.setState({ mapStyle })
   };
 
-  _updateFeatures = (sourceId, sourceData) => {
+  _addGeoJson = (sourceId, features) => {
     // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
-    const prevMapStyle = this.state.mapStyle
-    let mapStyle = prevMapStyle
-      .setIn(['sources', sourceId, 'data', 'features'], [{
-        "properties": {
-          "yearOfOcc": "1641",
-        },
-        "geometry": {
-          "coordinates": [
-            2.15888889,
-            41.36722222
-          ],
-          "type": "Point"
-        },
-        "type": "Feature"
-      }])
-
-      // .setIn(['sources', sourceId, 'data', 'features'], sourceData.features)
-    // let mapStyle = prevMapStyle
-    //   .setIn(['sources', sourceId, 'data', 'features'], sourceData.features)
+    const mapStyle = this.state.mapStyle
+      .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features))
     this.setState({ mapStyle })
   };
 
   _removeGeoJson = (sourceId, entityId) => {
-    const prevMapStyle = this.state.mapStyle
-    let geojson = prevMapStyle
-      .getIn(['sources', sourceId, 'data']).toJS()
-
-    console.debug(geojson)
-
     // let mapStyle = prevMapStyle
     //   .setIn(['sources', sourceId, 'data'],
     //     fromJS({
-
 
     // this.setState({ mapStyle: this.state.mapStyle
     //     .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.concat({
@@ -466,16 +443,15 @@ class Map extends Component {
     //     }))
     // })
 
-
     //       "type": "FeatureCollection",
     //       "features": geojson.features.filter(function(obj) {
     //       return (-1 === obj.properties._storage_options.iconUrl.indexOf("/static/i/b"))
     //       }) }
     //     ))
 
-    let mapStyle = prevMapStyle
+    const mapStyle = this.state.mapStyle
       .updateIn(['sources', sourceId, 'data', 'features'], list => list.filter(function (obj) {
-        return (obj.properties._storage_options.iconUrl.indexOf('/static/i/b') === -1)
+        return (obj.properties.t !== entityId)
       }))
 
     this.setState({ mapStyle })
@@ -524,24 +500,36 @@ class Map extends Component {
 
   _onHover = event => {
     event.stopPropagation()
-
-    if (this.props.modActive.type === 'areas') return
+    if (this.props.modActive.type !== '') return
 
     let provinceName = ''
     let hoverInfo = null
 
-    const province = event.features && event.features[0]
-    if (province) {
-      hoverInfo = {
-        lngLat: event.lngLat,
-        province: province.properties
-      }
-      provinceName = province.properties.name
+    const layerHovered = event.features && event.features[0]
+    if (layerHovered) {
+      if (layerHovered.layer.id === "markers") {
+        hoverInfo = {
+          lngLat: event.lngLat,
+          feature: layerHovered.properties
+        }
+        provinceName = layerHovered.properties.name
 
-      this.setState({ mapStyle: this.state.mapStyle
-        .setIn(['sources', 'area-hover', 'data', 'features'], [{
-          'type': 'Feature', 'properties': {}, 'geometry': province.geometry
-        }]) })
+        this.setState({ mapStyle: this.state.mapStyle
+            .setIn(['sources', 'area-hover', 'data', 'features'], [{
+              'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
+            }]) })
+      } else {
+        hoverInfo = {
+          lngLat: event.lngLat,
+          feature: layerHovered.properties
+        }
+        provinceName = layerHovered.properties.name
+
+        this.setState({ mapStyle: this.state.mapStyle
+            .setIn(['sources', 'area-hover', 'data', 'features'], [{
+              'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
+            }]) })
+      }
     } else {
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
@@ -562,7 +550,8 @@ class Map extends Component {
     if (this.props.modActive.type === 'marker') {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    } else if (this.props.modActive.type === 'areas') {
+    }
+    else if (this.props.modActive.type === 'areas') {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = this.props.modActive.data
@@ -589,21 +578,40 @@ class Map extends Component {
       return
     }
 
-    const item = event.features && event.features[0]
+    const layerClicked = event.features && event.features[0]
 
-    if (item) {
-      itemName = item.properties.name
-      wikiId = item.properties.wikiUrl
-      utilsQuery.updateQueryStringParameter('type', 'areas')
-      utilsQuery.updateQueryStringParameter('province', itemName)
+    if (layerClicked) {
+      if (layerClicked.layer.id === "markers") {
+        itemName = layerClicked.properties.n
+        wikiId = layerClicked.properties.w
+        utilsQuery.updateQueryStringParameter('type', 'markers')
+        utilsQuery.updateQueryStringParameter('province', '')
 
-      const prevMapStyle = this.state.mapStyle
-      let mapStyle = prevMapStyle
-        .setIn(['sources', 'area-hover', 'data', 'features'], [])
-      this.setState({
-        hoverInfo: null,
-        mapStyle
-      })
+        const prevMapStyle = this.state.mapStyle
+        let mapStyle = prevMapStyle
+          .setIn(['sources', 'area-hover', 'data', 'features'], [])
+        this.setState({
+          hoverInfo: null,
+          mapStyle
+        })
+
+        this.props.selectMarkerItem(wikiId)
+      } else {
+        itemName = layerClicked.properties.name
+        wikiId = layerClicked.properties.wikiUrl
+        utilsQuery.updateQueryStringParameter('type', 'areas')
+        utilsQuery.updateQueryStringParameter('province', itemName)
+
+        const prevMapStyle = this.state.mapStyle
+        let mapStyle = prevMapStyle
+          .setIn(['sources', 'area-hover', 'data', 'features'], [])
+        this.setState({
+          hoverInfo: null,
+          mapStyle
+        })
+
+        this.props.selectAreaItem(wikiId, itemName)
+      }
     }
 
     if (itemName !== '') {
@@ -615,15 +623,8 @@ class Map extends Component {
       })
     }
 
-    this.props.setRightDrawerVisibility(itemName !== '')
-    this.props.selectAreaItem(wikiId, itemName)
-
-    if (item.layer === 'markers') {
-
-    } else {
-      // Assume it is an area clicked //TODO: handle other cases then markers and areas
-      this.props.history.push('/article')
-    }
+    // this.props.setRightDrawerVisibility(itemName !== '')
+    this.props.history.push('/article')
   }
 
   _renderPopup () {
@@ -736,6 +737,7 @@ const enhance = compose(
   }), {
     setRightDrawerVisibility: setRightDrawerVisibilityAction,
     selectAreaItem: selectAreaItemAction,
+    selectMarkerItem : selectMarkerItemAction,
     setModData: setModDataAction,
     removeModData: removeModDataAction,
     addModData: addModDataAction,

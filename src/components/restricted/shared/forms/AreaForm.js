@@ -70,7 +70,7 @@ export class AreaForm extends Component {
 
   componentDidMount() {
     const { setModType, selectedItem, setModData } = this.props
-    const selectedProvince = selectedItem.province
+    const selectedProvince = selectedItem.id
     if (selectedProvince) setModData([selectedProvince])
     setModType("areas", selectedProvince ? [selectedProvince] : [])
   }

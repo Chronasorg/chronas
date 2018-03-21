@@ -25,7 +25,7 @@ const styles = {
   },
 };
 
-const allMarkers = ['People', 'Battles']
+const allMarkers = ['Politician', 'Battles']
 
 const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker }) => (
   <div style={styles.main}>
@@ -54,7 +54,7 @@ const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, 
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.color === 'religion'} onClick={() => changeColor('religion')} />
     <RaisedButton style={styles.button} label="ReligionGeneral" primary={activeArea.color === 'religionGeneral'} onClick={() => changeColor('religionGeneral')} />
     <RaisedButton style={styles.button} label="Culture" primary={activeArea.color === 'culture'} onClick={() => changeColor('culture')} />
-    <RaisedButton style={styles.button} label="population" primary={activeArea.color === 'population'} onClick={() => changeColor('population')} />
+    <RaisedButton style={styles.button} label="population" primary={activeArea.color === 'population'} onClick={() => changeColor('population')} />np
     {activeArea.color}
     <br/>
     <h4>Marker</h4>

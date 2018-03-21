@@ -86,7 +86,7 @@ class RightDrawerRoutes extends PureComponent {
       hiddenElement: true,
       metadataType: '',
       metadataEntity: '',
-      selectedIndex: 0,
+      selectedIndex: -1,
     }
   }
 

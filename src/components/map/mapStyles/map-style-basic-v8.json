@@ -51,112 +51,10 @@
       }
     },
     "markers": {
-      "cluster": true,
-      "clusterMaxZoom": 14,
-      "clusterRadius": 50,
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [{
-          "properties": {
-            "yearOfOcc": "1812",
-            "name": "Battle of Queenston Heights",
-            "wikiUrl": "Battle%20of%20Queenston%20Heights",
-            "age": -171,
-            "_storage_options": {
-              "iconClass": "Drop",
-              "iconUrl": "/static/i/b0.png"
-            }
-          },
-          "geometry": {
-            "coordinates": [
-              -79.05049,
-              43.16192
-            ],
-            "type": "Point"
-          },
-          "type": "Feature"
-        },
-          {
-            "properties": {
-              "yearOfOcc": "1642",
-              "name": "Battle of Lerida (1642)",
-              "wikiUrl": "Battle%20of%20Lerida%20%281642%29",
-              "age": -1,
-              "_storage_options": {
-                "iconClass": "Drop",
-                "iconUrl": "/static/i/b0.png"
-              }
-            },
-            "geometry": {
-              "coordinates": [
-                0.63333333,
-                41.61666667
-              ],
-              "type": "Point"
-            },
-            "type": "Feature"
-          },
-          {
-            "properties": {
-              "yearOfOcc": "1690",
-              "name": "Battle of Cromdale",
-              "wikiUrl": "Battle%20of%20Cromdale",
-              "age": -49,
-              "_storage_options": {
-                "iconClass": "Drop",
-                "iconUrl": "/static/i/b0.png"
-              }
-            },
-            "geometry": {
-              "coordinates": [
-                -3.48916667,
-                57.33166667
-              ],
-              "type": "Point"
-            },
-            "type": "Feature"
-          },
-          {
-            "properties": {
-              "yearOfOcc": "1634",
-              "name": "Battle of NÃ¶rdlingen (1634)",
-              "wikiUrl": "Battle%20of%20NÃ¶rdlingen%20%281634%29",
-              "age": 7,
-              "_storage_options": {
-                "iconClass": "Drop",
-                "iconUrl": "/static/i/b2.png"
-              }
-            },
-            "geometry": {
-              "coordinates": [
-                10.492802,
-                48.805026
-              ],
-              "type": "Point"
-            },
-            "type": "Feature"
-          },
-          {
-            "properties": {
-              "yearOfOcc": "1644",
-              "name": "Battle of Marston Moor",
-              "wikiUrl": "Battle%20of%20Marston%20Moor",
-              "age": -3,
-              "_storage_options": {
-                "iconClass": "Drop",
-                "iconUrl": "/static/i/b0.png"
-              }
-            },
-            "geometry": {
-              "coordinates": [
-                -1.2619,
-                53.9637
-              ],
-              "type": "Point"
-            },
-            "type": "Feature"
-          }]
+        "features": []
       }
     }
   },
@@ -346,13 +244,13 @@
       "id": "markers",
       "type": "circle",
       "source": "markers",
-      "filter": ["!has", "point_count"],
       "paint": {
         "circle-color": "#11b4da",
-        "circle-radius": 4,
+        "circle-radius": 44,
         "circle-stroke-width": 1,
         "circle-stroke-color": "#fff"
-      }
+      },
+      "interactive": true
     }
   ]
 }

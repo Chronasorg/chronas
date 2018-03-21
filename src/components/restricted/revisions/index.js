@@ -101,8 +101,8 @@ export const RevisionEdit = (props) => {
     <SimpleForm>
       <TextInput source="name" label="resources.revisions.fields.name" />
       <TextInput source="id" label="resources.revisions.fields.url" validation={{ id: true }} />
-      <TextInput source="geo[0]" label="resources.revisions.fields.lat" />
-      <TextInput source="geo[1]" label="resources.revisions.fields.lng" />
+      <TextInput source="coo[0]" label="resources.revisions.fields.lat" />
+      <TextInput source="coo[1]" label="resources.revisions.fields.lng" />
       <TextInput source="type" label="resources.revisions.fields.type" />
       <TextInput source="subtype" label="resources.revisions.fields.subtype" />
       <DateInput source="lastUpdated" label="resources.revisions.fields.lastUpdated" type="date" />
@@ -118,8 +118,8 @@ export const RevisionCreate = (props) => {
     <SimpleForm redirect="list">
       <TextInput source="name" label="resources.revisions.fields.name" />
       <TextInput source="wiki" label="resources.revisions.fields.url" validate={required} />
-      <NumberInput source="geo[0]" label="resources.revisions.fields.lat" />
-      <NumberInput source="geo[1]" label="resources.revisions.fields.lng" />
+      <NumberInput source="coo[0]" label="resources.revisions.fields.lat" />
+      <NumberInput source="coo[1]" label="resources.revisions.fields.lng" />
       <TextInput source="type" label="resources.revisions.fields.type" />
       <TextInput source="subtype" label="resources.revisions.fields.subtype" />
       <DateInput source="lastUpdated" label="resources.revisions.fields.lastUpdated" type="date" />

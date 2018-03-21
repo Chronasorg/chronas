@@ -22,8 +22,6 @@ export class MetaForm extends Component {
     this.props.handleSubmit(values => {
       console.debug(this.props)
 
-      const { initialValues } = this.props
-
       const wikiURL = values.url
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
       let newWikiURL
@@ -98,7 +96,7 @@ export class MetaForm extends Component {
 
   componentDidMount () {
     const { setModType, selectedItem, setModData } = this.props
-    const selectedProvince = selectedItem.province
+    const selectedProvince = selectedItem.id
     if (selectedProvince) setModData([selectedProvince])
     setModType('metadata')
 

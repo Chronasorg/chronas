@@ -135,7 +135,7 @@ class Account extends PureComponent {
           <TextInput type='email' label='resources.users.fields.email' source='email' validation={{ email: true }} options={{ fullWidth: true }} style={{ width: 544 }} />
           <DisabledInput source='privilege' label='resources.users.fields.privilege' elStyle={{ width: '5em' }} />
           <DisabledInput source='karma' elStyle={{ width: '5em' }} />
-          <TextInput source='website' type='URL' />
+          <TextInput source='website' type='url' />
           <DisabledInput source='loginCount' label='resources.users.fields.loginCount' type='number' />
           <DisabledInput source='createdAt' label='resources.users.fields.createdAt' type='date' />
           <DisabledInput source='lastUpdated' label='resources.users.fields.lastUpdated' type='date' />

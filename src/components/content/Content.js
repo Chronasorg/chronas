@@ -9,6 +9,7 @@ import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
+import { TYPE_AREA, TYPE_MARKER } from '../map/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
@@ -29,14 +30,23 @@ const styles = {
 }
 
 const Content = (props) => {
-  const selectedProvince = props.selectedItem.province
-  const activeAreaDim = (props.activeArea.color === 'population') ? 'capital' : props.activeArea.color
-  const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
-  const selectedWiki = (activeAreaDim === 'religionGeneral')
-    ? (props.metadata[activeAreaDim][(props.metadata.religion[activeprovinceDim] || [])[3]] || {})[2]
-    : (activeAreaDim === 'province' || activeAreaDim === 'capital')
-      ? (props.metadata[activeAreaDim][activeprovinceDim] || {})
-      : (props.metadata[activeAreaDim][activeprovinceDim] || {})[2]
+  let selectedWiki = ''
+
+  if (props.selectedItem.type === TYPE_AREA) {
+    const selectedProvince = props.selectedItem.id
+    const activeAreaDim = (props.activeArea.color === 'population') ? 'capital' : props.activeArea.color
+    const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
+
+    selectedWiki = (activeAreaDim === 'religionGeneral')
+      ? (props.metadata[activeAreaDim][(props.metadata.religion[activeprovinceDim] || [])[3]] || {})[2]
+      : (activeAreaDim === 'province' || activeAreaDim === 'capital')
+        ? (props.metadata[activeAreaDim][activeprovinceDim] || {})
+        : (props.metadata[activeAreaDim][activeprovinceDim] || {})[2]
+  }
+  else if (props.selectedItem.type === TYPE_MARKER) {
+    const selectedMarker = props.selectedItem.id
+    selectedWiki = props.selectedItem.wiki
+  }
 
   return <div style={styles.main}><iframe style={styles.iframe} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}
     height='100%' frameBorder='0' /></div>

@@ -59,7 +59,7 @@ export const modActiveReducer = (defaultState = { 'data': [], 'type': '', 'toUpd
           return {
             ...previousState,
             type: payload[0],
-            data: payload[1],
+            data: payload[1] || [],
             toUpdate: payload[2] || '',
           }
         }

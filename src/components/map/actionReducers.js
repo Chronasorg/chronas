@@ -19,9 +19,9 @@ export const selectAreaItem = (wiki, province) => ({
   payload: [wiki, province],
 })
 
-export const selectMarkerItem = (wiki) => ({
+export const selectMarkerItem = (wiki, id) => ({
   type: SET_MARKER_ITEM,
-  payload: [wiki],
+  payload: [wiki, id],
 })
 
 export const deselectItem = () => ({
@@ -30,7 +30,7 @@ export const deselectItem = () => ({
 
 /** Reducers **/
 
-export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'province': '' }) => (
+export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'id': '' }) => (
   (previousState = defaultState, { type, payload }) => {
     switch (type) {
       case SET_WIKI_ID:
@@ -41,13 +41,13 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'pr
       case SET_AREA_ITEM:
         return {
           wiki: payload[0],
-          province: payload[1],
+          id: payload[1],
           type: TYPE_AREA
         }
       case SET_MARKER_ITEM:
         return {
           wiki: payload[0],
-          province: '',
+          id: payload[1],
           type: TYPE_MARKER
         }
       case DESELECT_ITEM:
