@@ -259,13 +259,13 @@ class Map extends Component {
         // refresh this year data
         this._changeYear(nextProps.selectedYear)
       }
-    } else if (nextProps.modActive.type === 'metadata' && nextProps.modActive.type === '') {
+    } else if (modActive.type === 'metadata' && nextProps.modActive.type === '') {
       // Leaving Metadata Mod
       if (nextProps.modActive.toUpdate !== '') {
         // refresh mapstyles and links
         this._updateMetaMapStyle(nextProps.modActive.toUpdate)
       }
-    } else if (nextProps.modActive.type === 'markers' && nextProps.modActive.type === '') {
+    } else if (modActive.type === 'markers' && nextProps.modActive.type === '') {
       // Leaving Metadata Mod
       if (nextProps.modActive.toUpdate !== '') {
         // refresh mapstyles and links
@@ -450,8 +450,10 @@ class Map extends Component {
   }
 
   _updateGeoJson = (sourceId, entityId) => {
-    this._removeGeoJson(sourceId, entityId)
-    this._addGeoJson(sourceId, entityId)
+    setTimeout(() => {
+      this._removeGeoJson(sourceId, entityId)
+      this._addGeoJson(sourceId, entityId)
+    }, 500)
   }
 
   _loadMarkerData = data => {

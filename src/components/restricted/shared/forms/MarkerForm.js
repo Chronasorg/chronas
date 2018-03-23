@@ -7,19 +7,25 @@ import { showNotification } from 'admin-on-rest';
 import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
-import {setModType} from "../buttons/actionReducers";
+import { setModType } from "../buttons/actionReducers";
 import { TYPE_MARKER } from '../../../map/actionReducers'
 import properties from "../../../../properties";
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
 const formStyle = { padding: '0 1em 1em 1em' };
 
-export class SimpleForm extends Component {
+export class MarkerForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const markerItem = decodeURIComponent(values.wiki)
+      const { setModType, showNotification, history } = this.props
       const token = localStorage.getItem('token')
-      fetch(properties.chronasApiHost + '/markers/' + markerItem, {
+
+      const wikiURL = values.wiki
+      const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
+      if (redirect !== 'edit' && wikiIndex > -1) values.wiki = wikiURL.substring(wikiIndex + 20, wikiURL.length)
+
+      const markerItem = decodeURIComponent(values.wiki)
+      fetch(properties.chronasApiHost + '/markers/' + ((redirect === 'edit') ? markerItem : ''), {
         method: (redirect === 'edit') ? 'PUT': 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -30,15 +36,18 @@ export class SimpleForm extends Component {
       })
         .then((res) => {
           if (res.status === 200) {
-            console.debug(res, this.props)
             setModType('', [], values.type)
-            this.props.showNotification((redirect === 'edit') ? 'Marker successfully updated' : 'Marker successfully added')
-            this.props.history.goBack()
+            showNotification((redirect === 'edit') ? 'Marker successfully updated' : 'Marker successfully added')
+            history.goBack()
           } else {
-            this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
+            showNotification((redirect === 'edit') ? 'Marker not updated' : 'Marker not added', 'warning')
           }
         })
     });
+
+  componentWillUnmount () {
+    this.props.setModType('')
+  }
 
   componentWillMount () {
     this.props.setModType(TYPE_MARKER)
@@ -86,12 +95,13 @@ export class SimpleForm extends Component {
   }
 }
 
-SimpleForm.propTypes = {
+MarkerForm.propTypes = {
   basePath: PropTypes.string,
   children: PropTypes.node,
   defaultValue: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   handleSubmit: PropTypes.func, // passed by redux-form
   invalid: PropTypes.bool,
+  history: PropTypes.object,
   record: PropTypes.object,
   resource: PropTypes.string,
   redirect: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
@@ -102,7 +112,7 @@ SimpleForm.propTypes = {
   version: PropTypes.number,
 };
 
-SimpleForm.defaultProps = {
+MarkerForm.defaultProps = {
   submitOnEnter: true,
   toolbar: <Toolbar />,
 };
@@ -122,4 +132,4 @@ const enhance = compose(
   })
 );
 
-export default enhance(SimpleForm);
+export default enhance(MarkerForm);

@@ -1,21 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import IconButton from 'material-ui/IconButton';
-import {cyan500} from 'material-ui/styles/colors';
+import FlatButton from 'material-ui/FlatButton';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 
-const DeleteButton = ({ basePath = '', record = {} }) => (
-    <IconButton
-        containerElement={<Link to={`${basePath}/${record["id"]}/delete`} />}
-        style={{ overflow: 'inherit' }}
-    >
-        <ActionDelete color={cyan500} />
-    </IconButton>
+const DeleteButton = ({ customLabel="Delete", basePath = '', resource = '', id = '', record = {} }) => (
+
+  <FlatButton
+    containerElement={<Link to={`${basePath}/${resource}/${id}/delete`} />}
+    label={customLabel}
+    secondary={true}
+    icon={<ActionDelete />}
+  />
 );
 
 DeleteButton.propTypes = {
     basePath: PropTypes.string,
+    id: PropTypes.string,
+    resource: PropTypes.string,
     record: PropTypes.object,
 };
 

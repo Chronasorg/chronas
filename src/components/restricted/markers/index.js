@@ -15,7 +15,6 @@ import {
     List,
     LongTextInput,
     Edit,
-    Delete,
     UrlField,
     NullableBooleanInput,
     NumberField,
@@ -32,6 +31,8 @@ import {
 } from 'admin-on-rest'
 import Icon from 'material-ui/svg-icons/social/person'
 import EditButton from '../shared/buttons/EditButton'
+import DeleteButton from '../shared/buttons/DeleteButton'
+import Delete from '../shared/crudComponents/Delete'
 import ModGeoInput from '../shared/inputs/ModGeoInput'
 import ModButton from '../shared/buttons/ModButton'
 import { chronasMainColor } from '../../../styles/chronasColors'
@@ -113,21 +114,22 @@ export const MarkerEdit = (props) => {
 
   console.debug(props)
   return <Create title={<span>MarkerEdit</span>} {...props}>
-    {(props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) ? <MarkerForm validate={validateWikiProps} redirect='edit'>
+    {(props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit'>
       <TextInput source='name' defaultValue={props.selectedItem.value.n} label='resources.markers.fields.name' />
-      <TextInput source='wiki' defaultValue={props.selectedItem.value.w} label='resources.markers.fields.url' />
+      <DisabledInput source='wiki' defaultValue={props.selectedItem.value.w} label='resources.markers.fields.url' />
       <ModButton modType='marker' />
       <TextInput source='coo[0]' onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={props.selectedItem.value.coo[0]} label='resources.markers.fields.lat' />
       <TextInput source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={props.selectedItem.value.coo[1]} label='resources.markers.fields.lng' />
       <SelectInput source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={markerTypes} label='resources.markers.fields.type' />
       <NumberInput validate={required} defaultValue={props.selectedItem.value.y} source='year' label='resources.markers.fields.year' type='number' />
+      <DeleteButton resource='markers' id={props.selectedItem.value.w} {...props} />
     </MarkerForm> : <MarkerForm hidesavebutton={true}><h4>click on marker on the map which you like to modify</h4></MarkerForm>}
   </Create>
 }
 
 export const MarkerCreate = (props) => {
   return <Create {...props}>
-    <MarkerForm validate={validateWiki} redirect=''>
+    <MarkerForm validate={validateWiki} redirect='' history={props.history}>
       <TextInput validate={required} source='name' label='resources.markers.fields.name' />
       <TextInput validate={required} source='wiki' label='resources.markers.fields.url' type='url' />
       <ModButton modType='marker' />
