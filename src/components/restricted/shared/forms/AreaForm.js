@@ -9,13 +9,9 @@ import compose from 'recompose/compose';
 import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
-// import { crudUpdate as crudUpdateAction } from 'admin-on-rest'
-// import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
-import { setModType , setModData } from '../buttons/actionReducers'
-import {setToken} from "../../../menu/authentication/actionReducers";
-import properties from "../../../../properties";
-import decodeJwt from "jwt-decode";
 import { showNotification } from 'admin-on-rest';
+import { setModType , setModData } from '../buttons/actionReducers'
+import properties from "../../../../properties";
 const formStyle = { padding: '0 1em 1em 1em' }
 
 export class AreaForm extends Component {
@@ -70,7 +66,7 @@ export class AreaForm extends Component {
 
   componentDidMount() {
     const { setModType, selectedItem, setModData } = this.props
-    const selectedProvince = selectedItem.id
+    const selectedProvince = selectedItem.value
     if (selectedProvince) setModData([selectedProvince])
     setModType("areas", selectedProvince ? [selectedProvince] : [])
   }

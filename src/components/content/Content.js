@@ -33,7 +33,7 @@ const Content = (props) => {
   let selectedWiki = ''
 
   if (props.selectedItem.type === TYPE_AREA) {
-    const selectedProvince = props.selectedItem.id
+    const selectedProvince = props.selectedItem.value
     const activeAreaDim = (props.activeArea.color === 'population') ? 'capital' : props.activeArea.color
     const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
 
@@ -44,7 +44,7 @@ const Content = (props) => {
         : (props.metadata[activeAreaDim][activeprovinceDim] || {})[2]
   }
   else if (props.selectedItem.type === TYPE_MARKER) {
-    const selectedMarker = props.selectedItem.id
+    const selectedMarker = props.selectedItem.value
     selectedWiki = props.selectedItem.wiki
   }
 

@@ -3,14 +3,13 @@ import PropTypes from 'prop-types';
 import { reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
 import compose from 'recompose/compose';
-// import getDefaultValues from './getDefaultValues';
-// import FormInput from './FormInput';
-// import Toolbar from './Toolbar';
+import { showNotification } from 'admin-on-rest';
 import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
 import {setModType} from "../buttons/actionReducers";
 import { TYPE_MARKER } from '../../../map/actionReducers'
+import properties from "../../../../properties";
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
 const formStyle = { padding: '0 1em 1em 1em' };
@@ -18,20 +17,28 @@ const formStyle = { padding: '0 1em 1em 1em' };
 export class SimpleForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const wikiURL = values.wiki
-      const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
-      if (wikiIndex > -1) {
-        values.wiki = wikiURL.substring(wikiIndex + 20, wikiURL.length)
-      } else {
-        return 'Not a full Wikipedia URL'
-      }
-      this.props.setModType("")
-      this.props.save(values, redirect)
+      const markerItem = decodeURIComponent(values.wiki)
+      const token = localStorage.getItem('token')
+      fetch(properties.chronasApiHost + '/markers/' + markerItem, {
+        method: (redirect === 'edit') ? 'PUT': 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            console.debug(res, this.props)
+            setModType('', [], values.type)
+            this.props.showNotification((redirect === 'edit') ? 'Marker successfully updated' : 'Marker successfully added')
+            this.props.history.goBack()
+          } else {
+            this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
+          }
+        })
     });
-
-  componentWillUnmount () {
-    this.props.setModType("")
-  }
 
   componentWillMount () {
     this.props.setModType(TYPE_MARKER)
@@ -52,6 +59,7 @@ export class SimpleForm extends Component {
       resource,
       submitOnEnter,
       toolbar,
+      hidesavebutton,
       version,
     } = this.props;
 
@@ -67,7 +75,7 @@ export class SimpleForm extends Component {
             />
           ))}
         </div>
-        {toolbar &&
+        {toolbar && !hidesavebutton &&
         React.cloneElement(toolbar, {
           handleSubmitWithRedirect: this.handleSubmitWithRedirect,
           invalid,
@@ -106,6 +114,7 @@ const enhance = compose(
     }),
     {
       setModType,
+      showNotification
     }),
   reduxForm({
     form: 'record-form',

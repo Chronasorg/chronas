@@ -68,7 +68,8 @@ const markerTypes = [
 
 const validateWiki = (values) => {
   const errors = {}
-  if (values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) {
+  if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1))// && ((this.props.selectedItem.value || {}).w !== values.wiki)) {
+  {
     errors.wiki = ['The URL needs to be a full Wikipedia URL']
   }
   return errors
@@ -102,24 +103,33 @@ export const MarkerList = (props) => {
 }
 
 export const MarkerEdit = (props) => {
+  const validateWikiProps = (values) => {
+    const errors = {}
+    if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
+      errors.wiki = ['The URL needs to be a full Wikipedia URL']
+    }
+    return errors
+  }
+
   console.debug(props)
   return <Create title={<span>MarkerEdit</span>} {...props}>
-    {(props.selectedItem.id !== '' && props.selectedItem.type === TYPE_MARKER) ? <MarkerForm >
-      <TextInput source='name' defaultValue={props.selectedItem.id} label='resources.markers.fields.name' />
-      <TextInput source='wiki' defaultValue={props.selectedItem.wiki} label='resources.markers.fields.url' />
-      <TextInput source='coo[0]' label='resources.markers.fields.lat' />
-      <TextInput source='coo[1]' label='resources.markers.fields.lng' />
-      <SelectInput validate={required} choices={markerTypes} label='resources.markers.fields.type' />
-      <NumberInput source='year' label='resources.markers.fields.year' type='number' />
-    </MarkerForm> : <h4>click on marker on the map which you like to modify</h4>}
+    {(props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) ? <MarkerForm validate={validateWikiProps} redirect='edit'>
+      <TextInput source='name' defaultValue={props.selectedItem.value.n} label='resources.markers.fields.name' />
+      <TextInput source='wiki' defaultValue={props.selectedItem.value.w} label='resources.markers.fields.url' />
+      <ModButton modType='marker' />
+      <TextInput source='coo[0]' onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={props.selectedItem.value.coo[0]} label='resources.markers.fields.lat' />
+      <TextInput source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={props.selectedItem.value.coo[1]} label='resources.markers.fields.lng' />
+      <SelectInput source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={markerTypes} label='resources.markers.fields.type' />
+      <NumberInput validate={required} defaultValue={props.selectedItem.value.y} source='year' label='resources.markers.fields.year' type='number' />
+    </MarkerForm> : <MarkerForm hidesavebutton={true}><h4>click on marker on the map which you like to modify</h4></MarkerForm>}
   </Create>
 }
 
 export const MarkerCreate = (props) => {
   return <Create {...props}>
     <MarkerForm validate={validateWiki} redirect=''>
-      <TextInput source='name' label='resources.markers.fields.name' />
-      <TextInput source='wiki' label='resources.markers.fields.url' type='url' />
+      <TextInput validate={required} source='name' label='resources.markers.fields.name' />
+      <TextInput validate={required} source='wiki' label='resources.markers.fields.url' type='url' />
       <ModButton modType='marker' />
       <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
       <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />

@@ -259,11 +259,17 @@ class Map extends Component {
         // refresh this year data
         this._changeYear(nextProps.selectedYear)
       }
-    } else if (modActive.type === 'metadata' && nextProps.modActive.type === '') {
+    } else if (nextProps.modActive.type === 'metadata' && nextProps.modActive.type === '') {
       // Leaving Metadata Mod
       if (nextProps.modActive.toUpdate !== '') {
         // refresh mapstyles and links
-        this._updateMetaMapStyle(modActive.toUpdate)
+        this._updateMetaMapStyle(nextProps.modActive.toUpdate)
+      }
+    } else if (nextProps.modActive.type === 'markers' && nextProps.modActive.type === '') {
+      // Leaving Metadata Mod
+      if (nextProps.modActive.toUpdate !== '') {
+        // refresh mapstyles and links
+        this._updateGeoJson('markers', nextProps.modActive.toUpdate)
       }
     }
 
@@ -391,9 +397,7 @@ class Map extends Component {
       // iterate to add
       for (const addedMarker of addedMarkers) {
         console.log('addedMarker', addedMarker)
-        fetch(properties.chronasApiHost + '/markers?types=' + addedMarker + '&year=' + selectedYear) // TODO: change to markers after API endpoint is ready
-          .then(res => res.json())
-          .then(features => this._addGeoJson('markers', features || []))
+        this._addGeoJson('markers', addedMarker)
       }
     }
 
@@ -425,37 +429,30 @@ class Map extends Component {
     this.setState({ mapStyle })
   };
 
-  _addGeoJson = (sourceId, features) => {
+  _addGeoJson = (sourceId, entityId) => {
     // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
-    const mapStyle = this.state.mapStyle
-      .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features))
-    this.setState({ mapStyle })
-  };
+    fetch(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + this.props.selectedYear)
+      .then(res => res.json())
+      .then(features => {
+        const mapStyle = this.state.mapStyle
+          .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features))
+        this.setState({ mapStyle })
+      })
+  }
 
   _removeGeoJson = (sourceId, entityId) => {
-    // let mapStyle = prevMapStyle
-    //   .setIn(['sources', sourceId, 'data'],
-    //     fromJS({
-
-    // this.setState({ mapStyle: this.state.mapStyle
-    //     .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.concat({
-    //       'type': 'Feature', 'properties': { n: addedProv }, 'geometry': provGeometry
-    //     }))
-    // })
-
-    //       "type": "FeatureCollection",
-    //       "features": geojson.features.filter(function(obj) {
-    //       return (-1 === obj.properties._storage_options.iconUrl.indexOf("/static/i/b"))
-    //       }) }
-    //     ))
-
     const mapStyle = this.state.mapStyle
       .updateIn(['sources', sourceId, 'data', 'features'], list => list.filter(function (obj) {
         return (obj.properties.t !== entityId)
       }))
 
     this.setState({ mapStyle })
-  };
+  }
+
+  _updateGeoJson = (sourceId, entityId) => {
+    this._removeGeoJson(sourceId, entityId)
+    this._addGeoJson(sourceId, entityId)
+  }
 
   _loadMarkerData = data => {
     data.features.map((markerData, iter) => (
@@ -547,7 +544,7 @@ class Map extends Component {
     let itemName = ''
     let wikiId = ''
 
-    if (this.props.modActive.type === TYPE_MARKER) {
+    if (this.props.modActive.type === TYPE_MARKER && this.props.modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
     }
@@ -558,7 +555,6 @@ class Map extends Component {
 
       if (province) {
         provinceName = province.properties.name
-
         if (prevModData.indexOf(provinceName) > -1) {
           // remove province
           this.props.removeModData(provinceName)
@@ -595,7 +591,8 @@ class Map extends Component {
           mapStyle
         })
 
-        this.props.selectMarkerItem(wikiId)
+        this.props.selectMarkerItem(wikiId, { ...layerClicked.properties, 'coo': layerClicked.geometry.coordinates })
+        if (this.props.modActive.type === TYPE_MARKER) return
       } else {
         itemName = layerClicked.properties.name
         wikiId = layerClicked.properties.wikiUrl

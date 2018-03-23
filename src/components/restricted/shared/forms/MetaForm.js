@@ -96,7 +96,7 @@ export class MetaForm extends Component {
 
   componentDidMount () {
     const { setModType, selectedItem, setModData } = this.props
-    const selectedProvince = selectedItem.id
+    const selectedProvince = selectedItem.value
     if (selectedProvince) setModData([selectedProvince])
     setModType('metadata')
 
