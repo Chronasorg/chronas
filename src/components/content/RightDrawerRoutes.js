@@ -6,7 +6,7 @@ import Avatar from 'material-ui/Avatar'
 import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
-import FlatButton from 'material-ui/FlatButton'
+import RaisedButton from 'material-ui/RaisedButton'
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import FontIcon from 'material-ui/FontIcon'
 import Chip from 'material-ui/Chip'
@@ -30,18 +30,21 @@ import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '
 import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
+import IconDrag from 'material-ui/svg-icons/editor/drag-handle';
 
 const nearbyIcon = <IconLocationOn />;
 
 import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../restricted/metadata'
 import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from './actionReducers'
-import { deselectItem as deselectItemAction } from '../map/actionReducers'
+import { TYPE_AREA, TYPE_MARKER, deselectItem as deselectItemAction } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
 import utilsQuery from '../map/utils/query'
+import { changeColor } from '../menu/layers/actionReducers'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../styles/chronasColors'
+import utils from "../map/utils/general";
 
 const styles = {
   menuButtons: {
@@ -61,7 +64,20 @@ const styles = {
     paddingTop: 0
   },
   chip: {
+  },
+  draggableButton: {
+    position: 'absolute',
+    top: 'calc(50% - 20px)',
+    marginLeft: '-44px',
+    transform: 'rotate(90deg)'
   }
+}
+
+const selectedIndexObject = {
+  'ruler': 1,
+  'culture': 2,
+  'religion': 3,
+  'population': 5,
 }
 
 const resources = {
@@ -83,10 +99,12 @@ class RightDrawerRoutes extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
+      activeResize: false,
       hiddenElement: true,
       metadataType: '',
       metadataEntity: '',
       selectedIndex: -1,
+      articleWidth: '50%',
     }
   }
 
@@ -146,6 +164,26 @@ class RightDrawerRoutes extends PureComponent {
     this.props.setRightDrawerVisibility(false)
   }
 
+  handleOnTouchTap = (event) => {
+    console.debug(event)
+  }
+
+  handleMouseDown = (event) => {
+    console.debug('down')
+    this.setState({ activeResize: true })
+  }
+
+  handleMouseOver = (event) => {
+    if (this.state.activeResize) {
+      this.setState({ articleWidth: parseInt(event.clientX/event.screenX*100) + '%' })
+      console.debug('onMouseOver', event.screenX, event.clientX, parseInt(event.screenX/event.clientX*100) + '%' )
+    }
+  }
+
+  handleMouseUp = (event) => {
+    this.setState({ activeResize: false })
+  }
+
   select = (index) => this.setState({selectedIndex: index});
 
   render() {
@@ -157,34 +195,6 @@ class RightDrawerRoutes extends PureComponent {
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
     const modHeader = <AppBar
-      // title={
-      //   <span style={{
-      //     color: chronasDark,
-      //     fontSize: 20
-      //   }}
-      //   > {JSON.stringify(location.pathname)} tata</span>
-      // }
-      // showMenuIconButton={false}
-      // style={{ backgroundColor: '#fff' }}
-
-      // iconElementLeft={<IconButton><NavigationClose />test1</IconButton>}
-      // iconElementRight={this.state.logged ? <NavigationClose /> : <NavigationClose />}
-
-      /*
-
-      <Tabs
-          onChange={this.handleChange}
-          value={this.state.slideIndex}
-        >
-          <Tab label="Add Marker" value={1} />
-          <Tab label="Add Meta" value={0} />
-          <Tab label="Edit Area" value={2} />
-          <Tab label="Edit Marker" value={3} />
-          <Tab label="Edit Meta" value={4} />
-        </Tabs>
-
-       */
-
       iconElementLeft={
         <BottomNavigation
         onChange={this.handleChange}
@@ -194,19 +204,19 @@ class RightDrawerRoutes extends PureComponent {
             containerElement={<Link to="/mod/markers/create" />}
             label="Add Marker"
             icon={nearbyIcon}
-            // onClick={() => this.select(0)}
+            onClick={() => this.props.changeColor('ruler')}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/metadata/create" />}
             label="Add Meta"
             icon={nearbyIcon}
-            // onClick={() => this.select(1)}
+            onClick={() => this.props.changeColor('ruler')}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/areas" />}
             label="Edit Area"
             icon={nearbyIcon}
-            // onClick={() => this.select(2)}
+            onClick={() => this.props.changeColor('ruler')}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/markers" />}
@@ -236,14 +246,17 @@ class RightDrawerRoutes extends PureComponent {
       }
     />
 
+    const selectedProvince = this.props.selectedItem.value
+
     const modUrl = '/mod/' + selectedItem.type
     const articletHeader = <AppBar
       iconElementLeft={
-        <BottomNavigation
+        (this.props.selectedItem.type === TYPE_AREA) ? <BottomNavigation
           onChange={this.handleChange}
           value={this.state.slideIndex}
-          selectedIndex={ this.state.selectedIndex }>
+          selectedIndex={ selectedIndexObject[this.props.activeArea.color] }>
           <BottomNavigationItem
+            onClick={() => this.props.changeColor('ruler')}
             icon={<Chip
               style={styles.chip}
             >
@@ -253,33 +266,37 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
+            onClick={() => this.props.changeColor('ruler')}
             icon={<Chip
               style={styles.chip}
             >
               <Avatar src="images/uxceo-128.jpg" />
-              Ruler
+              { (this.props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')] }
             </Chip>}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
+            onClick={() => this.props.changeColor('culture')}
             icon={<Chip
               style={styles.chip}
             >
               <Avatar src="images/uxceo-128.jpg" />
-              Culture
+              { (this.props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')] }
             </Chip>}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
+            onClick={() => this.props.changeColor('religion')}
             icon={<Chip
               style={styles.chip}
             >
               <Avatar src="images/uxceo-128.jpg" />
-              Religion
+              { (this.props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')] }
             </Chip>}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
+            onClick={() => this.props.changeColor('population')}
             icon={<Chip
               style={styles.chip}
             >
@@ -289,15 +306,16 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
+            onClick={() => this.props.changeColor('population')}
             icon={<Chip
               style={styles.chip}
             >
               <Avatar src="images/uxceo-128.jpg" />
-              Population
+              { (this.props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('population')] }
             </Chip>}
             // onClick={() => this.select(0)}
           />
-        </BottomNavigation>
+        </BottomNavigation> : null
       }
       iconElementRight={
         <div>
@@ -339,8 +357,18 @@ class RightDrawerRoutes extends PureComponent {
               open
               containerStyle={{ overflow: 'none' }}
               style={{ overflow: 'none', zIndex: 9 }}
-              width={'50%'}
+              width={this.state.articleWidth}
             >
+              <RaisedButton
+                icon={<IconDrag />}
+                style={styles.draggableButton}
+                onTouchTap={(event) => console.debug('touchtap', event)}
+                onMouseDown={this.handleMouseDown.bind(this)}
+                onMouseOver={this.handleMouseOver.bind(this)}
+                onMouseUp={this.handleMouseUp.bind(this)}
+                onClick={(event) => console.debug('onClick', event)}
+              />
+
               {headerComponent}
               {component && createElement(component, {
                 ...commonProps,
@@ -353,7 +381,7 @@ class RightDrawerRoutes extends PureComponent {
       return RestrictedPage
     }
 
-
+//this.handleOnTouchTap.bind(this)
     return (
       <div>
         <Switch>
@@ -385,7 +413,7 @@ class RightDrawerRoutes extends PureComponent {
             finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, handleClose: this.handleClose }
           } else if (resourceKey === 'metadata') {
             finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType }
-          } else if (resourceKey === 'markers') {
+          } else if (resourceKey === TYPE_MARKER) {
             finalProps = { ...commonProps, selectedItem, setModDataLng, setModDataLat }
           } else {
             finalProps = commonProps
@@ -441,6 +469,7 @@ const mapStateToProps = (state, props) => ({
 const enhance = compose(
   connect(mapStateToProps,
     {
+      changeColor,
       deselectItem: deselectItemAction,
       toggleRightDrawer: toggleRightDrawerAction,
       setModData: setModDataAction,
