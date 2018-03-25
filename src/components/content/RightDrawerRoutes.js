@@ -260,17 +260,42 @@ class RightDrawerRoutes extends PureComponent {
     const religionId = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')]
 
     // we need metadata to be loaded before we can render this component
-    if (typeof metadata['ruler'] === 'undefined') return null
+    if (typeof metadata['ruler'] === 'undefined' || Object.keys(activeArea.data).length === 0) return null
 
     let entityPop = 0,
       totalPop = 0
 
-    Object.keys(activeArea.data).forEach((key)=>{totalPop += activeArea.data[key][4]; if (activeArea.data[key][0] === rulerId) entityPop += activeArea.data[key][4]})
+    if (activeArea.color === 'ruler') {
+      Object.keys(activeArea.data).forEach((key)=> {
+        const currPop = (activeArea.data[key] || {})[4] || 0
+        totalPop += currPop
+        if ((activeArea.data[key] || {})[0] === rulerId) entityPop += currPop
+      })
+    } else if (activeArea.color === 'culture') {
+      Object.keys(activeArea.data).forEach((key)=> {
+        const currPop = (activeArea.data[key] || {})[4] || 0
+        totalPop += currPop
+        if ((activeArea.data[key] || {})[1] === cultureId) entityPop += currPop
+      })
+    } else if (activeArea.color === 'religion') {
+      Object.keys(activeArea.data).forEach((key)=> {
+        const currPop = (activeArea.data[key] || {})[4] || 0
+        totalPop += currPop
+        if ((activeArea.data[key] || {})[2] === religionId) entityPop += currPop
+      })
+    } else if (activeArea.color === 'religionGeneral') {
+      const religionGeneralId = metadata['religion'][religionId][3]
+      Object.keys(activeArea.data).forEach((key)=> {
+        const currPop = (activeArea.data[key] || {})[4] || 0
+        totalPop += currPop
+        if ((metadata['religion'][(activeArea.data[key] || {})[2]] || {})[3] === religionGeneralId) entityPop += currPop
+      })
+    }
 
     const rulerName = metadata['ruler'][rulerId][0]
-    const religionName = metadata['religion'][religionId][0]
+    const religionName = (metadata['religion'][religionId] || {})[0] || 'n/a'
     const religionGeneralName = metadata['religionGeneral'][metadata['religion'][religionId][3]][0]
-    const cultureName = metadata['culture'][cultureId][0]
+    const cultureName = (metadata['culture'][cultureId] || {})[0] || 'n/a'
     const capitalName = (activeArea.data[selectedProvince] || {})[3] + '[' + (activeArea.data[selectedProvince] || {})[4] + ']'
     const populationName = entityPop + ' [' + parseInt(entityPop / totalPop * 1000) / 10 + '%]'
 
