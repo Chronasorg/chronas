@@ -89,7 +89,7 @@ export const ModMetaAdd = (props) => {
       errors.url = ["The URL needs to be a full Wikipedia URL"]
     }
     if (values.name === '') {
-      errors.name = ["This name already exists. If you like to edit an existing resource click Edit Meta on top."]
+      errors.name = ["This name already exists. If you like to edit an existing resource click Edit Entity on top."]
     }
     if (!values.color) {
       errors.color = ['Color value is required']

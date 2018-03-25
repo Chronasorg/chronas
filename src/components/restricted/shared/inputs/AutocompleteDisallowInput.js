@@ -198,7 +198,7 @@ export class AutocompleteDisallowInput extends Component {
     );
 
     const validMessage = {
-      0: 'Specify an original value, if you like to edit an existing resource click Edit Meta on top.',
+      0: 'Specify an original value, if you like to edit an existing resource click Edit Entity on top.',
       1: ''
     }
 

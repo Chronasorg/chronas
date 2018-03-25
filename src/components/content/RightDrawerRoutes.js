@@ -10,9 +10,6 @@ import RaisedButton from 'material-ui/RaisedButton'
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import FontIcon from 'material-ui/FontIcon'
 import Chip from 'material-ui/Chip'
-import {Tabs, Tab} from 'material-ui/Tabs';
-import CloseIcon from 'material-ui/svg-icons/content/clear'
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { Restricted, translate } from 'admin-on-rest'
@@ -30,6 +27,9 @@ import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '
 import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
+import IconEdit from 'material-ui/svg-icons/editor/mode-edit';
+import IconClose from 'material-ui/svg-icons/navigation/close';
+import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import IconDrag from 'material-ui/svg-icons/editor/drag-handle';
 
 const nearbyIcon = <IconLocationOn />;
@@ -108,10 +108,6 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
 
-  componentDidMount = () => {
-    console.debug('### RightDrawerRoutes mounted with props', this.props)
-  }
-
   componentWillReceiveProps (nextProps) {
 
     if (this.props.location.pathname !== nextProps.location.pathname) {
@@ -174,10 +170,10 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   handleMouseOver = (event) => {
-    if (this.state.activeResize) {
-      this.setState({ articleWidth: parseInt(event.clientX/event.screenX*100) + '%' })
-      console.debug('onMouseOver', event.screenX, event.clientX, parseInt(event.screenX/event.clientX*100) + '%' )
-    }
+    // if (this.state.activeResize) {
+    //   this.setState({ articleWidth: window.innerWidth-event.clientX })
+    //   // console.debug('onMouseOver', window.innerWidth-event.layerX, window.innerWidth-event.pageX, window.innerWidth-event.screenX, window.innerWidth-event.clientX, parseInt(event.screenX/event.clientX*100) + '%', event )
+    // }
   }
 
   handleMouseUp = (event) => {
@@ -186,11 +182,22 @@ class RightDrawerRoutes extends PureComponent {
 
   select = (index) => this.setState({selectedIndex: index});
 
+
+  componentDidMount(){
+    console.debug('### RightDrawerRoutes mounted with props', this.props)
+    window.addEventListener('mousemove', this.handleMouseOver.bind(this), false);
+    window.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
+  }
+  componentWillUnmount(){
+    window.removeEventListener('mousemove', this.handleMouseOver.bind(this), false);
+    window.removeEventListener('mouseup', this.handleMouseUp.bind(this), false);
+  }
+
   render() {
     const { list, create, edit, show, remove, options, onMenuTap,
       translate, rightDrawerOpen, deselectItem, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme,
-      setModData, setModDataLng, setModDataLat, location, history, metadata } = this.props
+      setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor } = this.props
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
@@ -204,19 +211,19 @@ class RightDrawerRoutes extends PureComponent {
             containerElement={<Link to="/mod/markers/create" />}
             label="Add Marker"
             icon={nearbyIcon}
-            onClick={() => this.props.changeColor('ruler')}
+            onClick={() => changeColor('ruler')}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/metadata/create" />}
-            label="Add Meta"
+            label="Add Entity"
             icon={nearbyIcon}
-            onClick={() => this.props.changeColor('ruler')}
+            onClick={() => changeColor('ruler')}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/areas" />}
-            label="Edit Area"
+            label="Edit Entity"
             icon={nearbyIcon}
-            onClick={() => this.props.changeColor('ruler')}
+            onClick={() => changeColor('ruler')}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/markers" />}
@@ -236,27 +243,46 @@ class RightDrawerRoutes extends PureComponent {
         <div>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleBack()}>
-            <FontIcon className='fa fa-chevron-left' />
+            <IconBack />
           </IconButton>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleClose()}>
-            <FontIcon className='fa fa-chevron-right' />
+            <IconClose />
           </IconButton>
         </div>
       }
     />
 
-    const selectedProvince = this.props.selectedItem.value
+    const selectedProvince = selectedItem.value
+
+    const rulerId = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')]
+    const cultureId = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')]
+    const religionId = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')]
+
+    // we need metadata to be loaded before we can render this component
+    if (typeof metadata['ruler'] === 'undefined') return null
+
+    let entityPop = 0,
+      totalPop = 0
+
+    Object.keys(activeArea.data).forEach((key)=>{totalPop += activeArea.data[key][4]; if (activeArea.data[key][0] === rulerId) entityPop += activeArea.data[key][4]})
+
+    const rulerName = metadata['ruler'][rulerId][0]
+    const religionName = metadata['religion'][religionId][0]
+    const religionGeneralName = metadata['religionGeneral'][metadata['religion'][religionId][3]][0]
+    const cultureName = metadata['culture'][cultureId][0]
+    const capitalName = (activeArea.data[selectedProvince] || {})[3] + '[' + (activeArea.data[selectedProvince] || {})[4] + ']'
+    const populationName = entityPop + ' [' + parseInt(entityPop / totalPop * 1000) / 10 + '%]'
 
     const modUrl = '/mod/' + selectedItem.type
     const articletHeader = <AppBar
       iconElementLeft={
-        (this.props.selectedItem.type === TYPE_AREA) ? <BottomNavigation
+        (selectedItem.type === TYPE_AREA) ? <BottomNavigation
           onChange={this.handleChange}
           value={this.state.slideIndex}
-          selectedIndex={ selectedIndexObject[this.props.activeArea.color] }>
+          selectedIndex={ selectedIndexObject[activeArea.color] }>
           <BottomNavigationItem
-            onClick={() => this.props.changeColor('ruler')}
+            onClick={() => changeColor('ruler')}
             icon={<Chip
               style={styles.chip}
             >
@@ -266,52 +292,52 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => this.props.changeColor('ruler')}
+            onClick={() => changeColor('ruler')}
             icon={<Chip
               style={styles.chip}
             >
               <Avatar src="images/uxceo-128.jpg" />
-              { (this.props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')] }
+              { rulerName }
             </Chip>}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => this.props.changeColor('culture')}
+            onClick={() => changeColor('culture')}
             icon={<Chip
               style={styles.chip}
             >
               <Avatar src="images/uxceo-128.jpg" />
-              { (this.props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')] }
+              { cultureName }
             </Chip>}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => this.props.changeColor('religion')}
+            onClick={() => changeColor('religion')}
             icon={<Chip
               style={styles.chip}
             >
               <Avatar src="images/uxceo-128.jpg" />
-              { (this.props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')] }
+              { religionName } [ { religionGeneralName } ]
             </Chip>}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => this.props.changeColor('population')}
+            onClick={() => changeColor('population')}
             icon={<Chip
               style={styles.chip}
             >
               <Avatar src="images/uxceo-128.jpg" />
-              Capital
+              { capitalName }
             </Chip>}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => this.props.changeColor('population')}
+            onClick={() => changeColor('population')}
             icon={<Chip
               style={styles.chip}
             >
               <Avatar src="images/uxceo-128.jpg" />
-              { (this.props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('population')] }
+              { populationName }
             </Chip>}
             // onClick={() => this.select(0)}
           />
@@ -320,16 +346,15 @@ class RightDrawerRoutes extends PureComponent {
       iconElementRight={
         <div>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
-            containerElement={<Link to={modUrl} />}>
-            <FontIcon className='fa fa-edit' />
+            containerElement={<Link to={modUrl} />}><IconEdit />
           </IconButton>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleBack()}>
-            <FontIcon className='fa fa-chevron-left' />
+            <IconBack />
           </IconButton>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
-            onClick={() => this.handleClose()}>
-            <FontIcon className='fa fa-chevron-right' />
+                      onClick={() => this.handleClose()}>
+            <IconClose />
           </IconButton>
         </div>
       }
@@ -362,11 +387,11 @@ class RightDrawerRoutes extends PureComponent {
               <RaisedButton
                 icon={<IconDrag />}
                 style={styles.draggableButton}
-                onTouchTap={(event) => console.debug('touchtap', event)}
-                onMouseDown={this.handleMouseDown.bind(this)}
-                onMouseOver={this.handleMouseOver.bind(this)}
-                onMouseUp={this.handleMouseUp.bind(this)}
-                onClick={(event) => console.debug('onClick', event)}
+                // onTouchTap={(event) => console.debug('touchtap', event)}
+                // onMouseDown={this.handleMouseDown.bind(this)}
+                // onMouseOver={this.handleMouseOver.bind(this)}
+                // onMouseUp={this.handleMouseUp.bind(this)}
+                // onClick={(event) => console.debug('onClick', event)}
               />
 
               {headerComponent}
@@ -381,7 +406,6 @@ class RightDrawerRoutes extends PureComponent {
       return RestrictedPage
     }
 
-//this.handleOnTouchTap.bind(this)
     return (
       <div>
         <Switch>
