@@ -507,28 +507,25 @@ class Map extends Component {
     const layerHovered = event.features && event.features[0]
     if (layerHovered) {
       if (layerHovered.layer.id === "markers") {
-        hoverInfo = {
-          lngLat: event.lngLat,
-          feature: layerHovered.properties
-        }
-        provinceName = layerHovered.properties.name
 
-        this.setState({ mapStyle: this.state.mapStyle
-            .setIn(['sources', 'area-hover', 'data', 'features'], [{
-              'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
-            }]) })
       } else {
-        hoverInfo = {
-          lngLat: event.lngLat,
-          feature: layerHovered.properties
-        }
-        provinceName = layerHovered.properties.name
 
-        this.setState({ mapStyle: this.state.mapStyle
-            .setIn(['sources', 'area-hover', 'data', 'features'], [{
-              'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
-            }]) })
       }
+      hoverInfo = {
+        lngLat: event.lngLat,
+        feature: layerHovered.properties
+      }
+      provinceName = layerHovered.properties.name
+
+      this.setState({ mapStyle: this.state.mapStyle
+          .setIn(['sources', 'area-hover', 'data', 'features'], [{
+            'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
+          }]).setIn(['sources', 'area-outlines', 'data', 'features'], [{
+            'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
+          }])
+
+      })
+
     } else {
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
@@ -561,13 +558,13 @@ class Map extends Component {
           // remove province
           this.props.removeModData(provinceName)
           this.setState({ mapStyle: this.state.mapStyle
-            .updateIn(['sources', 'area-outline', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
+            .updateIn(['sources', 'area-outlines', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
           })
         } else {
           // add province
           this.props.addModData(provinceName)
           this.setState({ mapStyle: this.state.mapStyle
-            .updateIn(['sources', 'area-outline', 'data', 'features'], list => list.concat({
+            .updateIn(['sources', 'area-outlines', 'data', 'features'], list => list.concat({
               'type': 'Feature', 'properties': { n: provinceName }, 'geometry': province.geometry
             }))
           })

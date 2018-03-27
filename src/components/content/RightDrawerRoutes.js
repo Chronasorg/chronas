@@ -24,7 +24,9 @@ import { ModMetaEdit } from './mod/ModMetaEdit'
 import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
 // import MarkerCreate from '../restricted/markers/MarkerCreate'
-import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {BottomNavigation } from 'material-ui/BottomNavigation';
+import BottomNavigationItem from '../overwrites/BottomNavigationItem'
 import Paper from 'material-ui/Paper';
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
 import IconEdit from 'material-ui/svg-icons/editor/mode-edit';
@@ -63,7 +65,19 @@ const styles = {
     opacity: 0,
     paddingTop: 0
   },
-  chip: {
+  cardHeader: {
+    titleStyle: {
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      maxWidth: 100,
+      textAlign: 'left'
+    },
+    style: {
+      whiteSpace: 'nowrap',
+      textAlign: 'left',
+      padding: 0
+    }
   },
   draggableButton: {
     position: 'absolute',
@@ -205,37 +219,36 @@ class RightDrawerRoutes extends PureComponent {
       iconElementLeft={
         <BottomNavigation
         onChange={this.handleChange}
-        value={this.state.slideIndex}
         selectedIndex={ this.state.selectedIndex }>
           <BottomNavigationItem
             containerElement={<Link to="/mod/markers/create" />}
             label="Add Marker"
             icon={nearbyIcon}
-            onClick={() => changeColor('ruler')}
+            onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/metadata/create" />}
             label="Add Entity"
             icon={nearbyIcon}
-            onClick={() => changeColor('ruler')}
+            onClick={() => { this.select(1) }}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/areas" />}
             label="Edit Entity"
             icon={nearbyIcon}
-            onClick={() => changeColor('ruler')}
+            onClick={() => { this.select(2) }}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/markers" />}
             label="Edit Marker"
             icon={nearbyIcon}
-            // onClick={() => this.select(3)}
+            onClick={() => this.select(3)}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/metadata" />}
             label="Edit Meta"
             icon={nearbyIcon}
-            // onClick={() => this.select(4)}
+            onClick={() => this.select(4)}
           />
         </BottomNavigation>
       }
@@ -300,70 +313,76 @@ class RightDrawerRoutes extends PureComponent {
     const populationName = entityPop + ' [' + parseInt(entityPop / totalPop * 1000) / 10 + '%]'
 
     const modUrl = '/mod/' + selectedItem.type
+
     const articletHeader = <AppBar
       iconElementLeft={
         (selectedItem.type === TYPE_AREA) ? <BottomNavigation
           onChange={this.handleChange}
-          value={this.state.slideIndex}
-          selectedIndex={ selectedIndexObject[activeArea.color] }>
+          selectedIndex={ this.state.selectedIndex }>
           <BottomNavigationItem
-            onClick={() => changeColor('ruler')}
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              King
-            </Chip>}
+            onClick={() => { this.select(0); changeColor('ruler') }}
+            icon={<CardHeader
+                title="very loooooooooooong text"
+                titleStyle={ styles.cardHeader.titleStyle }
+                style={ styles.cardHeader.style }
+                subtitle="Ruler"
+                avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+              />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => changeColor('ruler')}
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              { rulerName }
-            </Chip>}
+            onClick={() => { this.select(1); changeColor('ruler') }}
+            icon={<CardHeader
+              title={ rulerName }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Ruler"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => changeColor('culture')}
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              { cultureName }
-            </Chip>}
+            onClick={() => { this.select(2); changeColor('culture') }}
+            icon={<CardHeader
+              title={ cultureName }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Culture"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => changeColor('religion')}
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              { religionName } [ { religionGeneralName } ]
-            </Chip>}
+            onClick={() => { this.select(3); changeColor('religion') }}
+            icon={<CardHeader
+              title={ religionName + ' [' + religionGeneralName + ']' }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Religion"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => changeColor('population')}
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              { capitalName }
-            </Chip>}
+            onClick={() => { this.select(4); changeColor('population') }}
+            icon={<CardHeader
+              title={ capitalName }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Capital"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => changeColor('population')}
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              { populationName }
-            </Chip>}
+            onClick={() => { this.select(5); changeColor('population')} }
+            icon={<CardHeader
+              title={ populationName }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Population"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
         </BottomNavigation> : null
