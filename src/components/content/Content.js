@@ -35,13 +35,13 @@ const Content = (props) => {
   if (props.selectedItem.type === TYPE_AREA) {
     const selectedProvince = props.selectedItem.value
     const activeAreaDim = (props.activeArea.color === 'population') ? 'capital' : props.activeArea.color
-    const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
+    const activeprovinceValue = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
 
     selectedWiki = (activeAreaDim === 'religionGeneral')
-      ? (props.metadata[activeAreaDim][(props.metadata.religion[activeprovinceDim] || [])[3]] || {})[2]
+      ? (props.metadata[activeAreaDim][(props.metadata.religion[activeprovinceValue] || [])[3]] || {})[2]
       : (activeAreaDim === 'province' || activeAreaDim === 'capital')
-        ? (props.metadata[activeAreaDim][activeprovinceDim] || {})
-        : (props.metadata[activeAreaDim][activeprovinceDim] || {})[2]
+        ? (props.metadata[activeAreaDim][activeprovinceValue] || {})
+        : (props.metadata[activeAreaDim][activeprovinceValue] || {})[2]
   }
   else if (props.selectedItem.type === TYPE_MARKER) {
     const selectedMarker = props.selectedItem.value

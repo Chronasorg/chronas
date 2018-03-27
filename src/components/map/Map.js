@@ -16,10 +16,12 @@ import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCount
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
 import _ from 'lodash'
-
 import Timeline from './timeline/MapTimeline'
 import BasicInfo from './markers/basic-info'
 import BasicPin from './markers/basic-pin'
+import utils from './utils/general'
+
+const turf = require('@turf/turf')
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min)
@@ -146,6 +148,35 @@ class Map extends Component {
 
     this.setState({ mapStyle })
   }
+  _setAreaOutlines = (activeColorDim, activeColorValue) => {
+    let geometryToOutline
+    if (activeColorDim === 'ruler') {
+      geometryToOutline = this.state.mapStyle
+        .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.r === activeColorValue)
+    } else if (activeColorDim === 'culture') {
+      geometryToOutline = this.state.mapStyle
+        .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.c === activeColorValue)
+    } else if (activeColorDim === 'religion') {
+      geometryToOutline = this.state.mapStyle
+        .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.e === activeColorValue)
+    } else if (activeColorDim === 'religionGeneral') {
+      geometryToOutline = this.state.mapStyle
+        .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.g === activeColorValue)
+    }
+    // turf.unkinkPolygon.apply(null,geometryToOutline)
+    if (typeof geometryToOutline !== 'undefined' && geometryToOutline.length !== 0) {
+      const multiPolygonToOutline = turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features[0]))  // TODO: also include multipolygons (see 0) - f
+    //  const multiPolygonToOutline = turf.union.apply(null, geometryToOutline.map((f) => turf.combine(turf.unkinkPolygon(f)).features))
+
+      setTimeout(() => {
+        const prevMapStyle = this.state.mapStyle
+        this.setState({ mapStyle: prevMapStyle
+            .setIn(['sources', 'area-outlines', 'data'], fromJS(multiPolygonToOutline))
+            .setIn(['sources', 'area-hover', 'data'], fromJS(multiPolygonToOutline))  // TODO: this seems to break the normal hover (seperate layers or sources for now?)
+        })
+      }, 500) // TODO: get rid of that hack
+    }
+  }
 
   _changeArea = (areaDefs, newLabel, newColor) => {
     let mapStyle = this.state.mapStyle
@@ -265,11 +296,11 @@ class Map extends Component {
         // refresh mapstyles and links
         this._updateMetaMapStyle(nextProps.modActive.toUpdate)
       }
-    } else if (modActive.type === 'markers' && nextProps.modActive.type === '') {
+    } else if (modActive.type === TYPE_MARKER && nextProps.modActive.type === '') {
       // Leaving Metadata Mod
       if (nextProps.modActive.toUpdate !== '') {
         // refresh mapstyles and links
-        this._updateGeoJson('markers', nextProps.modActive.toUpdate)
+        this._updateGeoJson(TYPE_MARKER, nextProps.modActive.toUpdate)
       }
     }
 
@@ -379,6 +410,11 @@ class Map extends Component {
       console.debug('###### Area Color changed' + nextProps.activeArea.color)
       this._changeArea(activeArea.data, undefined, nextProps.activeArea.color)
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
+
+      if (nextProps.selectedItem.value !== '' && nextProps.activeArea.color !== '') {
+        const activeprovinceValue = (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)]
+        this._setAreaOutlines(nextProps.activeArea.color, activeprovinceValue)
+      }
     }
 
     // Markers changed?
@@ -391,13 +427,13 @@ class Map extends Component {
       // iterate to remove
       for (const removedMarker of removedMarkers) {
         console.log('removing Marker', removedMarker)
-        this._removeGeoJson('markers', removedMarker)
+        this._removeGeoJson(TYPE_MARKER, removedMarker)
       }
 
       // iterate to add
       for (const addedMarker of addedMarkers) {
         console.log('addedMarker', addedMarker)
-        this._addGeoJson('markers', addedMarker)
+        this._addGeoJson(TYPE_MARKER, addedMarker)
       }
     }
 
@@ -506,7 +542,7 @@ class Map extends Component {
 
     const layerHovered = event.features && event.features[0]
     if (layerHovered) {
-      if (layerHovered.layer.id === "markers") {
+      if (layerHovered.layer.id === TYPE_MARKER) {
 
       } else {
 
@@ -517,6 +553,7 @@ class Map extends Component {
       }
       provinceName = layerHovered.properties.name
 
+      console.debug(JSON.stringify(layerHovered.geometry))
       this.setState({ mapStyle: this.state.mapStyle
           .setIn(['sources', 'area-hover', 'data', 'features'], [{
             'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
@@ -525,7 +562,6 @@ class Map extends Component {
           }])
 
       })
-
     } else {
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
@@ -546,8 +582,7 @@ class Map extends Component {
     if (this.props.modActive.type === TYPE_MARKER && this.props.modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    }
-    else if (this.props.modActive.type === 'areas') {
+    } else if (this.props.modActive.type === 'areas') {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = this.props.modActive.data
@@ -576,7 +611,7 @@ class Map extends Component {
     const layerClicked = event.features && event.features[0]
 
     if (layerClicked) {
-      if (layerClicked.layer.id === "markers") {
+      if (layerClicked.layer.id === TYPE_MARKER) {
         itemName = layerClicked.properties.n
         wikiId = layerClicked.properties.w
         utilsQuery.updateQueryStringParameter('type', 'marker')
