@@ -30,6 +30,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.0.0",
     "compression": "^1.7.2",
+    "d3-ease": "^1.0.3",
     "d3-request": "^1.0.6",
     "d3-scale": "^1.0.6",
     "express": "^4.16.2",
@@ -55,6 +56,7 @@
     "redbox-react": "^1.5.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
+    "viewport-mercator-project": "^5.0.1",
     "vis": "^4.21.0",
     "whatwg-fetch": "^2.0.3"
   },

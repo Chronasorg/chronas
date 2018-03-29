@@ -10,6 +10,7 @@ import { setModType, setModData } from '../buttons/actionReducers'
 import { updateSingleMetadata } from './../../../map/data/actionReducers'
 import properties from '../../../../properties'
 import { showNotification } from 'admin-on-rest'
+import axios from "axios/index";
 const formStyle = { padding: '0 1em 1em 1em' }
 
 export class MetaForm extends Component {
@@ -83,10 +84,9 @@ export class MetaForm extends Component {
     const { setModType, updateSingleMetadata } = this.props
 
     // only update relevant
-    fetch(properties.chronasApiHost + "/metadata/" + metaToUpdate)
-      .then(res => res.json())
+    axios.get(properties.chronasApiHost + "/metadata/" + metaToUpdate)
       .then( (metadata) => {
-        updateSingleMetadata(metaToUpdate, metadata)
+        updateSingleMetadata(metaToUpdate, metadata.data)
       })
       .then( () => {
         setModType('', [], metaToUpdate)

@@ -38,7 +38,7 @@ const nearbyIcon = <IconLocationOn />;
 
 import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../restricted/metadata'
 import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
-import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from './actionReducers'
+import { setRightDrawerVisibility } from './actionReducers'
 import { TYPE_AREA, TYPE_MARKER, deselectItem as deselectItemAction } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
@@ -49,6 +49,12 @@ import { chronasMainColor } from '../../styles/chronasColors'
 import utils from "../map/utils/general";
 
 const styles = {
+  iconElementRightStyle: {
+    position: 'fixed',
+    background: 'white',
+    whiteSpace:  'nowrap',
+    right: 0
+  },
   menuButtons: {
     margin: 12,
     color: '#fff',
@@ -130,7 +136,7 @@ class RightDrawerRoutes extends PureComponent {
       })
     }
 
-    const { rightDrawerOpen } = this.props
+    const { rightDrawerOpen, setRightDrawerVisibility } = this.props
     console.debug('### MAP rightDrawerOpen', this.props, nextProps)
 
 
@@ -146,9 +152,9 @@ class RightDrawerRoutes extends PureComponent {
     }
 
     if (nextProps.location.pathname.indexOf('/mod') > -1 ||
-      nextProps.location.pathname.indexOf('/article/') > -1) {
+      nextProps.location.pathname.indexOf('/article') > -1) {
       if (!nextProps.rightDrawerOpen) {
-        setRightDrawerVisibilityAction(true)
+        setRightDrawerVisibility(true)
       }
     }
   }
@@ -253,7 +259,7 @@ class RightDrawerRoutes extends PureComponent {
         </BottomNavigation>
       }
       iconElementRight={
-        <div>
+        <div style={styles.iconElementRightStyle}>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleBack()}>
             <IconBack />
@@ -388,7 +394,7 @@ class RightDrawerRoutes extends PureComponent {
         </BottomNavigation> : null
       }
       iconElementRight={
-        <div>
+        <div style={styles.iconElementRightStyle}>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             containerElement={<Link to={modUrl} />}><IconEdit />
           </IconButton>
@@ -543,7 +549,7 @@ const enhance = compose(
       setModData: setModDataAction,
       setModDataLng: setModDataLngAction,
       setModDataLat: setModDataLatAction,
-      setRightDrawerVisibility: setRightDrawerVisibilityAction
+      setRightDrawerVisibility
     }),
   pure,
   translate,

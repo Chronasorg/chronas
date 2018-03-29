@@ -20,7 +20,7 @@ export const makeRootReducer = (asyncReducers) => {
     activeMarkers: markerReducer(),
     basemap: basemapReducer(),
     form: formReducer,
-    loading: loadingReducer(),
+    isLoading: loadingReducer(),
     locale: localeReducer(),
     location: locationReducer,
     metadata: metadataReducer(),
