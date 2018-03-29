@@ -51,6 +51,7 @@ class Map extends Component {
   }
 
   componentDidMount = () => {
+    this._addGeoJson(TYPE_MARKER, this.props.activeMarkers)
     window.addEventListener('resize', this._resize)
     this._resize()
   }
@@ -182,11 +183,10 @@ class Map extends Component {
             { padding: 20, offset: [0, -40] }
           )
 
-        // TODO: fly 2 lods higher!
-
         const viewport = {
           ...this.state.viewport,
           ...bounds,
+          zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)), // TODO: only apply this i
           transitionDuration: 1000,
           transitionInterpolator: new FlyToInterpolator(),
           transitionEasing: easeCubic
@@ -200,6 +200,7 @@ class Map extends Component {
   }
 
   _changeArea = (areaDefs, newLabel, newColor, selectedProvince) => {
+    const { activeArea, metadata, selectedItem } = this.props
     let mapStyle = this.state.mapStyle
 
     if (typeof newColor !== 'undefined') {
@@ -215,25 +216,28 @@ class Map extends Component {
     }
 
     if (typeof newLabel !== 'undefined') {
-      const plCol = utilsMapping.addTextFeat(areaDefs, newLabel, this.props.metadata)
+      const plCol = utilsMapping.addTextFeat(areaDefs, newLabel, metadata)
       mapStyle = mapStyle
         .setIn(['sources', 'area-labels', 'data'], fromJS(plCol[0]))
         .setIn(['sources', 'area-outlines', 'data'], fromJS(plCol[2]))
     }
 
-    if (newColor !== '' && selectedProvince) {
-      const activeprovinceValue = (this.props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(this.props.activeArea.color)]
-      const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(this.props.activeArea.color, activeprovinceValue)
+    if (selectedItem.type === TYPE_AREA && newColor !== '' && selectedProvince) {
+      const activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(newColor)]
+      const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(newColor, activeprovinceValue)
 
       if (typeof multiPolygonToOutline !== "undefined") {
         this.setState({
           viewport,
           mapStyle: mapStyle
             .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutline))
-            .setIn(['sources', 'area-hover', 'data'], fromJS(multiPolygonToOutline))
+            // .setIn(['sources', 'area-hover', 'data'], fromJS(multiPolygonToOutline))
         })
       } else {
-        this.setState({ mapStyle })
+        this.setState({ mapStyle: mapStyle.setIn(['sources', 'entity-outlines', 'data'], fromJS({
+          "type": "FeatureCollection",
+          "features": [ ]
+        }))})
       }
     } else {
       this.setState({ mapStyle })
@@ -305,7 +309,7 @@ class Map extends Component {
       } else {
         // clicked on item!
 
-        if (nextProps.activeArea.color !== '' && nextProps.activeArea.color === activeArea.color) {
+        if (nextProps.selectedItem.type === TYPE_AREA && nextProps.selectedItem.value !== '' && nextProps.activeArea.color !== '' && nextProps.activeArea.color === activeArea.color) {
           const activeprovinceValue = (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)]
           const {viewport, multiPolygonToOutline} = this._getAreaViewportAndOutlines(nextProps.activeArea.color, activeprovinceValue)
 
@@ -314,26 +318,41 @@ class Map extends Component {
               viewport,
               mapStyle: this.state.mapStyle
                 .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutline))
-                .setIn(['sources', 'area-hover', 'data'], fromJS(multiPolygonToOutline)),
+                // .setIn(['sources', 'area-hover', 'data'], fromJS(multiPolygonToOutline))
+              ,
               hoverInfo: null
             })
           } else {
             this.setState({
-              mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data', 'features'], []),
+              mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
+                "type": "FeatureCollection",
+                "features": [ ]
+              })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+                "type": "FeatureCollection",
+                "features": [ ]
+              })),
               hoverInfo: null
             })
           }
         } else {
-          this.setState({
-            mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data', 'features'], []),
-            hoverInfo: null
-          })
+          // setTimeout(() => {
+            this.setState({
+              mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
+                "type": "FeatureCollection",
+                "features": [ ]
+              })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+                "type": "FeatureCollection",
+                "features": [ ]
+              })),
+              hoverInfo: null
+            })
+          // }, 2000)
         }
       }
     }
 
     // Leaving Area Mod?
-    if (modActive.type === 'areas' && nextProps.modActive.type === '') {
+    if (modActive.type === TYPE_AREA && nextProps.modActive.type === '') {
       // reload
       if (nextProps.modActive.toUpdate === 'area') {
         // refresh this year data
@@ -354,7 +373,7 @@ class Map extends Component {
     }
 
     // Highlight mod area
-    if (nextProps.modActive.type === 'areas' && !_.isEqual(modActive.data, nextProps.modActive.data)) {
+    if (nextProps.modActive.type === TYPE_AREA && !_.isEqual(modActive.data, nextProps.modActive.data)) {
       // reload
       const removedProvinces = _.difference(modActive.data, nextProps.modActive.data)
       const addedProvinces = _.difference(nextProps.modActive.data, modActive.data)
@@ -378,11 +397,14 @@ class Map extends Component {
       })
     }
 
-    if (nextProps.modActive.type === 'areas') {
+    if (nextProps.modActive.type === TYPE_AREA) {
       if (modActive.type === '') {
         const prevMapStyle = this.state.mapStyle
         let mapStyle = prevMapStyle
-          .setIn(['sources', 'area-hover', 'data', 'features'], [])
+          .setIn(['sources', 'area-hover', 'data'], fromJS({
+            "type": "FeatureCollection",
+            "features": [ ]
+          }))
         this.setState({
           hoverInfo: null
         })
@@ -416,7 +438,7 @@ class Map extends Component {
           })
         }
       }
-    } else if (modActive.type === 'areas') {
+    } else if (modActive.type === TYPE_AREA) {
       // clean up mod select
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
@@ -464,7 +486,7 @@ class Map extends Component {
     // Markers changed?
     if (!_.isEqual(activeMarkers.sort(), nextProps.activeMarkers.sort())) { // expensive comparison! // TODO
       console.debug('###### Markers changed')
-      utilsQuery.updateQueryStringParameter('marker', nextProps.activeMarkers)
+      utilsQuery.updateQueryStringParameter('markers', nextProps.activeMarkers)
       const removedMarkers = _.difference(activeMarkers, nextProps.activeMarkers)
       const addedMarkers = _.difference(nextProps.activeMarkers, activeMarkers)
 
@@ -542,6 +564,7 @@ class Map extends Component {
   };
 
   _changeYear = (year) => {
+    // TODO: reset selected marker pools
     axios.get(properties.chronasApiHost + '/areas/' + year)
       .then((areaDefsRequest) => {
         this.props.changeAreaData(areaDefsRequest.data)
@@ -606,7 +629,10 @@ class Map extends Component {
     } else {
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
-        .setIn(['sources', 'area-hover', 'data', 'features'], [])
+        .setIn(['sources', 'area-hover', 'data'], fromJS({
+          "type": "FeatureCollection",
+          "features": [ ]
+        }))
       this.setState({ mapStyle })
     }
 
@@ -623,7 +649,7 @@ class Map extends Component {
     if (this.props.modActive.type === TYPE_MARKER && this.props.modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    } else if (this.props.modActive.type === 'areas') {
+    } else if (this.props.modActive.type === TYPE_AREA) {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = this.props.modActive.data
@@ -655,12 +681,15 @@ class Map extends Component {
       if (layerClicked.layer.id === TYPE_MARKER) {
         itemName = layerClicked.properties.n
         wikiId = layerClicked.properties.w
-        utilsQuery.updateQueryStringParameter('type', 'marker')
-        utilsQuery.updateQueryStringParameter('province', '')
+        utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
+        utilsQuery.updateQueryStringParameter('value', wikiId)
 
         const prevMapStyle = this.state.mapStyle
         let mapStyle = prevMapStyle
-          .setIn(['sources', 'area-hover', 'data', 'features'], [])
+          .setIn(['sources', 'area-hover', 'data'], fromJS({
+            "type": "FeatureCollection",
+            "features": [ ]
+          }))
         this.setState({
           hoverInfo: null,
           mapStyle
@@ -671,12 +700,15 @@ class Map extends Component {
       } else {
         itemName = layerClicked.properties.name
         wikiId = layerClicked.properties.wikiUrl
-        utilsQuery.updateQueryStringParameter('type', 'areas')
-        utilsQuery.updateQueryStringParameter('province', itemName)
+        utilsQuery.updateQueryStringParameter('type', TYPE_AREA)
+        utilsQuery.updateQueryStringParameter('value', itemName)
 
         const prevMapStyle = this.state.mapStyle
         let mapStyle = prevMapStyle
-          .setIn(['sources', 'area-hover', 'data', 'features'], [])
+          .setIn(['sources', 'area-hover', 'data'], fromJS({
+            "type": "FeatureCollection",
+            "features": [ ]
+          }))
         this.setState({
           hoverInfo: null,
           mapStyle
@@ -739,7 +771,7 @@ class Map extends Component {
     const { modActive } = this.props
 
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
-    if (this.props.rightDrawerOpen) leftOffset -= 228
+    if (this.props.rightDrawerOpen) leftOffset -= viewport.width * 0.24 // TODO: make this resize dynamic by article Content width
 
     let modMarker = (modActive.type === TYPE_MARKER && typeof modActive.data[0] !== 'undefined') ? <Marker
       captureClick={false}

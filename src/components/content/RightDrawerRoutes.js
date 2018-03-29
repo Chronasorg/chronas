@@ -174,10 +174,10 @@ class RightDrawerRoutes extends PureComponent {
 
   handleClose = () => {
     this.props.history.push('/')
-    utilsQuery.updateQueryStringParameter('type', '')
-    utilsQuery.updateQueryStringParameter('province', '')
     this.props.deselectItem()
     this.props.setRightDrawerVisibility(false)
+    utilsQuery.updateQueryStringParameter('type', '')
+    utilsQuery.updateQueryStringParameter('value', '')
   }
 
   handleOnTouchTap = (event) => {

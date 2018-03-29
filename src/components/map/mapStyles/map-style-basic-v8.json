@@ -159,8 +159,8 @@
         "line-cap": "round"
       },
       "paint": {
-        "line-color": "#bc0000",
-        "line-width": 2
+        "line-color": "#aaa",
+        "line-width": 1
       }
     },
     {

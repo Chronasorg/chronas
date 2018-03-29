@@ -98,27 +98,27 @@ class App extends Component {
     const selectedItem = {
       wiki: '',
       type: (utilsQuery.getURLParameter('type') || ''),
-      value: (utilsQuery.getURLParameter('province') || ''),
+      value: (utilsQuery.getURLParameter('value') || ''),
     }
-    const selectedMarker = (utilsQuery.getURLParameter('marker') || '')
+    const selectedMarker = (utilsQuery.getURLParameter('markers') || '')
 
     setYear(selectedYear)
-    if (selectedMarker !== '') setMarker(selectedMarker)
+    if (selectedMarker !== '') setMarker(selectedMarker.split(','))
     if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
     if (selectedItem.type === TYPE_AREA) {
       selectAreaItem('-1', selectedItem.value)
     } else if (selectedItem.type === TYPE_MARKER) {
-      selectMarkerItem('-1', selectedItem.value)
+      selectMarkerItem(selectedItem.value, selectedItem.value)
     }
 
     // initialize queryparameters
     window.history.pushState('', '',
       '?year=' + selectedYear +
-      '&marker=' + selectedMarker +
+      '&markers=' + selectedMarker +
       '&type=' + selectedItem.type +
       '&fill=' + activeArea.color +
       '&label=' + activeArea.label +
-      '&province=' + selectedItem.value +
+      '&value=' + selectedItem.value +
       window.location.hash)
   }
 
