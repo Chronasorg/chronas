@@ -17,6 +17,8 @@ import { Title,
   ViewTitle
 } from 'admin-on-rest'
 import { logout } from '../../../menu/authentication/actionReducers'
+import {setModType} from "../buttons/actionReducers";
+import { TYPE_MARKER, deselectItem } from "../../../map/actionReducers";
 
 const styles = {
   actions: { zIndex: 2, display: 'inline-block', float: 'right' },
@@ -29,6 +31,10 @@ class Delete extends Component {
     super(props)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.goBack = this.goBack.bind(this)
+  }
+
+  componentWillMount () {
+    if (this.props.resource === 'markers') this.props.setModType(TYPE_MARKER)
   }
 
   componentDidMount () {
@@ -58,25 +64,30 @@ class Delete extends Component {
   }
 
   handleSubmit (event) {
+    const { account, logout, resource, deselectItem, id, setModType, history, showNotification, crudDelete, data } = this.props
     event.preventDefault()
-    this.props.crudDelete(
-      this.props.resource,
-      this.props.id,
-      this.props.data,
+
+    setModType('metadata')
+    crudDelete(
+      resource,
+      id,
+      data,
       this.getBasePath()
     )
-    if (this.props.account) {
-
-      const { logout, showNotification } = this.props;
+    if (account) {
       showNotification("auth.logged_out")
       logout()
       // log off
-
+    }
+    else if (this.props.resource === 'markers') {
+      showNotification("resources.markers.deleted")
+      setModType('', [], data.type)
+      deselectItem()
+      history.push('/mod/markers')
     }
   }
 
   goBack () {
-
     window.history.go(-1)
     // this.props.history.goBack()
   }
@@ -165,6 +176,8 @@ const enhance = compose(
     crudGetOne: crudGetOneAction,
     crudDelete: crudDeleteAction,
     showNotification,
+    deselectItem,
+    setModType,
     logout
   }),
   translate

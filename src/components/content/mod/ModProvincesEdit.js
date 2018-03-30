@@ -37,7 +37,7 @@ import utils from "../../map/utils/general"
 
 export const ModProvincesEdit = (props) => {
   const { metadata } = props
-  const selectedProvince = props.selectedItem.id || ''
+  const selectedProvince = props.selectedItem.value || ''
   // const activeAreaDim = props.activeArea.color
   // const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
   // const selectedWiki = (metadata[activeAreaDim][activeprovinceDim] || {})[2]

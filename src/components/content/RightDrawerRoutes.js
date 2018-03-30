@@ -6,13 +6,10 @@ import Avatar from 'material-ui/Avatar'
 import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
-import FlatButton from 'material-ui/FlatButton'
+import RaisedButton from 'material-ui/RaisedButton'
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import FontIcon from 'material-ui/FontIcon'
 import Chip from 'material-ui/Chip'
-import {Tabs, Tab} from 'material-ui/Tabs';
-import CloseIcon from 'material-ui/svg-icons/content/clear'
-import NavigationClose from 'material-ui/svg-icons/navigation/close';
 import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { Restricted, translate } from 'admin-on-rest'
@@ -27,23 +24,37 @@ import { ModMetaEdit } from './mod/ModMetaEdit'
 import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
 // import MarkerCreate from '../restricted/markers/MarkerCreate'
-import {BottomNavigation, BottomNavigationItem} from 'material-ui/BottomNavigation';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import {BottomNavigation } from 'material-ui/BottomNavigation';
+import BottomNavigationItem from '../overwrites/BottomNavigationItem'
 import Paper from 'material-ui/Paper';
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
+import IconEdit from 'material-ui/svg-icons/editor/mode-edit';
+import IconClose from 'material-ui/svg-icons/navigation/close';
+import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
+import IconDrag from 'material-ui/svg-icons/editor/drag-handle';
 
 const nearbyIcon = <IconLocationOn />;
 
 import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../restricted/metadata'
 import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
-import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from './actionReducers'
-import { deselectItem as deselectItemAction } from '../map/actionReducers'
+import { setRightDrawerVisibility } from './actionReducers'
+import { TYPE_AREA, TYPE_MARKER, deselectItem as deselectItemAction } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
 import utilsQuery from '../map/utils/query'
+import { changeColor } from '../menu/layers/actionReducers'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../styles/chronasColors'
+import utils from "../map/utils/general";
 
 const styles = {
+  iconElementRightStyle: {
+    position: 'fixed',
+    background: 'white',
+    whiteSpace:  'nowrap',
+    right: 0
+  },
   menuButtons: {
     margin: 12,
     color: '#fff',
@@ -60,8 +71,33 @@ const styles = {
     opacity: 0,
     paddingTop: 0
   },
-  chip: {
+  cardHeader: {
+    titleStyle: {
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      maxWidth: 100,
+      textAlign: 'left'
+    },
+    style: {
+      whiteSpace: 'nowrap',
+      textAlign: 'left',
+      padding: 0
+    }
+  },
+  draggableButton: {
+    position: 'absolute',
+    top: 'calc(50% - 20px)',
+    marginLeft: '-44px',
+    transform: 'rotate(90deg)'
   }
+}
+
+const selectedIndexObject = {
+  'ruler': 1,
+  'culture': 2,
+  'religion': 3,
+  'population': 5,
 }
 
 const resources = {
@@ -83,15 +119,13 @@ class RightDrawerRoutes extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
+      activeResize: false,
       hiddenElement: true,
       metadataType: '',
       metadataEntity: '',
       selectedIndex: -1,
+      articleWidth: '50%',
     }
-  }
-
-  componentDidMount = () => {
-    console.debug('### RightDrawerRoutes mounted with props', this.props)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -102,7 +136,7 @@ class RightDrawerRoutes extends PureComponent {
       })
     }
 
-    const { rightDrawerOpen } = this.props
+    const { rightDrawerOpen, setRightDrawerVisibility } = this.props
     console.debug('### MAP rightDrawerOpen', this.props, nextProps)
 
 
@@ -118,9 +152,9 @@ class RightDrawerRoutes extends PureComponent {
     }
 
     if (nextProps.location.pathname.indexOf('/mod') > -1 ||
-      nextProps.location.pathname.indexOf('/article/') > -1) {
+      nextProps.location.pathname.indexOf('/article') > -1) {
       if (!nextProps.rightDrawerOpen) {
-        setRightDrawerVisibilityAction(true)
+        setRightDrawerVisibility(true)
       }
     }
   }
@@ -140,178 +174,237 @@ class RightDrawerRoutes extends PureComponent {
 
   handleClose = () => {
     this.props.history.push('/')
-    utilsQuery.updateQueryStringParameter('type', '')
-    utilsQuery.updateQueryStringParameter('province', '')
     this.props.deselectItem()
     this.props.setRightDrawerVisibility(false)
+    utilsQuery.updateQueryStringParameter('type', '')
+    utilsQuery.updateQueryStringParameter('value', '')
+  }
+
+  handleOnTouchTap = (event) => {
+    console.debug(event)
+  }
+
+  handleMouseDown = (event) => {
+    console.debug('down')
+    this.setState({ activeResize: true })
+  }
+
+  handleMouseOver = (event) => {
+    // if (this.state.activeResize) {
+    //   this.setState({ articleWidth: window.innerWidth-event.clientX })
+    //   // console.debug('onMouseOver', window.innerWidth-event.layerX, window.innerWidth-event.pageX, window.innerWidth-event.screenX, window.innerWidth-event.clientX, parseInt(event.screenX/event.clientX*100) + '%', event )
+    // }
+  }
+
+  handleMouseUp = (event) => {
+    this.setState({ activeResize: false })
   }
 
   select = (index) => this.setState({selectedIndex: index});
+
+
+  componentDidMount(){
+    console.debug('### RightDrawerRoutes mounted with props', this.props)
+    window.addEventListener('mousemove', this.handleMouseOver.bind(this), false);
+    window.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
+  }
+  componentWillUnmount(){
+    window.removeEventListener('mousemove', this.handleMouseOver.bind(this), false);
+    window.removeEventListener('mouseup', this.handleMouseUp.bind(this), false);
+  }
 
   render() {
     const { list, create, edit, show, remove, options, onMenuTap,
       translate, rightDrawerOpen, deselectItem, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme,
-      setModData, setModDataLng, setModDataLat, location, history, metadata } = this.props
+      setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor } = this.props
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
     const modHeader = <AppBar
-      // title={
-      //   <span style={{
-      //     color: chronasDark,
-      //     fontSize: 20
-      //   }}
-      //   > {JSON.stringify(location.pathname)} tata</span>
-      // }
-      // showMenuIconButton={false}
-      // style={{ backgroundColor: '#fff' }}
-
-      // iconElementLeft={<IconButton><NavigationClose />test1</IconButton>}
-      // iconElementRight={this.state.logged ? <NavigationClose /> : <NavigationClose />}
-
-      /*
-
-      <Tabs
-          onChange={this.handleChange}
-          value={this.state.slideIndex}
-        >
-          <Tab label="Add Marker" value={1} />
-          <Tab label="Add Meta" value={0} />
-          <Tab label="Edit Area" value={2} />
-          <Tab label="Edit Marker" value={3} />
-          <Tab label="Edit Meta" value={4} />
-        </Tabs>
-
-       */
-
       iconElementLeft={
         <BottomNavigation
         onChange={this.handleChange}
-        value={this.state.slideIndex}
         selectedIndex={ this.state.selectedIndex }>
           <BottomNavigationItem
             containerElement={<Link to="/mod/markers/create" />}
             label="Add Marker"
             icon={nearbyIcon}
-            // onClick={() => this.select(0)}
+            onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/metadata/create" />}
-            label="Add Meta"
+            label="Add Entity"
             icon={nearbyIcon}
-            // onClick={() => this.select(1)}
+            onClick={() => { this.select(1) }}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/areas" />}
-            label="Edit Area"
+            label="Edit Entity"
             icon={nearbyIcon}
-            // onClick={() => this.select(2)}
+            onClick={() => { this.select(2) }}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/markers" />}
             label="Edit Marker"
             icon={nearbyIcon}
-            // onClick={() => this.select(3)}
+            onClick={() => this.select(3)}
           />
           <BottomNavigationItem
             containerElement={<Link to="/mod/metadata" />}
             label="Edit Meta"
             icon={nearbyIcon}
-            // onClick={() => this.select(4)}
+            onClick={() => this.select(4)}
           />
         </BottomNavigation>
       }
       iconElementRight={
-        <div>
+        <div style={styles.iconElementRightStyle}>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleBack()}>
-            <FontIcon className='fa fa-chevron-left' />
+            <IconBack />
           </IconButton>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleClose()}>
-            <FontIcon className='fa fa-chevron-right' />
+            <IconClose />
           </IconButton>
         </div>
       }
     />
 
+    const selectedProvince = selectedItem.value
+
+    const rulerId = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')]
+    const cultureId = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')]
+    const religionId = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')]
+
+    // we need metadata to be loaded before we can render this component
+    if (typeof metadata['ruler'] === 'undefined' || Object.keys(activeArea.data).length === 0) return null
+
+    let entityPop = 0,
+      totalPop = 0
+
+    if (activeArea.color === 'ruler') {
+      Object.keys(activeArea.data).forEach((key)=> {
+        const currPop = (activeArea.data[key] || {})[4] || 0
+        totalPop += currPop
+        if ((activeArea.data[key] || {})[0] === rulerId) entityPop += currPop
+      })
+    } else if (activeArea.color === 'culture') {
+      Object.keys(activeArea.data).forEach((key)=> {
+        const currPop = (activeArea.data[key] || {})[4] || 0
+        totalPop += currPop
+        if ((activeArea.data[key] || {})[1] === cultureId) entityPop += currPop
+      })
+    } else if (activeArea.color === 'religion') {
+      Object.keys(activeArea.data).forEach((key)=> {
+        const currPop = (activeArea.data[key] || {})[4] || 0
+        totalPop += currPop
+        if ((activeArea.data[key] || {})[2] === religionId) entityPop += currPop
+      })
+    } else if (activeArea.color === 'religionGeneral') {
+      const religionGeneralId = metadata['religion'][religionId][3]
+      Object.keys(activeArea.data).forEach((key)=> {
+        const currPop = (activeArea.data[key] || {})[4] || 0
+        totalPop += currPop
+        if ((metadata['religion'][(activeArea.data[key] || {})[2]] || {})[3] === religionGeneralId) entityPop += currPop
+      })
+    }
+
+    const rulerName = metadata['ruler'][rulerId][0]
+    const religionName = (metadata['religion'][religionId] || {})[0] || 'n/a'
+    const religionGeneralName = metadata['religionGeneral'][metadata['religion'][religionId][3]][0]
+    const cultureName = (metadata['culture'][cultureId] || {})[0] || 'n/a'
+    const capitalName = (activeArea.data[selectedProvince] || {})[3] + '[' + (activeArea.data[selectedProvince] || {})[4] + ']'
+    const populationName = entityPop + ' [' + parseInt(entityPop / totalPop * 1000) / 10 + '%]'
+
     const modUrl = '/mod/' + selectedItem.type
+
     const articletHeader = <AppBar
       iconElementLeft={
-        <BottomNavigation
+        (selectedItem.type === TYPE_AREA) ? <BottomNavigation
           onChange={this.handleChange}
-          value={this.state.slideIndex}
           selectedIndex={ this.state.selectedIndex }>
           <BottomNavigationItem
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              King
-            </Chip>}
+            onClick={() => { this.select(0); changeColor('ruler') }}
+            icon={<CardHeader
+                title="very loooooooooooong text"
+                titleStyle={ styles.cardHeader.titleStyle }
+                style={ styles.cardHeader.style }
+                subtitle="Ruler"
+                avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+              />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              Ruler
-            </Chip>}
+            onClick={() => { this.select(1); changeColor('ruler') }}
+            icon={<CardHeader
+              title={ rulerName }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Ruler"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              Culture
-            </Chip>}
+            onClick={() => { this.select(2); changeColor('culture') }}
+            icon={<CardHeader
+              title={ cultureName }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Culture"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              Religion
-            </Chip>}
+            onClick={() => { this.select(3); changeColor('religion') }}
+            icon={<CardHeader
+              title={ religionName + ' [' + religionGeneralName + ']' }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Religion"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              Capital
-            </Chip>}
+            onClick={() => { this.select(4); changeColor('population') }}
+            icon={<CardHeader
+              title={ capitalName }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Capital"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            icon={<Chip
-              style={styles.chip}
-            >
-              <Avatar src="images/uxceo-128.jpg" />
-              Population
-            </Chip>}
+            onClick={() => { this.select(5); changeColor('population')} }
+            icon={<CardHeader
+              title={ populationName }
+              titleStyle={ styles.cardHeader.titleStyle }
+              style={ styles.cardHeader.style }
+              subtitle="Population"
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
             // onClick={() => this.select(0)}
           />
-        </BottomNavigation>
+        </BottomNavigation> : null
       }
       iconElementRight={
-        <div>
+        <div style={styles.iconElementRightStyle}>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
-            containerElement={<Link to={modUrl} />}>
-            <FontIcon className='fa fa-edit' />
+            containerElement={<Link to={modUrl} />}><IconEdit />
           </IconButton>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleBack()}>
-            <FontIcon className='fa fa-chevron-left' />
+            <IconBack />
           </IconButton>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
-            onClick={() => this.handleClose()}>
-            <FontIcon className='fa fa-chevron-right' />
+                      onClick={() => this.handleClose()}>
+            <IconClose />
           </IconButton>
         </div>
       }
@@ -339,8 +432,18 @@ class RightDrawerRoutes extends PureComponent {
               open
               containerStyle={{ overflow: 'none' }}
               style={{ overflow: 'none', zIndex: 9 }}
-              width={'50%'}
+              width={this.state.articleWidth}
             >
+              <RaisedButton
+                icon={<IconDrag />}
+                style={styles.draggableButton}
+                // onTouchTap={(event) => console.debug('touchtap', event)}
+                // onMouseDown={this.handleMouseDown.bind(this)}
+                // onMouseOver={this.handleMouseOver.bind(this)}
+                // onMouseUp={this.handleMouseUp.bind(this)}
+                // onClick={(event) => console.debug('onClick', event)}
+              />
+
               {headerComponent}
               {component && createElement(component, {
                 ...commonProps,
@@ -352,7 +455,6 @@ class RightDrawerRoutes extends PureComponent {
       )
       return RestrictedPage
     }
-
 
     return (
       <div>
@@ -385,7 +487,7 @@ class RightDrawerRoutes extends PureComponent {
             finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, handleClose: this.handleClose }
           } else if (resourceKey === 'metadata') {
             finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType }
-          } else if (resourceKey === 'markers') {
+          } else if (resourceKey === TYPE_MARKER) {
             finalProps = { ...commonProps, selectedItem, setModDataLng, setModDataLat }
           } else {
             finalProps = commonProps
@@ -441,12 +543,13 @@ const mapStateToProps = (state, props) => ({
 const enhance = compose(
   connect(mapStateToProps,
     {
+      changeColor,
       deselectItem: deselectItemAction,
       toggleRightDrawer: toggleRightDrawerAction,
       setModData: setModDataAction,
       setModDataLng: setModDataLngAction,
       setModDataLat: setModDataLatAction,
-      setRightDrawerVisibility: setRightDrawerVisibilityAction
+      setRightDrawerVisibility
     }),
   pure,
   translate,

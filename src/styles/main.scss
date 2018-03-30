@@ -25,7 +25,7 @@ body {
 }
 
 .dialogBackgroundHack > div:first-child {
-  background-color: rgba(0,0,0,0) !important;
+  background-color: rgba(0, 0, 0, 0) !important;
   border-radius: 0 !important;
   box-shadow: none !important;
 }
@@ -34,4 +34,28 @@ body {
   position: absolute !important;
   top: 1rem;
   right: 2rem;
+}
+
+.loadingBar {
+  position: fixed !important;
+  display: block;
+  width: 100%;
+  border-radius: 2px;
+  margin: 0;
+  overflow: hidden;
+  z-index: 1000000;
+  height: 10px !important;
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0) !important;
+  pointer-events: none;
+
+  div {
+    height: 3px !important;
+    background-color: rgb(212, 0, 18) !important;
+    -webkit-transition: width 500ms ease-out, height 500ms ease-out;
+    -moz-transition: width 500ms ease-out, height 500ms ease-out;
+    -o-transition: width 500ms ease-out, height 500ms ease-out;
+    transition: width 500ms ease-out, height 500ms ease-out;
+    box-shadow: 0 4px 3px 0 rgba(1,2,3,.4) !important;
+  }
 }

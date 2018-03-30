@@ -1,17 +1,17 @@
 export default {
 
   updateQueryStringParameter: function (key, value) {
-    let updatedUri
+    let updatedSearchQuery
     const uri = location.search
     const re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i')
     const separator = uri.indexOf('?') !== -1 ? '&' : '?'
     if (uri.match(re)) {
-      updatedUri = uri.replace(re, '$1' + key + '=' + value + '$2')
+      updatedSearchQuery = uri.replace(re, '$1' + key + '=' + value + '$2')
     } else {
-      updatedUri = uri + separator + key + '=' + value
+      updatedSearchQuery = uri + separator + key + '=' + value
     }
 
-    window.history.pushState(null, null, updatedUri)
+    window.history.pushState(null, null, updatedSearchQuery + window.location.hash) // + window.location.hash // TODO
   },
 
   getURLParameter: function (name) {

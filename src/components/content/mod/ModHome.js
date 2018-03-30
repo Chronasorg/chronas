@@ -57,10 +57,10 @@ export const ModHome = () => {
       <Subheader>Meta</Subheader>
       <ListItem
         containerElement={<Link to="/mod/metadata/create" />}
-        primaryText="Add Meta" />
+        primaryText="Add Entity" />
       <ListItem
         containerElement={<Link to="/mod/metadata" />}
-        primaryText="Edit Meta" />
+        primaryText="Edit Entity" />
     </List>
   </div>
 };

@@ -103,6 +103,7 @@ export default {
     markers: {
       name: 'Marker |||| Markers',
       place_marker: 'Place Marker',
+      deleted: 'Marker Deleted',
       fields: {
         name: 'Name',
         url: 'URL',

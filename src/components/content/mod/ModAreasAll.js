@@ -37,7 +37,7 @@ import AreaForm from '../../restricted/shared/forms/AreaForm'
 import utils from "../../map/utils/general"
 
 export const ModAreasAll = (props) => {
-  const selectedProvince = props.selectedItem.id || ''
+  const selectedProvince = props.selectedItem.value || ''
 
   const defaultValues = {
     'provinces': [selectedProvince] || [],
