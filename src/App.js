@@ -28,6 +28,7 @@ import CrudRoute from './components/restricted/shared/CrudRoute'
 import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import LoadingBar from './components/global/LoadingBar'
+import LoadingPage from './components/loadingPage/LoadingPage'
 
 // translations
 import messages from './translations'
@@ -204,10 +205,7 @@ class App extends Component {
                 <div style={prefixedStyles.main}>
                   <LoadingBar />
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
-                    {isLoading
-                      ? <div style={{ position: 'fixed' }}>
-                        <h1>loading page here</h1>
-                      </div> : createElement(Map, { history: history, isLoading: isLoading })}
+                    {isLoading ? <LoadingPage /> : createElement(Map, { history: history, isLoading: isLoading })}
                     {!isLoading && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path='/' />
@@ -233,14 +231,6 @@ class App extends Component {
                     </Sidebar>}
                   </div>
                   <Notification />
-                  {/*{isLoading && <LoadingBar />}*/}
-                  {/* {isLoading && <CircularProgress */}
-                  {/* className="app-loader" */}
-                  {/* color="#fff" */}
-                  {/* size={width === 1 ? 20 : 30} */}
-                  {/* thickness={2} */}
-                  {/* style={styles.loader} */}
-                  {/* />} */}
                 </div>
               </div>
             </MuiThemeProvider>
