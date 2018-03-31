@@ -36,6 +36,10 @@ body {
   right: 2rem;
 }
 
+.dragHandle > button > div > div {
+  height: 24px !important;
+}
+
 .loadingBar {
   position: fixed !important;
   display: block;
@@ -44,14 +48,14 @@ body {
   margin: 0;
   overflow: hidden;
   z-index: 1000000;
-  height: 10px !important;
+  height: 8px !important;
   position: fixed;
   background-color: rgba(0, 0, 0, 0) !important;
   pointer-events: none;
 
   div {
     height: 3px !important;
-    background-color: rgb(212, 0, 18) !important;
+    //background-color: rgb(212, 0, 18) !important;
     -webkit-transition: width 500ms ease-out, height 500ms ease-out;
     -moz-transition: width 500ms ease-out, height 500ms ease-out;
     -o-transition: width 500ms ease-out, height 500ms ease-out;

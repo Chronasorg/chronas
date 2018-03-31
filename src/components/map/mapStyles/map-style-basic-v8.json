@@ -201,6 +201,7 @@
       "layout": {
         "symbol-spacing": 1000,
         "icon-allow-overlap": false,
+        "symbol-placement": "line",
         "text-field": "{n}",
         "text-font": ["Cinzel Regular"],
         "text-transform": "uppercase",
@@ -208,10 +209,10 @@
         {
           "type": "exponential",
           "stops": [
-            [{"zoom": 0, "value": 100}, 0],
-            [{"zoom": 0, "value": 5000}, 5],
-            [{"zoom": 20, "value": 100}, 50],
-            [{"zoom": 20, "value": 5000}, 500]
+            [{"zoom": 0, "value": 100}, 20],
+            [{"zoom": 0, "value": 800}, 40],
+            [{"zoom": 10, "value": 100}, 40],
+            [{"zoom": 10, "value": 800}, 60]
 
           ], "property": "d",
           "default": 50

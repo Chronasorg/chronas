@@ -532,13 +532,14 @@ class Map extends Component {
   };
 
   _addGeoJson = (sourceId, entityId) => {
-    // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
+    if (entityId.toString() !== '') {
     axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + this.props.selectedYear)
       .then(features => {
         const mapStyle = this.state.mapStyle
           .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
         this.setState({ mapStyle })
       })
+    }
   }
 
   _removeGeoJson = (sourceId, entityId) => {
@@ -771,7 +772,7 @@ class Map extends Component {
     const { modActive } = this.props
 
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
-    if (this.props.rightDrawerOpen) leftOffset -= viewport.width * 0.24 // TODO: make this resize dynamic by article Content width
+    if ( this.props.rightDrawerOpen ) leftOffset -= viewport.width * 0.24 // TODO: make this resize dynamic by article Content width
 
     let modMarker = (modActive.type === TYPE_MARKER && typeof modActive.data[0] !== 'undefined') ? <Marker
       captureClick={false}

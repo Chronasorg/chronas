@@ -2,9 +2,13 @@ import React from 'react'
 import LinearProgress from 'material-ui/LinearProgress'
 import axios from 'axios'
 
-const calculatePercentage = (loaded, total) => (Math.floor(loaded * 1.0) / total)
+const COLOR_SUCCESS = "rgb(0, 232, 18)"
+const COLOR_ERROR = "rgb(232, 0, 18)"
 
-let requestsCounter = 0
+const incrementLoaded = 15
+let isLoadingInterval
+let stoppedFlag = false
+let loaded = 0
 
 export default class LoadingBar extends React.Component {
 
@@ -12,65 +16,102 @@ export default class LoadingBar extends React.Component {
     super(props)
 
     this.state = {
-      completed: 0,
+      completedPercent: 0,
+      isVisible: true,
+      activeColor: COLOR_SUCCESS,
     }
+  }
+
+  _load = () => {
+    loaded += incrementLoaded;
+    if (!stoppedFlag)
+      this.setState({ completedPercent: (Math.sqrt(Math.sqrt(loaded)) * 15) })
+
+    if ((Math.sqrt(Math.sqrt(loaded)) * 15) > 100) {
+      clearInterval(isLoadingInterval)
+      stoppedFlag = false
+      this._errorOut()
+    }
+  }
+
+  _resetLoadingBar = () => {
+    console.debug("### LoadingBar: resetingLoadBar, this should be done with isVisible false")
+    stoppedFlag = true
+    clearInterval(isLoadingInterval)
+    this.setState({
+      isVisible: false,
+      completedPercent: 0,
+      activeColor: COLOR_SUCCESS
+    },() => {
+      stoppedFlag = false
+      this.setState({
+        isVisible: true
+      })
+    })
+  }
+
+  _startLoadingBar = () => {
+    if (!stoppedFlag && typeof isLoadingInterval === "undefined")
+    this.setState({
+      isVisible: true,
+      completedPercent: 0
+    })
+    this._startSimulation()
   }
 
   _setupStartProgress = () => {
     axios.interceptors.request.use(config => {
       console.debug('### LoadingBar: startingProgress')
-      this.setState({ completed: 0 })
-      requestsCounter++
+      this._startLoadingBar()
       return config
     })
   }
 
-  _setupUpdateProgress = () => {
-    const update = e => {
-      console.debug('### LoadingBar: updateProgress', e.loaded, e.total)
-      this.setState({ completed: (calculatePercentage(e.loaded, e.total)) })
-    }
-    axios.defaults.onDownloadProgress = update
-    axios.defaults.onUploadProgress = update
-  }
 
   _setupStopProgress = () => {
     const responseFunc = response => {
       console.debug('### LoadingBar: stopProgress')
-      if ((--requestsCounter) === 0){
-        this.setState({ completed: 100 })
-        setTimeout(() => {
-          //TODO: call reset function which will hide and reset bar!
-          return this.setState({ completed: 0 }), 1000
-        })
-      }
+        stoppedFlag = true
+        clearInterval(isLoadingInterval)
+        this.setState({ completedPercent: 100 })
+        setTimeout(() => this._resetLoadingBar(), 1000)
       return response
     }
 
     const errorFunc = error => {
       console.debug('### LoadingBar: errorProgress')
-      if ((--requestsCounter) === 0){
-        // TODO: red bar?
-        this.setState({ completed: 100 })
-        setTimeout(() => this.setState({ completed: 0 }), 1000)
-      }
+        clearInterval(isLoadingInterval)
+        this._errorOut()
       return Promise.reject(error)
     }
-
     axios.interceptors.response.use(responseFunc, errorFunc)
+  }
+
+  _errorOut() {
+    this.setState({ completedPercent: 100,
+      activeColor: COLOR_ERROR })
+    setTimeout(() => this._resetLoadingBar(), 500)
+  }
+  _startSimulation() {
+    if (typeof isLoadingInterval !== "undefined") {
+      clearInterval(isLoadingInterval);
+    }
+
+    loaded = 0
+    isLoadingInterval = setInterval(() => this._load(), 500)
   }
 
   componentDidMount() {
     console.debug('### LoadingBar: axios intercepted')
     this._setupStartProgress()
-    this._setupUpdateProgress()
     this._setupStopProgress()
     // this.timer = setTimeout(() => this.progress(5), 1000)
   }
 
   render() {
-    return (
-      <LinearProgress className="loadingBar" style={{ zIndex: 1000000 }} mode="determinate" value={this.state.completed} />
-    )
+    const { activeColor, completedPercent, isVisible } = this.state
+    return isVisible
+          ? <LinearProgress className="loadingBar" color={activeColor} style={{ zIndex: 1000000}} mode="determinate" value={ completedPercent } />
+          : null
   }
 }

@@ -43,7 +43,7 @@ import { TYPE_AREA, TYPE_MARKER, deselectItem as deselectItemAction } from '../m
 import { ModHome } from './mod/ModHome'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
 import utilsQuery from '../map/utils/query'
-import { changeColor } from '../menu/layers/actionReducers'
+import { changeColor, setAreaColorLabel } from '../menu/layers/actionReducers'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../styles/chronasColors'
 import utils from "../map/utils/general";
@@ -85,11 +85,18 @@ const styles = {
       padding: 0
     }
   },
-  draggableButton: {
+  draggableButtonDiv: {
+    minWidth: '60px',
     position: 'absolute',
     top: 'calc(50% - 20px)',
-    marginLeft: '-44px',
+    marginLeft: '-43px',
     transform: 'rotate(90deg)'
+  },
+  draggableButton: {
+    cursor: 'ew-resize',
+    boxShadow: '5px -5px 8px 0px rgba(0, 0, 0, 0.31)',
+    height: '20px',
+    lineHeight: '20px'
   }
 }
 
@@ -119,7 +126,9 @@ class RightDrawerRoutes extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      activeResize: false,
+      isResizing: false,
+      lastDownX: 0,
+      newWidth: '50%',
       hiddenElement: true,
       metadataType: '',
       metadataEntity: '',
@@ -180,24 +189,31 @@ class RightDrawerRoutes extends PureComponent {
     utilsQuery.updateQueryStringParameter('value', '')
   }
 
-  handleOnTouchTap = (event) => {
-    console.debug(event)
+  handleMousedown = e => {
+    this.setState({ isResizing: true, lastDownX: e.clientX });
+    document.addEventListener('mousemove', e => this.handleMousemove(e), false);
+    document.addEventListener('mouseup', e => this.handleMouseup(e), false);
   }
 
-  handleMouseDown = (event) => {
-    console.debug('down')
-    this.setState({ activeResize: true })
+  handleMouseup = e => {
+    this.setState({ isResizing: false })
+    window.removeEventListener('mousemove', e => this.handleMousemove(e), false);
+    window.removeEventListener('mouseup', e => this.handleMouseup(e), false);
   }
 
-  handleMouseOver = (event) => {
-    // if (this.state.activeResize) {
-    //   this.setState({ articleWidth: window.innerWidth-event.clientX })
-    //   // console.debug('onMouseOver', window.innerWidth-event.layerX, window.innerWidth-event.pageX, window.innerWidth-event.screenX, window.innerWidth-event.clientX, parseInt(event.screenX/event.clientX*100) + '%', event )
-    // }
-  }
+  handleMousemove = e => {
+    // this shouldnt be called anyway if not resizing (eventlistener unregister!)
+    if (!this.state.isResizing) {
+      return;
+    }
 
-  handleMouseUp = (event) => {
-    this.setState({ activeResize: false })
+    let offsetRight =
+      document.body.offsetWidth - (e.clientX - document.body.offsetLeft);
+    let minWidth = +document.body.offsetWidth * 0.24
+    let maxWidth = +document.body.offsetWidth - 50
+    if (offsetRight > minWidth && offsetRight < maxWidth) {
+      this.setState({ newWidth: offsetRight });
+    }
   }
 
   select = (index) => this.setState({selectedIndex: index});
@@ -205,19 +221,19 @@ class RightDrawerRoutes extends PureComponent {
 
   componentDidMount(){
     console.debug('### RightDrawerRoutes mounted with props', this.props)
-    window.addEventListener('mousemove', this.handleMouseOver.bind(this), false);
-    window.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
+    // window.addEventListener('mousemove', this.handleMouseOver.bind(this), false);
+    // window.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
   }
   componentWillUnmount(){
-    window.removeEventListener('mousemove', this.handleMouseOver.bind(this), false);
-    window.removeEventListener('mouseup', this.handleMouseUp.bind(this), false);
+    window.removeEventListener('mousemove', e => this.handleMousemove(e), false);
+    window.removeEventListener('mouseup', e => this.handleMouseup(e), false);
   }
 
   render() {
     const { list, create, edit, show, remove, options, onMenuTap,
       translate, rightDrawerOpen, deselectItem, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme,
-      setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor } = this.props
+      setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor, setAreaColorLabel } = this.props
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
@@ -324,9 +340,9 @@ class RightDrawerRoutes extends PureComponent {
       iconElementLeft={
         (selectedItem.type === TYPE_AREA) ? <BottomNavigation
           onChange={this.handleChange}
-          selectedIndex={ this.state.selectedIndex }>
+          selectedIndex={ selectedIndexObject[activeArea.color] || 0 }>
           <BottomNavigationItem
-            onClick={() => { this.select(0); changeColor('ruler') }}
+            onClick={() => { setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
                 title="very loooooooooooong text"
                 titleStyle={ styles.cardHeader.titleStyle }
@@ -337,7 +353,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { this.select(1); changeColor('ruler') }}
+            onClick={() => { setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
               title={ rulerName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -348,7 +364,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { this.select(2); changeColor('culture') }}
+            onClick={() => { setAreaColorLabel('culture', 'culture') }}
             icon={<CardHeader
               title={ cultureName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -359,7 +375,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { this.select(3); changeColor('religion') }}
+            onClick={() => { setAreaColorLabel('religion','religion') }}
             icon={<CardHeader
               title={ religionName + ' [' + religionGeneralName + ']' }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -370,7 +386,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { this.select(4); changeColor('population') }}
+            onClick={() => { changeColor('population') }}
             icon={<CardHeader
               title={ capitalName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -381,7 +397,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { this.select(5); changeColor('population')} }
+            onClick={() => { changeColor('population')} }
             icon={<CardHeader
               title={ populationName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -432,23 +448,30 @@ class RightDrawerRoutes extends PureComponent {
               open
               containerStyle={{ overflow: 'none' }}
               style={{ overflow: 'none', zIndex: 9 }}
-              width={this.state.articleWidth}
+              width={this.state.newWidth}
             >
               <RaisedButton
+                className='dragHandle'
                 icon={<IconDrag />}
-                style={styles.draggableButton}
+                style={styles.draggableButtonDiv}
+                rippleStyle={{ width: '20px'}}
+                buttonStyle={styles.draggableButton}
+                onMouseDown={event => {
+                  this.handleMousedown(event);
+                }}
                 // onTouchTap={(event) => console.debug('touchtap', event)}
                 // onMouseDown={this.handleMouseDown.bind(this)}
                 // onMouseOver={this.handleMouseOver.bind(this)}
                 // onMouseUp={this.handleMouseUp.bind(this)}
                 // onClick={(event) => console.debug('onClick', event)}
               />
-
-              {headerComponent}
-              {component && createElement(component, {
-                ...commonProps,
-                ...routeProps,
-              })}
+              <div style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
+                {headerComponent}
+                {component && createElement(component, {
+                  ...commonProps,
+                  ...routeProps,
+                })}
+              </div>
             </Drawer>
           }
         />
@@ -543,6 +566,7 @@ const mapStateToProps = (state, props) => ({
 const enhance = compose(
   connect(mapStateToProps,
     {
+      setAreaColorLabel,
       changeColor,
       deselectItem: deselectItemAction,
       toggleRightDrawer: toggleRightDrawerAction,
