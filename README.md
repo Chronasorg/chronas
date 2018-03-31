@@ -1,6 +1,6 @@
 # Chronas
 
-![Build Status](https://joausandbox.visualstudio.com/_apis/public/build/definitions/2b7f7236-ef4a-4ee5-9164-a7cb0ad72964/17/badge)
+[![Build Status](https://joausandbox.visualstudio.com/_apis/public/build/definitions/2b7f7236-ef4a-4ee5-9164-a7cb0ad72964/16/badge)](https://joausandbox.visualstudio.com/chronas/_build/index?definitionId=16)
 [![dependencies](https://david-dm.org/daumann/chronas.svg)](https://david-dm.org/daumann/chronas)
 [![devDependency Status](https://david-dm.org/daumann/chronas/dev-status.svg)](https://david-dm.org/daumann/chronas#info=devDependencies)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
