@@ -13,6 +13,7 @@ import { TYPE_AREA, TYPE_MARKER } from '../map/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
+import Timeline from './Timeline'
 
 const styles = {
   main: {
@@ -90,8 +91,10 @@ class Content extends Component {
     console.debug(shouldLoad)
     return <div style={styles.main}>
       { shouldLoad && <span>loading placeholder...</span> }
-      {(this.state.selectedWiki === null) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + this.state.selectedWiki + '?printable=yes'}
-      height='100%' frameBorder='0' />}</div>
+      <Timeline />
+      {/*{(this.state.selectedWiki === null) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + this.state.selectedWiki + '?printable=yes'}*/}
+      {/*height='100%' frameBorder='0' />}*/}
+      </div>
   }
 }
 
