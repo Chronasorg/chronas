@@ -17,6 +17,7 @@ import axios from 'axios'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
+import properties from "../../../properties";
 
 const styles = {
   label: { width: '10em', display: 'inline-block' },
@@ -74,50 +75,12 @@ class Discover extends PureComponent {
       slideIndex: 0,
       currentYearLoaded: 3000,
       hiddenElement: true,
-      tilesData: [
-        {
-          img: 'http://www.material-ui.com/images/grid-list/00-52-29-429_640.jpg',
-          title: 'Breakfast',
-          author: 'jill111',
-          featured: true,
-        },
-        {
-          img: 'http://www.material-ui.com/images/grid-list/burger-827309_640.jpg',
-          title: 'Tasty burger',
-          author: 'pashminu',
-        },
-        {
-          img: 'http://www.material-ui.com/images/grid-list/camera-813814_640.jpg',
-          title: 'Camera',
-          author: 'Danson67',
-        },
-        {
-          img: 'http://www.material-ui.com/images/grid-list/morning-819362_640.jpg',
-          title: 'Morninddg',
-          author: 'fancycrave1',
-          featured: true,
-        },
-        {
-          img: 'http://www.material-ui.com/images/grid-list/hats-829509_640.jpg',
-          title: 'Hadadts',
-          author: 'Hans',
-        },
-        {
-          img: 'http://www.material-ui.com/images/grid-list/honey-823614_640.jpg',
-          title: 'Honey',
-          author: 'fancycravel',
-        },
-        {
-          img: 'http://www.material-ui.com/images/grid-list/vegetables-790022_640.jpg',
-          title: 'Vegetables',
-          author: 'jill111',
-        },
-        {
-          img: 'http://www.material-ui.com/images/grid-list/water-plant-821293_640.jpg',
-          title: 'Water plant',
-          author: 'BkrmadtyaKarki',
-        },
-      ]
+      tilesData: [],
+      tilesStoriesData: [],
+      tilesPeopleData: [],
+      tilesCitiesData: [],
+      tilesBattlesData: [],
+      tilesOtherData: []
     }
   }
 
@@ -144,25 +107,69 @@ class Discover extends PureComponent {
     /** Acting on store changes **/
     if (this.state.currentYearLoaded !== selectedYear) {
       console.debug('DISCOVER.js ### new year changed to ' + selectedYear)
-      const newTilesData = []
 
-      axios.get('https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages%7Cpageterms&generator=prefixsearch&redirects=1&formatversion=2&piprop=thumbnail&pithumbsize=250&pilimit=20&wbptterms=description&gpssearch=year' + selectedYear + '&gpslimit=40')
+      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&type=i')
         .then(response => {
+          const newTilesData = []
           const res = response.data
-          for (var i = 0; i < 40; i++) {
-            if (res.query.pages[i].hasOwnProperty('thumbnail') === true) {
-              newTilesData.push({
-                img: res.query.pages[i].thumbnail.source,
-                title: res.query.pages[i].title,
-                author: res.query.pages[i].title,
-              })
-            } else {
-              console.log('no image found for ')
-            }
-          }
+          res.forEach((imageItem) => {
+            newTilesData.push({
+              img: imageItem._id,
+              title: imageItem.data.title,
+              author: imageItem.data.source,
+            })
+          })
           this.setState({
             currentYearLoaded: selectedYear,
             tilesData: newTilesData })
+        })
+
+      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=100&type=i&subtype=cities')
+        .then(response => {
+          const newTilesData = []
+          const res = response.data
+          res.forEach((imageItem) => {
+            newTilesData.push({
+              img: imageItem._id,
+              title: imageItem.data.title,
+              author: imageItem.data.source,
+            })
+          })
+          this.setState({
+            currentYearLoaded: selectedYear,
+            tilesCitiesData: newTilesData })
+        })
+
+      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=100&type=i&subtype=battle')
+        .then(response => {
+          const newTilesData = []
+          const res = response.data
+          res.forEach((imageItem) => {
+            newTilesData.push({
+              img: imageItem._id,
+              title: imageItem.data.title,
+              author: imageItem.data.source,
+            })
+          })
+          this.setState({
+            currentYearLoaded: selectedYear,
+            tilesBattlesData: newTilesData })
+        })
+
+      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=100&type=i&subtype=misc')
+        .then(response => {
+          const newTilesData = []
+          const res = response.data
+          res.forEach((imageItem) => {
+            newTilesData.push({
+              img: imageItem._id,
+              title: imageItem.data.title,
+              author: imageItem.data.source,
+            })
+          })
+          this.setState({
+            currentYearLoaded: selectedYear,
+            tilesOtherData: newTilesData })
         })
     }
   }
@@ -170,7 +177,7 @@ class Discover extends PureComponent {
   render () {
     console.debug('rendering discoverjs')
     const { theme, locale, changeTheme, changeLocale, menuItemActive, selectedYear, translate } = this.props
-    const { tilesData } = this.state
+    const { tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
 
     return (
       <div>
@@ -282,24 +289,51 @@ class Discover extends PureComponent {
             </div>
             {/* TAB 1 */}
             <div style={styles.slide}>
-              <Card style={{ boxShadow: 'none' }}>
-                <CardText>
-                  <div style={styles.label}>{translate('pos.theme.name')}</div>
-                  <RaisedButton style={styles.button} label={translate('pos.theme.modern')} primary
-                    onClick={() => changeTheme('modern')} />
-                  <RaisedButton style={styles.button} label={translate('pos.theme.historic')} secondary
-                    onClick={() => changeTheme('historic')} />
-                </CardText>
-                <CardText>
-                  <div style={styles.label}>{translate('pos.language')}</div>
-                  <RaisedButton style={styles.button} label='en' primary={locale === 'en'}
-                    onClick={() => changeLocale('en')} />
-                  <RaisedButton style={styles.button} label='fr' primary={locale === 'fr'}
-                    onClick={() => changeLocale('fr')} />
-                </CardText>
-              </Card>
+              <GridList
+                cols={2}
+                cellHeight={200}
+                padding={1}
+                style={styles.gridList}
+              >
+                {tilesStoriesData.map((tile) => (
+                  <GridTile
+                    key={tile.img}
+                    title={tile.title}
+                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
+                    actionPosition='left'
+                    titlePosition='top'
+                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
+                    cols={tile.featured ? 2 : 1}
+                    rows={tile.featured ? 2 : 1}
+                  >
+                    <img src={tile.img} />
+                  </GridTile>
+                ))}
+              </GridList>
             </div>
-            {/* TAB 2 */}
+            <div style={styles.slide}>
+              <GridList
+                cols={2}
+                cellHeight={200}
+                padding={1}
+                style={styles.gridList}
+              >
+                {tilesPeopleData.map((tile) => (
+                  <GridTile
+                    key={tile.img}
+                    title={tile.title}
+                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
+                    actionPosition='left'
+                    titlePosition='top'
+                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
+                    cols={tile.featured ? 2 : 1}
+                    rows={tile.featured ? 2 : 1}
+                  >
+                    <img src={tile.img} />
+                  </GridTile>
+                ))}
+              </GridList>
+            </div>
             <div style={styles.root}>
               <GridList
                 cols={2}
@@ -307,7 +341,7 @@ class Discover extends PureComponent {
                 padding={1}
                 style={styles.gridList}
               >
-                {tilesData.map((tile) => (
+                {tilesBattlesData.map((tile) => (
                   <GridTile
                     key={tile.img}
                     title={tile.title}
@@ -325,11 +359,51 @@ class Discover extends PureComponent {
             </div>
             {/* TAB 3 */}
             <div style={styles.slide}>
-              slide n°4
+              <GridList
+                cols={2}
+                cellHeight={200}
+                padding={1}
+                style={styles.gridList}
+              >
+                {tilesCitiesData.map((tile) => (
+                  <GridTile
+                    key={tile.img}
+                    title={tile.title}
+                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
+                    actionPosition='left'
+                    titlePosition='top'
+                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
+                    cols={tile.featured ? 2 : 1}
+                    rows={tile.featured ? 2 : 1}
+                  >
+                    <img src={tile.img} />
+                  </GridTile>
+                ))}
+              </GridList>
             </div>
             {/* TAB 5 */}
             <div style={styles.slide}>
-              slide n°5
+              <GridList
+                cols={2}
+                cellHeight={200}
+                padding={1}
+                style={styles.gridList}
+              >
+                {tilesOtherData.map((tile) => (
+                  <GridTile
+                    key={tile.img}
+                    title={tile.title}
+                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
+                    actionPosition='left'
+                    titlePosition='top'
+                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
+                    cols={tile.featured ? 2 : 1}
+                    rows={tile.featured ? 2 : 1}
+                  >
+                    <img src={tile.img} />
+                  </GridTile>
+                ))}
+              </GridList>
             </div>
           </SwipeableViews>
         </Dialog>
