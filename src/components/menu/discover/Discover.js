@@ -4,20 +4,24 @@ import { Link } from 'react-router-dom'
 import Dialog from 'material-ui/Dialog'
 import { GridList, GridTile } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
-import StarBorder from 'material-ui/svg-icons/toggle/star-border'
+import IconThumbUp from 'material-ui/svg-icons/action/thumb-up'
+import IconThumbDown from 'material-ui/svg-icons/action/thumb-down'
+import IconEdit from 'material-ui/svg-icons/content/create'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import { Tabs, Tab } from 'material-ui/Tabs'
 import ImageGallery from 'react-image-gallery'
 import SwipeableViews from 'react-swipeable-views'
-import { translate, ViewTitle } from 'admin-on-rest'
+import { translate, ViewTitle, showNotification } from 'admin-on-rest'
 import axios from 'axios'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
+import { tooltip } from '../../../styles/chronasStyleComponents'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 import properties from "../../../properties";
 
 const styles = {
+  imageButton: { width: 20, height: 20},
   label: { width: '10em', display: 'inline-block' },
   button: { margin: '1em' },
   discoverDialogStyle: {
@@ -192,6 +196,24 @@ class Discover extends PureComponent {
       })
   }
 
+  _handleUpvote = () => {
+    this.props.showNotification(translate('pos.feedbackSuccess'))
+    setTimeout(() => // TODO: this comes into callback
+      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? translate('pos.pointsAdded') : translate('pos.signupToGatherPoints')), 1000)
+
+  }
+
+  _handleDownvote = () => {
+    this.props.showNotification(translate('pos.feedbackSuccess'))
+    setTimeout(() => // TODO: this comes into callback
+      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? translate('pos.pointsAdded') : translate('pos.signupToGatherPoints')), 1000)
+
+  }
+
+  _handleEdit = () => {
+
+  }
+
   render () {
     const {  selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
     const { slidesData, slideIndex, tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
@@ -266,7 +288,32 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
-                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
+                    actionIcon={<div>
+
+                      <IconButton
+                        onClick={this._handleUpvote}
+                        style={ styles.imageButton }
+                        tooltipPosition="bottom-right"
+                        tooltip={translate('pos.upvote')}
+                      ><IconThumbUp color='white' />
+                      </IconButton>
+
+                      <IconButton
+                        onClick={this._handleDownvote}
+                        style={ styles.imageButton }
+                        tooltipPosition="bottom-right"
+                        tooltip={translate('pos.downvote')}
+                      ><IconThumbDown color='white' /></IconButton>
+
+                      <IconButton
+                        onClick={this._handleEdit}
+                        style={ styles.imageButton }
+                        tooltipPosition="bottom-right"
+                        tooltip={translate('pos.edit')}
+                      ><IconEdit color='white' />
+                      </IconButton>
+
+                    </div>}
                     actionPosition='left'
                     titlePosition='top'
                     titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
@@ -415,4 +462,5 @@ export default connect(mapStateToProps, {
   changeLocale: changeLocaleAction,
   changeTheme: changeThemeAction,
   setRightDrawerVisibility,
+  showNotification
 })(translate(Discover))

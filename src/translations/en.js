@@ -17,6 +17,8 @@ export default {
   pos: {
     areas: 'Areas',
     edit: 'Edit Data',
+    upvote: 'Interesting and accurate',
+    downvote: 'Inappropriate, broken or inaccurate',
     mod: 'Modification',
     markers: 'Markers',
     metadata: 'Metadata',
