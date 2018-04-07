@@ -39,7 +39,7 @@ const nearbyIcon = <IconLocationOn />;
 import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../restricted/metadata'
 import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
 import { setRightDrawerVisibility } from './actionReducers'
-import { TYPE_AREA, TYPE_MARKER, deselectItem as deselectItemAction } from '../map/actionReducers'
+import { TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId, deselectItem as deselectItemAction } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
 import utilsQuery from '../map/utils/query'
@@ -231,7 +231,7 @@ class RightDrawerRoutes extends PureComponent {
 
   render() {
     const { list, create, edit, show, remove, options, onMenuTap,
-      translate, rightDrawerOpen, deselectItem, setRightDrawerVisibility,
+      translate, rightDrawerOpen, deselectItem, setWikiId, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme,
       setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor, setAreaColorLabel } = this.props
 
@@ -340,9 +340,9 @@ class RightDrawerRoutes extends PureComponent {
       iconElementLeft={
         (selectedItem.type === TYPE_AREA) ? <BottomNavigation
           onChange={this.handleChange}
-          selectedIndex={ selectedIndexObject[activeArea.color] || 0 }>
+          selectedIndex={ (selectedItem.wiki === WIKI_RULER_TIMELINE) ? 0 : selectedIndexObject[activeArea.color] }>
           <BottomNavigationItem
-            onClick={() => { setAreaColorLabel('ruler', 'ruler') }}
+            onClick={() => { setWikiId(WIKI_RULER_TIMELINE); setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
                 title="very loooooooooooong text"
                 titleStyle={ styles.cardHeader.titleStyle }
@@ -353,7 +353,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { setAreaColorLabel('ruler', 'ruler') }}
+            onClick={() => { setWikiId(''); setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
               title={ rulerName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -364,7 +364,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { setAreaColorLabel('culture', 'culture') }}
+            onClick={() => { setWikiId(''); setAreaColorLabel('culture', 'culture') }}
             icon={<CardHeader
               title={ cultureName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -375,7 +375,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { setAreaColorLabel('religion','religion') }}
+            onClick={() => { setWikiId(''); setAreaColorLabel('religion','religion') }}
             icon={<CardHeader
               title={ religionName + ' [' + religionGeneralName + ']' }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -386,7 +386,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { changeColor('population') }}
+            onClick={() => { setWikiId(''); changeColor('population') }}
             icon={<CardHeader
               title={ capitalName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -397,7 +397,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { changeColor('population')} }
+            onClick={() => { setWikiId(''); changeColor('population')} }
             icon={<CardHeader
               title={ populationName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -449,6 +449,8 @@ class RightDrawerRoutes extends PureComponent {
               containerStyle={{ overflow: 'none' }}
               style={{ overflow: 'none', zIndex: 9 }}
               width={this.state.newWidth}
+              overlayStyle={{ zIndex: 10001}}
+              containerStyle={{ zIndex: 10002}}
             >
               <RaisedButton
                 className='dragHandle'
@@ -568,6 +570,7 @@ const enhance = compose(
     {
       setAreaColorLabel,
       changeColor,
+      setWikiId,
       deselectItem: deselectItemAction,
       toggleRightDrawer: toggleRightDrawerAction,
       setModData: setModDataAction,

@@ -1,21 +1,19 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { Card, CardText } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
 import { GridList, GridTile } from 'material-ui/GridList'
-import RaisedButton from 'material-ui/RaisedButton'
 import IconButton from 'material-ui/IconButton'
 import StarBorder from 'material-ui/svg-icons/toggle/star-border'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import { Tabs, Tab } from 'material-ui/Tabs'
-import { AutoRotatingCarousel, Slide } from 'material-auto-rotating-carousel'
+import ImageGallery from 'react-image-gallery'
 import SwipeableViews from 'react-swipeable-views'
 import { translate, ViewTitle } from 'admin-on-rest'
 import axios from 'axios'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
-
+import { setRightDrawerVisibility } from '../../content/actionReducers'
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 import properties from "../../../properties";
 
@@ -61,7 +59,6 @@ const styles = {
   },
   gridList: {
     width: '100%',
-    // height: 450,
     overflowY: 'auto',
     maxWidth: '1024px',
     margin: '0 auto'
@@ -75,6 +72,7 @@ class Discover extends PureComponent {
       slideIndex: 0,
       currentYearLoaded: 3000,
       hiddenElement: true,
+      slidesData: [],
       tilesData: [],
       tilesStoriesData: [],
       tilesPeopleData: [],
@@ -96,88 +94,109 @@ class Discover extends PureComponent {
     this.setState({ hiddenElement: false })
   }
 
+  componentWillMount = () => {
+    console.debug("componentWillMountcomponentWillMount")
+    if (this.props.selectedYear !== this.state.currentYearLoaded) {
+      this._updateImages(this.props.selectedYear)
+    }
+  }
+
   componentWillUnmount = () => {
     this.setState({ hiddenElement: true })
   }
 
-  componentWillMount () {
-    const { basemap, activeArea, selectedYear, activeMarkers, selectedItem, areaData } = this.props
+  componentWillReceiveProps (nextProps) {
+    const { selectedYear } = this.props
     console.debug('### MAP componentWillReceiveProps', this.props)
 
     /** Acting on store changes **/
-    if (this.state.currentYearLoaded !== selectedYear) {
-      console.debug('DISCOVER.js ### new year changed to ' + selectedYear)
-
-      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&type=i')
-        .then(response => {
-          const newTilesData = []
-          const res = response.data
-          res.forEach((imageItem) => {
-            newTilesData.push({
-              img: imageItem._id,
-              title: imageItem.data.title,
-              author: imageItem.data.source,
-            })
-          })
-          this.setState({
-            currentYearLoaded: selectedYear,
-            tilesData: newTilesData })
-        })
-
-      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=100&type=i&subtype=cities')
-        .then(response => {
-          const newTilesData = []
-          const res = response.data
-          res.forEach((imageItem) => {
-            newTilesData.push({
-              img: imageItem._id,
-              title: imageItem.data.title,
-              author: imageItem.data.source,
-            })
-          })
-          this.setState({
-            currentYearLoaded: selectedYear,
-            tilesCitiesData: newTilesData })
-        })
-
-      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=100&type=i&subtype=battle')
-        .then(response => {
-          const newTilesData = []
-          const res = response.data
-          res.forEach((imageItem) => {
-            newTilesData.push({
-              img: imageItem._id,
-              title: imageItem.data.title,
-              author: imageItem.data.source,
-            })
-          })
-          this.setState({
-            currentYearLoaded: selectedYear,
-            tilesBattlesData: newTilesData })
-        })
-
-      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=100&type=i&subtype=misc')
-        .then(response => {
-          const newTilesData = []
-          const res = response.data
-          res.forEach((imageItem) => {
-            newTilesData.push({
-              img: imageItem._id,
-              title: imageItem.data.title,
-              author: imageItem.data.source,
-            })
-          })
-          this.setState({
-            currentYearLoaded: selectedYear,
-            tilesOtherData: newTilesData })
-        })
+    if (nextProps.selectedYear !== selectedYear) {
+      this._updateImages(nextProps.selectedYear)
     }
   }
 
+  _updateImages(selectedYear) {
+    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i')
+      .then(response => {
+        const newTilesData = []
+        const newSlideData = []
+        const res = response.data
+        res.forEach((imageItem, i) => {
+          if (i < 5) {
+            newSlideData.push({
+              original: imageItem._id,
+              thumbnail: imageItem._id,
+              description: imageItem.data.title,
+              originalTitle: imageItem.year,
+              thumbnailTitle: imageItem.year,
+            })
+          }
+          newTilesData.push({
+            img: imageItem._id,
+            title: imageItem.data.title,
+            author: imageItem.data.source,
+          })
+        })
+        this.setState({
+          currentYearLoaded: selectedYear,
+          tilesData: newTilesData,
+          slidesData: newSlideData })
+      })
+
+    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=cities')
+      .then(response => {
+        const newTilesData = []
+        const res = response.data
+        res.forEach((imageItem) => {
+          newTilesData.push({
+            img: imageItem._id,
+            title: imageItem.data.title,
+            author: imageItem.data.source,
+          })
+        })
+        this.setState({
+          currentYearLoaded: selectedYear,
+          tilesCitiesData: newTilesData })
+      })
+
+    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=battles')
+      .then(response => {
+        const newTilesData = []
+        const res = response.data
+        res.forEach((imageItem) => {
+          newTilesData.push({
+            img: imageItem._id,
+            title: imageItem.data.title,
+            author: imageItem.data.source,
+          })
+        })
+        this.setState({
+          currentYearLoaded: selectedYear,
+          tilesBattlesData: newTilesData })
+      })
+
+    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=misc')
+      .then(response => {
+        const newTilesData = []
+        const res = response.data
+        res.forEach((imageItem) => {
+          newTilesData.push({
+            img: imageItem._id,
+            title: imageItem.data.title,
+            author: imageItem.data.source,
+          })
+        })
+        this.setState({
+          currentYearLoaded: selectedYear,
+          tilesOtherData: newTilesData })
+      })
+  }
+
   render () {
-    console.debug('rendering discoverjs')
-    const { theme, locale, changeTheme, changeLocale, menuItemActive, selectedYear, translate } = this.props
-    const { tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
+    const {  selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
+    const { slidesData, slideIndex, tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
+
+    if (rightDrawerOpen) setRightDrawerVisibility(false)
 
     return (
       <div>
@@ -204,44 +223,17 @@ class Discover extends PureComponent {
           titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
           autoScrollBodyContent={false}>
 
-          <AutoRotatingCarousel
-            style={{ position: 'relative', transform: 'none', backgroundColor: 'none' }}
-            contentStyle={{ transform: 'none',
-              backgroundColor: 'none',
-              height: '512px',
-              maxWidth: '1024px',
-              marginTop: '16px',
-              width: '80%' }}
-            open
-            landscape
-          >
-            <Slide
-              media={<img src='http://www.icons101.com/icon_png/size_256/id_79394/youtube.png' />}
-              mediaBackgroundStyle={{ backgroundColor: red400 }}
-              contentStyle={{ backgroundColor: red600 }}
-              mediaStyle={{ borderRadius: 0 }}
-              title='This is a very cool feature'
-              subtitle='Just using this will blow your mind.'
-            />
-            <Slide
-              media={<img src='http://www.icons101.com/icon_png/size_256/id_80975/GoogleInbox.png' />}
-              mediaBackgroundStyle={{ backgroundColor: blue400 }}
-              contentStyle={{ backgroundColor: blue600 }}
-              title='Ever wanted to be popular?'
-              subtitle='Well just mix two colors and your are good to go!'
-            />
-            <Slide
-              media={<img src='http://www.icons101.com/icon_png/size_256/id_76704/Google_Settings.png' />}
-              mediaBackgroundStyle={{ backgroundColor: green400 }}
-              contentStyle={{ backgroundColor: green600 }}
-              title='May the force be with you'
-              subtitle='The Force is a metaphysical and ubiquitous power in the Star Wars universe.'
-            />
-          </AutoRotatingCarousel>
+          <ImageGallery
+            showPlayButton={false}
+            showFullscreenButton={false}
+            autoPlay={true}
+            showBullets={true}
+            showThumbnails={false}
+            items={this.state.slidesData} />
 
           <Tabs
             onChange={this.handleChange}
-            value={this.state.slideIndex}
+            value={slideIndex}
             tabItemContainerStyle={{
               backgroundColor: 'rgba(0,0,0,0)',
               margin: '0 auto',
@@ -261,12 +253,11 @@ class Discover extends PureComponent {
             <Tab label='OTHER' value={5} />
           </Tabs>
           <SwipeableViews
-            index={this.state.slideIndex}
+            index={slideIndex}
             onChangeIndex={this.handleChange}>
             {/* // TAB 0 */}
             <div style={styles.root}>
               <GridList
-                cols={2}
                 cellHeight={200}
                 padding={1}
                 style={styles.gridList}
@@ -414,6 +405,7 @@ class Discover extends PureComponent {
 
 const mapStateToProps = state => ({
   selectedYear: state.selectedYear,
+  rightDrawerOpen: state.rightDrawerOpen,
   theme: state.theme,
   locale: state.locale,
   menuItemActive: state.menuItemActive,
@@ -422,4 +414,5 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   changeLocale: changeLocaleAction,
   changeTheme: changeThemeAction,
+  setRightDrawerVisibility,
 })(translate(Discover))

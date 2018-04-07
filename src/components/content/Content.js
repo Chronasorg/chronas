@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
@@ -9,11 +9,11 @@ import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
-import { TYPE_AREA, TYPE_MARKER } from '../map/actionReducers'
+import {TYPE_AREA, TYPE_MARKER, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE} from '../map/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
-import Timeline from './Timeline'
+import EntityTimeline from './EntityTimeline'
 
 const styles = {
   main: {
@@ -52,11 +52,11 @@ class Content extends Component {
     const currSrc = document.getElementById('articleIframe').getAttribute('src')
     if (currSrc.indexOf('?printable=yes') === 1) {
       document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
-    } //TODO: do this with ref
+    } // TODO: do this with ref
   }
 
   _handleNewData = (selectedItem, metadata, activeArea) => {
-    let selectedWiki = ''
+    let selectedWiki = null
 
     if (selectedItem.type === TYPE_AREA) {
       const selectedProvince = selectedItem.value
@@ -68,8 +68,7 @@ class Content extends Component {
         : (activeAreaDim === 'province' || activeAreaDim === 'capital')
           ? (metadata[activeAreaDim][activeprovinceValue] || {})
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
-    }
-    else if (selectedItem.type === TYPE_MARKER) {
+    } else if (selectedItem.type === TYPE_MARKER) {
       const selectedMarker = selectedItem.value
       selectedWiki = selectedItem.wiki
     }
@@ -87,14 +86,15 @@ class Content extends Component {
   }
 
   render () {
+    const { selectedItem } = this.props
     const shouldLoad = (this.state.iframeLoading || this.state.selectedWiki === null)
     console.debug(shouldLoad)
+
     return <div style={styles.main}>
       { shouldLoad && <span>loading placeholder...</span> }
-      <Timeline />
-      {/*{(this.state.selectedWiki === null) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + this.state.selectedWiki + '?printable=yes'}*/}
-      {/*height='100%' frameBorder='0' />}*/}
-      </div>
+      {(this.state.selectedWiki === null || selectedItem.wiki === WIKI_PROVINCE_TIMELINE || selectedItem.wiki === WIKI_RULER_TIMELINE) ? <EntityTimeline /> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + this.state.selectedWiki + '?printable=yes'}
+        height='100%' frameBorder='0' />}
+    </div>
   }
 }
 

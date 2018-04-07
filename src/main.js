@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import createStore from './store/createStore'
+import 'react-image-gallery/styles/scss/image-gallery.scss'
 import './styles/main.scss'
 import './styles/login.scss'
 // Store Initialization

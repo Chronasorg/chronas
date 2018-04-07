@@ -26,7 +26,7 @@ const styles = {
     marginLeft: '-5px',
   }
 }
-class Timeline extends React.Component {
+class EntityTimeline extends React.Component {
   state = {
     stepIndex: 0,
   };
@@ -101,4 +101,4 @@ class Timeline extends React.Component {
   }
 }
 
-export default Timeline
+export default EntityTimeline

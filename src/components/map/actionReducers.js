@@ -7,6 +7,9 @@ export const DESELECT_ITEM = 'DESELECT_ITEM'
 export const TYPE_AREA = 'areas'
 export const TYPE_MARKER = 'markers'
 
+export const WIKI_RULER_TIMELINE = 'WIKI_RULER_TIMELINE'
+export const WIKI_PROVINCE_TIMELINE = 'WIKI_PROVINCE_TIMELINE'
+
 /** Actions **/
 
 export const setWikiId = id => ({
