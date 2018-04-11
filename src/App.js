@@ -230,7 +230,7 @@ class App extends Component {
                       {createElement(Menu)}
                     </Sidebar>}
                   </div>
-                  <Notification style={{zIndex: 1000000000}} /> // TODO: raise issue and custom Notification it
+                  <Notification style={{ zIndex: 1000000000 }} />
                 </div>
               </div>
             </MuiThemeProvider>

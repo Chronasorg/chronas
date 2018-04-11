@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
-import {TYPE_AREA, TYPE_MARKER, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE} from '../map/actionReducers'
+import { TYPE_AREA, TYPE_MARKER, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE } from '../map/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
@@ -20,8 +20,8 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    height: '100%',
-    padding: '8px 4px',
+    height: 'calc(100% - 64px)',
+    padding: '8px 4px'
   },
   iframe: {
     display: 'block',
@@ -68,6 +68,7 @@ class Content extends Component {
         : (activeAreaDim === 'province' || activeAreaDim === 'capital')
           ? (metadata[activeAreaDim][activeprovinceValue] || {})
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
+
     } else if (selectedItem.type === TYPE_MARKER) {
       const selectedMarker = selectedItem.value
       selectedWiki = selectedItem.wiki
@@ -86,13 +87,14 @@ class Content extends Component {
   }
 
   render () {
-    const { selectedItem } = this.props
+    const { selectedItem, rulerEntity } = this.props
     const shouldLoad = (this.state.iframeLoading || this.state.selectedWiki === null)
     console.debug(shouldLoad)
+    const rulerEntityOpen = !!(this.state.selectedWiki === null || selectedItem.wiki === WIKI_PROVINCE_TIMELINE || selectedItem.wiki === WIKI_RULER_TIMELINE)
 
     return <div style={styles.main}>
-      { shouldLoad && <span>loading placeholder...</span> }
-      {(this.state.selectedWiki === null || selectedItem.wiki === WIKI_PROVINCE_TIMELINE || selectedItem.wiki === WIKI_RULER_TIMELINE) ? <EntityTimeline /> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + this.state.selectedWiki + '?printable=yes'}
+      { shouldLoad && !rulerEntityOpen && <span>loading placeholder...</span> }
+      {rulerEntityOpen ? <EntityTimeline rulerEntity={rulerEntity} /> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + this.state.selectedWiki + '?printable=yes'}
         height='100%' frameBorder='0' />}
     </div>
   }

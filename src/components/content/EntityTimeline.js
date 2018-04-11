@@ -24,6 +24,30 @@ const styles = {
     borderRadius: '15px',
     color: 'white',
     marginLeft: '-5px',
+    // whiteSpace: 'nowrap'
+  },
+  stepContainer: {
+    // whiteSpace: 'nowrap',
+    // textOverflow: 'ellipsis',
+    // overflow: 'hidden'
+  },
+  iframe: {
+    position: 'fixed',
+    right: 0,
+    width: '80%',
+    height: 'calc(100% - 128px)',
+  },
+  navButtons: {
+    marginTop:'12px',
+    right: '28px',
+    bottom: '10px',
+    position: 'fixed'
+  },
+  navTitle: {
+    marginTop:'12px',
+    left: 'calc(20% + 4px)',
+    bottom: '10px',
+    position: 'fixed'
   }
 }
 class EntityTimeline extends React.Component {
@@ -33,55 +57,87 @@ class EntityTimeline extends React.Component {
 
   handleNext = () => {
     const { stepIndex } = this.state
-    if (stepIndex < 2) {
-      this.setState({ stepIndex: stepIndex + 1 })
-    }
+    this.setState({ stepIndex: stepIndex + 1 })
   };
 
   handlePrev = () => {
     const { stepIndex } = this.state
-    if (stepIndex > 0) {
-      this.setState({ stepIndex: stepIndex - 1 })
-    }
+    this.setState({ stepIndex: stepIndex - 1 })
   };
 
+  _handleUrlChange = (e) => {
+    this.setState({ iframeLoading: false })
+    const currSrc = document.getElementById('articleIframe').getAttribute('src')
+    if (currSrc.indexOf('?printable=yes') === 1) {
+      document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
+    } // TODO: do this with ref
+  }
+
   getStepContent (stepIndex) {
-    switch (stepIndex) {
-      case 0:
-        return 'Select campaign settings...'
-      case 1:
-        return 'What is an ad group anyways?'
-      case 2:
-        return 'This is the bit I really care about!'
-      default:
-        return 'You\'re a long way from home sonny jim!'
-    }
+    const rulerEntityData = ((this.props.rulerEntity || {}).data || {})
+    const wikiUrl = (rulerEntityData[Object.keys(rulerEntityData)[stepIndex]] || {})[2] || -1
+    return (wikiUrl === -1) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + wikiUrl + '?printable=yes'} height='90%' frameBorder='0' />
   }
 
   render () {
-    const { stepIndex } = this.state
+    const { stepIndex, selectedWiki } = this.state
+    const { rulerEntity } = this.props
     const contentStyle = { margin: '0 16px' }
 
+    const shouldLoad = (this.state.iframeLoading || selectedWiki === null)
+    const rulerEntityData = (rulerEntity || {}).data || {}
+
     return (
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '19%', overflow: 'auto' }}>
         <Stepper linear={false}
           activeStep={stepIndex}
           orientation='vertical'
-          style={{ float: 'left', paddingRight: '1em' }}>
-          <Step>
-            <StepButton icon={<span style={styles.stepLabel}>1942</span>} onClick={() => this.setState({ stepIndex: 1 })}>
-              Create an ad group
-            </StepButton>
-          </Step>
-          <Step>
-            <StepButton onClick={() => this.setState({ stepIndex: 2 })}>
-              Create an ad
-            </StepButton>
-          </Step>
+          style={{ float: 'left', width: '100%', paddingRight: '1em' }}>
+          {Object.keys(rulerEntityData).map((yearKey, i) => (
+            <Step style={ styles.stepContainer}>
+              <StepButton icon={<span style={styles.stepLabel}>{yearKey}</span>} onClick={() => this.setState({ stepIndex: i }) /* TODO: change year onclick */ }>
+                <div style={{
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  position: 'absolute',
+                  width: '20$',
+                  left: '60px',
+                  top: '16px',
+                  fontSize: '15px'
+                }}>
+                  {rulerEntityData[yearKey][0]}
+                </div>
+                <div style={{
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  position: 'absolute',
+                  width: '20$',
+                  left: '60px',
+                  top: '32px',
+                  fontSize: '12px'
+                }}>
+                  {rulerEntityData[yearKey][1]}
+                </div>
+
+              </StepButton>
+            </Step>
+          ))}
         </Stepper>
         <div style={contentStyle}>
-          <p>{this.getStepContent(stepIndex)}</p>
-          <div style={{ marginTop: 12 }}>
+          {(selectedWiki === null || shouldLoad)
+            ? <span>loadin1g placeholder...</span>
+            : this.getStepContent(stepIndex)}
+          <div style={ styles.navTitle }>
+            <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (rulerEntityData[Object.keys(rulerEntityData)[stepIndex]] || {} )[0] } </span>
+            <span style={{ fontWeight: 300, paddingRight: '.6em'}}>
+              {(rulerEntityData[Object.keys(rulerEntityData)[stepIndex]] || {} )[1]}
+            </span>
+            <span style={{ paddingRight: '2em'}}> ({stepIndex + 1} / {Object.keys(rulerEntityData).length})</span>
+          </div>
+
+          <div style={ styles.navButtons }>
             <FlatButton
               label='Back'
               disabled={stepIndex === 0}
@@ -90,7 +146,7 @@ class EntityTimeline extends React.Component {
             />
             <RaisedButton
               label='Next'
-              disabled={stepIndex === 2}
+              disabled={stepIndex === Object.keys(rulerEntityData).length-1}
               primary
               onClick={this.handleNext}
             />

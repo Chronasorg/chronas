@@ -47,6 +47,8 @@ import { changeColor, setAreaColorLabel } from '../menu/layers/actionReducers'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../styles/chronasColors'
 import utils from "../map/utils/general";
+import properties from "../../properties";
+import axios from "axios/index";
 
 const styles = {
   iconElementRightStyle: {
@@ -90,7 +92,8 @@ const styles = {
     position: 'absolute',
     top: 'calc(50% - 20px)',
     marginLeft: '-43px',
-    transform: 'rotate(90deg)'
+    transform: 'rotate(90deg)',
+    zIndex: 10002
   },
   draggableButton: {
     cursor: 'ew-resize',
@@ -134,10 +137,16 @@ class RightDrawerRoutes extends PureComponent {
       metadataEntity: '',
       selectedIndex: -1,
       articleWidth: '50%',
+      rulerEntity: {
+        "id": null,
+        "data": null
+      }
     }
   }
 
   componentWillReceiveProps (nextProps) {
+
+    this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
 
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.setState({
@@ -216,11 +225,28 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
 
-  select = (index) => this.setState({selectedIndex: index});
+  select = (index) => this.setState({selectedIndex: index})
 
+  _handleNewData = (selectedItem, activeArea = {}) => {
+    if (selectedItem.type === TYPE_AREA) {
+      const selectedProvince = selectedItem.value
+      // is rulerEntity loaded?
+      const activeRulDim = ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')]
+      if (this.state.rulerEntity.id !== activeRulDim) {
+        axios.get(properties.chronasApiHost + '/metadata/r_' + /*activeRulDim TODO: remove tete */ "tete" + "?type=r")
+          .then((newRulerEntity) => {
+            this.setState({ rulerEntity: {
+                id: /*activeRulDim TODO: remove tete */ "tete",
+                data: newRulerEntity.data
+              }})
+          })
+      }
+    }
+  }
 
   componentDidMount(){
     console.debug('### RightDrawerRoutes mounted with props', this.props)
+    this._handleNewData(this.props.selectedItem, this.props.activeArea)
     // window.addEventListener('mousemove', this.handleMouseOver.bind(this), false);
     // window.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
   }
@@ -234,6 +260,7 @@ class RightDrawerRoutes extends PureComponent {
       translate, rightDrawerOpen, deselectItem, setWikiId, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme,
       setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor, setAreaColorLabel } = this.props
+    const { rulerEntity } = this.state
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
@@ -327,6 +354,8 @@ class RightDrawerRoutes extends PureComponent {
       })
     }
 
+    const rulerEntityData = (rulerEntity || {}).data || {}
+    const rulerEntityDecoded = rulerEntityData[(Object.keys(rulerEntityData) || {})[0]]
     const rulerName = metadata['ruler'][rulerId][0]
     const religionName = (metadata['religion'][religionId] || {})[0] || 'n/a'
     const religionGeneralName = metadata['religionGeneral'][metadata['religion'][religionId][3]][0]
@@ -344,10 +373,10 @@ class RightDrawerRoutes extends PureComponent {
           <BottomNavigationItem
             onClick={() => { setWikiId(WIKI_RULER_TIMELINE); setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
-                title="very loooooooooooong text"
+                title={ rulerEntityDecoded[0] }
                 titleStyle={ styles.cardHeader.titleStyle }
                 style={ styles.cardHeader.style }
-                subtitle="Ruler"
+                subtitle={ rulerEntityDecoded[1] }
                 avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
               />}
             // onClick={() => this.select(0)}
@@ -446,11 +475,10 @@ class RightDrawerRoutes extends PureComponent {
             <Drawer
               openSecondary
               open
-              containerStyle={{ overflow: 'none' }}
+              containerStyle={{ overflow: 'none', zIndex: 10002}}
               style={{ overflow: 'none', zIndex: 9 }}
               width={this.state.newWidth}
               overlayStyle={{ zIndex: 10001}}
-              containerStyle={{ zIndex: 10002}}
             >
               <RaisedButton
                 className='dragHandle'
@@ -487,7 +515,7 @@ class RightDrawerRoutes extends PureComponent {
           <Route
             exact
             path={'/article'}
-            render={restrictPage(articletHeader, Content, '', { metadata } )}
+            render={restrictPage(articletHeader, Content, '', { metadata, rulerEntity } )}
         />
           <Route
             exact
