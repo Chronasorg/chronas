@@ -43,8 +43,10 @@ class Content extends Component {
   }
 
   componentWillUnmount = () => {
-    this.setState({ iframeLoading: true,
-      selectedWiki: null, })
+    this.setState({
+      iframeLoading: true,
+      selectedWiki: null
+    })
   }
 
   _handleUrlChange = (e) => {

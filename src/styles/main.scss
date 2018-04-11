@@ -142,6 +142,8 @@ button:focus {
 .image-gallery-slide .image-gallery-description {
   top: 0px;
   bottom: inherit;
+}
 
-
+.notifications {
+  z-index: 100000000000000; // notificaiton bredcrumb should always be on top
 }

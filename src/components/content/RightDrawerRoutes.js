@@ -81,6 +81,11 @@ const styles = {
       maxWidth: 100,
       textAlign: 'left'
     },
+    textStyle: {
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden'
+    },
     style: {
       whiteSpace: 'nowrap',
       textAlign: 'left',
@@ -355,7 +360,7 @@ class RightDrawerRoutes extends PureComponent {
     }
 
     const rulerEntityData = (rulerEntity || {}).data || {}
-    const rulerEntityDecoded = rulerEntityData[(Object.keys(rulerEntityData) || {})[0]]
+    const rulerEntityDecoded = rulerEntityData[(Object.keys(rulerEntityData) || {})[0]] || ['n/a','Ruling Entity']
     const rulerName = metadata['ruler'][rulerId][0]
     const religionName = (metadata['religion'][religionId] || {})[0] || 'n/a'
     const religionGeneralName = metadata['religionGeneral'][metadata['religion'][religionId][3]][0]
@@ -375,6 +380,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
                 title={ rulerEntityDecoded[0] }
                 titleStyle={ styles.cardHeader.titleStyle }
+                textStyle={ styles.cardHeader.textStyle }
                 style={ styles.cardHeader.style }
                 subtitle={ rulerEntityDecoded[1] }
                 avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
@@ -386,6 +392,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
               title={ rulerName }
               titleStyle={ styles.cardHeader.titleStyle }
+              textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Ruler"
               avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
@@ -397,6 +404,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
               title={ cultureName }
               titleStyle={ styles.cardHeader.titleStyle }
+              textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Culture"
               avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
@@ -408,6 +416,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
               title={ religionName + ' [' + religionGeneralName + ']' }
               titleStyle={ styles.cardHeader.titleStyle }
+              textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Religion"
               avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
@@ -419,6 +428,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
               title={ capitalName }
               titleStyle={ styles.cardHeader.titleStyle }
+              textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Capital"
               avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
@@ -430,6 +440,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
               title={ populationName }
               titleStyle={ styles.cardHeader.titleStyle }
+              textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Population"
               avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"

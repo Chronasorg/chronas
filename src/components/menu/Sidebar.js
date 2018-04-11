@@ -18,7 +18,7 @@ const getStyles = ({ drawer }) => {
       flex: `0 0 ${width}`,
       marginLeft: 0,
       order: -1,
-      zIndex: 10,
+      zIndex: 10000,
       borderRadius: 0,
       backgroundImage: chronasGradient,
       color: '#fff',
@@ -29,7 +29,7 @@ const getStyles = ({ drawer }) => {
       flex: `0 0 ${width}`,
       marginLeft: `-${width}`,
       order: -1,
-      zIndex: 10,
+      zIndex: 10000,
       transition: 'margin 350ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
     },
   });

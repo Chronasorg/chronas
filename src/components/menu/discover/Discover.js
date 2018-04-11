@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom'
 import Dialog from 'material-ui/Dialog'
 import { GridList, GridTile } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
-import IconThumbUp from 'material-ui/svg-icons/action/thumb-up'
-import IconThumbDown from 'material-ui/svg-icons/action/thumb-down'
+import IconThumbUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
+import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
 import IconEdit from 'material-ui/svg-icons/content/create'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
@@ -20,8 +20,25 @@ import { setRightDrawerVisibility } from '../../content/actionReducers'
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 import properties from "../../../properties";
 
+const imgButton = { width: 20, height: 20}
 const styles = {
-  imageButton: { width: 20, height: 20},
+  buttonContainer: {
+    width: 70,
+    height: 30,
+  },
+  upArrow: { ...imgButton, padding: 0, top: -13 },
+  downArrow: { ...imgButton, padding: 0, bottom: -13, left: -20 },
+  editButton: { ...imgButton, left: -18 },
+  scoreLabel: {
+    width: 40,
+    height: 20,
+    right: 38,
+    top: 25,
+    color: 'white',
+    position: 'absolute',
+    fontSize: 12,
+    textAlign: 'center'
+  },
   label: { width: '10em', display: 'inline-block' },
   button: { margin: '1em' },
   discoverDialogStyle: {
@@ -197,16 +214,16 @@ class Discover extends PureComponent {
   }
 
   _handleUpvote = () => {
-    this.props.showNotification(translate('pos.feedbackSuccess'))
+    this.props.showNotification('pos.feedbackSuccess')
     setTimeout(() => // TODO: this comes into callback
-      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? translate('pos.pointsAdded') : translate('pos.signupToGatherPoints')), 1000)
+      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints'), 1000)
 
   }
 
   _handleDownvote = () => {
-    this.props.showNotification(translate('pos.feedbackSuccess'))
+    this.props.showNotification('pos.feedbackSuccess')
     setTimeout(() => // TODO: this comes into callback
-      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? translate('pos.pointsAdded') : translate('pos.signupToGatherPoints')), 1000)
+      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints'), 1000)
 
   }
 
@@ -219,6 +236,31 @@ class Discover extends PureComponent {
     const { slidesData, slideIndex, tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
 
     if (rightDrawerOpen) setRightDrawerVisibility(false)
+
+    const slideButtons = <div style={ styles.buttonContainer }>
+      <IconButton
+        onClick={this._handleUpvote}
+        style={ styles.upArrow }
+        tooltipPosition="bottom-left"
+        tooltip={translate('pos.upvote')}
+      ><IconThumbUp color='white' />
+      </IconButton>
+      <IconButton
+        onClick={this._handleDownvote}
+        style={ styles.downArrow }
+        tooltipPosition="bottom-left"
+        tooltip={translate('pos.downvote')}
+      ><IconThumbDown color='white' /></IconButton>
+      <div style={ styles.scoreLabel }>31</div>
+      <IconButton
+        onClick={this._handleEdit}
+        style={ styles.editButton }
+        tooltipPosition="bottom-left"
+        tooltip={translate('pos.edit')}
+      ><IconEdit color='white' />
+      </IconButton>
+
+    </div>
 
     return (
       <div>
@@ -288,33 +330,8 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
-                    actionIcon={<div>
-
-                      <IconButton
-                        onClick={this._handleUpvote}
-                        style={ styles.imageButton }
-                        tooltipPosition="bottom-right"
-                        tooltip={translate('pos.upvote')}
-                      ><IconThumbUp color='white' />
-                      </IconButton>
-
-                      <IconButton
-                        onClick={this._handleDownvote}
-                        style={ styles.imageButton }
-                        tooltipPosition="bottom-right"
-                        tooltip={translate('pos.downvote')}
-                      ><IconThumbDown color='white' /></IconButton>
-
-                      <IconButton
-                        onClick={this._handleEdit}
-                        style={ styles.imageButton }
-                        tooltipPosition="bottom-right"
-                        tooltip={translate('pos.edit')}
-                      ><IconEdit color='white' />
-                      </IconButton>
-
-                    </div>}
-                    actionPosition='left'
+                    actionIcon={slideButtons}
+                    actionPosition='right'
                     titlePosition='top'
                     titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
                     cols={tile.featured ? 2 : 1}
@@ -337,8 +354,8 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
-                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
-                    actionPosition='left'
+                    actionIcon={slideButtons}
+                    actionPosition='right'
                     titlePosition='top'
                     titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
                     cols={tile.featured ? 2 : 1}
@@ -360,8 +377,8 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
-                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
-                    actionPosition='left'
+                    actionIcon={slideButtons}
+                    actionPosition='right'
                     titlePosition='top'
                     titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
                     cols={tile.featured ? 2 : 1}
@@ -383,8 +400,8 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
-                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
-                    actionPosition='left'
+                    actionIcon={slideButtons}
+                    actionPosition='right'
                     titlePosition='top'
                     titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
                     cols={tile.featured ? 2 : 1}
@@ -407,8 +424,8 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
-                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
-                    actionPosition='left'
+                    actionIcon={slideButtons}
+                    actionPosition='right'
                     titlePosition='top'
                     titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
                     cols={tile.featured ? 2 : 1}
@@ -431,8 +448,8 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
-                    actionIcon={<IconButton><StarBorder color='white' /></IconButton>}
-                    actionPosition='left'
+                    actionIcon={slideButtons}
+                    actionPosition='right'
                     titlePosition='top'
                     titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
                     cols={tile.featured ? 2 : 1}
