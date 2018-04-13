@@ -126,7 +126,7 @@ class Account extends PureComponent {
 
     const UserEdit = (props) => {
       console.debug(props)
-      const t = {...props, ...routeProps}
+      const t = { ...props, ...routeProps }
       return <Edit title={<span>UserEdit</span>} {...t}>
         <SimpleForm>
           <DisabledInput source='username' />
@@ -144,21 +144,20 @@ class Account extends PureComponent {
       </Edit>
     }
 
-    const UserDeleteTitle = translate(({ record, translate }) => <span>
-        {translate('resources.customers.page.delete')}&nbsp;tata
+    const UserDeleteTitle = translate(({ record, translate }) => <span> {translate('resources.customers.page.delete')}&nbsp;tata
       {username}
     </span>)
 
     const UserDelete = (props) => {
-      const tt = {...props, ...routeProps}
-      return <Delete account={true} history={props.history} {...tt} title={<UserDeleteTitle />} />
+      const tt = { ...props, ...routeProps }
+      return <Delete account history={props.history} {...tt} title={<UserDeleteTitle />} />
     }
 
     const restrictPage = (component, route, commonProps) => {
       const RestrictedPage = routeProps => (
         <Restricted location={{ pathname: 'account' }} authParams={{ routeProps }} {...routeProps}>
-          <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-                  contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
+          <Dialog bodyStyle={{ backgroundImage: '#fff' }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
+            contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
             <Card style={styles.card}>
               {createElement(component, {
                 ...commonProps,
@@ -167,27 +166,27 @@ class Account extends PureComponent {
             </Card>
           </Dialog>
         </Restricted>
-      );
-      return RestrictedPage;
-    };
+      )
+      return RestrictedPage
+    }
 
     return (
-            <Switch style={{zIndex: 20000}}>
-              {UserEdit && (
-                <Route
-                  exact
-                  path={'/account/'}
-                  render={restrictPage(UserEdit, username, {...commonProps,...routeProps})}
+      <Switch style={{ zIndex: 20000 }}>
+        {UserEdit && (
+        <Route
+          exact
+          path={'/account/'}
+          render={restrictPage(UserEdit, username, { ...commonProps, ...routeProps })}
                 />
               )}
-              {UserDelete && (
-                <Route
-                  exact
-                  path={'/' + window.encodeURIComponent(username) + '/delete'}
-                  render={restrictPage(UserDelete, 'delete', {...commonProps,...routeProps})}
+        {UserDelete && (
+        <Route
+          exact
+          path={'/' + window.encodeURIComponent(username) + '/delete'}
+          render={restrictPage(UserDelete, 'delete', { ...commonProps, ...routeProps })}
                 />
               )}
-            </Switch>
+      </Switch>
     )
   }
 }

@@ -5,12 +5,18 @@
     pointer-events: none;
   }
 }
+
+.discoverActive {
+  z-index: 10000;
+  position: absolute;
+}
+
 .vis-timeline {
   border: none;
   position: fixed;
   bottom: -46px !important;
   height: 120px !important;
-  z-index: 10000;
+
 }
 
 .vis-custom-time {

@@ -94,7 +94,7 @@ class EntityTimeline extends React.Component {
           orientation='vertical'
           style={{ float: 'left', width: '100%', paddingRight: '1em' }}>
           {Object.keys(rulerEntityData).map((yearKey, i) => (
-            <Step style={ styles.stepContainer}>
+            <Step key={i} style={ styles.stepContainer}>
               <StepButton icon={<span style={styles.stepLabel}>{yearKey}</span>} onClick={() => this.setState({ stepIndex: i }) /* TODO: change year onclick */ }>
                 <div style={{
                   overflow: 'hidden',

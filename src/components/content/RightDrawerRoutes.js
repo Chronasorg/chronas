@@ -84,7 +84,7 @@ const styles = {
     textStyle: {
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
-      overflow: 'hidden'
+      overflow: 'hidden',
     },
     style: {
       whiteSpace: 'nowrap',
@@ -380,6 +380,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
                 title={ rulerEntityDecoded[0] }
                 titleStyle={ styles.cardHeader.titleStyle }
+                subtitleStyle={ styles.cardHeader.titleStyle }
                 textStyle={ styles.cardHeader.textStyle }
                 style={ styles.cardHeader.style }
                 subtitle={ rulerEntityDecoded[1] }
@@ -392,6 +393,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
               title={ rulerName }
               titleStyle={ styles.cardHeader.titleStyle }
+              subtitleStyle={ styles.cardHeader.titleStyle }
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Ruler"
@@ -416,6 +418,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
               title={ religionName + ' [' + religionGeneralName + ']' }
               titleStyle={ styles.cardHeader.titleStyle }
+              subtitleStyle={ styles.cardHeader.titleStyle }
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Religion"
@@ -428,6 +431,7 @@ class RightDrawerRoutes extends PureComponent {
             icon={<CardHeader
               title={ capitalName }
               titleStyle={ styles.cardHeader.titleStyle }
+              subtitleStyle={ styles.cardHeader.titleStyle }
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Capital"
@@ -465,57 +469,59 @@ class RightDrawerRoutes extends PureComponent {
         </div>
       }
     />
-
+    /*<Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'article' }}>  TODO: do pathname dynamicaly*!/*/
     const restrictPage = (headerComponent, component, route, commonProps) => {
       const RestrictedPage = routeProps => (
-        <Responsive
-          small={
-            <Drawer
-              docked={false}
-              openSecondary
-              open
-              onRequestChange={setRightDrawerVisibility}
-            >
-              {component && createElement(component, {
-                ...commonProps,
-                ...routeProps,
-              })}
-            </Drawer>
-          }
-          medium={
-            <Drawer
-              openSecondary
-              open
-              containerStyle={{ overflow: 'none', zIndex: 10002}}
-              style={{ overflow: 'none', zIndex: 9 }}
-              width={this.state.newWidth}
-              overlayStyle={{ zIndex: 10001}}
-            >
-              <RaisedButton
-                className='dragHandle'
-                icon={<IconDrag />}
-                style={styles.draggableButtonDiv}
-                rippleStyle={{ width: '20px'}}
-                buttonStyle={styles.draggableButton}
-                onMouseDown={event => {
-                  this.handleMousedown(event);
-                }}
-                // onTouchTap={(event) => console.debug('touchtap', event)}
-                // onMouseDown={this.handleMouseDown.bind(this)}
-                // onMouseOver={this.handleMouseOver.bind(this)}
-                // onMouseUp={this.handleMouseUp.bind(this)}
-                // onClick={(event) => console.debug('onClick', event)}
-              />
-              <div style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
-                {headerComponent}
+        <Restricted location={{ pathname: 'mod/areas' }}  authParams={{ foo: 'bar' }} {...routeProps}>
+          <Responsive
+            small={
+              <Drawer
+                docked={false}
+                openSecondary
+                open
+                onRequestChange={setRightDrawerVisibility}
+              >
                 {component && createElement(component, {
                   ...commonProps,
                   ...routeProps,
                 })}
-              </div>
-            </Drawer>
-          }
-        />
+              </Drawer>
+            }
+            medium={
+              <Drawer
+                openSecondary
+                open
+                containerStyle={{ overflow: 'none'/*, zIndex: 10002*/}}
+                style={{ overflow: 'none', zIndex: 9 }}
+                width={this.state.newWidth}
+                overlayStyle={{ /*zIndex: 10001*/}}
+              >
+                <RaisedButton
+                  className='dragHandle'
+                  icon={<IconDrag />}
+                  style={styles.draggableButtonDiv}
+                  rippleStyle={{ width: '20px'}}
+                  buttonStyle={styles.draggableButton}
+                  onMouseDown={event => {
+                    this.handleMousedown(event);
+                  }}
+                  // onTouchTap={(event) => console.debug('touchtap', event)}
+                  // onMouseDown={this.handleMouseDown.bind(this)}
+                  // onMouseOver={this.handleMouseOver.bind(this)}
+                  // onMouseUp={this.handleMouseUp.bind(this)}
+                  // onClick={(event) => console.debug('onClick', event)}
+                />
+                <div style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
+                  {headerComponent}
+                  {component && createElement(component, {
+                    ...commonProps,
+                    ...routeProps,
+                  })}
+                </div>
+              </Drawer>
+            }
+          />
+        </Restricted>
       )
       return RestrictedPage
     }

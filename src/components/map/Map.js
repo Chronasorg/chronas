@@ -34,6 +34,7 @@ const getRandomInt = (min, max) => {
 class Map extends Component {
   state = {
     mapStyle: defaultMapStyle,
+    mapTimelineContainerClass: '',
     year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
     data: null,
     viewport: {
@@ -153,50 +154,50 @@ class Map extends Component {
   }
 
   _getAreaViewportAndOutlines = (activeColorDim, activeColorValue) => {
-      let geometryToOutline
-      if (activeColorDim === 'ruler') {
-        geometryToOutline = this.state.mapStyle
+    let geometryToOutline
+    if (activeColorDim === 'ruler') {
+      geometryToOutline = this.state.mapStyle
             .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.r === activeColorValue)
-      } else if (activeColorDim === 'culture') {
-        geometryToOutline = this.state.mapStyle
+    } else if (activeColorDim === 'culture') {
+      geometryToOutline = this.state.mapStyle
             .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.c === activeColorValue)
-      } else if (activeColorDim === 'religion') {
-        geometryToOutline = this.state.mapStyle
+    } else if (activeColorDim === 'religion') {
+      geometryToOutline = this.state.mapStyle
             .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.e === activeColorValue)
-      } else if (activeColorDim === 'religionGeneral') {
-        geometryToOutline = this.state.mapStyle
+    } else if (activeColorDim === 'religionGeneral') {
+      geometryToOutline = this.state.mapStyle
             .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.g === activeColorValue)
-      }
+    }
         // turf.unkinkPolygon.apply(null,geometryToOutline)
-      if (typeof geometryToOutline !== 'undefined' && geometryToOutline.length !== 0) {
-        const multiPolygonToOutline = turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), []))  // TODO: also include multipolygons (see 0) - f
+    if (typeof geometryToOutline !== 'undefined' && geometryToOutline.length !== 0) {
+      const multiPolygonToOutline = turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), []))  // TODO: also include multipolygons (see 0) - f
 
-        const webMercatorViewport = new WebMercatorViewport({
-          width: this.props.width || (window.innerWidth - 56),
-          height: this.props.height || window.innerHeight
-        })
+      const webMercatorViewport = new WebMercatorViewport({
+        width: this.props.width || (window.innerWidth - 56),
+        height: this.props.height || window.innerHeight
+      })
 
-        const bbox = turf.bbox(multiPolygonToOutline)
+      const bbox = turf.bbox(multiPolygonToOutline)
 
-        const bounds = webMercatorViewport.fitBounds(
+      const bounds = webMercatorViewport.fitBounds(
             [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
             { padding: 20, offset: [0, -40] }
           )
 
-        const viewport = {
-          ...this.state.viewport,
-          ...bounds,
-          zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)), // TODO: only apply this i
-          transitionDuration: 1000,
-          transitionInterpolator: new FlyToInterpolator(),
-          transitionEasing: easeCubic
-        }
-
-        return { viewport, multiPolygonToOutline }
+      const viewport = {
+        ...this.state.viewport,
+        ...bounds,
+        zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)), // TODO: only apply this i
+        transitionDuration: 1000,
+        transitionInterpolator: new FlyToInterpolator(),
+        transitionEasing: easeCubic
       }
 
-      console.error('We got something wrong with the turf.union or turf.unkinkPolygon')
-      return {}
+      return { viewport, multiPolygonToOutline }
+    }
+
+    console.error('We got something wrong with the turf.union or turf.unkinkPolygon')
+    return {}
   }
 
   _changeArea = (areaDefs, newLabel, newColor, selectedProvince) => {
@@ -226,7 +227,7 @@ class Map extends Component {
       const activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(newColor)]
       const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(newColor, activeprovinceValue)
 
-      if (typeof multiPolygonToOutline !== "undefined") {
+      if (typeof multiPolygonToOutline !== 'undefined') {
         this.setState({
           viewport,
           mapStyle: mapStyle
@@ -235,9 +236,9 @@ class Map extends Component {
         })
       } else {
         this.setState({ mapStyle: mapStyle.setIn(['sources', 'entity-outlines', 'data'], fromJS({
-          "type": "FeatureCollection",
-          "features": [ ]
-        }))})
+          'type': 'FeatureCollection',
+          'features': [ ]
+        })) })
       }
     } else {
       this.setState({ mapStyle })
@@ -288,10 +289,16 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { basemap, activeArea, selectedYear, metadata, modActive, activeMarkers, selectedItem } = this.props
+    const { basemap, activeArea, selectedYear, metadata, modActive, history, activeMarkers, selectedItem } = this.props
     console.debug('### MAP componentWillReceiveProps', this.props, nextProps)
 
     /** Acting on store changes **/
+    if (nextProps.history.location.pathname === '/discover') {
+      this.setState({ mapTimelineContainerClass: 'discoverActive' })
+    } else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '') {
+      this.setState({ mapTimelineContainerClass: '' })
+    }
+
     if (selectedItem.value !== nextProps.selectedItem.value) {
       console.debug('###### Item changed')
       if (nextProps.selectedItem.wiki === 'random') {
@@ -311,41 +318,40 @@ class Map extends Component {
 
         if (nextProps.selectedItem.type === TYPE_AREA && nextProps.selectedItem.value !== '' && nextProps.activeArea.color !== '' && nextProps.activeArea.color === activeArea.color) {
           const activeprovinceValue = (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)]
-          const {viewport, multiPolygonToOutline} = this._getAreaViewportAndOutlines(nextProps.activeArea.color, activeprovinceValue)
+          const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, activeprovinceValue)
 
-          if (typeof multiPolygonToOutline !== "undefined") {
+          if (typeof multiPolygonToOutline !== 'undefined') {
             this.setState({
               viewport,
               mapStyle: this.state.mapStyle
-                .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutline))
-                // .setIn(['sources', 'area-hover', 'data'], fromJS(multiPolygonToOutline))
-              ,
+                .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutline)),                // .setIn(['sources', 'area-hover', 'data'], fromJS(multiPolygonToOutline))
+
               hoverInfo: null
             })
           } else {
             this.setState({
               mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
-                "type": "FeatureCollection",
-                "features": [ ]
+                'type': 'FeatureCollection',
+                'features': [ ]
               })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
-                "type": "FeatureCollection",
-                "features": [ ]
+                'type': 'FeatureCollection',
+                'features': [ ]
               })),
               hoverInfo: null
             })
           }
         } else {
           // setTimeout(() => {
-            this.setState({
-              mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
-                "type": "FeatureCollection",
-                "features": [ ]
-              })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
-                "type": "FeatureCollection",
-                "features": [ ]
-              })),
-              hoverInfo: null
-            })
+          this.setState({
+            mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
+              'type': 'FeatureCollection',
+              'features': [ ]
+            })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+              'type': 'FeatureCollection',
+              'features': [ ]
+            })),
+            hoverInfo: null
+          })
           // }, 2000)
         }
       }
@@ -402,8 +408,8 @@ class Map extends Component {
         const prevMapStyle = this.state.mapStyle
         let mapStyle = prevMapStyle
           .setIn(['sources', 'area-hover', 'data'], fromJS({
-            "type": "FeatureCollection",
-            "features": [ ]
+            'type': 'FeatureCollection',
+            'features': [ ]
           }))
         this.setState({
           hoverInfo: null
@@ -533,7 +539,7 @@ class Map extends Component {
 
   _addGeoJson = (sourceId, entityId) => {
     if (entityId.toString() !== '') {
-    axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + this.props.selectedYear)
+      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + this.props.selectedYear)
       .then(features => {
         const mapStyle = this.state.mapStyle
           .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
@@ -631,8 +637,8 @@ class Map extends Component {
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
         .setIn(['sources', 'area-hover', 'data'], fromJS({
-          "type": "FeatureCollection",
-          "features": [ ]
+          'type': 'FeatureCollection',
+          'features': [ ]
         }))
       this.setState({ mapStyle })
     }
@@ -688,8 +694,8 @@ class Map extends Component {
         const prevMapStyle = this.state.mapStyle
         let mapStyle = prevMapStyle
           .setIn(['sources', 'area-hover', 'data'], fromJS({
-            "type": "FeatureCollection",
-            "features": [ ]
+            'type': 'FeatureCollection',
+            'features': [ ]
           }))
         this.setState({
           hoverInfo: null,
@@ -707,8 +713,8 @@ class Map extends Component {
         const prevMapStyle = this.state.mapStyle
         let mapStyle = prevMapStyle
           .setIn(['sources', 'area-hover', 'data'], fromJS({
-            "type": "FeatureCollection",
-            "features": [ ]
+            'type': 'FeatureCollection',
+            'features': [ ]
           }))
         this.setState({
           hoverInfo: null,
@@ -768,11 +774,11 @@ class Map extends Component {
   }
 
   render () {
-    const { viewport, mapStyle } = this.state
+    const { viewport, mapStyle, mapTimelineContainerClass } = this.state
     const { modActive } = this.props
 
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
-    if ( this.props.rightDrawerOpen ) leftOffset -= viewport.width * 0.24 // TODO: make this resize dynamic by article Content width
+    if (this.props.rightDrawerOpen) leftOffset -= viewport.width * 0.24 // TODO: make this resize dynamic by article Content width
 
     let modMarker = (modActive.type === TYPE_MARKER && typeof modActive.data[0] !== 'undefined') ? <Marker
       captureClick={false}
@@ -807,7 +813,10 @@ class Map extends Component {
 
           {this._renderPopup()}
         </MapGL>
-        <Timeline />
+        <div className={mapTimelineContainerClass}
+        >
+          <Timeline />
+        </div>
       </div>
     )
   }

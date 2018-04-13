@@ -128,7 +128,7 @@ class Discover extends PureComponent {
 
   componentWillReceiveProps (nextProps) {
     const { selectedYear } = this.props
-    console.debug('### MAP componentWillReceiveProps', this.props)
+    console.debug('### DISCOVER componentWillReceiveProps', this.props)
 
     /** Acting on store changes **/
     if (nextProps.selectedYear !== selectedYear) {
