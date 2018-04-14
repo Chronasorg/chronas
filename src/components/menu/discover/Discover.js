@@ -237,6 +237,7 @@ class Discover extends PureComponent {
             title: imageItem.data.title,
             author: imageItem.data.source,
             subtitle: imageItem.year,
+            score: imageItem.score,
           })
         })
         this.setState({
@@ -245,18 +246,22 @@ class Discover extends PureComponent {
       })
   }
 
-  _handleUpvote = () => {
+  _handleUpvote = (id) => {
     this.props.showNotification('pos.feedbackSuccess')
-    setTimeout(() => // TODO: this comes into callback
-      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints'), 1000)
+
+    axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote')
+      .then(() => {
+      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+      })
 
   }
 
-  _handleDownvote = () => {
+  _handleDownvote = (id) => {
     this.props.showNotification('pos.feedbackSuccess')
-    setTimeout(() => // TODO: this comes into callback
-      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints'), 1000)
-
+    axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote')
+      .then(() => {
+      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+      })
   }
 
   _handleEdit = () => {
@@ -267,9 +272,9 @@ class Discover extends PureComponent {
     const {  selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
     const { slidesData, slideIndex, tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
-    const slideButtons = <div className="slideButtons" style={ styles.buttonContainer }>
+    const slideButtons = (score, id) => <div className="slideButtons" style={ styles.buttonContainer }>
       <IconButton
-        onClick={this._handleUpvote}
+        onClick={this._handleUpvote(id)}
         style={ styles.upArrow }
         tooltipPosition="bottom-left"
         tooltip={translate('pos.upvote')}
@@ -277,15 +282,15 @@ class Discover extends PureComponent {
       ><IconThumbUp color='white' />
       </IconButton>
       <IconButton
-        onClick={this._handleDownvote}
+        onClick={this._handleDownvote(id)}
         style={ styles.downArrow }
         iconStyle={ styles.iconButton }
         tooltipPosition="bottom-left"
         tooltip={translate('pos.downvote')}
       ><IconThumbDown color='white' /></IconButton>
-      <div style={ styles.scoreLabel }>31</div>
+      <div style={ styles.scoreLabel }>score</div>
       <IconButton
-        onClick={this._handleEdit}
+        onClick={this._handleEdit({id})}
         iconStyle={ styles.iconButton }
         style={ styles.editButton }
         tooltipPosition="bottom-left"
@@ -370,7 +375,7 @@ class Discover extends PureComponent {
                     subtitleStyle={styles.subtitle}
                     title={tile.subtitle}
                     subtitle={tile.title}
-                    actionIcon={slideButtons}
+                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.id))}
                     actionPosition='right'
                     titlePosition='bottom'
                     titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
