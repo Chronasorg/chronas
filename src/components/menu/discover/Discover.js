@@ -24,8 +24,13 @@ const imgButton = { width: 20, height: 20}
 const styles = {
   buttonContainer: {
     width: 70,
-    height: 30,
+    height: 50,
+    /* margin-top: -315px; */
+    position: 'relative',
+    right: 0,
+    bottom: 290
   },
+  iconButton: { filter: 'drop-shadow(2px 6px 4px rgba(0,0,0,0.8))' },
   upArrow: { ...imgButton, padding: 0, top: -13 },
   downArrow: { ...imgButton, padding: 0, bottom: -13, left: -20 },
   editButton: { ...imgButton, left: -18 },
@@ -33,11 +38,12 @@ const styles = {
     width: 40,
     height: 20,
     right: 38,
-    top: 25,
+    top: 16,
     color: 'white',
     position: 'absolute',
     fontSize: 12,
-    textAlign: 'center'
+    textAlign: 'center',
+    filter: 'drop-shadow(2px 6px 4px rgba(0,0,0,0.8))'
   },
   label: { width: '10em', display: 'inline-block' },
   button: { margin: '1em' },
@@ -84,6 +90,28 @@ const styles = {
     maxWidth: '1024px',
     margin: '0 auto'
   },
+  subtitle: {
+    fontSize: '16px',
+    // paddingLeft: '28px',
+    // paddingRight: '28px',
+    fontWeight: '400',
+    lineHeight: '24px',
+    color: '#bcbcbc',
+    transition: 'all .5s ease',
+    bottom: '20px',
+    left: '30px',
+    paddingRight: '2em',
+  },
+  title: {
+    // padding: '36px 28px 0 28px',
+    lineHeight: '32px',
+    fontWeight: 300,
+    color: '#fff',
+    fontSize: '24px',
+    bottom: '50px',
+    position: 'absolute',
+    left: '30px',
+  }
 }
 
 class Discover extends PureComponent {
@@ -156,6 +184,7 @@ class Discover extends PureComponent {
             img: imageItem._id,
             title: imageItem.data.title,
             author: imageItem.data.source,
+            subtitle: imageItem.year,
           })
         })
         this.setState({
@@ -173,6 +202,7 @@ class Discover extends PureComponent {
             img: imageItem._id,
             title: imageItem.data.title,
             author: imageItem.data.source,
+            subtitle: imageItem.year,
           })
         })
         this.setState({
@@ -189,6 +219,7 @@ class Discover extends PureComponent {
             img: imageItem._id,
             title: imageItem.data.title,
             author: imageItem.data.source,
+            subtitle: imageItem.year,
           })
         })
         this.setState({
@@ -205,6 +236,7 @@ class Discover extends PureComponent {
             img: imageItem._id,
             title: imageItem.data.title,
             author: imageItem.data.source,
+            subtitle: imageItem.year,
           })
         })
         this.setState({
@@ -234,32 +266,32 @@ class Discover extends PureComponent {
   render () {
     const {  selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
     const { slidesData, slideIndex, tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
-
     if (rightDrawerOpen) setRightDrawerVisibility(false)
-
-    const slideButtons = <div style={ styles.buttonContainer }>
+    const slideButtons = <div className="slideButtons" style={ styles.buttonContainer }>
       <IconButton
         onClick={this._handleUpvote}
         style={ styles.upArrow }
         tooltipPosition="bottom-left"
         tooltip={translate('pos.upvote')}
+        iconStyle={ styles.iconButton }
       ><IconThumbUp color='white' />
       </IconButton>
       <IconButton
         onClick={this._handleDownvote}
         style={ styles.downArrow }
+        iconStyle={ styles.iconButton }
         tooltipPosition="bottom-left"
         tooltip={translate('pos.downvote')}
       ><IconThumbDown color='white' /></IconButton>
       <div style={ styles.scoreLabel }>31</div>
       <IconButton
         onClick={this._handleEdit}
+        iconStyle={ styles.iconButton }
         style={ styles.editButton }
         tooltipPosition="bottom-left"
         tooltip={translate('pos.edit')}
       ><IconEdit color='white' />
       </IconButton>
-
     </div>
 
     return (
@@ -301,11 +333,11 @@ class Discover extends PureComponent {
             tabItemContainerStyle={{
               backgroundColor: 'rgba(0,0,0,0)',
               margin: '0 auto',
-              maxWidth: '600px'
+              maxWidth: '800px'
             }}
             style={{
               margin: '0 auto',
-              width: '600px',
+              width: '800px',
               marginBottom: '1em',
               marginTop: '1em' }}
           >
@@ -315,6 +347,9 @@ class Discover extends PureComponent {
             <Tab label='BATTLES' value={3} />
             <Tab label='CITIES' value={4} />
             <Tab label='OTHER' value={5} />
+            <Tab label='VIDEOS' value={6} />
+            <Tab label='PODCASTS' value={7} />
+            <Tab label='PRIMARY SOURCES' value={8} />
           </Tabs>
           <SwipeableViews
             index={slideIndex}
@@ -322,20 +357,25 @@ class Discover extends PureComponent {
             {/* // TAB 0 */}
             <div style={styles.root}>
               <GridList
-                cellHeight={200}
+                cellHeight={180}
                 padding={1}
+                cols={3}
                 style={styles.gridList}
               >
-                {tilesData.map((tile) => (
+                {tilesData.map((tile, i) => (
                   <GridTile
                     key={tile.img}
-                    title={tile.title}
+                    style={{border: '1px solid black'}}
+                    titleStyle={styles.title}
+                    subtitleStyle={styles.subtitle}
+                    title={tile.subtitle}
+                    subtitle={tile.title}
                     actionIcon={slideButtons}
                     actionPosition='right'
-                    titlePosition='top'
-                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
-                    cols={tile.featured ? 2 : 1}
-                    rows={tile.featured ? 2 : 1}
+                    titlePosition='bottom'
+                    titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                    cols={((i+3)%4 < 2) ? 1 : 2}
+                    rows={2}
                   >
                     <img src={tile.img} />
                   </GridTile>
@@ -354,6 +394,7 @@ class Discover extends PureComponent {
                   <GridTile
                     key={tile.img}
                     title={tile.title}
+                    subtitle={<span><b>{tile.subtitle}</b></span>}
                     actionIcon={slideButtons}
                     actionPosition='right'
                     titlePosition='top'

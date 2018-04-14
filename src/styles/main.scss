@@ -145,5 +145,25 @@ button:focus {
 }
 
 .notifications {
-  z-index: 100000000000000; // notificaiton bredcrumb should always be on top
+  z-index: 1000000; // notificaiton bredcrumb should always be on top
+}
+
+.react-swipeable-view-container > div > div > div > div:hover {
+    .slideButtons {
+      transition: opacity .5s;
+      opacity: 1
+    }
+  img {
+    transition-timing-function: ease-in-out;
+    transition: transform 35s;
+    //transform: scale(1) translateY(-50%) !important;
+    margin: 0 auto;
+    transform: scale(4) translateX(0%) translateY(0%) !important;
+  }
+}
+
+.react-swipeable-view-container {
+  .slideButtons {
+    opacity: 0
+  }
 }

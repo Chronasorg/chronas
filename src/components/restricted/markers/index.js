@@ -123,7 +123,7 @@ export const MarkerEdit = (props) => {
       <SelectInput source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={markerTypes} label='resources.markers.fields.type' />
       <NumberInput validate={required} defaultValue={props.selectedItem.value.y} source='year' label='resources.markers.fields.year' type='number' />
       <DeleteButton resource='markers' id={props.selectedItem.value.w} {...props} />
-    </MarkerForm> : <MarkerForm hidesavebutton={true}><h4>click on marker on the map which you like to modify</h4></MarkerForm>}
+    </MarkerForm> : <MarkerForm hidesavebutton><h4>click on marker on the map which you like to modify</h4></MarkerForm>}
   </Create>
 }
 
