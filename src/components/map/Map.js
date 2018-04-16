@@ -801,6 +801,10 @@ class Map extends Component {
         transition: 'left 300ms cubic-bezier(0.4, 0, 0.2, 1), right 300ms cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
         <MapGL
+          style={{
+            transition: 'filter 300ms cubic-bezier(0.4, 0, 0.2, 1)',
+            filter: (mapTimelineContainerClass === '') ? 'inherit' : 'blur(10px)'
+          }}
           ref={(map) => { this.map = map }}
           {...viewport}
           mapStyle={mapStyle}
@@ -813,8 +817,7 @@ class Map extends Component {
 
           {this._renderPopup()}
         </MapGL>
-        <div className={mapTimelineContainerClass}
-        >
+        <div className={mapTimelineContainerClass}>
           <Timeline />
         </div>
       </div>

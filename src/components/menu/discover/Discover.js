@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import Dialog from 'material-ui/Dialog'
 import { GridList, GridTile } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
+import RaisedButton from 'material-ui/RaisedButton'
+import FloatingActionButton from 'material-ui/FloatingActionButton'
 import IconThumbUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
 import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
 import IconEdit from 'material-ui/svg-icons/content/create'
@@ -30,15 +32,19 @@ const styles = {
     right: 0,
     bottom: 290
   },
+  imageDialog: {
+    width: '100%',
+    maxWidth: 'none',
+  },
   iconButton: { filter: 'drop-shadow(2px 6px 4px rgba(0,0,0,0.8))' },
   upArrow: { ...imgButton, padding: 0, top: -13 },
   downArrow: { ...imgButton, padding: 0, bottom: -13, left: -20 },
-  editButton: { ...imgButton, left: -18 },
+  editButton: { ...imgButton, left: -14, top: 1, position: 'relative' },
   scoreLabel: {
     width: 40,
     height: 20,
     right: 38,
-    top: 16,
+    top: 14,
     color: 'white',
     position: 'absolute',
     fontSize: 12,
@@ -71,8 +77,14 @@ const styles = {
   toolbarTitleStyle: {
     pointerEvents: 'none',
     color: 'white',
-    zIndex: 1000000
-  },
+    textShadow: '1px 1px 1px black',
+    zIndex: 15000,
+    background: 'linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.2) 70%, rgba(0, 0, 0, 0) 100%)',
+    padding: '1em',
+    position: 'fixed',
+    left: 64,
+    right: 0,
+},
   headline: {
     fontSize: 24,
     paddingTop: 16,
@@ -111,6 +123,54 @@ const styles = {
     bottom: '50px',
     position: 'absolute',
     left: '30px',
+  },
+  selectedIMG: {
+    height: 'auto',
+/* transform: translateY(-50%); */
+    position: 'relative',
+    left: 0,
+    width: '100%',
+  },
+  buttonOpenArticle: {
+    marginTop: '2.85em'
+    // bottom: '30%',
+    // position: 'absolute',
+    // left: '20%',
+  },
+  selectedImageContent: {
+    alignItems: 'flex-start',
+    margin: '0 0 0 10%',
+    padding: 0,
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    justifyContent: 'center',
+    maxWidth: '32em',
+    position: 'absolute',
+    width: '100%',
+    zIndex: 2,
+    bottom: '10%'
+  },
+  selectedImageTitle: {
+    fontWeight: 400,
+    fontSize: '3.125em',
+    margin: '.4em 0',
+    lineHeight: '1.3',
+    textAlign: 'left',
+    color: '#fff',
+    fontFamily: "Roboto Slab','Georgia','Times New Roman',serif",
+    textShadow: '1px 1px 1px black',
+    padding: 0
+  },
+  selectedImageDescription: {
+    textShadow: '1px 1px 1px black',
+    textAlign: 'left',
+    fontSize: '1em',
+    fontWeight: 400,
+    color: 'rgba(255,255,255,0.87)',
+    lineHeight: 1.5,
+    margin: 0,
   }
 }
 
@@ -118,6 +178,7 @@ class Discover extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
+      selectedImage: { img: '', description: '' },
       slideIndex: 0,
       currentYearLoaded: 3000,
       hiddenElement: true,
@@ -136,7 +197,15 @@ class Discover extends PureComponent {
   }
 
   handleClose = () => {
+    if (this.state.selectedImage.img !== '') {
+      this.handleImageClose()
+      return
+    }
     this.props.history.push('/')
+  }
+
+  handleImageClose = () => {
+    this.setState({ selectedImage: { img: '', description: '' } })
   }
 
   componentDidMount = () => {
@@ -185,6 +254,7 @@ class Discover extends PureComponent {
             title: imageItem.data.title,
             author: imageItem.data.source,
             subtitle: imageItem.year,
+            score: imageItem.score
           })
         })
         this.setState({
@@ -246,22 +316,90 @@ class Discover extends PureComponent {
       })
   }
 
-  _handleUpvote = (id) => {
-    this.props.showNotification('pos.feedbackSuccess')
+  _handleUpvote = (id, stateDataId) => {
+    const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
+    const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
+    const originalState = this.state[stateDataId]
 
-    axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote')
-      .then(() => {
-      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-      })
-
+    if (upvotedItems.indexOf(id) > -1) {
+      // already upvoted -> downvote
+      localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+        .then(() => {
+          this.setState({ [stateDataId]: originalState.map((el) => {
+              if (encodeURIComponent(el.img) === id) el.score -= 1
+            return el
+          })})
+        })
+    } else if (downvotedItems.indexOf(id) > -1) {
+      // already downvoted -> upvote twice
+      localStorage.setItem('upvotedItems', upvotedItems.concat([id]))
+      localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+        .then(() => {
+          axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+            .then(() => {
+              this.setState({ [stateDataId]: originalState.map((el) => {
+                  if (encodeURIComponent(el.img) === id) el.score += 2
+                  return el
+                })})
+            })
+        })
+    } else {
+      // neutral -> just upvote
+      localStorage.setItem('upvotedItems', upvotedItems.concat([id]))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+        .then(() => {
+          this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+          this.setState({ [stateDataId]: originalState.map((el) => {
+              if (encodeURIComponent(el.img) === id) el.score += 1
+              return el
+            })})
+        })
+    }
   }
 
-  _handleDownvote = (id) => {
-    this.props.showNotification('pos.feedbackSuccess')
-    axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote')
-      .then(() => {
-      this.props.showNotification((typeof localStorage.removeItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-      })
+  _handleDownvote = (id, stateDataId) => {
+    const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
+    const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
+    const originalState = this.state[stateDataId]
+
+    if (downvotedItems.indexOf(id) > -1) {
+      // already downvoted -> upvote
+      localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+        .then(() => {
+          this.setState({ [stateDataId]: originalState.map((el) => {
+              if (encodeURIComponent(el.img) === id) el.score += 1
+              return el
+            })})
+        })
+    } else if (upvotedItems.indexOf(id) > -1) {
+      // already upvoted -> downvote twice
+      localStorage.setItem('downvotedItems', downvotedItems.concat([id]))
+      localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+        .then(() => {
+          axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+            .then(() => {
+              this.setState({ [stateDataId]: originalState.map((el) => {
+                  if (encodeURIComponent(el.img) === id) el.score -= 2
+                  return el
+                })})
+            })
+        })
+    } else {
+      // neutral -> just downvote
+      localStorage.setItem('downvotedItems', downvotedItems.concat([id]))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+        .then(() => {
+          this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+          this.setState({ [stateDataId]: originalState.map((el) => {
+              if (encodeURIComponent(el.img) === id) el.score -= 1
+              return el
+            })})
+        })
+    }
   }
 
   _handleEdit = () => {
@@ -270,43 +408,60 @@ class Discover extends PureComponent {
 
   render () {
     const {  selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
-    const { slidesData, slideIndex, tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
+    const { slidesData, selectedImage, slideIndex, tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
-    const slideButtons = (score, id) => <div className="slideButtons" style={ styles.buttonContainer }>
-      <IconButton
-        onClick={this._handleUpvote(id)}
-        style={ styles.upArrow }
-        tooltipPosition="bottom-left"
-        tooltip={translate('pos.upvote')}
-        iconStyle={ styles.iconButton }
-      ><IconThumbUp color='white' />
-      </IconButton>
-      <IconButton
-        onClick={this._handleDownvote(id)}
-        style={ styles.downArrow }
-        iconStyle={ styles.iconButton }
-        tooltipPosition="bottom-left"
-        tooltip={translate('pos.downvote')}
-      ><IconThumbDown color='white' /></IconButton>
-      <div style={ styles.scoreLabel }>score</div>
-      <IconButton
-        onClick={this._handleEdit({id})}
-        iconStyle={ styles.iconButton }
-        style={ styles.editButton }
-        tooltipPosition="bottom-left"
-        tooltip={translate('pos.edit')}
-      ><IconEdit color='white' />
-      </IconButton>
-    </div>
+    const slideButtons = (score, id, stateDataId) => {
+
+      const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
+      const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
+      const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'white' : 'green'
+      const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'white' : 'red'
+
+      return <div className="slideButtons" style={ styles.buttonContainer }>
+        <IconButton
+          onClick={() => this._handleUpvote(id, stateDataId)}
+          color='red'
+          style={ styles.upArrow }
+          tooltipPosition="center-left"
+          tooltip={translate('pos.upvote')}
+          iconStyle={ styles.iconButton }
+        ><IconThumbUp color={upvoteColor} />
+        </IconButton>
+        <IconButton
+          onClick={() => this._handleDownvote(id, stateDataId)}
+          style={ styles.downArrow }
+          iconStyle={ styles.iconButton }
+          tooltipPosition="center-left"
+          tooltip={translate('pos.downvote')}
+        ><IconThumbDown color={downvoteColor} /></IconButton>
+        <div style={ styles.scoreLabel }>{ score} </div>
+        <FloatingActionButton
+          mini={true}
+          onClick={() => this._handleEdit({id})}
+          backgroundColor='#aaaaaaba'
+          style={ styles.editButton }
+          tooltipPosition="center-left"
+          tooltip={translate('pos.edit')}
+        ><IconEdit color='white' />
+        </FloatingActionButton >
+      </div>
+    }
+
+    const titleText = (selectedImage.img !== '') ? selectedImage.description : translate('pos.discover_label') + selectedYear
 
     return (
       <div>
-        <Toolbar style={{ zIndex: 10000, color: 'white', boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px' }}>
+        <Toolbar style={{ zIndex: 15000, color: 'white', boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px' }}>
           <ToolbarGroup>
-            <ToolbarTitle style={styles.toolbarTitleStyle} text={translate('pos.discover_label') + selectedYear} />
+            <ToolbarTitle style={styles.toolbarTitleStyle} text={titleText} />
           </ToolbarGroup>
           <ToolbarGroup>
-            <IconButton style={{ zIndex: 10000 }} touch key={'close'} containerElement={<Link to='/' />}>
+            <IconButton
+              style={{ zIndex: 15000 }}
+              touch
+              key={'close'}
+              onClick={this.handleClose}
+            >
               <CloseIcon color={styles.toolbarTitleStyle.color} />
             </IconButton>
           </ToolbarGroup>
@@ -328,6 +483,7 @@ class Discover extends PureComponent {
             showPlayButton={false}
             showFullscreenButton={false}
             autoPlay={true}
+            slideDuration={800}
             showBullets={true}
             showThumbnails={false}
             items={this.state.slidesData} />
@@ -370,19 +526,19 @@ class Discover extends PureComponent {
                 {tilesData.map((tile, i) => (
                   <GridTile
                     key={tile.img}
-                    style={{border: '1px solid black'}}
+                    style={{border: '1px solid black', cursor: 'pointer'}}
                     titleStyle={styles.title}
                     subtitleStyle={styles.subtitle}
                     title={tile.subtitle}
                     subtitle={tile.title}
-                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.id))}
+                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.img), "tilesData")}
                     actionPosition='right'
                     titlePosition='bottom'
                     titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
                     cols={((i+3)%4 < 2) ? 1 : 2}
                     rows={2}
                   >
-                    <img src={tile.img} />
+                    <img src={tile.img} onClick={() => { this.setState({ selectedImage: { img: tile.img, description: tile.title} })}} />
                   </GridTile>
                 ))}
               </GridList>
@@ -507,6 +663,31 @@ class Discover extends PureComponent {
               </GridList>
             </div>
           </SwipeableViews>
+        </Dialog>
+        <Dialog
+
+          autoDetectWindowHeight={false}
+          modal={false}
+          contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogImageBackgroundHack'}
+          contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', maxWidth: 'calc(100% - 64px)'}}
+          bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
+          actionsContainerStyle={{ backgroundColor: red400 }}
+          // overlayStyle={styles.overlayStyle}
+          style={{ backgroundColor: 'transparent', overflow: 'auto' }}
+          titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
+          autoScrollBodyContent={false}
+
+          // contentStyle={styles.imageDialog}
+          open={(this.state.selectedImage.img !== '')}
+          onRequestClose={this.handleImageClose}
+        >
+          <img src={this.state.selectedImage.img} style={styles.selectedIMG} />
+          <div style={styles.selectedImageContent}>
+            <h1 style={styles.selectedImageTitle}>Explore 'Monet Was Here' with Google Arts &amp; Culture</h1>
+            <p style={styles.selectedImageDescription}>Visit the places that inspired Monet throughout his life, from the coast to the city to the countryside.</p>
+            <RaisedButton label="Open Article" primary={true} style={styles.buttonOpenArticle} />
+            <RaisedButton label="Edit Image" primary={true} style={styles.buttonOpenArticle} />
+          </div>
         </Dialog>
       </div>
     )

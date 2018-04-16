@@ -16,9 +16,9 @@ export default (type, params) => {
       return fetch(request)
         .then(response => {
           if (response.status < 200 || response.status >= 300) {
-            throw new Error(response.statusText);
+            throw new Error(response.statusText)
           }
-          return response.json();
+          return response.json()
         })
         .then(({ token }) => {
           setToken(token)
