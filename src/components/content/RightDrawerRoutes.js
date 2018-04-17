@@ -40,7 +40,10 @@ const nearbyIcon = <IconLocationOn />;
 import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../restricted/metadata'
 import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
 import { setRightDrawerVisibility } from './actionReducers'
-import { TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId, deselectItem as deselectItemAction } from '../map/actionReducers'
+import {
+  TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
+  deselectItem as deselectItemAction, TYPE_LINKED
+} from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
 import utilsQuery from '../map/utils/query'
@@ -152,9 +155,7 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   componentWillReceiveProps (nextProps) {
-
     this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
-
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.setState({
         selectedIndex: menuIndexByLocation[nextProps.location.pathname] || -1
@@ -163,7 +164,6 @@ class RightDrawerRoutes extends PureComponent {
 
     const { rightDrawerOpen, setRightDrawerVisibility } = this.props
     console.debug('### MAP rightDrawerOpen', this.props, nextProps)
-
 
     /** Acting on store changes **/
     if (rightDrawerOpen != nextProps.rightDrawerOpen) {
@@ -561,6 +561,8 @@ class RightDrawerRoutes extends PureComponent {
             finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType }
           } else if (resourceKey === TYPE_MARKER) {
             finalProps = { ...commonProps, selectedItem, setModDataLng, setModDataLat }
+          } else if (resourceKey === TYPE_LINKED) {
+            finalProps = { ...commonProps, selectedItem, setModDataLng, setModDataLat, resource: 'metadata' }
           } else {
             finalProps = commonProps
           }

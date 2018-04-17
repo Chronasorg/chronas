@@ -20,6 +20,7 @@ import axios from 'axios'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
+import { selectLinkedItem } from '../../map/actionReducers'
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 import properties from "../../../properties";
 
@@ -432,7 +433,9 @@ class Discover extends PureComponent {
     }
   }
 
-  _handleEdit = () => {
+  _handleEdit = (id, dataKey = false) => {
+    const selectedItem = (dataKey) ? this.state.tileData[dataKey].filter(el => (el.img === decodeURIComponent(id)))[0] : this.state.selectedImage
+    this.props.selectLinkedItem(selectedItem)
     this.props.history.push('/mod/linked') //TODO not working yet
   }
 
@@ -479,7 +482,7 @@ class Discover extends PureComponent {
         <div style={ styles.scoreLabel }>{ score} </div>
         <FloatingActionButton
           mini={true}
-          onClick={() => this._handleEdit({id})}
+          onClick={() => this._handleEdit(id, stateDataId)}
           backgroundColor='#aaaaaaba'
           style={ styles.editButton }
         ><IconEdit color='white' />
@@ -651,7 +654,7 @@ class Discover extends PureComponent {
                 <RaisedButton
                   label="Edit"
                   primary={true}
-                  onClick={() => this._handleEdit} />
+                  onClick={() => this._handleEdit(selectedImage.source)} />
               </IconButton>
             </div>
           </div>
@@ -673,5 +676,6 @@ export default connect(mapStateToProps, {
   changeLocale: changeLocaleAction,
   changeTheme: changeThemeAction,
   setRightDrawerVisibility,
+  selectLinkedItem,
   showNotification
 })(translate(Discover))

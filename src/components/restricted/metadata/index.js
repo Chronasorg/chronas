@@ -15,7 +15,6 @@ import {
     List,
     LongTextInput,
     Edit,
-    Delete,
     UrlField,
     NullableBooleanInput,
     NumberField,
@@ -31,6 +30,7 @@ import {
 } from 'admin-on-rest'
 import Icon from 'material-ui/svg-icons/social/person'
 import EditButton from '../shared/buttons/EditButton'
+import Delete from '../shared/crudComponents/Delete'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import ArrayField from './ArrayField'
 export const MetadataIcon = Icon

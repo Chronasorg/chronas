@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  AutocompleteInput,
     translate,
     BooleanField,
     Create,
@@ -106,17 +107,20 @@ export const LinkedEdit = (props) => {
   }
 
   console.debug(props)
+//onChange={(val,v) => { props.setMetadataType(v) }} //TODO subtype see below
   return <Create title={<span>LinkedEdit</span>} {...props}>
-    {(props.selectedItem.value !== '' && props.selectedItem.type === TYPE_LINKED) ? <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
-      <TextInput source='name' defaultValue={props.selectedItem.value.n} label='resources.linked.fields.name' />
-      <DisabledInput source='wiki' defaultValue={props.selectedItem.value.w} label='resources.linked.fields.url' />
+    <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
+      <DisabledInput source='img' defaultValue={props.selectedItem.value.img || ''} label='resources.linked.fields.img' />
+    <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || ''} />
+    <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />
+    <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
       <ModButton modType='linked' />
-      <TextInput source='coo[0]' onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={props.selectedItem.value.coo[0]} label='resources.linked.fields.lat' />
-      <TextInput source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={props.selectedItem.value.coo[1]} label='resources.linked.fields.lng' />
-      <SelectInput source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={linkedTypes} label='resources.linked.fields.type' />
-      <NumberInput validate={required} defaultValue={props.selectedItem.value.y} source='year' label='resources.linked.fields.year' type='number' />
-      <DeleteButton resource='linked' id={props.selectedItem.value.w} {...props} />
-    </LinkedForm> : <LinkedForm hidesavebutton><h4>click on linked on the map which you like to modify</h4></LinkedForm>}
+      <TextInput source='coo[0]' onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} label='resources.linked.fields.lat' />
+      <TextInput source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} label='resources.linked.fields.lng' />
+      <AutocompleteInput source="subtype" choices={linkedTypes} label="resources.linked.fields.subtype" defaultValue={props.selectedItem.value.subtype} />
+      <NumberInput validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle} source='year' label='resources.linked.fields.year' type='number' />
+      <DeleteButton id={encodeURIComponent(props.selectedItem.value.img)} {...props} />
+    </LinkedForm>
   </Create>
 }
 
