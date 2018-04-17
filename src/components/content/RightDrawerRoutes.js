@@ -23,6 +23,7 @@ import { ModMetaAdd } from './mod/ModMetaAdd'
 import { ModMetaEdit } from './mod/ModMetaEdit'
 import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
+import { LinkedList, LinkedCreate, LinkedEdit, LinkedDelete, LinkedIcon } from '../restricted/linked'
 // import MarkerCreate from '../restricted/markers/MarkerCreate'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import {BottomNavigation } from 'material-ui/BottomNavigation';
@@ -117,6 +118,7 @@ const selectedIndexObject = {
 
 const resources = {
   areas: { edit: ModAreasAll, permission: 1 },
+  linked: { create: LinkedCreate, edit: LinkedEdit, remove: LinkedDelete, permission: 1 },
   markers: { create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
   metadata: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
   images: { create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },

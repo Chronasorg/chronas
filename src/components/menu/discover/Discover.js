@@ -8,6 +8,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import IconThumbUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
 import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
+import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconEdit from 'material-ui/svg-icons/content/create'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
@@ -79,7 +80,6 @@ const styles = {
     color: 'white',
     textShadow: '1px 1px 1px black',
     zIndex: 15000,
-    background: 'linear-gradient(rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.2) 70%, rgba(0, 0, 0, 0) 100%)',
     padding: '1em',
     position: 'fixed',
     left: 64,
@@ -131,11 +131,15 @@ const styles = {
     left: 0,
     width: '100%',
   },
-  buttonOpenArticle: {
+  selectedImageButtonContainer: {
     marginTop: '2.85em'
-    // bottom: '30%',
-    // position: 'absolute',
-    // left: '20%',
+  },
+  buttonOpenArticle: {
+    // float: 'left',
+    backgroundColor: 'transparent',
+    paddingRight: '1em',
+    width: 'inherit',
+    height: 'inherit',
   },
   selectedImageContent: {
     alignItems: 'flex-start',
@@ -178,17 +182,30 @@ class Discover extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      selectedImage: { img: '', description: '' },
+      selectedImage: { img: '', year: '', title: '', wiki: '', source: '' },
       slideIndex: 0,
       currentYearLoaded: 3000,
       hiddenElement: true,
       slidesData: [],
-      tilesData: [],
-      tilesStoriesData: [],
-      tilesPeopleData: [],
-      tilesCitiesData: [],
-      tilesBattlesData: [],
-      tilesOtherData: []
+      tileData: {
+        tilesHighlightData: [],
+        tilesStoriesData: [],
+        tilesPeopleData: [],
+        tilesCitiesData: [],
+        tilesBattlesData: [],
+        tilesOtherData: []
+      },
+      tabDataKeys: [
+        ['tilesHighlightData','HIGHLIGHTS'],
+        ['tilesStoriesData','STORIES'],
+        ['tilesPeopleData','PEOPLE'],
+        ['tilesCitiesData','CITIES'],
+        ['tilesBattlesData','BATTLES'],
+        ['tilesOtherData','OTHER'],
+        ['tilesOtherData','VIDEOS'],
+        ['tilesOtherData','PODCASTS'],
+        ['tilesOtherData','PRIMARY SOURCES']
+      ]
     }
   }
 
@@ -205,7 +222,7 @@ class Discover extends PureComponent {
   }
 
   handleImageClose = () => {
-    this.setState({ selectedImage: { img: '', description: '' } })
+    this.setState({ selectedImage: { img: '', year: '', title: '', wiki: '', source: '' } })
   }
 
   componentDidMount = () => {
@@ -223,7 +240,7 @@ class Discover extends PureComponent {
     this.setState({ hiddenElement: true })
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps = (nextProps) => {
     const { selectedYear } = this.props
     console.debug('### DISCOVER componentWillReceiveProps', this.props)
 
@@ -233,7 +250,7 @@ class Discover extends PureComponent {
     }
   }
 
-  _updateImages(selectedYear) {
+  _updateImages = (selectedYear) => {
     axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i')
       .then(response => {
         const newTilesData = []
@@ -245,22 +262,27 @@ class Discover extends PureComponent {
               original: imageItem._id,
               thumbnail: imageItem._id,
               description: imageItem.data.title,
+              source: imageItem.data.source,
+              wiki: imageItem.data.wiki,
               originalTitle: imageItem.year,
               thumbnailTitle: imageItem.year,
+              score: imageItem.score,
             })
           }
           newTilesData.push({
             img: imageItem._id,
+            wiki: imageItem.data.wiki,
             title: imageItem.data.title,
-            author: imageItem.data.source,
+            source: imageItem.data.source,
             subtitle: imageItem.year,
-            score: imageItem.score
+            score: imageItem.score,
           })
         })
         this.setState({
           currentYearLoaded: selectedYear,
-          tilesData: newTilesData,
-          slidesData: newSlideData })
+          slidesData: newSlideData,
+          tileData: {...this.state.tileData, tilesHighlightData: newTilesData}
+        })
       })
 
     axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=cities')
@@ -270,14 +292,17 @@ class Discover extends PureComponent {
         res.forEach((imageItem) => {
           newTilesData.push({
             img: imageItem._id,
+            wiki: imageItem.data.wiki,
             title: imageItem.data.title,
-            author: imageItem.data.source,
+            source: imageItem.data.source,
             subtitle: imageItem.year,
+            score: imageItem.score,
           })
         })
         this.setState({
           currentYearLoaded: selectedYear,
-          tilesCitiesData: newTilesData })
+          tileData: {...this.state.tileData, tilesCitiesData: newTilesData}
+        })
       })
 
     axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=battles')
@@ -287,14 +312,17 @@ class Discover extends PureComponent {
         res.forEach((imageItem) => {
           newTilesData.push({
             img: imageItem._id,
+            wiki: imageItem.data.wiki,
             title: imageItem.data.title,
-            author: imageItem.data.source,
+            source: imageItem.data.source,
             subtitle: imageItem.year,
+            score: imageItem.score,
           })
         })
         this.setState({
           currentYearLoaded: selectedYear,
-          tilesBattlesData: newTilesData })
+          tileData: {...this.state.tileData, tilesBattlesData: newTilesData}
+        })
       })
 
     axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=misc')
@@ -304,15 +332,17 @@ class Discover extends PureComponent {
         res.forEach((imageItem) => {
           newTilesData.push({
             img: imageItem._id,
+            wiki: imageItem.data.wiki,
             title: imageItem.data.title,
-            author: imageItem.data.source,
+            source: imageItem.data.source,
             subtitle: imageItem.year,
             score: imageItem.score,
           })
         })
         this.setState({
           currentYearLoaded: selectedYear,
-          tilesOtherData: newTilesData })
+          tileData: {...this.state.tileData, tilesOtherData: newTilesData}
+        })
       })
   }
 
@@ -403,13 +433,25 @@ class Discover extends PureComponent {
   }
 
   _handleEdit = () => {
+    this.props.history.push('/mod/linked') //TODO not working yet
+  }
+
+  _handleOpenSource = (source) => {
+    window.open(source, '_blank').focus()
+  }
+
+  _handleOpenArticle = () => {
 
   }
 
   render () {
     const {  selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
-    const { slidesData, selectedImage, slideIndex, tilesData, tilesStoriesData, tilesBattlesData, tilesCitiesData, tilesPeopleData, tilesOtherData } = this.state
+    const { slidesData, selectedImage, slideIndex, tileData, tabDataKeys } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
+
+    const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
+    const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
+
     const slideButtons = (score, id, stateDataId) => {
 
       const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
@@ -440,14 +482,12 @@ class Discover extends PureComponent {
           onClick={() => this._handleEdit({id})}
           backgroundColor='#aaaaaaba'
           style={ styles.editButton }
-          tooltipPosition="center-left"
-          tooltip={translate('pos.edit')}
         ><IconEdit color='white' />
         </FloatingActionButton >
       </div>
     }
 
-    const titleText = (selectedImage.img !== '') ? selectedImage.description : translate('pos.discover_label') + selectedYear
+    const titleText = (selectedImage.img !== '') ? '' : translate('pos.discover_label') + selectedYear
 
     return (
       <div>
@@ -486,7 +526,20 @@ class Discover extends PureComponent {
             slideDuration={800}
             showBullets={true}
             showThumbnails={false}
-            items={this.state.slidesData} />
+            items={slidesData}
+            onClick={(event) => {
+              const src = event.target.src
+              const selectedSlide = slidesData.filter(el => (el.original === src))[0]
+
+              this.setState({ selectedImage: {
+                img: selectedSlide.original,
+                year: selectedSlide.originalTitle,
+                title: selectedSlide.description,
+                wiki: selectedSlide.wiki,
+                source: selectedSlide.source
+              } })
+            }}
+          />
 
           <Tabs
             onChange={this.handleChange}
@@ -502,28 +555,23 @@ class Discover extends PureComponent {
               marginBottom: '1em',
               marginTop: '1em' }}
           >
-            <Tab label='HIGHLIGHTS' value={0} />
-            <Tab label='STORIES' value={1} />
-            <Tab label='PEOPLE' value={2} />
-            <Tab label='BATTLES' value={3} />
-            <Tab label='CITIES' value={4} />
-            <Tab label='OTHER' value={5} />
-            <Tab label='VIDEOS' value={6} />
-            <Tab label='PODCASTS' value={7} />
-            <Tab label='PRIMARY SOURCES' value={8} />
+            {tabDataKeys.map((tabKey, i) => (
+            <Tab key={'tabHeader_' + i} label={tabKey[1]} value={i} />
+              ))}
           </Tabs>
           <SwipeableViews
             index={slideIndex}
             onChangeIndex={this.handleChange}>
             {/* // TAB 0 */}
-            <div style={styles.root}>
+            {tabDataKeys.map((tabKey, i) => (
+            <div style={styles.root} key={'tab_' + i}>
               <GridList
                 cellHeight={180}
                 padding={1}
                 cols={3}
                 style={styles.gridList}
               >
-                {tilesData.map((tile, i) => (
+                {tileData[tabKey[0]].map((tile, i) => (
                   <GridTile
                     key={tile.img}
                     style={{border: '1px solid black', cursor: 'pointer'}}
@@ -531,162 +579,81 @@ class Discover extends PureComponent {
                     subtitleStyle={styles.subtitle}
                     title={tile.subtitle}
                     subtitle={tile.title}
-                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.img), "tilesData")}
+                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.img), "tilesHighlightData")}
                     actionPosition='right'
                     titlePosition='bottom'
                     titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
                     cols={((i+3)%4 < 2) ? 1 : 2}
                     rows={2}
                   >
-                    <img src={tile.img} onClick={() => { this.setState({ selectedImage: { img: tile.img, description: tile.title} })}} />
+                    <img src={tile.img} onClick={() => { this.setState({ selectedImage: {
+                        img: tile.img,
+                        year: tile.subtitle,
+                        title: tile.title,
+                        wiki: tile.wiki,
+                        source: tile.source
+                    } })}} />
                   </GridTile>
                 ))}
               </GridList>
-            </div>
-            {/* TAB 1 */}
-            <div style={styles.slide}>
-              <GridList
-                cols={2}
-                cellHeight={200}
-                padding={1}
-                style={styles.gridList}
-              >
-                {tilesStoriesData.map((tile) => (
-                  <GridTile
-                    key={tile.img}
-                    title={tile.title}
-                    subtitle={<span><b>{tile.subtitle}</b></span>}
-                    actionIcon={slideButtons}
-                    actionPosition='right'
-                    titlePosition='top'
-                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
-                    cols={tile.featured ? 2 : 1}
-                    rows={tile.featured ? 2 : 1}
-                  >
-                    <img src={tile.img} />
-                  </GridTile>
-                ))}
-              </GridList>
-            </div>
-            <div style={styles.slide}>
-              <GridList
-                cols={2}
-                cellHeight={200}
-                padding={1}
-                style={styles.gridList}
-              >
-                {tilesPeopleData.map((tile) => (
-                  <GridTile
-                    key={tile.img}
-                    title={tile.title}
-                    actionIcon={slideButtons}
-                    actionPosition='right'
-                    titlePosition='top'
-                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
-                    cols={tile.featured ? 2 : 1}
-                    rows={tile.featured ? 2 : 1}
-                  >
-                    <img src={tile.img} />
-                  </GridTile>
-                ))}
-              </GridList>
-            </div>
-            <div style={styles.root}>
-              <GridList
-                cols={2}
-                cellHeight={200}
-                padding={1}
-                style={styles.gridList}
-              >
-                {tilesBattlesData.map((tile) => (
-                  <GridTile
-                    key={tile.img}
-                    title={tile.title}
-                    actionIcon={slideButtons}
-                    actionPosition='right'
-                    titlePosition='top'
-                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
-                    cols={tile.featured ? 2 : 1}
-                    rows={tile.featured ? 2 : 1}
-                  >
-                    <img src={tile.img} />
-                  </GridTile>
-                ))}
-              </GridList>
-            </div>
-            {/* TAB 3 */}
-            <div style={styles.slide}>
-              <GridList
-                cols={2}
-                cellHeight={200}
-                padding={1}
-                style={styles.gridList}
-              >
-                {tilesCitiesData.map((tile) => (
-                  <GridTile
-                    key={tile.img}
-                    title={tile.title}
-                    actionIcon={slideButtons}
-                    actionPosition='right'
-                    titlePosition='top'
-                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
-                    cols={tile.featured ? 2 : 1}
-                    rows={tile.featured ? 2 : 1}
-                  >
-                    <img src={tile.img} />
-                  </GridTile>
-                ))}
-              </GridList>
-            </div>
-            {/* TAB 5 */}
-            <div style={styles.slide}>
-              <GridList
-                cols={2}
-                cellHeight={200}
-                padding={1}
-                style={styles.gridList}
-              >
-                {tilesOtherData.map((tile) => (
-                  <GridTile
-                    key={tile.img}
-                    title={tile.title}
-                    actionIcon={slideButtons}
-                    actionPosition='right'
-                    titlePosition='top'
-                    titleBackground='linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 70%,rgba(0,0,0,0) 100%)'
-                    cols={tile.featured ? 2 : 1}
-                    rows={tile.featured ? 2 : 1}
-                  >
-                    <img src={tile.img} />
-                  </GridTile>
-                ))}
-              </GridList>
-            </div>
+            </div>))}
           </SwipeableViews>
         </Dialog>
         <Dialog
-
           autoDetectWindowHeight={false}
           modal={false}
           contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogImageBackgroundHack'}
           contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', maxWidth: 'calc(100% - 64px)'}}
           bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
           actionsContainerStyle={{ backgroundColor: red400 }}
-          // overlayStyle={styles.overlayStyle}
           style={{ backgroundColor: 'transparent', overflow: 'auto' }}
           titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
           autoScrollBodyContent={false}
-
-          // contentStyle={styles.imageDialog}
-          open={(this.state.selectedImage.img !== '')}
+          open={(selectedImage.img !== '')}
           onRequestClose={this.handleImageClose}
         >
-          <img src={this.state.selectedImage.img} style={styles.selectedIMG} />
+          <img src={selectedImage.img} style={styles.selectedIMG} />
           <div style={styles.selectedImageContent}>
-            <h1 style={styles.selectedImageTitle}>Explore 'Monet Was Here' with Google Arts &amp; Culture</h1>
-            <p style={styles.selectedImageDescription}>Visit the places that inspired Monet throughout his life, from the coast to the city to the countryside.</p>
-            <RaisedButton label="Open Article" primary={true} style={styles.buttonOpenArticle} />
-            <RaisedButton label="Edit Image" primary={true} style={styles.buttonOpenArticle} />
+            <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
+            <p style={styles.selectedImageDescription}>{selectedImage.title}</p>
+            <div style={styles.selectedImageButtonContainer}>
+
+              <IconButton
+                style={{ ...styles.buttonOpenArticle, paddingRight: '1em' }}
+                tooltipPosition="bottom-center"
+                tooltip={hasWiki ? translate('pos.discover.hasNoArticle') : translate('pos.discover.openArticle')}>
+                  <RaisedButton
+                    disabled={hasWiki}
+                    label="Open Article"
+                    primary={true}
+                    onClick={() => this._handleOpenArticle}
+                  />
+              </IconButton>
+
+              <IconButton
+                style={styles.buttonOpenArticle}
+                tooltipPosition="bottom-center"
+                tooltip={hasWiki ? translate('pos.discover.hasNoSource') : translate('pos.discover.openSource')}>
+                <RaisedButton
+                  disabled={hasSource}
+                  label="Open Source"
+                  primary={true}
+                  onClick={() => this._handleOpenSource(selectedImage.source)} >
+                  <IconOutbound color="white" style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
+                </RaisedButton>
+
+              </IconButton>
+
+              <IconButton
+                style={styles.buttonOpenArticle}
+                tooltipPosition="bottom-center"
+                tooltip={translate('pos.discover.edit')}>
+                <RaisedButton
+                  label="Edit"
+                  primary={true}
+                  onClick={() => this._handleEdit} />
+              </IconButton>
+            </div>
           </div>
         </Dialog>
       </div>
