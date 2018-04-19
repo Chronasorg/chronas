@@ -44,27 +44,20 @@ import { TYPE_LINKED } from '../../map/actionReducers'
 export const LinkedIcon = Icon
 
 const linkedTypes = [
-  { name: 'People -> Military', id: 'military' },
-  { name: 'People -> Politicians', id: 'politicians' },
-  { name: 'People -> Explorers', id: 'explorers' },
-  { name: 'People -> Scientists', id: 'scientists' },
-  { name: 'People -> Artists', id: 'artists' },
-  { name: 'People -> Religious', id: 'religious' },
-  { name: 'People -> Athletes', id: 'athletes' },
-  { name: 'People -> Unclassified', id: 'unclassified' },
-  { name: 'Cities -> Cities', id: 'cities' },
-  { name: 'Cities -> Castles', id: 'castles' },
-  { name: 'Battles -> Battles', id: 'battles' },
-  { name: 'Battles -> Sieges', id: 'sieges' },
-  { name: 'People -> Artifacts', id: 'artifacts' },
-  { name: 'Other -> Area Info', id: 'areainfo' },
-  { name: 'Other -> Unknown', id: 'unknown' },
+  { name: '[Article]', id: 'articles' },
+  { name: '[Image] Artefact', id: 'artefacts' },
+  { name: '[Image] Battle', id: 'battles' },
+  { name: '[Image] City & Building', id: 'cities' },
+  { name: '[Image] Person', id: 'people' },
+  { name: '[Image] Other', id: 'misc' },
+  { name: '[Video]', id: 'videos' },
+  { name: '[Podcast & Audio]', id: 'audios' },
+  { name: '[Primary Source]', id: 'ps' },
 ]
 
 const validateWiki = (values) => {
   const errors = {}
-  if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1))// && ((this.props.selectedItem.value || {}).w !== values.wiki)) {
-  {
+  if ((values.wiki && values.wiki !==  values.wiki.indexOf('.wikipedia.org/wiki/') === -1)) {
     errors.wiki = ['The URL needs to be a full Wikipedia URL']
   }
   return errors
@@ -100,24 +93,20 @@ export const LinkedList = (props) => {
 export const LinkedEdit = (props) => {
   const validateWikiProps = (values) => {
     const errors = {}
-    if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
+    if ((values.wiki && values.wiki !== (props.selectedItem.value.wiki || '') && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
       errors.wiki = ['The URL needs to be a full Wikipedia URL']
     }
     return errors
   }
 
-  console.debug(props)
-//onChange={(val,v) => { props.setMetadataType(v) }} //TODO subtype see below
   return <Create title={<span>LinkedEdit</span>} {...props}>
     <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
       <DisabledInput source='img' defaultValue={props.selectedItem.value.img || ''} label='resources.linked.fields.img' />
-    <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || ''} />
-    <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />
-    <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
-      <ModButton modType='linked' />
-      <TextInput source='coo[0]' onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} label='resources.linked.fields.lat' />
-      <TextInput source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} label='resources.linked.fields.lng' />
-      <AutocompleteInput source="subtype" choices={linkedTypes} label="resources.linked.fields.subtype" defaultValue={props.selectedItem.value.subtype} />
+      <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || ''} />
+      <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />
+      <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
+      <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
+      <SelectInput source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <NumberInput validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle} source='year' label='resources.linked.fields.year' type='number' />
       <DeleteButton id={encodeURIComponent(props.selectedItem.value.img)} {...props} />
     </LinkedForm>
@@ -125,15 +114,25 @@ export const LinkedEdit = (props) => {
 }
 
 export const LinkedCreate = (props) => {
+  const validateWikiProps = (values) => {
+    const errors = {}
+    if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
+      errors.wiki = ['The URL needs to be a full Wikipedia URL']
+    }
+    return errors
+  }
+
+  console.debug(props)
+
   return <Create {...props}>
-    <LinkedForm validate={validateWiki} redirect='' history={props.history}>
-      <TextInput validate={required} source='name' label='resources.linked.fields.name' />
-      <TextInput validate={required} source='wiki' label='resources.linked.fields.url' type='url' />
-      <ModButton modType='linked' />
-      <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.linked.fields.lat' />
-      <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.linked.fields.lng' />
-      <SelectInput source='type' validate={required} choices={linkedTypes} label='resources.linked.fields.type' />
-      <NumberInput source='year' label='resources.linked.fields.year' />
+    <LinkedForm validate={validateWikiProps} redirect='' history={props.history}>
+      <LongTextInput validate={required} source='img' type='url' label='resources.linked.fields.img' />
+      <LongTextInput validate={required} source='description' label='resources.linked.fields.description' />
+      <LongTextInput source='source' label='resources.linked.fields.source' type='url' />
+      <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' />
+      <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
+      <SelectInput validate={required} source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' />
+      <NumberInput validate={required} defaultValue={props.selectedYear || ''} source='year' label='resources.linked.fields.year' type='number' />
     </LinkedForm>
   </Create>
 }

@@ -560,9 +560,9 @@ class RightDrawerRoutes extends PureComponent {
           } else if (resourceKey === 'metadata') {
             finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType }
           } else if (resourceKey === TYPE_MARKER) {
-            finalProps = { ...commonProps, selectedItem, setModDataLng, setModDataLat }
+            finalProps = { ...commonProps, selectedItem, selectedYear, setModDataLng, setModDataLat }
           } else if (resourceKey === TYPE_LINKED) {
-            finalProps = { ...commonProps, selectedItem, setModDataLng, setModDataLat, resource: 'metadata' }
+            finalProps = { ...commonProps, selectedItem, selectedYear, setModDataLng, setModDataLat, resource: 'metadata' }
           } else {
             finalProps = commonProps
           }

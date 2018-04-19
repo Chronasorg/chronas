@@ -1,46 +1,83 @@
-import React, { Children, Component } from 'react';
-import PropTypes from 'prop-types';
-import { reduxForm } from 'redux-form';
-import { connect } from 'react-redux';
-import compose from 'recompose/compose';
-import { showNotification } from 'admin-on-rest';
-import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
-import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
-import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
-import { setModType } from "../buttons/actionReducers";
+import React, { Children, Component } from 'react'
+import PropTypes from 'prop-types'
+import { reduxForm } from 'redux-form'
+import { connect } from 'react-redux'
+import compose from 'recompose/compose'
+import { showNotification } from 'admin-on-rest'
+import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
+import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
+import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
+import { setModType } from '../buttons/actionReducers'
 import { TYPE_MARKER } from '../../../map/actionReducers'
-import properties from "../../../../properties";
+import properties from '../../../../properties'
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
-const formStyle = { padding: '0 1em 1em 1em' };
+const formStyle = { padding: '0 1em 1em 1em' }
 
 export class MarkerForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const { setModType, showNotification, history } = this.props
+      const { setModType, showNotification, initialValues, history } = this.props
       const token = localStorage.getItem('token')
-
       const wikiURL = values.wiki
-      const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
-      if (redirect !== 'edit' && wikiIndex > -1) values.wiki = wikiURL.substring(wikiIndex + 20, wikiURL.length)
 
-      const markerItem = decodeURIComponent(values.wiki)
-      fetch(properties.chronasApiHost + '/markers/' + ((redirect === 'edit') ? markerItem : ''), {
-        method: (redirect === 'edit') ? 'PUT': 'POST',
+      if (values.wiki !== initialValues.wiki && typeof wikiURL !== 'undefined') {
+        const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
+        if (wikiIndex > -1) values.wiki = wikiURL.substring(wikiIndex + 20, wikiURL.length)
+      }
+
+      const bodyToSend = {}
+      if (redirect === 'edit') {
+        // updating linked metadata
+        if (values.year !== initialValues.year) bodyToSend.year = values.year
+        if (values.subtype !== initialValues.subtype) bodyToSend.subtype = values.subtype
+        if (values.wiki !== initialValues.wiki) bodyToSend.wiki = values.wiki
+
+        // any data changed?
+        if (values.description !== initialValues.description ||
+          values.source !== initialValues.source) {
+          bodyToSend.data = {
+            title: initialValues.description,
+            source: initialValues.source
+          }
+          if (values.source !== initialValues.source) bodyToSend.data.source = values.source
+          if (values.description !== initialValues.description) bodyToSend.data.title = values.description
+        }
+        // attempt post marker if wiki + lat long + year available and wiki new
+      } else {
+        bodyToSend._id = values.img
+        bodyToSend.type = 'i'
+        // adding linked metadata
+        if (values.year) bodyToSend.year = values.year
+        if (values.subtype) bodyToSend.subtype = values.subtype
+        if (values.wiki) bodyToSend.wiki = values.wiki
+
+        // any data changed?
+        if (values.description || values.source) {
+          bodyToSend.data = {
+            title: values.description,
+            source: values.source
+          }
+        }
+      }
+
+      const metadataItem = encodeURIComponent(values.img)
+      fetch(properties.chronasApiHost + '/metadata/' + ((redirect === 'edit') ? metadataItem : ''), {
+        method: (redirect === 'edit') ? 'PUT' : 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(values)
+        body: JSON.stringify(bodyToSend)
       })
         .then((res) => {
           if (res.status === 200) {
             setModType('', [], values.type)
-            showNotification((redirect === 'edit') ? 'Marker successfully updated' : 'Marker successfully added')
+            showNotification((redirect === 'edit') ? 'Item successfully updated' : 'Item successfully added')
             history.goBack()
           } else {
-            showNotification((redirect === 'edit') ? 'Marker not updated' : 'Marker not added', 'warning')
+            showNotification((redirect === 'edit') ? 'Item not updated' : 'Item not added', 'warning')
           }
         })
     });
@@ -52,14 +89,8 @@ export class MarkerForm extends Component {
   componentWillMount () {
     this.props.setModType(TYPE_MARKER)
   }
-  componentWillReceiveProps(nextProps) {
-    if (this.props.modActive.data[0] !== nextProps.modActive.data[0])
-      this.props.change ("coo[0]" , nextProps.modActive.data[0] )
-    if (this.props.modActive.data[1] !== nextProps.modActive.data[1])
-      this.props.change ("coo[1]" , nextProps.modActive.data[1] )
-  }
 
-  render() {
+  render () {
     const {
       basePath,
       children,
@@ -70,10 +101,10 @@ export class MarkerForm extends Component {
       toolbar,
       hidesavebutton,
       version,
-    } = this.props;
+    } = this.props
 
     return (
-      <form className="simple-form">
+      <form className='simple-form'>
         <div style={formStyle} key={version}>
           {Children.map(children, input => (
             <FormInput
@@ -91,7 +122,7 @@ export class MarkerForm extends Component {
           submitOnEnter,
         })}
       </form>
-    );
+    )
   }
 }
 
@@ -110,18 +141,18 @@ MarkerForm.propTypes = {
   toolbar: PropTypes.element,
   validate: PropTypes.func,
   version: PropTypes.number,
-};
+}
 
 MarkerForm.defaultProps = {
   submitOnEnter: true,
   toolbar: <Toolbar />,
-};
+}
 
 const enhance = compose(
   connect((state, props) => ({
     initialValues: getDefaultValues(state, props),
     modActive: state.modActive,
-    }),
+  }),
     {
       setModType,
       showNotification
@@ -130,6 +161,6 @@ const enhance = compose(
     form: 'record-form',
     enableReinitialize: true,
   })
-);
+)
 
-export default enhance(MarkerForm);
+export default enhance(MarkerForm)

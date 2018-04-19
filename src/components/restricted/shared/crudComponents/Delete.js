@@ -72,24 +72,26 @@ class Delete extends Component {
       resource,
       id,
       data,
-      this.getBasePath()
+      (resource === 'metadata') ? '/discover' : this.getBasePath()
     )
     if (account) {
       showNotification("auth.logged_out")
       logout()
-      // log off
     }
-    else if (this.props.resource === 'markers') {
+    else if (resource === 'markers') {
       showNotification("resources.markers.deleted")
       setModType('', [], data.type)
       deselectItem()
-      history.push('/mod/markers')
+    }
+    else if (resource === 'metadata') {
+      showNotification("resources.metadata.deleted")
+      setModType('', [], '')
+      deselectItem()
     }
   }
 
   goBack () {
-    window.history.go(-1)
-    // this.props.history.goBack()
+    this.props.history.goBack()
   }
 
   render () {

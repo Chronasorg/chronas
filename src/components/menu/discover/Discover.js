@@ -11,6 +11,7 @@ import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
 import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconEdit from 'material-ui/svg-icons/content/create'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import { Tabs, Tab } from 'material-ui/Tabs'
 import ImageGallery from 'react-image-gallery'
@@ -20,12 +21,17 @@ import axios from 'axios'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
-import { selectLinkedItem } from '../../map/actionReducers'
+import {selectLinkedItem, selectMarkerItem} from '../../map/actionReducers'
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 import properties from "../../../properties";
 
 const imgButton = { width: 20, height: 20}
 const styles = {
+  addButton: {
+    zIndex: 15000,
+    marginTop: '3em',
+    marginRight: '3em'
+  },
   buttonContainer: {
     width: 70,
     height: 50,
@@ -264,7 +270,7 @@ class Discover extends PureComponent {
               thumbnail: imageItem._id,
               description: imageItem.data.title,
               source: imageItem.data.source,
-              wiki: imageItem.data.wiki,
+              wiki: imageItem.wiki,
               originalTitle: imageItem.year,
               thumbnailTitle: imageItem.year,
               score: imageItem.score,
@@ -272,7 +278,7 @@ class Discover extends PureComponent {
           }
           newTilesData.push({
             img: imageItem._id,
-            wiki: imageItem.data.wiki,
+            wiki: imageItem.wiki,
             title: imageItem.data.title,
             source: imageItem.data.source,
             subtitle: imageItem.year,
@@ -293,7 +299,7 @@ class Discover extends PureComponent {
         res.forEach((imageItem) => {
           newTilesData.push({
             img: imageItem._id,
-            wiki: imageItem.data.wiki,
+            wiki: imageItem.wiki,
             title: imageItem.data.title,
             source: imageItem.data.source,
             subtitle: imageItem.year,
@@ -313,7 +319,7 @@ class Discover extends PureComponent {
         res.forEach((imageItem) => {
           newTilesData.push({
             img: imageItem._id,
-            wiki: imageItem.data.wiki,
+            wiki: imageItem.wiki,
             title: imageItem.data.title,
             source: imageItem.data.source,
             subtitle: imageItem.year,
@@ -333,7 +339,7 @@ class Discover extends PureComponent {
         res.forEach((imageItem) => {
           newTilesData.push({
             img: imageItem._id,
-            wiki: imageItem.data.wiki,
+            wiki: imageItem.wiki,
             title: imageItem.data.title,
             source: imageItem.data.source,
             subtitle: imageItem.year,
@@ -350,17 +356,19 @@ class Discover extends PureComponent {
   _handleUpvote = (id, stateDataId) => {
     const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
     const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
-    const originalState = this.state[stateDataId]
+    const tileData = this.state.tileData
 
     if (upvotedItems.indexOf(id) > -1) {
       // already upvoted -> downvote
       localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
-          this.setState({ [stateDataId]: originalState.map((el) => {
-              if (encodeURIComponent(el.img) === id) el.score -= 1
+          tileData[stateDataId] = tileData[stateDataId].map((el) => {
+            if (encodeURIComponent(el.img) === id) el.score -= 1
             return el
-          })})
+          })
+          this.setState({ tileData: tileData  })
+          this.forceUpdate()
         })
     } else if (downvotedItems.indexOf(id) > -1) {
       // already downvoted -> upvote twice
@@ -370,10 +378,12 @@ class Discover extends PureComponent {
         .then(() => {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
             .then(() => {
-              this.setState({ [stateDataId]: originalState.map((el) => {
+              tileData[stateDataId] = tileData[stateDataId].map((el) => {
                   if (encodeURIComponent(el.img) === id) el.score += 2
                   return el
-                })})
+                })
+              this.setState({ tileData: tileData  })
+              this.forceUpdate()
             })
         })
     } else {
@@ -382,10 +392,12 @@ class Discover extends PureComponent {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
           this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          this.setState({ [stateDataId]: originalState.map((el) => {
+          tileData[stateDataId] = tileData[stateDataId].map((el) => {
               if (encodeURIComponent(el.img) === id) el.score += 1
               return el
-            })})
+            })
+          this.setState({ tileData: tileData  })
+          this.forceUpdate()
         })
     }
   }
@@ -393,17 +405,19 @@ class Discover extends PureComponent {
   _handleDownvote = (id, stateDataId) => {
     const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
     const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
-    const originalState = this.state[stateDataId]
+    const tileData = this.state.tileData
 
     if (downvotedItems.indexOf(id) > -1) {
       // already downvoted -> upvote
       localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
-          this.setState({ [stateDataId]: originalState.map((el) => {
+          tileData[stateDataId] = tileData[stateDataId].map((el) => {
               if (encodeURIComponent(el.img) === id) el.score += 1
               return el
-            })})
+            })
+          this.setState({ tileData: tileData  })
+          this.forceUpdate()
         })
     } else if (upvotedItems.indexOf(id) > -1) {
       // already upvoted -> downvote twice
@@ -413,10 +427,12 @@ class Discover extends PureComponent {
         .then(() => {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
             .then(() => {
-              this.setState({ [stateDataId]: originalState.map((el) => {
+              tileData[stateDataId] = tileData[stateDataId].map((el) => {
                   if (encodeURIComponent(el.img) === id) el.score -= 2
                   return el
-                })})
+                })
+              this.setState({ tileData: tileData  })
+              this.forceUpdate()
             })
         })
     } else {
@@ -425,10 +441,12 @@ class Discover extends PureComponent {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
           this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          this.setState({ [stateDataId]: originalState.map((el) => {
+          tileData[stateDataId] = tileData[stateDataId].map((el) => {
               if (encodeURIComponent(el.img) === id) el.score -= 1
               return el
-            })})
+            })
+          this.setState({ tileData: tileData  })
+          this.forceUpdate()
         })
     }
   }
@@ -436,15 +454,20 @@ class Discover extends PureComponent {
   _handleEdit = (id, dataKey = false) => {
     const selectedItem = (dataKey) ? this.state.tileData[dataKey].filter(el => (el.img === decodeURIComponent(id)))[0] : this.state.selectedImage
     this.props.selectLinkedItem(selectedItem)
-    this.props.history.push('/mod/linked') //TODO not working yet
+    this.props.history.push('/mod/linked')
+  }
+
+  _handleAdd = () => {
+    this.props.history.push('/mod/linked/create')
   }
 
   _handleOpenSource = (source) => {
     window.open(source, '_blank').focus()
   }
 
-  _handleOpenArticle = () => {
-
+  _handleOpenArticle = (selectedImage) => {
+    this.props.selectMarkerItem(selectedImage.wiki)
+    this.props.history.push('/article') //TODO not working yet
   }
 
   render () {
@@ -499,6 +522,11 @@ class Discover extends PureComponent {
             <ToolbarTitle style={styles.toolbarTitleStyle} text={titleText} />
           </ToolbarGroup>
           <ToolbarGroup>
+            <FloatingActionButton
+              onClick={this._handleAdd}
+              style={ styles.addButton }>
+              <ContentAdd />
+            </FloatingActionButton>
             <IconButton
               style={{ zIndex: 15000 }}
               touch
@@ -629,7 +657,7 @@ class Discover extends PureComponent {
                     disabled={hasWiki}
                     label="Open Article"
                     primary={true}
-                    onClick={() => this._handleOpenArticle}
+                    onClick={() => this._handleOpenArticle(selectedImage)}
                   />
               </IconButton>
 
@@ -677,5 +705,6 @@ export default connect(mapStateToProps, {
   changeTheme: changeThemeAction,
   setRightDrawerVisibility,
   selectLinkedItem,
+  selectMarkerItem,
   showNotification
 })(translate(Discover))
