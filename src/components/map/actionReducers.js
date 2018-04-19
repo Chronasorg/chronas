@@ -26,7 +26,7 @@ export const selectAreaItem = (wiki, province) => ({
 
 export const selectLinkedItem = (value) => ({
   type: SET_LINKED_ITEM,
-  payload: [value.wiki || '', value],
+  payload: [value, value],
 })
 
 export const selectMarkerItem = (wiki, value) => ({

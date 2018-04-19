@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 import PropTypes from 'prop-types'
 import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
@@ -7,13 +8,15 @@ import { Link } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import { translate, defaultTheme } from 'admin-on-rest'
+import {translate, defaultTheme, showNotification} from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
-import { TYPE_AREA, TYPE_MARKER, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE } from '../map/actionReducers'
+import { setFullModActive, resetModActive } from '../restricted/shared/buttons/actionReducers'
+import { TYPE_AREA, TYPE_MARKER, TYPE_LINKED, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE } from '../map/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
 import EntityTimeline from './EntityTimeline'
+import properties from "../../properties"
 
 const styles = {
   main: {
@@ -43,10 +46,15 @@ class Content extends Component {
   }
 
   componentWillUnmount = () => {
+    //TODO: this is not called on historypush!
     this.setState({
       iframeLoading: true,
       selectedWiki: null
     })
+    this._cleanUp()
+  }
+  _cleanUp = () => {
+    this.props.resetModActive()
   }
 
   _handleUrlChange = (e) => {
@@ -57,8 +65,11 @@ class Content extends Component {
     } // TODO: do this with ref
   }
 
-  _handleNewData = (selectedItem, metadata, activeArea) => {
+  _handleNewData = (selectedItem, metadata, activeArea, doCleanup = false) => {
+    const { showNotification, setFullModActive, resetModActive } = this.props
     let selectedWiki = null
+
+    if (doCleanup) this._cleanUp()
 
     if (selectedItem.type === TYPE_AREA) {
       const selectedProvince = selectedItem.value
@@ -72,8 +83,19 @@ class Content extends Component {
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
 
     } else if (selectedItem.type === TYPE_MARKER) {
-      const selectedMarker = selectedItem.value
       selectedWiki = selectedItem.wiki
+    } else if (selectedItem.type === TYPE_LINKED) {
+      selectedWiki = selectedItem.wiki
+      axios.get(properties.chronasApiHost + '/markers/' + selectedWiki)
+        .then((linkedMarkerResult) => {
+          if (linkedMarkerResult.status === 200) {
+            const linkedMarker = linkedMarkerResult.data
+            showNotification("Linked marker found")
+            setFullModActive(TYPE_MARKER, linkedMarker.coo, '', false)
+          } else {
+            showNotification("No linked marker found, consider adding one")
+          }
+        })
     }
 
     if (selectedWiki !== this.state.selectedWiki) {
@@ -85,7 +107,10 @@ class Content extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    this._handleNewData(nextProps.selectedItem, nextProps.metadata, nextProps.activeArea)
+      if (this.props.selectedItem.value !== nextProps.selectedItem.value ||
+        this.props.selectedItem.wiki !== nextProps.selectedItem.wiki ||
+        this.props.selectedItem.type !== nextProps.selectedItem.type)
+    this._handleNewData(nextProps.selectedItem, nextProps.metadata, nextProps.activeArea, nextProps.selectedItem.value === '')
   }
 
   render () {
@@ -119,6 +144,9 @@ const enhance = compose(
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
     toggleRightDrawer: toggleRightDrawerAction,
+    setFullModActive,
+    resetModActive,
+    showNotification,
   }),
   pure,
   translate,

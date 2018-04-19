@@ -7,23 +7,22 @@ import { translate, defaultTheme } from 'admin-on-rest'
 import axios from 'axios'
 import { easeCubic } from 'd3-ease'
 import WebMercatorViewport from 'viewport-mercator-project'
+import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
+import { fromJS } from 'immutable'
+import _ from 'lodash'
+import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
+const turf = require('@turf/turf')
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import { TYPE_MARKER, TYPE_AREA, selectAreaItem as selectAreaItemAction, selectMarkerItem as selectMarkerItemAction } from './actionReducers'
-import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
-import { fromJS } from 'immutable'
-import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
 import properties from '../../properties'
 import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
-import _ from 'lodash'
 import Timeline from './timeline/MapTimeline'
 import BasicInfo from './markers/basic-info'
 import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
-
-const turf = require('@turf/turf')
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min)
@@ -170,7 +169,7 @@ class Map extends Component {
     }
         // turf.unkinkPolygon.apply(null,geometryToOutline)
     if (typeof geometryToOutline !== 'undefined' && geometryToOutline.length !== 0) {
-      const multiPolygonToOutline = turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), []))  // TODO: also include multipolygons (see 0) - f
+      const multiPolygonToOutline = turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), []))
 
       const webMercatorViewport = new WebMercatorViewport({
         width: this.props.width || (window.innerWidth - 56),
@@ -187,7 +186,7 @@ class Map extends Component {
       const viewport = {
         ...this.state.viewport,
         ...bounds,
-        zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)), // TODO: only apply this i
+        zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)),
         transitionDuration: 1000,
         transitionInterpolator: new FlyToInterpolator(),
         transitionEasing: easeCubic
@@ -532,8 +531,6 @@ class Map extends Component {
     const prevMapStyle = this.state.mapStyle
     let mapStyle = prevMapStyle
       .setIn(['sources', sourceId, 'data', 'features'], sourceData.features)
-    // let mapStyle = prevMapStyle
-    //   .setIn(['sources', sourceId, 'data', 'features'], sourceData.features)
     this.setState({ mapStyle })
   };
 
@@ -564,12 +561,6 @@ class Map extends Component {
     }, 500)
   }
 
-  _loadMarkerData = data => {
-    data.features.map((markerData, iter) => (
-      this._renderBasicMarker(markerData, iter)
-    ))
-  };
-
   _changeYear = (year) => {
     // TODO: reset selected marker pools
     axios.get(properties.chronasApiHost + '/areas/' + year)
@@ -579,16 +570,6 @@ class Map extends Component {
         this._changeArea(areaDefsRequest.data, this.props.activeArea.label, this.props.activeArea.color, this.props.selectedItem.value)
         utilsQuery.updateQueryStringParameter('year', year)
       })
-  }
-
-  _renderBasicMarker = (markerData, index) => {
-    return (
-      <Marker key={`marker-${index}`}
-        longitude={markerData.geometry.coordinates[0]}
-        latitude={markerData.geometry.coordinates[1]}>
-        <BasicPin size={20} onClick={() => this.setState({ popupInfo: markerData.properties })} />
-      </Marker>
-    )
   }
 
   _onViewportChange = viewport => this.setState({ viewport });

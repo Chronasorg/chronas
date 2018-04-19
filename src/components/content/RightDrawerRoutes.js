@@ -12,6 +12,7 @@ import FontIcon from 'material-ui/FontIcon'
 import Chip from 'material-ui/Chip'
 import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
+import axios from 'axios'
 import { Restricted, translate } from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { grey600, grey400, chronasDark } from '../../styles/chronasColors'
@@ -52,7 +53,6 @@ import { tooltip } from '../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../styles/chronasColors'
 import utils from "../map/utils/general";
 import properties from "../../properties";
-import axios from "axios/index";
 
 const styles = {
   iconElementRightStyle: {

@@ -6,13 +6,12 @@ import compose from 'recompose/compose'
 import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
+import axios from 'axios'
 import { setModType, setModData } from '../buttons/actionReducers'
 import { updateSingleMetadata } from './../../../map/data/actionReducers'
 import properties from '../../../../properties'
 import { showNotification } from 'admin-on-rest'
-import axios from "axios/index";
 const formStyle = { padding: '0 1em 1em 1em' }
-
 export class MetaForm extends Component {
   state = {
     metaToUpdate: '',

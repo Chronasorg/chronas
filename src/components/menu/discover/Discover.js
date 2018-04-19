@@ -40,6 +40,13 @@ const styles = {
     right: 0,
     bottom: 290
   },
+  closeButton: {
+    boxShadow: 'inherit',
+    zIndex: 15000,
+    filter: 'drop-shadow(0 0 1px rgba(0,0,0,.7)) drop-shadow(0 1px 2px rgba(0,0,0,.3))',
+    marginTop: '1em',
+    marginRight: '1em'
+  },
   imageDialog: {
     width: '100%',
     maxWidth: 'none',
@@ -466,7 +473,8 @@ class Discover extends PureComponent {
   }
 
   _handleOpenArticle = (selectedImage) => {
-    this.props.selectMarkerItem(selectedImage.wiki)
+    // Albert_Einstein
+    this.props.selectLinkedItem(selectedImage.wiki)
     this.props.history.push('/article') //TODO not working yet
   }
 
@@ -515,6 +523,7 @@ class Discover extends PureComponent {
 
     const titleText = (selectedImage.img !== '') ? '' : translate('pos.discover_label') + selectedYear
 
+    const addButtonDynamicStyle = {...styles.addButton, display: (selectedImage.img !== '') ? 'none' : 'inherit'}
     return (
       <div>
         <Toolbar style={{ zIndex: 15000, color: 'white', boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px' }}>
@@ -524,17 +533,17 @@ class Discover extends PureComponent {
           <ToolbarGroup>
             <FloatingActionButton
               onClick={this._handleAdd}
-              style={ styles.addButton }>
+              style={ addButtonDynamicStyle }>
               <ContentAdd />
             </FloatingActionButton>
-            <IconButton
-              style={{ zIndex: 15000 }}
-              touch
+            <FloatingActionButton
+              backgroundColor={'transparent'}
+              style={styles.closeButton}
               key={'close'}
               onClick={this.handleClose}
             >
               <CloseIcon color={styles.toolbarTitleStyle.color} />
-            </IconButton>
+            </FloatingActionButton >
           </ToolbarGroup>
         </Toolbar>
         <Dialog open

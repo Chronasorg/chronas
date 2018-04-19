@@ -1,16 +1,27 @@
 export const SET_MODACTIVE = 'SET_MODACTIVE'
+export const SET_FULLMODACTIVE = 'SET_FULLMODACTIVE'
 export const SET_MODDATA = 'SET_MODDATA'
 export const SET_MODDATA_LNG = 'SET_MODDATA_LNG'
 export const SET_MODDATA_LAT = 'SET_MODDATA_LAT'
+export const SET_RESETMODACTIVE = 'SET_RESETMODACTIVE'
 export const SET_MODSELECTACTIVE = 'SET_MODSELECTACTIVE'
 export const REMOVE_MODDATA = 'REMOVE_MODDATA'
 export const ADD_MODDATA = 'ADD_MODDATA'
 
 /** Actions **/
 
+export const setFullModActive = (modType, data, toUpdate, selectActive) => ({
+  type: SET_FULLMODACTIVE,
+  payload: [modType, data, toUpdate, selectActive],
+})
+
 export const setModType = (modType, data, toUpdate) => ({
   type: SET_MODACTIVE,
   payload: [modType, data, toUpdate],
+})
+
+export const resetModActive = () => ({
+  type: SET_RESETMODACTIVE
 })
 
 export const setModSelectActive = isActive => ({
@@ -48,6 +59,15 @@ export const setModDataLat = Lat => ({
 export const modActiveReducer = (defaultState = { 'data': [], 'type': '', 'toUpdate': '', 'selectActive': false }) =>
   (previousState = defaultState, { type, payload }) => {
     switch (type) {
+      case SET_RESETMODACTIVE:
+        return defaultState
+      case SET_FULLMODACTIVE:
+        return {
+          type: payload[0],
+          data: payload[1] || [],
+          toUpdate: payload[2] || '',
+          selectActive: payload[3] || false,
+        }
       case SET_MODACTIVE:
         if (payload[0] === '') {
           return {
@@ -58,6 +78,7 @@ export const modActiveReducer = (defaultState = { 'data': [], 'type': '', 'toUpd
           }
         } else if (typeof payload[1] !== 'undefined') {
           return {
+            ...previousState,
             type: payload[0],
             data: payload[1],
             toUpdate: payload[2] || '',
