@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import ReactPlayer from 'react-player'
+import YouTube from 'react-youtube'
 import Dialog from 'material-ui/Dialog'
 import { GridList, GridTile } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
@@ -192,33 +194,46 @@ const styles = {
   }
 }
 
+const YOUTUBEOPTS = {
+  height: '100%',
+  width: '100%',
+  playerVars: { // https://developers.google.com/youtube/player_parameters
+    autoplay: 0
+  }
+}
+
 class Discover extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      selectedImage: { img: '', year: '', title: '', wiki: '', source: '' },
+      selectedImage: { src: '', year: '', title: '', wiki: '', source: '' },
       slideIndex: 0,
       currentYearLoaded: 3000,
       hiddenElement: true,
       slidesData: [],
       tileData: {
         tilesHighlightData: [],
+        tilesArticlesData: [],
         tilesStoriesData: [],
         tilesPeopleData: [],
         tilesCitiesData: [],
         tilesBattlesData: [],
-        tilesOtherData: []
+        tilesOtherData: [],
+        tilesVideosData: [],
+        tilesPodcastsData: [],
+        tilesPsData: []
       },
       tabDataKeys: [
-        ['tilesHighlightData','HIGHLIGHTS'],
-        ['tilesStoriesData','STORIES'],
-        ['tilesPeopleData','PEOPLE'],
-        ['tilesCitiesData','CITIES'],
-        ['tilesBattlesData','BATTLES'],
-        ['tilesOtherData','OTHER'],
-        ['tilesOtherData','VIDEOS'],
-        ['tilesOtherData','PODCASTS'],
-        ['tilesOtherData','PRIMARY SOURCES']
+        ['tilesHighlightData','HIGHLIGHTS',''],
+        ['tilesArticlesData','ARTICLES','articles'],
+        ['tilesStoriesData','STORIES','stories'],
+        ['tilesPeopleData','PEOPLE','people'],
+        ['tilesCitiesData','CITIES','cities'],
+        ['tilesBattlesData','BATTLES','battles'],
+        ['tilesOtherData','OTHER','misc'],
+        ['tilesVideosData','VIDEOS','videos'],
+        ['tilesPodcastsData','PODCASTS','audios'],
+        ['tilesPsData','PRIMARY SOURCES','ps']
       ]
     }
   }
@@ -228,7 +243,7 @@ class Discover extends PureComponent {
   }
 
   handleClose = () => {
-    if (this.state.selectedImage.img !== '') {
+    if (this.state.selectedImage.src !== '') {
       this.handleImageClose()
       return
     }
@@ -236,7 +251,7 @@ class Discover extends PureComponent {
   }
 
   handleImageClose = () => {
-    this.setState({ selectedImage: { img: '', year: '', title: '', wiki: '', source: '' } })
+    this.setState({ selectedImage: { src: '', year: '', title: '', wiki: '', source: '' } })
   }
 
   componentDidMount = () => {
@@ -265,99 +280,55 @@ class Discover extends PureComponent {
   }
 
   _updateImages = (selectedYear) => {
+    // Load slides data
     axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i')
       .then(response => {
-        const newTilesData = []
         const newSlideData = []
         const res = response.data
         res.forEach((imageItem, i) => {
-          if (i < 5) {
+          if (i < 10) {
             newSlideData.push({
               original: imageItem._id,
               thumbnail: imageItem._id,
               description: imageItem.data.title,
               source: imageItem.data.source,
+              subtype: imageItem.subtype,
               wiki: imageItem.wiki,
               originalTitle: imageItem.year,
               thumbnailTitle: imageItem.year,
               score: imageItem.score,
             })
           }
-          newTilesData.push({
-            img: imageItem._id,
-            wiki: imageItem.wiki,
-            title: imageItem.data.title,
-            source: imageItem.data.source,
-            subtitle: imageItem.year,
-            score: imageItem.score,
-          })
         })
         this.setState({
           currentYearLoaded: selectedYear,
           slidesData: newSlideData,
-          tileData: {...this.state.tileData, tilesHighlightData: newTilesData}
         })
       })
 
-    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=cities')
-      .then(response => {
-        const newTilesData = []
-        const res = response.data
-        res.forEach((imageItem) => {
-          newTilesData.push({
-            img: imageItem._id,
-            wiki: imageItem.wiki,
-            title: imageItem.data.title,
-            source: imageItem.data.source,
-            subtitle: imageItem.year,
-            score: imageItem.score,
+    // Load tab data
+    this.state.tabDataKeys.forEach(categoryObj => {
+      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=' + categoryObj[2])
+        .then(response => {
+          const newTilesData = []
+          const res = response.data
+          res.forEach((imageItem) => {
+            newTilesData.push({
+              src: imageItem._id,
+              wiki: imageItem.wiki,
+              title: imageItem.data.title,
+              subtype: imageItem.subtype,
+              source: imageItem.data.source,
+              subtitle: imageItem.year,
+              score: imageItem.score,
+            })
+          })
+          this.setState({
+            currentYearLoaded: selectedYear,
+            tileData: {...this.state.tileData, [categoryObj[0]]: newTilesData}
           })
         })
-        this.setState({
-          currentYearLoaded: selectedYear,
-          tileData: {...this.state.tileData, tilesCitiesData: newTilesData}
-        })
-      })
-
-    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=battles')
-      .then(response => {
-        const newTilesData = []
-        const res = response.data
-        res.forEach((imageItem) => {
-          newTilesData.push({
-            img: imageItem._id,
-            wiki: imageItem.wiki,
-            title: imageItem.data.title,
-            source: imageItem.data.source,
-            subtitle: imageItem.year,
-            score: imageItem.score,
-          })
-        })
-        this.setState({
-          currentYearLoaded: selectedYear,
-          tileData: {...this.state.tileData, tilesBattlesData: newTilesData}
-        })
-      })
-
-    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=misc')
-      .then(response => {
-        const newTilesData = []
-        const res = response.data
-        res.forEach((imageItem) => {
-          newTilesData.push({
-            img: imageItem._id,
-            wiki: imageItem.wiki,
-            title: imageItem.data.title,
-            source: imageItem.data.source,
-            subtitle: imageItem.year,
-            score: imageItem.score,
-          })
-        })
-        this.setState({
-          currentYearLoaded: selectedYear,
-          tileData: {...this.state.tileData, tilesOtherData: newTilesData}
-        })
-      })
+    })
   }
 
   _handleUpvote = (id, stateDataId) => {
@@ -371,7 +342,7 @@ class Discover extends PureComponent {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-            if (encodeURIComponent(el.img) === id) el.score -= 1
+            if (encodeURIComponent(el.src) === id) el.score -= 1
             return el
           })
           this.setState({ tileData: tileData  })
@@ -386,7 +357,7 @@ class Discover extends PureComponent {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
             .then(() => {
               tileData[stateDataId] = tileData[stateDataId].map((el) => {
-                  if (encodeURIComponent(el.img) === id) el.score += 2
+                  if (encodeURIComponent(el.src) === id) el.score += 2
                   return el
                 })
               this.setState({ tileData: tileData  })
@@ -400,7 +371,7 @@ class Discover extends PureComponent {
         .then(() => {
           this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-              if (encodeURIComponent(el.img) === id) el.score += 1
+              if (encodeURIComponent(el.src) === id) el.score += 1
               return el
             })
           this.setState({ tileData: tileData  })
@@ -420,7 +391,7 @@ class Discover extends PureComponent {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-              if (encodeURIComponent(el.img) === id) el.score += 1
+              if (encodeURIComponent(el.src) === id) el.score += 1
               return el
             })
           this.setState({ tileData: tileData  })
@@ -435,7 +406,7 @@ class Discover extends PureComponent {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
             .then(() => {
               tileData[stateDataId] = tileData[stateDataId].map((el) => {
-                  if (encodeURIComponent(el.img) === id) el.score -= 2
+                  if (encodeURIComponent(el.src) === id) el.score -= 2
                   return el
                 })
               this.setState({ tileData: tileData  })
@@ -449,7 +420,7 @@ class Discover extends PureComponent {
         .then(() => {
           this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-              if (encodeURIComponent(el.img) === id) el.score -= 1
+              if (encodeURIComponent(el.src) === id) el.score -= 1
               return el
             })
           this.setState({ tileData: tileData  })
@@ -459,7 +430,7 @@ class Discover extends PureComponent {
   }
 
   _handleEdit = (id, dataKey = false) => {
-    const selectedItem = (dataKey) ? this.state.tileData[dataKey].filter(el => (el.img === decodeURIComponent(id)))[0] : this.state.selectedImage
+    const selectedItem = (dataKey) ? this.state.tileData[dataKey].filter(el => (el.src === decodeURIComponent(id)))[0] : this.state.selectedImage
     this.props.selectLinkedItem(selectedItem)
     this.props.history.push('/mod/linked')
   }
@@ -476,6 +447,30 @@ class Discover extends PureComponent {
     // Albert_Einstein
     this.props.selectLinkedItem(selectedImage.wiki)
     this.props.history.push('/article') //TODO not working yet
+  }
+
+  _getYoutubeId = (url) => {
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    if (match && match[2].length == 11) {
+      return match[2];
+    } else {
+      false
+    }
+  }
+
+  _removeTile = (tileDataKey, tileSrc) => {
+    const originalTileData = this.state.tileData
+    const originalSlideData = this.state.slidesData
+
+    originalTileData[tileDataKey] = originalTileData[tileDataKey].filter(el => el.src !== tileSrc)
+
+    this.setState({
+      slidesData: originalSlideData.filter(el => el.original !== tileSrc),
+      tileData: originalTileData
+    })
+
+    this.forceUpdate()
   }
 
   render () {
@@ -521,9 +516,9 @@ class Discover extends PureComponent {
       </div>
     }
 
-    const titleText = (selectedImage.img !== '') ? '' : translate('pos.discover_label') + selectedYear
+    const titleText = (selectedImage.src !== '') ? '' : translate('pos.discover_label') + selectedYear
 
-    const addButtonDynamicStyle = {...styles.addButton, display: (selectedImage.img !== '') ? 'none' : 'inherit'}
+    const addButtonDynamicStyle = {...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit'}
     return (
       <div>
         <Toolbar style={{ zIndex: 15000, color: 'white', boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px' }}>
@@ -563,7 +558,7 @@ class Discover extends PureComponent {
             showPlayButton={false}
             showFullscreenButton={false}
             autoPlay={true}
-            slideDuration={800}
+            slideDuration={1200}
             showBullets={true}
             showThumbnails={false}
             items={slidesData}
@@ -572,7 +567,7 @@ class Discover extends PureComponent {
               const selectedSlide = slidesData.filter(el => (el.original === src))[0]
 
               this.setState({ selectedImage: {
-                img: selectedSlide.original,
+                src: selectedSlide.original,
                 year: selectedSlide.originalTitle,
                 title: selectedSlide.description,
                 wiki: selectedSlide.wiki,
@@ -596,45 +591,104 @@ class Discover extends PureComponent {
               marginTop: '1em' }}
           >
             {tabDataKeys.map((tabKey, i) => (
-            <Tab key={'tabHeader_' + i} label={tabKey[1]} value={i} />
+            <Tab disabled={tileData[tabKey[0]].length > 0 ? false : true}  style={tileData[tabKey[0]].length > 0 ? {} : {opacity: 0.3, cursor: 'not-allowed'}} key={'tabHeader_' + i} label={tabKey[1]} value={i} />
               ))}
           </Tabs>
           <SwipeableViews
             index={slideIndex}
             onChangeIndex={this.handleChange}>
-            {/* // TAB 0 */}
             {tabDataKeys.map((tabKey, i) => (
             <div style={styles.root} key={'tab_' + i}>
               <GridList
                 cellHeight={180}
                 padding={1}
-                cols={3}
+                cols={(tabKey[2] !== 'videos')
+                  ? (tabKey[2] === 'audios') ?
+                    1 : 3
+                  : 2
+                }
                 style={styles.gridList}
               >
-                {tileData[tabKey[0]].map((tile, i) => (
-                  <GridTile
-                    key={tile.img}
-                    style={{border: '1px solid black', cursor: 'pointer'}}
-                    titleStyle={styles.title}
-                    subtitleStyle={styles.subtitle}
-                    title={tile.subtitle}
-                    subtitle={tile.title}
-                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.img), "tilesHighlightData")}
-                    actionPosition='right'
-                    titlePosition='bottom'
-                    titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                    cols={((i+3)%4 < 2) ? 1 : 2}
-                    rows={2}
-                  >
-                    <img src={tile.img} onClick={() => { this.setState({ selectedImage: {
-                        img: tile.img,
-                        year: tile.subtitle,
-                        title: tile.title,
-                        wiki: tile.wiki,
-                        source: tile.source
-                    } })}} />
-                  </GridTile>
-                ))}
+                {tileData[tabKey[0]].length > 0 ? tileData[tabKey[0]].map((tile, j) => (
+                    (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles') ? <GridTile
+                        key={tile.src}
+                        style={{border: '1px solid black', cursor: 'pointer'}}
+                        titleStyle={styles.title}
+                        subtitleStyle={styles.subtitle}
+                        title={tile.subtitle}
+                        subtitle={tile.title}
+                        actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), tabDataKeys[i][0])}
+                        actionPosition='right'
+                        titlePosition='bottom'
+                        titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                        cols={((j+3)%4 < 2) ? 1 : 2}
+                        rows={2}
+                      >
+                        <img src={tile.src}
+                                     onError={() => this._removeTile(tabKey[0], tile.src)}
+                                     onClick={() => { this.setState({ selectedImage: {
+                                         src: tile.src,
+                                         year: tile.subtitle,
+                                         title: tile.title,
+                                         wiki: tile.wiki,
+                                         source: tile.source
+                                       } })}}
+                          />
+                      </GridTile>
+                    : (tile.subtype === 'articles' || tile.subtype === 'ps')
+                      ? <GridTile
+                          key={tile.src}
+                          style={{border: '1px solid black', cursor: 'pointer'}}
+                          titleStyle={styles.title}
+                          subtitleStyle={styles.subtitle}
+                          title={tile.subtitle}
+                          subtitle={tile.title}
+                          actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), tabDataKeys[i][0])}
+                          actionPosition='right'
+                          titlePosition='bottom'
+                          titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                          cols={((j+3)%4 < 2) ? 1 : 2}
+                          rows={2}
+                        ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
+                               onError={() => this._removeTile(tabKey[0], tile.src)}
+                               onClick={() => { this.setState({ selectedImage: {
+                                   src: tile.src,
+                                   year: tile.subtitle,
+                                   title: tile.title,
+                                   wiki: tile.wiki,
+                                   source: tile.source
+                                 } })}}
+                        />
+                        </GridTile>
+                        : <GridTile
+                            key={tile.src}
+                            style={{border: '1px solid black', cursor: 'pointer'}}
+                            titleStyle={styles.title}
+                            subtitleStyle={styles.subtitle}
+                            title={tile.subtitle}
+                            subtitle={tile.title}
+                            actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), tabDataKeys[i][0])}
+                            actionPosition='right'
+                            titlePosition='bottom'
+                            titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                            rows={2}
+                          >
+                            {this._getYoutubeId(tile.src)
+                              ? <YouTube
+                                  videoId={this._getYoutubeId(tile.src)}
+                                  opts={YOUTUBEOPTS}
+                                  onError={() => this._removeTile(tabKey[0], tile.src)}
+                                />
+                              : <ReactPlayer
+                                  url={tile.src}
+                                  className='react-player'
+                                  width='100%'
+                                  height='100%'
+                                  onError={() => this._removeTile(tabKey[0], tile.src)}
+                                />
+                            }
+                          </GridTile>
+                    )) : <span> - nothing here - </span>}
               </GridList>
             </div>))}
           </SwipeableViews>
@@ -649,10 +703,10 @@ class Discover extends PureComponent {
           style={{ backgroundColor: 'transparent', overflow: 'auto' }}
           titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
           autoScrollBodyContent={false}
-          open={(selectedImage.img !== '')}
+          open={(selectedImage.src !== '')}
           onRequestClose={this.handleImageClose}
         >
-          <img src={selectedImage.img} style={styles.selectedIMG} />
+          <img src={selectedImage.src} style={styles.selectedIMG} />
           <div style={styles.selectedImageContent}>
             <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
             <p style={styles.selectedImageDescription}>{selectedImage.title}</p>

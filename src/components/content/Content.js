@@ -53,6 +53,7 @@ class Content extends Component {
     })
     this._cleanUp()
   }
+
   _cleanUp = () => {
     this.props.resetModActive()
   }
@@ -91,7 +92,7 @@ class Content extends Component {
           if (linkedMarkerResult.status === 200) {
             const linkedMarker = linkedMarkerResult.data
             showNotification("Linked marker found")
-            setFullModActive(TYPE_MARKER, linkedMarker.coo, '', false)
+            setFullModActive(TYPE_LINKED, linkedMarker.coo, '', false)
           } else {
             showNotification("No linked marker found, consider adding one")
           }

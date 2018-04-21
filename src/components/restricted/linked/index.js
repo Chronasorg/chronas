@@ -90,25 +90,55 @@ export const LinkedList = (props) => {
   </List>
 }
 
+export const isNotAnImage = (urlPre) => {
+  const url = urlPre.toLowerCase()
+  return (url.toLowerCase().match(/\.(jpeg|jpg|gif|png|svg)$/) === null)
+}
+
+export const isNotAnVideo = (urlPre) => {
+  const url = urlPre.toLowerCase()
+
+  if (url.indexOf("youtube") > -1 ||
+    url.indexOf("youtu.be") > -1 ||
+    url.indexOf("facebook") > -1 ||
+    url.indexOf("vimeo") > -1 ||
+    url.indexOf("streamable") > -1 ||
+    url.indexOf("wistia") > -1 ||
+    url.indexOf("dailymotion") > -1) return false
+
+  return (url.toLowerCase().match(/\.(mp4|ogv|webm|png|svg)$/) === null)
+}
+
+export const isNotAnAudio = (urlPre) => {
+  const url = urlPre.toLowerCase()
+
+  if (url.indexOf("soundcloud") > -1 ||
+    url.indexOf("mixcloud") > -1) return false
+
+  return (url.toLowerCase().match(/\.(mp3)$/) === null)
+}
+
+
 export const LinkedEdit = (props) => {
   const validateWikiProps = (values) => {
     const errors = {}
     if ((values.wiki && values.wiki !== (props.selectedItem.value.wiki || '') && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
       errors.wiki = ['The URL needs to be a full Wikipedia URL']
     }
+
     return errors
   }
 
   return <Create title={<span>LinkedEdit</span>} {...props}>
     <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
-      <DisabledInput source='img' defaultValue={props.selectedItem.value.img || ''} label='resources.linked.fields.img' />
+      <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
       <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || ''} />
       <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
       <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
       <SelectInput source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <NumberInput validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle} source='year' label='resources.linked.fields.year' type='number' />
-      <DeleteButton id={encodeURIComponent(props.selectedItem.value.img)} {...props} />
+      <DeleteButton id={encodeURIComponent(props.selectedItem.value.src)} {...props} />
     </LinkedForm>
   </Create>
 }
@@ -116,8 +146,24 @@ export const LinkedEdit = (props) => {
 export const LinkedCreate = (props) => {
   const validateWikiProps = (values) => {
     const errors = {}
+
+    if (values.subtype === 'artefacts' &&
+      values.subtype === 'battles' &&
+      values.subtype === 'cities' &&
+      values.subtype === 'people' &&
+      values.subtype === 'misc' &&
+      isNotAnImage(values.src || '')) {
+      errors.src = ['This URL must lead to an image']
+    } else if (values.subtype === 'videos' &&
+      isNotAnVideo(values.src || '')) {
+      errors.src = ['This URL must lead to a video']
+    } else if (values.subtype === 'audios' &&
+      isNotAnAudio(values.src || '')) {
+      errors.src = ['This URL must lead to an audio']
+    }
+
     if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
-      errors.wiki = ['The URL needs to be a full Wikipedia URL']
+      errors.wiki = ['This URL must to be a full Wikipedia URL']
     }
     return errors
   }
@@ -126,7 +172,7 @@ export const LinkedCreate = (props) => {
 
   return <Create {...props}>
     <LinkedForm validate={validateWikiProps} redirect='' history={props.history}>
-      <LongTextInput validate={required} source='img' type='url' label='resources.linked.fields.img' />
+      <LongTextInput validate={required} source='src' type='url' label='resources.linked.fields.src' />
       <LongTextInput validate={required} source='description' label='resources.linked.fields.description' />
       <LongTextInput source='source' label='resources.linked.fields.source' type='url' />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' />

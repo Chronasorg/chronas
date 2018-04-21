@@ -15,6 +15,7 @@ const styles = {
 
 const LoadingPage = () => (
   <div style={styles.parent}>
+    some random quote of history -> slack, business insider, wikiquote
     <img src={mainLogo} style={styles.mainLogo} alt='chronas' />
   </div>
 )

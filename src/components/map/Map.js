@@ -14,7 +14,7 @@ import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
 const turf = require('@turf/turf')
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
-import { TYPE_MARKER, TYPE_AREA, selectAreaItem as selectAreaItemAction, selectMarkerItem as selectMarkerItemAction } from './actionReducers'
+import { TYPE_MARKER, TYPE_AREA, TYPE_LINKED, selectAreaItem as selectAreaItemAction, selectMarkerItem as selectMarkerItemAction } from './actionReducers'
 import properties from '../../properties'
 import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
@@ -313,9 +313,12 @@ class Map extends Component {
         this.props.selectAreaItem('', provinceId) // set query url
         this.props.history.push('/article')
       } else {
-        // clicked on item!
+        // new item selected!
 
-        if (nextProps.selectedItem.type === TYPE_AREA && nextProps.selectedItem.value !== '' && nextProps.activeArea.color !== '' && nextProps.activeArea.color === activeArea.color) {
+        if (nextProps.selectedItem.type === TYPE_AREA &&
+          nextProps.selectedItem.value !== '' &&
+          nextProps.activeArea.color !== '' &&
+          nextProps.activeArea.color === activeArea.color) {
           const activeprovinceValue = (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)]
           const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, activeprovinceValue)
 
@@ -400,6 +403,16 @@ class Map extends Component {
           })
         }
       })
+    }
+    else if (nextProps.modActive.type === TYPE_LINKED && !_.isEqual(modActive.data, nextProps.modActive.data)) {
+      // new linked item clicked with linked marker coordinates
+      const newCoords = nextProps.modActive.data
+      if (typeof newCoords[1] !== 'undefined') {
+      this._goToViewport({
+          longitude: newCoords[0],
+          latitude: newCoords[1]
+        })
+      }
     }
 
     if (nextProps.modActive.type === TYPE_AREA) {
@@ -572,6 +585,17 @@ class Map extends Component {
       })
   }
 
+  _goToViewport = ({longitude, latitude}) => {
+    this._onViewportChange({
+      ...this.state.viewport,
+      longitude,
+      latitude,
+      zoom: Math.max(this.state.viewport.zoom + 1, 4.5),
+      transitionInterpolator: new FlyToInterpolator(),
+      transitionDuration: 3000
+    })
+  };
+
   _onViewportChange = viewport => this.setState({ viewport });
 
   _updateSettings = (name, value) => {
@@ -742,26 +766,14 @@ class Map extends Component {
     return null
   }
 
-  _renderTooltip () {
-    const { hoveredFeature, year, x, y } = this.state
-
-    return hoveredFeature && (
-    <div className='tooltip' style={{ left: x, top: y }}>
-      <div>State: {hoveredFeature.properties.name}</div>
-      <div>Median Household Income: {hoveredFeature.properties.value}</div>
-      <div>Percentile: {hoveredFeature.properties.percentile / 8 * 100}</div>
-    </div>
-      )
-  }
-
   render () {
     const { viewport, mapStyle, mapTimelineContainerClass } = this.state
-    const { modActive } = this.props
+    const { modActive, menuDrawerOpen, rightDrawerOpen } = this.props
 
-    let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
-    if (this.props.rightDrawerOpen) leftOffset -= viewport.width * 0.24 // TODO: make this resize dynamic by article Content width
+    let leftOffset = (menuDrawerOpen) ? 156 : 56
+    if (rightDrawerOpen) leftOffset -= viewport.width * 0.24
 
-    let modMarker = (modActive.type === TYPE_MARKER && typeof modActive.data[0] !== 'undefined') ? <Marker
+    let modMarker = ((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') ? <Marker
       captureClick={false}
       captureDrag={false}
       latitude={modActive.data[1]}

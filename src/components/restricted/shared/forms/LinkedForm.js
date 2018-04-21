@@ -45,7 +45,7 @@ export class MarkerForm extends Component {
         }
         // attempt post marker if wiki + lat long + year available and wiki new
       } else {
-        bodyToSend._id = values.img
+        bodyToSend._id = values.src
         bodyToSend.type = 'i'
         // adding linked metadata
         if (values.year) bodyToSend.year = values.year
@@ -61,7 +61,7 @@ export class MarkerForm extends Component {
         }
       }
 
-      const metadataItem = encodeURIComponent(values.img)
+      const metadataItem = encodeURIComponent(values.src)
       fetch(properties.chronasApiHost + '/metadata/' + ((redirect === 'edit') ? metadataItem : ''), {
         method: (redirect === 'edit') ? 'PUT' : 'POST',
         headers: {
