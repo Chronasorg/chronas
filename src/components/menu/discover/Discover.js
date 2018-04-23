@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import ReactPlayer from 'react-player'
 import YouTube from 'react-youtube'
+import { Player } from 'video-react'
 import Dialog from 'material-ui/Dialog'
 import { GridList, GridTile } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
@@ -40,7 +40,8 @@ const styles = {
     /* margin-top: -315px; */
     position: 'relative',
     right: 0,
-    bottom: 290
+    bottom: 290,
+    pointerEvents: 'all'
   },
   closeButton: {
     boxShadow: 'inherit',
@@ -54,13 +55,14 @@ const styles = {
     maxWidth: 'none',
   },
   iconButton: { filter: 'drop-shadow(2px 6px 4px rgba(0,0,0,0.8))' },
-  upArrow: { ...imgButton, padding: 0, top: -13 },
-  downArrow: { ...imgButton, padding: 0, bottom: -13, left: -20 },
-  editButton: { ...imgButton, left: -14, top: 1, position: 'relative' },
+  upArrow: { ...imgButton, padding: 0, right: 11, top: -4, position: 'absolute' },
+  downArrow: { ...imgButton, padding: 0, right: 11, top: 24, position: 'absolute' },
+  editButton: { ...imgButton, right: 60, top: 1, position: 'absolute' },
+  sourceButton: { ...imgButton, right: 110, top: 1, position: 'absolute', padding: 0 },
   scoreLabel: {
-    width: 40,
+    width: 38,
     height: 20,
-    right: 38,
+    right: 0,
     top: 14,
     color: 'white',
     position: 'absolute',
@@ -129,8 +131,11 @@ const styles = {
     bottom: '20px',
     left: '30px',
     paddingRight: '2em',
+    pointerEvents: 'none'
+
   },
   title: {
+    pointerEvents: 'none',
     // padding: '36px 28px 0 28px',
     lineHeight: '32px',
     fontWeight: 300,
@@ -440,6 +445,7 @@ class Discover extends PureComponent {
   }
 
   _handleOpenSource = (source) => {
+    console.debug("_handleOpenSource", source)
     window.open(source, '_blank').focus()
   }
 
@@ -481,16 +487,19 @@ class Discover extends PureComponent {
     const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
     const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
 
-    const slideButtons = (score, id, stateDataId) => {
+    const slideButtons = (score, id, source, stateData) => {
+      console.debug(id, source, source || id)
 
       const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
       const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
       const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'white' : 'green'
       const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'white' : 'red'
 
-      return <div className="slideButtons" style={ styles.buttonContainer }>
+      const sourceSelected = decodeURIComponent(source !== "undefined" ? source : id)
+
+      return <div className="slideButtons" style={(stateData[2] !== 'audios') ? styles.buttonContainer : { ...styles.buttonContainer, bottom: 100} }>
         <IconButton
-          onClick={() => this._handleUpvote(id, stateDataId)}
+          onClick={() => this._handleUpvote(id, stateData[0])}
           color='red'
           style={ styles.upArrow }
           tooltipPosition="center-left"
@@ -499,16 +508,28 @@ class Discover extends PureComponent {
         ><IconThumbUp color={upvoteColor} />
         </IconButton>
         <IconButton
-          onClick={() => this._handleDownvote(id, stateDataId)}
+          onClick={() => this._handleDownvote(id, stateData[0])}
           style={ styles.downArrow }
           iconStyle={ styles.iconButton }
           tooltipPosition="center-left"
           tooltip={translate('pos.downvote')}
         ><IconThumbDown color={downvoteColor} /></IconButton>
         <div style={ styles.scoreLabel }>{ score} </div>
+        {(stateData[2] === 'audios' || stateData[2] === 'articles' || stateData[2] === 'ps' || stateData[2] === 'videos') ? <IconButton
+          style={styles.sourceButton}
+          tooltipPosition="bottom-center"
+          tooltip={sourceSelected}
+          onClick={() => this._handleOpenSource(sourceSelected)} >
+          tooltip={hasWiki ? translate('pos.discover.hasNoSource') : translate('pos.discover.openSource')}>
+          <FloatingActionButton
+            mini={true}
+            backgroundColor='#aaaaaaba'
+          ><IconOutbound color="white" style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
+          </FloatingActionButton >
+        </IconButton> : null }
         <FloatingActionButton
           mini={true}
-          onClick={() => this._handleEdit(id, stateDataId)}
+          onClick={() => this._handleEdit(id, stateData[0])}
           backgroundColor='#aaaaaaba'
           style={ styles.editButton }
         ><IconEdit color='white' />
@@ -612,12 +633,12 @@ class Discover extends PureComponent {
                 {tileData[tabKey[0]].length > 0 ? tileData[tabKey[0]].map((tile, j) => (
                     (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles') ? <GridTile
                         key={tile.src}
-                        style={{border: '1px solid black', cursor: 'pointer'}}
+                        style={{border: '1px solid black', cursor: 'pointer' }}
                         titleStyle={styles.title}
                         subtitleStyle={styles.subtitle}
                         title={tile.subtitle}
                         subtitle={tile.title}
-                        actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), tabDataKeys[i][0])}
+                        actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
                         actionPosition='right'
                         titlePosition='bottom'
                         titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
@@ -643,7 +664,7 @@ class Discover extends PureComponent {
                           subtitleStyle={styles.subtitle}
                           title={tile.subtitle}
                           subtitle={tile.title}
-                          actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), tabDataKeys[i][0])}
+                          actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
                           actionPosition='right'
                           titlePosition='bottom'
                           titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
@@ -662,30 +683,27 @@ class Discover extends PureComponent {
                         </GridTile>
                         : <GridTile
                             key={tile.src}
-                            style={{border: '1px solid black', cursor: 'pointer'}}
+                            style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
                             titleStyle={styles.title}
                             subtitleStyle={styles.subtitle}
                             title={tile.subtitle}
                             subtitle={tile.title}
-                            actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), tabDataKeys[i][0])}
+                            actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
                             actionPosition='right'
                             titlePosition='bottom'
                             titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                            rows={2}
+                            rows={ tile.subtype === 'audios' ? 1 : 2}
                           >
                             {this._getYoutubeId(tile.src)
                               ? <YouTube
+                                  className='videoContent'
                                   videoId={this._getYoutubeId(tile.src)}
                                   opts={YOUTUBEOPTS}
                                   onError={() => this._removeTile(tabKey[0], tile.src)}
                                 />
-                              : <ReactPlayer
-                                  url={tile.src}
-                                  className='react-player'
-                                  width='100%'
-                                  height='100%'
-                                  onError={() => this._removeTile(tabKey[0], tile.src)}
-                                />
+                              : <Player className='videoContent' fluid={false} ref="player">
+                                <source src={tile.src} />
+                              </Player>
                             }
                           </GridTile>
                     )) : <span> - nothing here - </span>}
@@ -735,9 +753,7 @@ class Discover extends PureComponent {
                   onClick={() => this._handleOpenSource(selectedImage.source)} >
                   <IconOutbound color="white" style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
                 </RaisedButton>
-
               </IconButton>
-
               <IconButton
                 style={styles.buttonOpenArticle}
                 tooltipPosition="bottom-center"

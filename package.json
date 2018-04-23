@@ -47,7 +47,6 @@
     "react-image-gallery": "^0.8.7",
     "react-joyride": "^1.10.1",
     "react-map-gl": "~3.2.5",
-    "react-player": "^1.4.0",
     "react-redux": "~5.0.4",
     "react-router": "~4.1.0",
     "react-router-dom": "~4.1.0",
@@ -58,6 +57,7 @@
     "redbox-react": "^1.5.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
+    "video-react": "^0.10.4",
     "viewport-mercator-project": "^5.0.2",
     "vis": "^4.21.0",
     "whatwg-fetch": "^2.0.4"
