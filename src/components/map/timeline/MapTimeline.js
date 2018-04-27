@@ -7,7 +7,6 @@ import update from 'react/lib/update'
 import { setYear as setYearAction } from './actionReducers'
 
 import Timeline from 'react-visjs-timeline'
-
 import './mapTimeline.scss'
 
 const start = '0000-01-01',
@@ -31,7 +30,7 @@ class MapTimeline extends Component {
           // showMajorLabels: false
       },
       customTimes: {
-        selectedYear: new Date(new Date().setYear(this.props.selectedYear)).toISOString()
+        selectedYear: new Date(new Date().setFullYear(this.props.selectedYear)).toISOString()
       },
       year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
     }

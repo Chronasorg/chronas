@@ -113,9 +113,9 @@ const styles = {
 }
 
 const selectedIndexObject = {
-  'ruler': 1,
-  'culture': 2,
-  'religion': 3,
+  'ruler': 2,
+  'culture': 3,
+  'religion': 4,
   'population': 5,
 }
 
@@ -148,6 +148,10 @@ class RightDrawerRoutes extends PureComponent {
       selectedIndex: -1,
       articleWidth: '50%',
       rulerEntity: {
+        "id": null,
+        "data": null
+      },
+      provinceEntity: {
         "id": null,
         "data": null
       }
@@ -239,12 +243,21 @@ class RightDrawerRoutes extends PureComponent {
       const selectedProvince = selectedItem.value
       // is rulerEntity loaded?
       const activeRulDim = ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')]
-      if (this.state.rulerEntity.id !== activeRulDim) {
-        axios.get(properties.chronasApiHost + '/metadata/r_' + /*activeRulDim TODO: remove tete */ "tete" + "?type=r")
+      if (selectedItem.wiki === WIKI_RULER_TIMELINE && this.state.rulerEntity.id !== activeRulDim) {
+        axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + activeRulDim + '?type=a_ruler')
           .then((newRulerEntity) => {
             this.setState({ rulerEntity: {
-                id: /*activeRulDim TODO: remove tete */ "tete",
+                id: activeRulDim,
                 data: newRulerEntity.data
+              }})
+          })
+      }
+      else if (selectedItem.wiki === WIKI_PROVINCE_TIMELINE && this.state.provinceEntity.id !== activeRulDim) {
+        axios.get(properties.chronasApiHost + '/metadata/ap_' + selectedProvince.toLowerCase() + '?type=ap')
+          .then((newProvinceEntity) => {
+            this.setState({ provinceEntity: {
+                id: selectedProvince,
+                data: newProvinceEntity.data
               }})
           })
       }
@@ -267,7 +280,7 @@ class RightDrawerRoutes extends PureComponent {
       translate, rightDrawerOpen, deselectItem, setWikiId, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme,
       setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor, setAreaColorLabel } = this.props
-    const { rulerEntity } = this.state
+    const { rulerEntity, provinceEntity } = this.state
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
@@ -361,7 +374,7 @@ class RightDrawerRoutes extends PureComponent {
       })
     }
 
-    const rulerEntityData = (rulerEntity || {}).data || {}
+    const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
     const rulerEntityDecoded = rulerEntityData[(Object.keys(rulerEntityData) || {})[0]] || ['n/a','Ruling Entity']
     const rulerName = metadata['ruler'][rulerId][0]
     const religionName = (metadata['religion'][religionId] || {})[0] || 'n/a'
@@ -376,7 +389,24 @@ class RightDrawerRoutes extends PureComponent {
       iconElementLeft={
         (selectedItem.type === TYPE_AREA) ? <BottomNavigation
           onChange={this.handleChange}
-          selectedIndex={ (selectedItem.wiki === WIKI_RULER_TIMELINE) ? 0 : selectedIndexObject[activeArea.color] }>
+          selectedIndex={ (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
+            ? 0
+            : (selectedItem.wiki === WIKI_RULER_TIMELINE)
+              ? 1
+              : selectedIndexObject[activeArea.color] }>
+          <BottomNavigationItem
+            onClick={() => { setWikiId(WIKI_PROVINCE_TIMELINE); setAreaColorLabel('ruler', 'ruler') }}
+            icon={<CardHeader
+              title={ selectedProvince }
+              titleStyle={ styles.cardHeader.titleStyle }
+              subtitleStyle={ styles.cardHeader.titleStyle }
+              textStyle={ styles.cardHeader.textStyle }
+              style={ styles.cardHeader.style }
+              subtitle={ 'Summary' }
+              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+            />}
+            // onClick={() => this.select(0)}
+          />
           <BottomNavigationItem
             onClick={() => { setWikiId(WIKI_RULER_TIMELINE); setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
@@ -534,7 +564,7 @@ class RightDrawerRoutes extends PureComponent {
           <Route
             exact
             path={'/article'}
-            render={restrictPage(articletHeader, Content, '', { metadata, rulerEntity } )}
+            render={restrictPage(articletHeader, Content, '', { metadata, rulerEntity, provinceEntity, selectedYear } )}
         />
           <Route
             exact

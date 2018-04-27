@@ -2,6 +2,7 @@ export const SET_WIKI_ID = 'SET_WIKI_ID'
 export const SET_AREA_ITEM = 'SET_AREA_ITEM'
 export const SET_MARKER_ITEM = 'SET_MARKER_ITEM'
 export const SET_LINKED_ITEM = 'SET_LINKED_ITEM'
+export const SET_VALUE = 'SET_VALUE'
 
 export const DESELECT_ITEM = 'DESELECT_ITEM'
 
@@ -17,6 +18,11 @@ export const WIKI_PROVINCE_TIMELINE = 'WIKI_PROVINCE_TIMELINE'
 export const setWikiId = id => ({
   type: SET_WIKI_ID,
   payload: id,
+})
+
+export const selectValue = value => ({
+  type: SET_VALUE,
+  payload: value,
 })
 
 export const selectAreaItem = (wiki, province) => ({
@@ -43,6 +49,11 @@ export const deselectItem = () => ({
 export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'value': '' }) =>
   (previousState = defaultState, { type, payload }) => {
     switch (type) {
+      case SET_VALUE:
+        return {
+          ...previousState,
+          value: payload
+        }
       case SET_WIKI_ID:
         return {
           ...previousState,

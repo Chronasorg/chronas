@@ -16,6 +16,7 @@ import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
 import EntityTimeline from './EntityTimeline'
+import ProvinceTimeline from './ProvinceTimeline'
 import properties from "../../properties"
 
 const styles = {
@@ -110,19 +111,25 @@ class Content extends Component {
   componentWillReceiveProps (nextProps) {
       if (this.props.selectedItem.value !== nextProps.selectedItem.value ||
         this.props.selectedItem.wiki !== nextProps.selectedItem.wiki ||
-        this.props.selectedItem.type !== nextProps.selectedItem.type)
+        this.props.selectedItem.type !== nextProps.selectedItem.type ||
+        this.props.activeArea.color !== nextProps.activeArea.color)
     this._handleNewData(nextProps.selectedItem, nextProps.metadata, nextProps.activeArea, nextProps.selectedItem.value === '')
   }
 
   render () {
-    const { selectedItem, rulerEntity } = this.props
+    const { activeArea, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata } = this.props
     const shouldLoad = (this.state.iframeLoading || this.state.selectedWiki === null)
     console.debug(shouldLoad)
-    const rulerEntityOpen = !!(this.state.selectedWiki === null || selectedItem.wiki === WIKI_PROVINCE_TIMELINE || selectedItem.wiki === WIKI_RULER_TIMELINE)
+    const rulerTimelineOpen = (selectedItem.wiki === WIKI_RULER_TIMELINE)
+    const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
 
     return <div style={styles.main}>
-      { shouldLoad && !rulerEntityOpen && <span>loading placeholder...</span> }
-      {rulerEntityOpen ? <EntityTimeline rulerEntity={rulerEntity} /> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + this.state.selectedWiki + '?printable=yes'}
+      { shouldLoad && !rulerTimelineOpen && !provinceTimelineOpen && <span>loading placeholder...</span> }
+      {rulerTimelineOpen
+        ? <EntityTimeline rulerEntity={rulerEntity} />
+        : provinceTimelineOpen
+          ? <ProvinceTimeline metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
+          : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + this.state.selectedWiki + '?printable=yes'}
         height='100%' frameBorder='0' />}
     </div>
   }

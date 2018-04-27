@@ -6,12 +6,29 @@
   }
 }
 
+.ProvinceTimeline {
+  .vis-timeline {
+    visibility: visible !important;
+    border: none;
+  }
+}
+
+.entityTimelineItem {
+  cursor: pointer;
+  border-radius: 30px !important;
+  border-color: transparent !important;
+}
+
+.entityTimelineItem:hover {
+  opacity: 0.8;
+}
+
 .discoverActive {
   z-index: 10000;
   position: absolute;
 }
 
-.vis-timeline {
+.mapTimeline > div > .vis-timeline {
   border: none;
   position: fixed;
   bottom: -46px !important;

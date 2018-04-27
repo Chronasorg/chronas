@@ -14,7 +14,10 @@ import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
 const turf = require('@turf/turf')
 import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
-import { TYPE_MARKER, TYPE_AREA, TYPE_LINKED, selectAreaItem as selectAreaItemAction, selectMarkerItem as selectMarkerItemAction } from './actionReducers'
+import {
+  TYPE_MARKER, TYPE_AREA, TYPE_LINKED, selectValue, selectAreaItem as selectAreaItemAction,
+  selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
+} from './actionReducers'
 import properties from '../../properties'
 import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
@@ -33,7 +36,7 @@ const getRandomInt = (min, max) => {
 class Map extends Component {
   state = {
     mapStyle: defaultMapStyle,
-    mapTimelineContainerClass: '',
+    mapTimelineContainerClass: 'mapTimeline',
     year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
     data: null,
     viewport: {
@@ -293,9 +296,9 @@ class Map extends Component {
 
     /** Acting on store changes **/
     if (nextProps.history.location.pathname === '/discover') {
-      this.setState({ mapTimelineContainerClass: 'discoverActive' })
+      this.setState({ mapTimelineContainerClass: 'mapTimeline discoverActive' })
     } else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '') {
-      this.setState({ mapTimelineContainerClass: '' })
+      this.setState({ mapTimelineContainerClass: 'mapTimeline' })
     }
 
     if (selectedItem.value !== nextProps.selectedItem.value) {
@@ -661,7 +664,8 @@ class Map extends Component {
     if (this.props.modActive.type === TYPE_MARKER && this.props.modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    } else if (this.props.modActive.type === TYPE_AREA) {
+    }
+    else if (this.props.modActive.type === TYPE_AREA) {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = this.props.modActive.data
@@ -726,7 +730,12 @@ class Map extends Component {
           mapStyle
         })
 
-        this.props.selectAreaItem(wikiId, itemName)
+        if (this.props.selectedItem.wiki === WIKI_PROVINCE_TIMELINE || this.props.selectedItem.wiki === WIKI_RULER_TIMELINE) {
+          this.props.selectValue(itemName)
+        }
+        else {
+          this.props.selectAreaItem(wikiId, itemName)
+        }
       }
     }
 
@@ -796,7 +805,7 @@ class Map extends Component {
         <MapGL
           style={{
             transition: 'filter 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-            filter: (mapTimelineContainerClass === '') ? 'inherit' : 'blur(10px)'
+            filter: (mapTimelineContainerClass === 'mapTimeline') ? 'inherit' : 'blur(10px)'
           }}
           ref={(map) => { this.map = map }}
           {...viewport}
@@ -847,6 +856,7 @@ const enhance = compose(
   }), {
     setRightDrawerVisibility: setRightDrawerVisibilityAction,
     selectAreaItem: selectAreaItemAction,
+    selectValue,
     selectMarkerItem : selectMarkerItemAction,
     setModData: setModDataAction,
     removeModData: removeModDataAction,

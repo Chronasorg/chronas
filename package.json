@@ -44,6 +44,7 @@
     "query-string": "^5.1.0",
     "react": "^15.4.0",
     "react-dom": "^15.4.0",
+    "react-google-charts": "^1.5.7",
     "react-image-gallery": "^0.8.7",
     "react-joyride": "^1.10.1",
     "react-map-gl": "~3.2.5",

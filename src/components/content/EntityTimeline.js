@@ -74,7 +74,7 @@ class EntityTimeline extends React.Component {
   }
 
   getStepContent (stepIndex) {
-    const rulerEntityData = ((this.props.rulerEntity || {}).data || {})
+    const rulerEntityData = ((this.props.rulerEntity || {}).data || {}).ruler || {}
     const wikiUrl = (rulerEntityData[Object.keys(rulerEntityData)[stepIndex]] || {})[2] || -1
     return (wikiUrl === -1) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + wikiUrl + '?printable=yes'} height='90%' frameBorder='0' />
   }
@@ -85,7 +85,7 @@ class EntityTimeline extends React.Component {
     const contentStyle = { margin: '0 16px' }
 
     const shouldLoad = (this.state.iframeLoading || selectedWiki === null)
-    const rulerEntityData = (rulerEntity || {}).data || {}
+    const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
 
     return (
       <div style={{ width: '19%', overflow: 'auto' }}>
