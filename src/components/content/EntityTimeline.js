@@ -32,11 +32,13 @@ const styles = {
     // overflow: 'hidden'
   },
   iframe: {
-    position: 'fixed',
+    width: '100%',
     right: 0,
-    width: '80%',
-    height: 'calc(100% - 128px)',
+    padding: '2px 8px'
   },
+  contentStyle: {
+    display: 'flex',
+    height: '100%' },
   navButtons: {
     marginTop:'12px',
     right: '28px',
@@ -52,7 +54,7 @@ const styles = {
 }
 class EntityTimeline extends React.Component {
   state = {
-    stepIndex: 0,
+    stepIndex: -1,
   };
 
   handleNext = () => {
@@ -73,83 +75,97 @@ class EntityTimeline extends React.Component {
     } // TODO: do this with ref
   }
 
-  getStepContent (stepIndex) {
+  getStepContent (stepIndex, sortedRulerKeys) {
     const rulerEntityData = ((this.props.rulerEntity || {}).data || {}).ruler || {}
-    const wikiUrl = (rulerEntityData[Object.keys(rulerEntityData)[stepIndex]] || {})[2] || -1
-    return (wikiUrl === -1) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + wikiUrl + '?printable=yes'} height='90%' frameBorder='0' />
+    const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (this.props.rulerProps || {})[2] || -1
+    return (wikiUrl === -1) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? '100%' : 'calc(100% - 128px)') }} src={'http://en.wikipedia.org/wiki/' + wikiUrl + '?printable=yes'} height='90%' frameBorder='0' />
+  }
+
+  _selectRealm = () => {
+    this.setState({ stepIndex: -1 })
   }
 
   render () {
     const { stepIndex, selectedWiki } = this.state
-    const { rulerEntity } = this.props
-    const contentStyle = { margin: '0 16px' }
+    const { rulerEntity, selectedYear, rulerProps } = this.props
 
     const shouldLoad = (this.state.iframeLoading || selectedWiki === null)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
+    const sortedRulerKeys = Object.keys(rulerEntityData).sort(function(a,b) { return +a>+b })
+    const rulerDetected = sortedRulerKeys.length !== 0
 
     return (
-      <div style={{ width: '19%', overflow: 'auto' }}>
-        <Stepper linear={false}
-          activeStep={stepIndex}
-          orientation='vertical'
-          style={{ float: 'left', width: '100%', paddingRight: '1em' }}>
-          {Object.keys(rulerEntityData).map((yearKey, i) => (
-            <Step key={i} style={ styles.stepContainer}>
-              <StepButton icon={<span style={styles.stepLabel}>{yearKey}</span>} onClick={() => this.setState({ stepIndex: i }) /* TODO: change year onclick */ }>
-                <div style={{
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  position: 'absolute',
-                  width: '20$',
-                  left: '60px',
-                  top: '16px',
-                  fontSize: '15px'
-                }}>
-                  {rulerEntityData[yearKey][0]}
-                </div>
-                <div style={{
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  position: 'absolute',
-                  width: '20$',
-                  left: '60px',
-                  top: '32px',
-                  fontSize: '12px'
-                }}>
-                  {rulerEntityData[yearKey][1]}
-                </div>
+      <div style={{ height: '100%' }}>
+        { rulerDetected && <div style={{ width: '19%', overflow: 'auto', display: 'inline-block' }}>
+          <FlatButton label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
+          <Stepper linear={false}
+            activeStep={stepIndex}
+            orientation='vertical'
+            style={{ float: 'left', width: '100%', paddingRight: '1em' }}>
+            {sortedRulerKeys.sort(function(a,b) { return +a>+b }).map((yearKey, i) => (
+              <Step key={i} style={ styles.stepContainer}>
+                <StepButton iconContainerStyle={{ background: (( (+(sortedRulerKeys[i]) < +selectedYear) && (+selectedYear < +(sortedRulerKeys[i+1] || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{sortedRulerKeys[i]}</span>} onClick={() => this.setState({ stepIndex: i }) /* TODO: change year onclick */ }>
+                  <div style={{
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    position: 'absolute',
+                    width: '20$',
+                    left: '60px',
+                    top: '16px',
+                    fontSize: '15px'
+                  }}>
+                    {rulerEntityData[yearKey][0]}
+                  </div>
+                  <div style={{
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    position: 'absolute',
+                    width: '20$',
+                    left: '60px',
+                    top: '32px',
+                    fontSize: '12px'
+                  }}>
+                    {rulerEntityData[yearKey][1]}
+                  </div>
 
-              </StepButton>
-            </Step>
-          ))}
-        </Stepper>
-        <div style={contentStyle}>
-          {(selectedWiki === null || shouldLoad)
-            ? <span>loadin1g placeholder...</span>
-            : this.getStepContent(stepIndex)}
-          <div style={ styles.navTitle }>
-            <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (rulerEntityData[Object.keys(rulerEntityData)[stepIndex]] || {} )[0] } </span>
-            <span style={{ fontWeight: 300, paddingRight: '.6em'}}>
-              {(rulerEntityData[Object.keys(rulerEntityData)[stepIndex]] || {} )[1]}
-            </span>
-            <span style={{ paddingRight: '2em'}}> ({stepIndex + 1} / {Object.keys(rulerEntityData).length})</span>
-          </div>
-
-          <div style={ styles.navButtons }>
-            <FlatButton
-              label='Back'
-              disabled={stepIndex === 0}
-              onClick={this.handlePrev}
-              style={{ marginRight: 12 }}
-            />
-            <RaisedButton
-              label='Next'
-              disabled={stepIndex === Object.keys(rulerEntityData).length-1}
-              primary
-              onClick={this.handleNext}
-            />
+                </StepButton>
+              </Step>
+            ))}
+          </Stepper>
+        </div> }
+        <div style={{
+          width: (rulerDetected ? '80%' : '100%'),
+          display: 'inline-block',
+          float: 'right',
+          height: '100%'
+        }}>
+          <div style={styles.contentStyle}>
+            {(selectedWiki === null || shouldLoad)
+              ? <span>loadin1g placeholder...</span>
+              : this.getStepContent(stepIndex, sortedRulerKeys)}
+            { rulerDetected && <div style={ styles.navTitle }>
+              <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (rulerEntityData[sortedRulerKeys[stepIndex]] || {} )[0] } </span>
+              <span style={{ fontWeight: 300, paddingRight: '.6em'}}>
+                {(rulerEntityData[sortedRulerKeys[stepIndex]] || {} )[1]}
+              </span>
+              <span style={{ paddingRight: '2em'}}> ({stepIndex + 1} / {sortedRulerKeys.length})</span>
+            </div> }
+            { rulerDetected && <div style={ styles.navButtons }>
+              <FlatButton
+                label='Back'
+                disabled={stepIndex === 0}
+                onClick={this.handlePrev}
+                style={{ marginRight: 12 }}
+              />
+              <RaisedButton
+                label='Next'
+                disabled={stepIndex === sortedRulerKeys.length-1}
+                primary
+                onClick={this.handleNext}
+              />
+            </div> }
           </div>
         </div>
       </div>

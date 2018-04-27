@@ -113,10 +113,9 @@ const styles = {
 }
 
 const selectedIndexObject = {
-  'ruler': 2,
-  'culture': 3,
-  'religion': 4,
-  'population': 5,
+  'culture': 2,
+  'religion': 3,
+  'population': 4,
 }
 
 const resources = {
@@ -374,8 +373,6 @@ class RightDrawerRoutes extends PureComponent {
       })
     }
 
-    const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
-    const rulerEntityDecoded = rulerEntityData[(Object.keys(rulerEntityData) || {})[0]] || ['n/a','Ruling Entity']
     const rulerName = metadata['ruler'][rulerId][0]
     const religionName = (metadata['religion'][religionId] || {})[0] || 'n/a'
     const religionGeneralName = metadata['religionGeneral'][metadata['religion'][religionId][3]][0]
@@ -410,27 +407,14 @@ class RightDrawerRoutes extends PureComponent {
           <BottomNavigationItem
             onClick={() => { setWikiId(WIKI_RULER_TIMELINE); setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
-                title={ rulerEntityDecoded[0] }
+                title={ rulerName }
                 titleStyle={ styles.cardHeader.titleStyle }
                 subtitleStyle={ styles.cardHeader.titleStyle }
                 textStyle={ styles.cardHeader.textStyle }
                 style={ styles.cardHeader.style }
-                subtitle={ rulerEntityDecoded[1] }
+                subtitle="Ruler"
                 avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
               />}
-            // onClick={() => this.select(0)}
-          />
-          <BottomNavigationItem
-            onClick={() => { setWikiId(''); setAreaColorLabel('ruler', 'ruler') }}
-            icon={<CardHeader
-              title={ rulerName }
-              titleStyle={ styles.cardHeader.titleStyle }
-              subtitleStyle={ styles.cardHeader.titleStyle }
-              textStyle={ styles.cardHeader.textStyle }
-              style={ styles.cardHeader.style }
-              subtitle="Ruler"
-              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
-            />}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
