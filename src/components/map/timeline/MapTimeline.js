@@ -30,7 +30,7 @@ class MapTimeline extends Component {
           // showMajorLabels: false
       },
       customTimes: {
-        selectedYear: new Date(new Date().setFullYear(this.props.selectedYear)).toISOString()
+        selectedYear: new Date(new Date(0, 1, 1).setFullYear(this.props.selectedYear)).toISOString()
       },
       year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
     }
@@ -59,6 +59,20 @@ class MapTimeline extends Component {
       }
     })
   };
+
+  componentWillReceiveProps = (nextProps) => {
+    const { selectedYear } = this.props
+    const { customTimes } = this.state
+
+    /** Acting on store changes **/
+    if (nextProps.selectedYear !== selectedYear && new Date(customTimes.selectedYear).getFullYear() !== nextProps.selectedYear) {
+      this.setState({
+        customTimes: {
+          selectedYear: new Date(new Date(0, 1, 1).setFullYear(nextProps.selectedYear)).toISOString()
+        }
+      })
+    }
+  }
 
   _onRangeChangeTimeline = event => {
     console.debug(event)

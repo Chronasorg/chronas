@@ -113,6 +113,7 @@ const styles = {
 }
 
 const selectedIndexObject = {
+  'ruler': 1,
   'culture': 2,
   'religion': 3,
   'population': 4,
@@ -242,7 +243,7 @@ class RightDrawerRoutes extends PureComponent {
       const selectedProvince = selectedItem.value
       // is rulerEntity loaded?
       const activeRulDim = ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')]
-      if (selectedItem.wiki === WIKI_RULER_TIMELINE && this.state.rulerEntity.id !== activeRulDim) {
+      if (this.state.rulerEntity.id !== activeRulDim) {
         axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + activeRulDim + '?type=a_ruler')
           .then((newRulerEntity) => {
             this.setState({ rulerEntity: {
@@ -388,9 +389,7 @@ class RightDrawerRoutes extends PureComponent {
           onChange={this.handleChange}
           selectedIndex={ (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
             ? 0
-            : (selectedItem.wiki === WIKI_RULER_TIMELINE)
-              ? 1
-              : selectedIndexObject[activeArea.color] }>
+            : selectedIndexObject[activeArea.color] }>
           <BottomNavigationItem
             onClick={() => { setWikiId(WIKI_PROVINCE_TIMELINE); setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
@@ -405,7 +404,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(WIKI_RULER_TIMELINE); setAreaColorLabel('ruler', 'ruler') }}
+            onClick={() => { setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
                 title={ rulerName }
                 titleStyle={ styles.cardHeader.titleStyle }

@@ -120,7 +120,7 @@ class Content extends Component {
     const { activeArea, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata } = this.props
     const shouldLoad = (this.state.iframeLoading || this.state.selectedWiki === null)
     console.debug(shouldLoad)
-    const rulerTimelineOpen = (selectedItem.wiki === WIKI_RULER_TIMELINE)
+    const rulerTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && activeArea.color === 'ruler')
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
 
     return <div style={styles.main}>

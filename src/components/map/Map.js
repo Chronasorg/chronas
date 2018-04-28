@@ -291,7 +291,7 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { basemap, activeArea, selectedYear, metadata, modActive, history, activeMarkers, selectedItem } = this.props
+    const { basemap, activeArea, selectedYear, metadata, modActive, history, activeMarkers, selectedItem, selectAreaItem } = this.props
     console.debug('### MAP componentWillReceiveProps', this.props, nextProps)
 
     /** Acting on store changes **/
@@ -369,13 +369,15 @@ class Map extends Component {
         // refresh this year data
         this._changeYear(nextProps.selectedYear)
       }
-    } else if (modActive.type === 'metadata' && nextProps.modActive.type === '') {
+    }
+    else if (modActive.type === 'metadata' && nextProps.modActive.type === '') {
       // Leaving Metadata Mod
       if (nextProps.modActive.toUpdate !== '') {
         // refresh mapstyles and links
         this._updateMetaMapStyle(nextProps.modActive.toUpdate)
       }
-    } else if (modActive.type === TYPE_MARKER && nextProps.modActive.type === '') {
+    }
+    else if (modActive.type === TYPE_MARKER && nextProps.modActive.type === '') {
       // Leaving Metadata Mod
       if (nextProps.modActive.toUpdate !== '') {
         // refresh mapstyles and links
@@ -459,7 +461,8 @@ class Map extends Component {
           })
         }
       }
-    } else if (modActive.type === TYPE_AREA) {
+    }
+    else if (modActive.type === TYPE_AREA) {
       // clean up mod select
       const prevMapStyle = this.state.mapStyle
       let mapStyle = prevMapStyle
@@ -485,7 +488,7 @@ class Map extends Component {
     // Area Label and Color changed?
     if (activeArea.label !== nextProps.activeArea.label && activeArea.color !== nextProps.activeArea.color) {
       console.debug('###### Area Color and Label changed' + nextProps.activeArea.label)
-      this._changeArea(activeArea.data, nextProps.activeArea.label, nextProps.activeArea.color, nextProps.selectedItem.value)
+      this._changeArea(nextProps.data, nextProps.activeArea.label, nextProps.activeArea.color, nextProps.selectedItem.value)
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
       utilsQuery.updateQueryStringParameter('label', nextProps.activeArea.label)
     }
@@ -493,15 +496,24 @@ class Map extends Component {
     // Area Label changed?
     else if (activeArea.label !== nextProps.activeArea.label) {
       console.debug('###### Area Label changed' + nextProps.activeArea.label)
-      this._changeArea(activeArea.data, nextProps.activeArea.label, undefined)
+      this._changeArea(nextProps.activeArea.data, nextProps.activeArea.label, undefined)
       utilsQuery.updateQueryStringParameter('label', nextProps.activeArea.label)
     }
 
     // Area Color changed?
     else if (activeArea.color !== nextProps.activeArea.color) {
       console.debug('###### Area Color changed' + nextProps.activeArea.color)
-      this._changeArea(activeArea.data, undefined, nextProps.activeArea.color, nextProps.selectedItem.value)
+      this._changeArea(nextProps.activeArea.data, undefined, nextProps.activeArea.color, nextProps.selectedItem.value)
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
+    }
+
+    else if (nextProps.activeArea.color === 'ruler' && nextProps.selectedItem.type === 'areas' && nextProps.selectedItem.value !== '' && activeArea.data[nextProps.selectedItem.value] && activeArea.data[nextProps.selectedItem.value][0] !== (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[0]) {
+      // year changed while ruler article open and new ruler in province, ensure same ruler is kept if possible
+      const rulerToHold =
+        activeArea.data[selectedItem.value][0]
+      const nextData = nextProps.activeArea.data
+      const provinceWithOldRuler = Object.keys(nextData).filter(key => nextData[key][0] === rulerToHold)[0]
+      if (provinceWithOldRuler) selectAreaItem(provinceWithOldRuler,provinceWithOldRuler)
     }
 
     // Markers changed?

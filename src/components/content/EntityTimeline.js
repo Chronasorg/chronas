@@ -4,8 +4,19 @@ import {
   Stepper,
   StepButton,
 } from 'material-ui/Stepper'
+import {
+  HorizontalGridLines,
+  VerticalGridLines,
+  XAxis,
+  XYPlot,
+  YAxis,
+  LineMarkSeries
+} from 'react-vis'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
+import compose from 'recompose/compose'
+import {connect} from "react-redux"
+import {setYear as setYearAction} from "../map/timeline/actionReducers";
 
 /**
  * Non-linear steppers allow users to enter a multi-step flow at any point.
@@ -85,26 +96,42 @@ class EntityTimeline extends React.Component {
     this.setState({ stepIndex: -1 })
   }
 
+  _selectStepButton = (index, newYear) => {
+    this.setState({stepIndex: index})
+    this.props.setYear(+newYear)
+  }
+
   render () {
     const { stepIndex, selectedWiki } = this.state
     const { rulerEntity, selectedYear, rulerProps } = this.props
 
     const shouldLoad = (this.state.iframeLoading || selectedWiki === null)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
-    const sortedRulerKeys = Object.keys(rulerEntityData).sort(function(a,b) { return +a>+b })
+    const sortedRulerKeys = Object.keys(rulerEntityData).sort((a, b) => +a - +b)
     const rulerDetected = sortedRulerKeys.length !== 0
+
+    // TODO: refactor
+    const chartData = new Array(19).fill(0).reduce((prev, curr) => [...prev, {
+      x: prev.slice(-1)[0].x + 1,
+      y: prev.slice(-1)[0].y * (0.9 + Math.random() * 0.2)
+    }], [{x: 0, y: 10}]);
 
     return (
       <div style={{ height: '100%' }}>
-        { rulerDetected && <div style={{ width: '19%', overflow: 'auto', display: 'inline-block' }}>
-          <FlatButton label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
+        <XYPlot width={600} height={300}><XAxis/><YAxis/>
+          <HorizontalGridLines />
+          <VerticalGridLines />
+          <LineMarkSeries data={chartData} />
+        </XYPlot>;
+        { rulerDetected && <div style={{ width: '19%', height: '100%', overflow: 'auto', display: 'inline-block' }}>
+          <FlatButton labelStyle={{ padding: '4px' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}
             orientation='vertical'
             style={{ float: 'left', width: '100%', paddingRight: '1em' }}>
-            {sortedRulerKeys.sort(function(a,b) { return +a>+b }).map((yearKey, i) => (
-              <Step key={i} style={ styles.stepContainer}>
-                <StepButton iconContainerStyle={{ background: (( (+(sortedRulerKeys[i]) < +selectedYear) && (+selectedYear < +(sortedRulerKeys[i+1] || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{sortedRulerKeys[i]}</span>} onClick={() => this.setState({ stepIndex: i }) /* TODO: change year onclick */ }>
+            {sortedRulerKeys.map((yearKey, i) => (
+              (rulerEntityData[yearKey][0] !== "null") ? <Step key={i} style={ styles.stepContainer}>
+                <StepButton iconContainerStyle={{ background: (( (+(sortedRulerKeys[i]) <= +selectedYear) && (+selectedYear < +(sortedRulerKeys[i+1] || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{sortedRulerKeys[i]}</span>} onClick={() => this._selectStepButton(i, sortedRulerKeys[i]) }>
                   <div style={{
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
@@ -131,7 +158,7 @@ class EntityTimeline extends React.Component {
                   </div>
 
                 </StepButton>
-              </Step>
+              </Step> : null
             ))}
           </Stepper>
         </div> }
@@ -173,4 +200,11 @@ class EntityTimeline extends React.Component {
   }
 }
 
-export default EntityTimeline
+const enhance = compose(
+  connect(state => ({
+  }), {
+    setYear: setYearAction,
+  })
+)
+
+export default enhance(EntityTimeline)
