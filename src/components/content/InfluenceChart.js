@@ -20,7 +20,6 @@ import FlatButton from 'material-ui/FlatButton'
 import compose from 'recompose/compose'
 import {connect} from "react-redux"
 import {setYear as setYearAction} from "../map/timeline/actionReducers";
-import InfluenceChart from "./InfluenceChart";
 
 /**
  * Non-linear steppers allow users to enter a multi-step flow at any point.
@@ -109,46 +108,13 @@ class EntityTimeline extends React.Component {
 
   componentWillReceiveProps = (nextProps) => {
     if ((nextProps.rulerEntity || {}).id !== (this.props.rulerEntity || {}).id) {
-
-      //
-      // function getRandomSeriesData () {
-      //   const totalValues = Math.random() * 50;
-      //   const result = []
-      //   let lastY = Math.random() * 40 - 20
-      //   let y
-      //   const firstY = lastY
-      //   for (let i = 0; i < Math.max(totalValues, 3); i++) {
-      //     y = Math.random() * firstY - firstY / 2 + lastY
-      //     result.push({
-      //       left: i + 1002,
-      //       top: y
-      //     })
-      //     lastY = y
-      //   }
-      //   return result
-      // }
+      const influenceChartData = new Array(19).fill(0).reduce((prev, curr) => [...prev, {
+        x: prev.slice(-1)[0].x + 1,
+        y: prev.slice(-1)[0].y * (0.9 + Math.random() * 0.2)
+      }], [{x: 0, y: 10}]);
 
       this.setState({
-        influenceChartData: {
-          id: nextProps.rulerEntity.id,
-          data: [
-            {
-              title: 'Provinces',
-              disabled: false,
-              data: nextProps.rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][0] } })
-            },
-            {
-              title: 'Population Total',
-              disabled: false,
-              data: nextProps.rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][1] } })
-            },
-            {
-              title: 'Population Share',
-              disabled: false,
-              data: nextProps.rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][2] } })
-            }
-          ]
-        }
+        influenceChartData
       })
     }
   }
@@ -164,9 +130,39 @@ class EntityTimeline extends React.Component {
 
     return (
       <div style={{ height: '100%' }}>
-        <div style={{ height: '200px', width: '100%' }}>
-          <InfluenceChart rulerProps={rulerProps} newData={influenceChartData} selectedYear={selectedYear} />
-        </div>
+        <div style={{ height: '100px', width: '100%' }}>
+          <FlexibleWidthXYPlot
+            animation
+            getX={d => d.left}
+            getY={d => d.top}
+            onMouseLeave={this._mouseLeaveHandler}
+            xDomain={[0, series[0].data.length - 1]}
+            height={100}>
+            <HorizontalGridLines />
+            <YAxis
+              className="cool-custom-name"
+              tickSizeInner={0}
+              tickSizeOuter={8}
+            />
+            <XAxis
+              className="even-cooler-custom-name"
+              tickSizeInner={0}
+              tickSizeOuter={8}
+            />
+            <VerticalRectSeries
+              data={series[0].data.map(({left, top}) => ({x0: left - 0.5, left: left + 0.5, top}))}
+              stroke="white"
+              onNearestX={this._nearestXHandler}
+              {...(series[0].disabled ? {opacity: 0.2} : null)}/>
+            <LineSeries
+              data={series[1].data}
+              curve="curveMonotoneX"
+              {...(series[1].disabled ? {opacity: 0.2} : null)}/>
+            <Crosshair
+              itemsFormat={this._formatCrosshairItems}
+              titleFormat={this._formatCrosshairTitle}
+              values={crosshairValues}/>
+          </FlexibleWidthXYPlot></div>
         { rulerDetected && <div style={{ width: '19%', height: '100%', overflow: 'auto', display: 'inline-block' }}>
           <FlatButton labelStyle={{ padding: '4px' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
           <Stepper linear={false}
