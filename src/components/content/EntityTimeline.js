@@ -12,6 +12,8 @@ import {
   YAxis,
   LineMarkSeries
 } from 'react-vis'
+import Paper from 'material-ui/Paper';
+import ChartSunburst from './ChartSunburst'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 import compose from 'recompose/compose'
@@ -28,6 +30,13 @@ import {setYear as setYearAction} from "../map/timeline/actionReducers";
  */
 
 const styles = {
+  sunburstContainer: {
+    position: 'fixed',
+    left: '-390px',
+    height: '400px',
+    top: '64px',
+    padding: '1em',
+  },
   stepLabel: {
     fontWeight: 'bold',
     background: '#9e9e9e',
@@ -65,7 +74,7 @@ const styles = {
 }
 class EntityTimeline extends React.Component {
   state = {
-    stepIndex: -1,
+    stepIndex: -1
   };
 
   handleNext = () => {
@@ -103,7 +112,7 @@ class EntityTimeline extends React.Component {
 
   render () {
     const { stepIndex, selectedWiki } = this.state
-    const { rulerEntity, selectedYear, rulerProps } = this.props
+    const { rulerEntity, selectedYear, rulerProps, sunburstData } = this.props
 
     const shouldLoad = (this.state.iframeLoading || selectedWiki === null)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
@@ -118,6 +127,9 @@ class EntityTimeline extends React.Component {
 
     return (
       <div style={{ height: '100%' }}>
+        <Paper style= {styles.sunburstContainer } zDepth={3}>
+          <ChartSunburst data={ sunburstData } />
+        </Paper>
         <XYPlot width={600} height={300}><XAxis/><YAxis/>
           <HorizontalGridLines />
           <VerticalGridLines />
