@@ -56,3 +56,32 @@
 .vis-panel.vis-bottom, .vis-panel.vis-center, .vis-panel.vis-left, .vis-panel.vis-right, .vis-panel.vis-top {
   border: 2px #ffffff;
 }
+
+.currentYearMarker {
+  .rv-crosshair__line {
+    background: #ff7f6e;
+    width: 4px;
+  }
+
+  .rv-crosshair__inner__content {
+    border-radius: 0;
+    background: #ffffff94;
+    border: solid 1px #ff7f6e;
+    color: #000000ba;
+    font-size: 12px;
+    padding: 7px 10px;
+    box-shadow: none;
+  }
+
+  .rv-crosshair__inner.rv-crosshair__inner--right {
+    .rv-crosshair__inner__content {
+      margin-left: -2px;
+    }
+  }
+
+  .rv-crosshair__inner.rv-crosshair__inner--left {
+    .rv-crosshair__inner__content {
+      margin-right: -2px;
+    }
+  }
+}

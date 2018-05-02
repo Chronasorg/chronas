@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import {translate, defaultTheme, showNotification} from 'admin-on-rest'
+import { translate, defaultTheme, showNotification } from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { setFullModActive, resetModActive } from '../restricted/shared/buttons/actionReducers'
 import { TYPE_AREA, TYPE_MARKER, TYPE_LINKED, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE } from '../map/actionReducers'
@@ -17,7 +17,7 @@ import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
 import EntityTimeline from './EntityTimeline'
 import ProvinceTimeline from './ProvinceTimeline'
-import properties from "../../properties"
+import properties from '../../properties'
 
 const styles = {
   main: {
@@ -39,6 +39,7 @@ class Content extends Component {
     iframeLoading: true,
     iframeSource: '',
     selectedWiki: null,
+    sunburstData: []
   }
 
   componentDidMount = () => {
@@ -47,7 +48,7 @@ class Content extends Component {
   }
 
   componentWillUnmount = () => {
-    //TODO: this is not called on historypush!
+    // TODO: this is not called on historypush!
     this.setState({
       iframeLoading: true,
       selectedWiki: null
@@ -78,12 +79,46 @@ class Content extends Component {
       const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
       const activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
 
+      console.error('setting up sunburst data, this should only be done once', activeprovinceValue)
+      const sunburstData = []
+      const sunburstDataMeta = {}
+      const activeData = activeArea.data
+      Object.keys(activeData).forEach((provKey) => {
+        const currProvData = activeData[provKey]
+        if (currProvData[utils.activeAreaDataAccessor(activeAreaDim)] === activeprovinceValue) {
+          const ruler = metadata['ruler'][currProvData[utils.activeAreaDataAccessor('ruler')]] || {}
+          const culture = metadata['culture'][currProvData[utils.activeAreaDataAccessor('culture')]] || {}
+          const religion = metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {}
+          const religionGeneral = metadata['religionGeneral'][(metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {})[3]] || {}
+
+          const objectToPush =
+            {
+              province: provKey,
+              ruler: ruler[0],
+              culture: culture[0],
+              religion: religion[0],
+              religionGeneral: religionGeneral[0],
+              size: currProvData[utils.activeAreaDataAccessor('population')]
+            }
+
+          sunburstDataMeta[ruler[0]] = ruler
+          sunburstDataMeta[culture[0]] = culture
+          sunburstDataMeta[religion[0]] = religion
+          sunburstDataMeta[religionGeneral[0]] = religionGeneral
+
+          delete objectToPush[activeAreaDim]
+          sunburstData.push(objectToPush)
+        }
+      })
+      this.setState({
+        sunburstData: [sunburstData, sunburstDataMeta]
+      })
+
       selectedWiki = (activeAreaDim === 'religionGeneral')
         ? (metadata[activeAreaDim][(metadata.religion[activeprovinceValue] || [])[3]] || {})[2]
         : (activeAreaDim === 'province' || activeAreaDim === 'capital')
           ? (metadata[activeAreaDim][activeprovinceValue] || {})
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
-
     } else if (selectedItem.type === TYPE_MARKER) {
       selectedWiki = selectedItem.wiki
     } else if (selectedItem.type === TYPE_LINKED) {
@@ -92,10 +127,10 @@ class Content extends Component {
         .then((linkedMarkerResult) => {
           if (linkedMarkerResult.status === 200) {
             const linkedMarker = linkedMarkerResult.data
-            showNotification("Linked marker found")
+            showNotification('Linked marker found')
             setFullModActive(TYPE_LINKED, linkedMarker.coo, '', false)
           } else {
-            showNotification("No linked marker found, consider adding one")
+            showNotification('No linked marker found, consider adding one')
           }
         })
     }
@@ -106,19 +141,21 @@ class Content extends Component {
         selectedWiki: selectedWiki
       })
     }
+
+    // religionGeneral - religion - culture - prov
   }
 
   componentWillReceiveProps (nextProps) {
-      if (this.props.selectedItem.value !== nextProps.selectedItem.value ||
+    if (this.props.selectedItem.value !== nextProps.selectedItem.value ||
         this.props.selectedItem.wiki !== nextProps.selectedItem.wiki ||
         this.props.selectedItem.type !== nextProps.selectedItem.type ||
-        this.props.activeArea.color !== nextProps.activeArea.color)
-    this._handleNewData(nextProps.selectedItem, nextProps.metadata, nextProps.activeArea, nextProps.selectedItem.value === '')
+        this.props.activeArea.color !== nextProps.activeArea.color) { this._handleNewData(nextProps.selectedItem, nextProps.metadata, nextProps.activeArea, nextProps.selectedItem.value === '') }
   }
 
   render () {
-    const { activeArea, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata } = this.props
-    const shouldLoad = (this.state.iframeLoading || this.state.selectedWiki === null)
+    const { sunburstData, iframeLoading, selectedWiki } = this.state
+    const { activeArea, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata, newWidth } = this.props
+    const shouldLoad = (iframeLoading || selectedWiki === null)
     console.debug(shouldLoad)
     const rulerTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && activeArea.color === 'ruler')
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
@@ -126,11 +163,11 @@ class Content extends Component {
     return <div style={styles.main}>
       { shouldLoad && !rulerTimelineOpen && !provinceTimelineOpen && <span>loading placeholder...</span> }
       {rulerTimelineOpen
-        ? <EntityTimeline rulerProps={metadata.ruler[rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} />
+        ? <EntityTimeline newWidth={newWidth} rulerProps={metadata.ruler[rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} />
         : provinceTimelineOpen
           ? <ProvinceTimeline metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
-          : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + this.state.selectedWiki + '?printable=yes'}
-        height='100%' frameBorder='0' />}
+          : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}
+            height='100%' frameBorder='0' />}
     </div>
   }
 }

@@ -12,7 +12,7 @@ export default {
       case 'capital':
         return 3
       case 'population':
-        return 3
+        return 4
       default:
         return 0
     }

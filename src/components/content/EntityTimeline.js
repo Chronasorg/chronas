@@ -4,23 +4,13 @@ import {
   Stepper,
   StepButton,
 } from 'material-ui/Stepper'
-import {
-  HorizontalGridLines,
-  VerticalGridLines,
-  XAxis,
-  XYPlot,
-  YAxis,
-  LineMarkSeries,
-  LineSeries,
-  FlexibleWidthXYPlot,
-  makeWidthFlexible
-} from 'react-vis'
+import ChartSunburst from './Charts/ChartSunburst'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 import compose from 'recompose/compose'
 import {connect} from "react-redux"
 import {setYear as setYearAction} from "../map/timeline/actionReducers";
-import InfluenceChart from "./InfluenceChart";
+import InfluenceChart from "./Charts/ChartArea";
 
 /**
  * Non-linear steppers allow users to enter a multi-step flow at any point.
@@ -72,7 +62,7 @@ class EntityTimeline extends React.Component {
   state = {
     stepIndex: -1,
     influenceChartData: []
-  };
+  }
 
   handleNext = () => {
     const { stepIndex } = this.state
@@ -108,25 +98,8 @@ class EntityTimeline extends React.Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
-    if ((nextProps.rulerEntity || {}).id !== (this.props.rulerEntity || {}).id) {
 
-      //
-      // function getRandomSeriesData () {
-      //   const totalValues = Math.random() * 50;
-      //   const result = []
-      //   let lastY = Math.random() * 40 - 20
-      //   let y
-      //   const firstY = lastY
-      //   for (let i = 0; i < Math.max(totalValues, 3); i++) {
-      //     y = Math.random() * firstY - firstY / 2 + lastY
-      //     result.push({
-      //       left: i + 1002,
-      //       top: y
-      //     })
-      //     lastY = y
-      //   }
-      //   return result
-      // }
+    if ((nextProps.rulerEntity || {}).id !== (this.props.rulerEntity || {}).id) {
 
       this.setState({
         influenceChartData: {
@@ -155,7 +128,7 @@ class EntityTimeline extends React.Component {
 
   render () {
     const { stepIndex, selectedWiki, influenceChartData } = this.state
-    const { rulerEntity, selectedYear, rulerProps, newWidth } = this.props
+    const { rulerEntity, selectedYear, rulerProps, newWidth, sunburstData } = this.props
 
     const shouldLoad = (this.state.iframeLoading || selectedWiki === null)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
@@ -164,11 +137,12 @@ class EntityTimeline extends React.Component {
 
     return (
       <div style={{ height: '100%' }}>
+        <ChartSunburst preData={ sunburstData } />
         <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart rulerProps={rulerProps} newData={influenceChartData} selectedYear={selectedYear} />
         </div>
-        { rulerDetected && <div style={{ width: '19%', height: '100%', overflow: 'auto', display: 'inline-block' }}>
-          <FlatButton labelStyle={{ padding: '4px' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
+        { rulerDetected && <div style={{ width: '19%', maxWidth: '190px', height: '100%', overflow: 'auto', display: 'inline-block' }}>
+          <FlatButton backgroundColor={(rulerProps[1] || 'white')} labelStyle={{ padding: '4px' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}
             orientation='vertical'
@@ -208,6 +182,7 @@ class EntityTimeline extends React.Component {
         </div> }
         <div style={{
           width: (rulerDetected ? '80%' : '100%'),
+          minWidth: 'calc(100% - 200px)',
           display: 'inline-block',
           float: 'right',
           height: '100%'

@@ -146,7 +146,6 @@ class RightDrawerRoutes extends PureComponent {
       metadataType: '',
       metadataEntity: '',
       selectedIndex: -1,
-      articleWidth: '50%',
       rulerEntity: {
         "id": null,
         "data": null
@@ -230,7 +229,7 @@ class RightDrawerRoutes extends PureComponent {
     let offsetRight =
       document.body.offsetWidth - (e.clientX - document.body.offsetLeft);
     let minWidth = +document.body.offsetWidth * 0.24
-    let maxWidth = +document.body.offsetWidth - 50
+    let maxWidth = +document.body.offsetWidth - 160
     if (offsetRight > minWidth && offsetRight < maxWidth) {
       this.setState({ newWidth: offsetRight });
     }
@@ -244,6 +243,7 @@ class RightDrawerRoutes extends PureComponent {
       // is rulerEntity loaded?
       const activeRulDim = ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')]
       if (this.state.rulerEntity.id !== activeRulDim) {
+
         axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + activeRulDim + '?type=a_ruler')
           .then((newRulerEntity) => {
             this.setState({ rulerEntity: {
@@ -280,7 +280,7 @@ class RightDrawerRoutes extends PureComponent {
       translate, rightDrawerOpen, deselectItem, setWikiId, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme,
       setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor, setAreaColorLabel } = this.props
-    const { rulerEntity, provinceEntity } = this.state
+    const { newWidth, rulerEntity, provinceEntity } = this.state
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
@@ -547,7 +547,7 @@ class RightDrawerRoutes extends PureComponent {
           <Route
             exact
             path={'/article'}
-            render={restrictPage(articletHeader, Content, '', { metadata, rulerEntity, provinceEntity, selectedYear } )}
+            render={restrictPage(articletHeader, Content, '', { metadata, rulerEntity, provinceEntity, selectedYear, newWidth } )}
         />
           <Route
             exact
