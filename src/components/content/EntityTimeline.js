@@ -10,7 +10,7 @@ import FlatButton from 'material-ui/FlatButton'
 import compose from 'recompose/compose'
 import { connect } from "react-redux"
 import { setYear  as setYearAction} from '../map/timeline/actionReducers'
-import { selectAreaItem } from '../map/actionReducers'
+import {selectAreaItem, WIKI_PROVINCE_TIMELINE} from '../map/actionReducers'
 import InfluenceChart from "./Charts/ChartArea"
 
 /**
@@ -62,7 +62,7 @@ const styles = {
 class EntityTimeline extends React.Component {
   state = {
     stepIndex: -1,
-    influenceChartData: []
+    influenceChartData: {}
   }
 
   handleNext = () => {
@@ -98,32 +98,43 @@ class EntityTimeline extends React.Component {
     this.props.setYear(+newYear)
   }
 
+  setUpInfluenceChart = (rulerEntity) => {
+    if (!rulerEntity || !rulerEntity.data) return
+
+    console.error('setting up influenceChartData, this should only be done once', rulerEntity.id)
+
+    this.setState({
+      influenceChartData: {
+        id: rulerEntity.id,
+        data: [
+          {
+            title: 'Provinces',
+            disabled: false,
+            data: rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][0] } })
+          },
+          {
+            title: 'Population Total',
+            disabled: false,
+            data: rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][1] } })
+          },
+          {
+            title: 'Population Share',
+            disabled: false,
+            data: rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][2] } })
+          }
+        ]
+      }
+    })
+  }
+
+  componentDidMount = () => {
+    this.setUpInfluenceChart(this.props.rulerEntity)
+  }
+
   componentWillReceiveProps = (nextProps) => {
 
-    if ((nextProps.rulerEntity || {}).id !== (this.props.rulerEntity || {}).id) {
-
-      this.setState({
-        influenceChartData: {
-          id: nextProps.rulerEntity.id,
-          data: [
-            {
-              title: 'Provinces',
-              disabled: false,
-              data: nextProps.rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][0] } })
-            },
-            {
-              title: 'Population Total',
-              disabled: false,
-              data: nextProps.rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][1] } })
-            },
-            {
-              title: 'Population Share',
-              disabled: false,
-              data: nextProps.rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][2] } })
-            }
-          ]
-        }
-      })
+    if ((nextProps.rulerEntity || {}).id !== (this.props.rulerEntity || {}).id && nextProps.selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
+      this.setUpInfluenceChart(nextProps.rulerEntity)
     }
   }
 
@@ -134,7 +145,7 @@ class EntityTimeline extends React.Component {
 
   render () {
     const { stepIndex, selectedWiki, influenceChartData } = this.state
-    const { rulerEntity, selectedYear, rulerProps, newWidth, sunburstData } = this.props
+    const { rulerEntity, selectedYear, rulerProps, newWidth, activeAreaDim, sunburstData } = this.props
 
     const shouldLoad = (this.state.iframeLoading || selectedWiki === null)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
@@ -143,11 +154,11 @@ class EntityTimeline extends React.Component {
 
     return (
       <div style={{ height: '100%' }}>
-        <ChartSunburst selectAreaItemWrapper={ this.selectAreaItemWrapper } preData={ sunburstData } selectedYear={selectedYear} />
+        <ChartSunburst activeAreaDim={activeAreaDim} selectAreaItemWrapper={ this.selectAreaItemWrapper } preData={ sunburstData } selectedYear={selectedYear} />
         <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart rulerProps={rulerProps} newData={influenceChartData} selectedYear={selectedYear} />
         </div>
-        { rulerDetected && <div style={{ width: '19%', maxWidth: '190px', height: '100%', overflow: 'auto', display: 'inline-block' }}>
+        { rulerDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 200px)', overflow: 'auto', display: 'inline-block' }}>
           <FlatButton backgroundColor={(rulerProps[1] || 'grey')} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}
@@ -188,7 +199,7 @@ class EntityTimeline extends React.Component {
         </div> }
         <div style={{
           width: (rulerDetected ? '80%' : '100%'),
-          minWidth: 'calc(100% - 200px)',
+          minWidth: 'calc(100% - 210px)',
           display: 'inline-block',
           float: 'right',
           height: '100%'

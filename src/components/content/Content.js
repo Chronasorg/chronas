@@ -78,41 +78,42 @@ class Content extends Component {
       const selectedProvince = selectedItem.value
       const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
       const activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
-
-      console.error('setting up sunburst data, this should only be done once', activeprovinceValue)
       const sunburstData = []
       const sunburstDataMeta = {}
       const activeData = activeArea.data
-      Object.keys(activeData).forEach((provKey) => {
-        const currProvData = activeData[provKey]
-        if (currProvData[utils.activeAreaDataAccessor(activeAreaDim)] === activeprovinceValue) {
-          const ruler = metadata['ruler'][currProvData[utils.activeAreaDataAccessor('ruler')]] || {}
-          const culture = metadata['culture'][currProvData[utils.activeAreaDataAccessor('culture')]] || {}
-          const religion = metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {}
-          const religionGeneral = metadata['religionGeneral'][(metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {})[3]] || {}
+      if (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
+        console.error('setting up sunburst data, this should only be done once', activeprovinceValue)
+        Object.keys(activeData).forEach((provKey) => {
+          const currProvData = activeData[provKey]
+          if (currProvData[utils.activeAreaDataAccessor(activeAreaDim)] === activeprovinceValue) {
+            const ruler = metadata['ruler'][currProvData[utils.activeAreaDataAccessor('ruler')]] || {}
+            const culture = metadata['culture'][currProvData[utils.activeAreaDataAccessor('culture')]] || {}
+            const religion = metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {}
+            const religionGeneral = metadata['religionGeneral'][(metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {})[3]] || {}
 
-          const objectToPush =
-            {
-              province: provKey,
-              ruler: ruler[0],
-              culture: culture[0],
-              religion: religion[0],
-              religionGeneral: religionGeneral[0],
-              size: currProvData[utils.activeAreaDataAccessor('population')]
-            }
+            const objectToPush =
+              {
+                province: provKey,
+                ruler: ruler[0],
+                culture: culture[0],
+                religion: religion[0],
+                religionGeneral: religionGeneral[0],
+                size: currProvData[utils.activeAreaDataAccessor('population')]
+              }
 
-          sunburstDataMeta[ruler[0]] = ruler
-          sunburstDataMeta[culture[0]] = culture
-          sunburstDataMeta[religion[0]] = religion
-          sunburstDataMeta[religionGeneral[0]] = religionGeneral
+            sunburstDataMeta[ruler[0]] = ruler
+            sunburstDataMeta[culture[0]] = culture
+            sunburstDataMeta[religion[0]] = religion
+            sunburstDataMeta[religionGeneral[0]] = religionGeneral
 
-          delete objectToPush[activeAreaDim]
-          sunburstData.push(objectToPush)
-        }
-      })
-      this.setState({
-        sunburstData: [sunburstData, sunburstDataMeta]
-      })
+            delete objectToPush[activeAreaDim]
+            sunburstData.push(objectToPush)
+          }
+        })
+        this.setState({
+          sunburstData: [sunburstData, sunburstDataMeta]
+        })
+      }
 
       selectedWiki = (activeAreaDim === 'religionGeneral')
         ? (metadata[activeAreaDim][(metadata.religion[activeprovinceValue] || [])[3]] || {})[2]
@@ -159,14 +160,15 @@ class Content extends Component {
     const { sunburstData, iframeLoading, selectedWiki } = this.state
     const { activeArea, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata, newWidth } = this.props
     const shouldLoad = (iframeLoading || selectedWiki === null)
-    console.debug(shouldLoad)
-    const rulerTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && activeArea.color === 'ruler')
+
+    const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
+    const rulerTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
 
     return <div style={styles.main}>
       { shouldLoad && !rulerTimelineOpen && !provinceTimelineOpen && <span>loading placeholder...</span> }
       {rulerTimelineOpen
-        ? <EntityTimeline newWidth={newWidth} rulerProps={metadata.ruler[rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} />
+        ? <EntityTimeline newWidth={newWidth} activeAreaDim={activeAreaDim} rulerProps={metadata[activeAreaDim][rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} />
         : provinceTimelineOpen
           ? <ProvinceTimeline metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
           : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}

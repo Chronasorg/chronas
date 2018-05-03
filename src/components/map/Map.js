@@ -488,7 +488,7 @@ class Map extends Component {
     // Area Label and Color changed?
     if (activeArea.label !== nextProps.activeArea.label && activeArea.color !== nextProps.activeArea.color) {
       console.debug('###### Area Color and Label changed' + nextProps.activeArea.label)
-      this._changeArea(nextProps.data, nextProps.activeArea.label, nextProps.activeArea.color, nextProps.selectedItem.value)
+      this._changeArea(nextProps.activeArea.data, nextProps.activeArea.label, nextProps.activeArea.color, nextProps.selectedItem.value)
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
       utilsQuery.updateQueryStringParameter('label', nextProps.activeArea.label)
     }
@@ -513,7 +513,7 @@ class Map extends Component {
         activeArea.data[selectedItem.value][0]
       const nextData = nextProps.activeArea.data
       const provinceWithOldRuler = Object.keys(nextData).filter(key => nextData[key][0] === rulerToHold)[0]
-      if (provinceWithOldRuler) selectAreaItem(provinceWithOldRuler,provinceWithOldRuler)
+      if (provinceWithOldRuler) selectAreaItem(provinceWithOldRuler, provinceWithOldRuler)
     }
 
     // Markers changed?

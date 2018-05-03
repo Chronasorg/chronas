@@ -241,10 +241,10 @@ class RightDrawerRoutes extends PureComponent {
     if (selectedItem.type === TYPE_AREA) {
       const selectedProvince = selectedItem.value
       // is rulerEntity loaded?
-      const activeRulDim = ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')]
+      const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
+      const activeRulDim = ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
       if (this.state.rulerEntity.id !== activeRulDim) {
-
-        axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + activeRulDim + '?type=a_ruler')
+        axios.get(properties.chronasApiHost + '/metadata/a_' + activeAreaDim + '_' + activeRulDim + '?type=a_' + activeAreaDim)
           .then((newRulerEntity) => {
             this.setState({ rulerEntity: {
                 id: activeRulDim,
@@ -404,7 +404,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
-            onClick={() => { setAreaColorLabel('ruler', 'ruler') }}
+            onClick={() => { setWikiId(''); setAreaColorLabel('ruler', 'ruler') }}
             icon={<CardHeader
                 title={ rulerName }
                 titleStyle={ styles.cardHeader.titleStyle }

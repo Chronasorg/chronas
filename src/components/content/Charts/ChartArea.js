@@ -17,7 +17,8 @@ export default class InfluenceChart extends React.Component {
     this.state = {
       crosshairValues: [],
       currentYearMarkerValues: [],
-      series: []
+      series: [],
+      sortedData: []
     }
     this.__mouseClick = this._mouseClick.bind(this)
     this._nearestXHandler = this._nearestXHandler.bind(this)
@@ -33,7 +34,6 @@ export default class InfluenceChart extends React.Component {
    * @private
    */
   _nearestXHandler (value, { event, innerX, index }) {
-    console.debug(innerX)
     const { series } = this.state
     this.setState({
       crosshairValues: series.map(s => s.data[index])
@@ -82,7 +82,7 @@ export default class InfluenceChart extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if ((nextProps.newData || {}).id !== (this.props.newData || {}).id || nextProps.selectedYear !== this.props.selectedYear) {
+    if (nextProps.newData.data && (nextProps.newData || {}).id !== (this.props.newData || {}).id || nextProps.selectedYear !== this.props.selectedYear) {
       const { selectedYear} = nextProps
 
       const currentYearMarkerValues = nextProps.newData.data.map((s) => {
@@ -108,6 +108,7 @@ export default class InfluenceChart extends React.Component {
 
     if (!sortedData || sortedData.length === 0) return null
 
+    const entityColor = (rulerProps || {})[1] || 'grey'
     return (
       <div>
         <div className='influenceChart'>
@@ -123,7 +124,7 @@ export default class InfluenceChart extends React.Component {
             <HorizontalGridLines />
             <GradientDefs>
               <linearGradient id="CoolGradient" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={rulerProps[1]} stopOpacity={0.8} />
+                <stop offset="0%" stopColor={entityColor} stopOpacity={0.8} />
                 <stop offset="100%" stopColor="white" stopOpacity={0.3} />
               </linearGradient>
             </GradientDefs>
@@ -150,7 +151,7 @@ export default class InfluenceChart extends React.Component {
                 // does something on click
                 // you can access the value of the event
               }}
-              color={rulerProps[1]}
+              color={entityColor}
               data={series[2].data}
               curve='curveMonotoneX'
               onNearestX={this._nearestXHandler} />

@@ -116,7 +116,7 @@ export default function() {
     var array, sortKey = sortKeys[depth - 1];
     if (rollup != null && depth >= keys.length) array = map.entries();
     else array = [], map.each(function(v, k) {
-      if (depth === 3) {
+      if (v[0] && depth === 3) {
         const s = {
           name: v[0].province,
           hex: "rgba(0,0,0,0.4)",
