@@ -146,10 +146,13 @@ class Content extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.props.selectedItem.value !== nextProps.selectedItem.value ||
+    if (this.props.selectedYear !== nextProps.selectedYear ||
+      this.props.selectedItem.value !== nextProps.selectedItem.value ||
         this.props.selectedItem.wiki !== nextProps.selectedItem.wiki ||
         this.props.selectedItem.type !== nextProps.selectedItem.type ||
-        this.props.activeArea.color !== nextProps.activeArea.color) { this._handleNewData(nextProps.selectedItem, nextProps.metadata, nextProps.activeArea, nextProps.selectedItem.value === '') }
+        this.props.activeArea.color !== nextProps.activeArea.color) {
+      this._handleNewData(nextProps.selectedItem, nextProps.metadata, nextProps.activeArea, nextProps.selectedItem.value === '')
+    }
   }
 
   render () {

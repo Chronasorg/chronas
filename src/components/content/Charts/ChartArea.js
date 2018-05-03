@@ -16,8 +16,10 @@ export default class InfluenceChart extends React.Component {
     super(props)
     this.state = {
       crosshairValues: [],
+      currentYearMarkerValues: [],
       series: []
     }
+    this.__mouseClick = this._mouseClick.bind(this)
     this._nearestXHandler = this._nearestXHandler.bind(this)
     this._mouseLeaveHandler = this._mouseLeaveHandler.bind(this)
     this._formatCrosshairItems = this._formatCrosshairItems.bind(this)
@@ -30,7 +32,8 @@ export default class InfluenceChart extends React.Component {
    * @param {number} index Index of the series.
    * @private
    */
-  _nearestXHandler (value, { index }) {
+  _nearestXHandler (value, { event, innerX, index }) {
+    console.debug(innerX)
     const { series } = this.state
     this.setState({
       crosshairValues: series.map(s => s.data[index])
@@ -45,6 +48,10 @@ export default class InfluenceChart extends React.Component {
     this.setState({ crosshairValues: [] })
   }
 
+  _mouseClick (value,e) {
+    console.debug('_mouseClick',value,e)
+  }
+
   /**
    * Format the title line of the crosshair.
    * @param {Array} values Array of values.
@@ -53,7 +60,7 @@ export default class InfluenceChart extends React.Component {
    */
   _formatCrosshairTitle (values) {
     return {
-      title: 'X',
+      title: 'Year',
       value: values[0].left
     }
   }
@@ -75,20 +82,32 @@ export default class InfluenceChart extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if ((nextProps.newData || {}).id !== (this.props.newData || {}).id) {
+    if ((nextProps.newData || {}).id !== (this.props.newData || {}).id || nextProps.selectedYear !== this.props.selectedYear) {
+      const { selectedYear} = nextProps
+
+      const currentYearMarkerValues = nextProps.newData.data.map((s) => {
+        const nearestYear = s.data.map(y => +y.left).reduce(function(prev, curr) {
+          return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
+        }).toString()
+        return {
+          left: selectedYear,
+          top: s.data.filter(f => f.left ===  nearestYear)[0].top }
+      })
+
       this.setState({
-        series: nextProps.newData.data
+        sortedData: nextProps.newData.data[0].data.map((el) => { if (!isNaN(el.left)) return el.left }).sort((a, b) => +a - +b),
+        series: nextProps.newData.data,
+        currentYearMarkerValues
       })
     }
   }
 
   render () {
-    const { series, crosshairValues } = this.state
+    const { series, crosshairValues, currentYearMarkerValues, sortedData } = this.state
     const { rulerProps, selectedYear} = this.props
 
-    if (series.length === 0) return null
+    if (!sortedData || sortedData.length === 0) return null
 
-    const sortedData = series[0].data.map((el) => { if (!isNaN(el.left)) return el.left }).sort((a, b) => +a - +b)
     return (
       <div>
         <div className='influenceChart'>
@@ -96,24 +115,20 @@ export default class InfluenceChart extends React.Component {
             animation
             getX={d => d.left}
             getY={d => d.top}
+            onClick={this._mouseClick}
+            onValueClick={this._mouseClick}
             onMouseLeave={this._mouseLeaveHandler}
             xDomain={[sortedData[0], sortedData[sortedData.length - 1]]}
             height={200}>
             <HorizontalGridLines />
             <GradientDefs>
               <linearGradient id="CoolGradient" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={rulerProps[1]} stopOpacity={0.8}/>
+                <stop offset="0%" stopColor={rulerProps[1]} stopOpacity={0.8} />
                 <stop offset="100%" stopColor="white" stopOpacity={0.3} />
               </linearGradient>
             </GradientDefs>
             <YAxis
-              orientation='left' title='Provinces'
-              className='cool-custom-name'
-              tickSizeInner={0}
-              tickSizeOuter={8}
-            />
-            <YAxis
-              orientation='right' title='World population share'
+              orientation='left' title='Population'
               className='cool-custom-name'
               tickSizeInner={0}
               tickSizeOuter={8}
@@ -123,18 +138,33 @@ export default class InfluenceChart extends React.Component {
               tickSizeInner={0}
               tickSizeOuter={8}
             />
-            <VerticalRectSeries
-              data={series[0].data.map(({ left, top }) => ({ x0: left - 0.5, left: left + 0.5, top }))}
-              stroke='white'
-              onNearestX={this._nearestXHandler}
-              {...(series[0].disabled ? { opacity: 0.2 } : null)} />
             <LineSeries
-              data={series[1].data}
+              onSeriesMouseOver={this._mouseClick}
+              onclick={(val, event) => {
+                console.debug('line click', val, event)
+                // does something on click
+                // you can access the value of the event
+              }}
+              onSeriesClick={(event) => {
+                console.debug('line click', event, event.value)
+                // does something on click
+                // you can access the value of the event
+              }}
+              color={rulerProps[1]}
+              data={series[2].data}
               curve='curveMonotoneX'
-              {...(series[1].disabled ? { opacity: 0.2 } : null)} />
+              onNearestX={this._nearestXHandler} />
             <AreaSeries
+              onValueClick={this._mouseClick}
+              onSeriesClick={(event) => {
+                console.debug('area click', event, event.value)
+                // does something on click
+                // you can access the value of the event
+              }}
               color={'url(#CoolGradient)'}
-              data={series[1].data}
+              curve='curveMonotoneX'
+              onNearestX={this._nearestXHandler}
+              data={series[2].data}
             />
             <Crosshair
               itemsFormat={this._formatCrosshairItems}
@@ -142,12 +172,9 @@ export default class InfluenceChart extends React.Component {
               values={crosshairValues} />
             <Crosshair
               className='currentYearMarker'
-              // itemsFormat={this._formatCrosshairItems}
-              // titleFormat={this._formatCrosshairTitle}
-              values={[
-                {left: selectedYear, top: 93},
-                {left: selectedYear, top: 93},
-                {left: selectedYear, top: 93}]} />
+              itemsFormat={this._formatCrosshairItems}
+              titleFormat={this._formatCrosshairTitle}
+              values={currentYearMarkerValues} />
           </FlexibleWidthXYPlot>
         </div>
       </div>

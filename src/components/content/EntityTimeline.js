@@ -8,9 +8,10 @@ import ChartSunburst from './Charts/ChartSunburst'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 import compose from 'recompose/compose'
-import {connect} from "react-redux"
-import {setYear as setYearAction} from "../map/timeline/actionReducers";
-import InfluenceChart from "./Charts/ChartArea";
+import { connect } from "react-redux"
+import { setYear  as setYearAction} from '../map/timeline/actionReducers'
+import { selectAreaItem } from '../map/actionReducers'
+import InfluenceChart from "./Charts/ChartArea"
 
 /**
  * Non-linear steppers allow users to enter a multi-step flow at any point.
@@ -126,6 +127,11 @@ class EntityTimeline extends React.Component {
     }
   }
 
+  selectAreaItemWrapper = () => {
+    console.debug("selectAreaItemWrapper",this.props)
+    this.props.selectAreaItem("random")
+  }
+
   render () {
     const { stepIndex, selectedWiki, influenceChartData } = this.state
     const { rulerEntity, selectedYear, rulerProps, newWidth, sunburstData } = this.props
@@ -137,12 +143,12 @@ class EntityTimeline extends React.Component {
 
     return (
       <div style={{ height: '100%' }}>
-        <ChartSunburst preData={ sunburstData } />
+        <ChartSunburst selectAreaItemWrapper={ this.selectAreaItemWrapper } preData={ sunburstData } selectedYear={selectedYear} />
         <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart rulerProps={rulerProps} newData={influenceChartData} selectedYear={selectedYear} />
         </div>
         { rulerDetected && <div style={{ width: '19%', maxWidth: '190px', height: '100%', overflow: 'auto', display: 'inline-block' }}>
-          <FlatButton backgroundColor={(rulerProps[1] || 'white')} labelStyle={{ padding: '4px' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
+          <FlatButton backgroundColor={(rulerProps[1] || 'grey')} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}
             orientation='vertical'
@@ -223,6 +229,7 @@ const enhance = compose(
   connect(state => ({
   }), {
     setYear: setYearAction,
+    selectAreaItem
   })
 )
 

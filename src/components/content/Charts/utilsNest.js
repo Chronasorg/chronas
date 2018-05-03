@@ -119,7 +119,7 @@ export default function() {
       if (depth === 3) {
         const s = {
           name: v[0].province,
-          hex: "rgba(0,0,0,100)",
+          hex: "rgba(0,0,0,0.4)",
           size: v[0].size
         }
         array.push({

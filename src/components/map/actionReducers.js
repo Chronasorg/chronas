@@ -3,6 +3,7 @@ export const SET_AREA_ITEM = 'SET_AREA_ITEM'
 export const SET_MARKER_ITEM = 'SET_MARKER_ITEM'
 export const SET_LINKED_ITEM = 'SET_LINKED_ITEM'
 export const SET_VALUE = 'SET_VALUE'
+export const SET_FULL_ITEM = 'SET_FULL_ITEM'
 
 export const DESELECT_ITEM = 'DESELECT_ITEM'
 
@@ -23,6 +24,11 @@ export const setWikiId = id => ({
 export const selectValue = value => ({
   type: SET_VALUE,
   payload: value,
+})
+
+export const setFullItem = (wiki, province, type) => ({
+  type: SET_FULL_ITEM,
+  payload: [wiki, province, type],
 })
 
 export const selectAreaItem = (wiki, province) => ({
@@ -58,6 +64,12 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
         return {
           ...previousState,
           wiki: payload
+        }
+      case SET_FULL_ITEM:
+        return {
+          wiki: payload[0],
+          value: payload[1],
+          type: payload[2]
         }
       case SET_AREA_ITEM:
         return {

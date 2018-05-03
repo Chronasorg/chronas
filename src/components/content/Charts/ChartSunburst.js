@@ -19,14 +19,7 @@ const fullRadian = Math.PI*2
 
 const MODE = [
   'circlePack',
-  'partition',
-  'partition-pivot',
-  'squarify',
-  'resquarify',
-  'slice',
-  'dice',
-  'slicedice',
-  'binary'
+  'partition'
 ];
 
 /*
@@ -60,15 +53,10 @@ function updateData (data, keyPath) {
   return data
 }
 
-
-const decoratedData = updateData({
-}, false)
-
-
 export default class ChartSunburst extends React.Component {
   state = {
     pathValue: false,
-    data: decoratedData,
+    data: {},
     finalValue: 'SUNBURST',
     clicked: false,
     total: 1,
@@ -86,18 +74,22 @@ export default class ChartSunburst extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    this.setState({
-      data: {
-        "children": nest()
-      .key(function(d) { return d.religionGeneral; })
-      .key(function(d) { return d.religion; })
-      .key(function(d) { return d.culture; })
-      // .key(function(d) { return d.province; })
-      .meta((nextProps.preData || {})[1] || {})
-      .entries((nextProps.preData || {})[0] || {})
-      },
-      total: nextProps.preData[0].reduce((a,b) => { return (+a || 0) + (b.size || 0) })
-    })
+    if (nextProps.preData && nextProps.preData.length > 0 || nextProps.selectedYear !== this.props.selectedYear) {
+      const { preData } = nextProps
+      if (!preData || preData.length === 0) return
+      this.setState({
+        data: {
+          "children": nest()
+            .key(function(d) { return d.religionGeneral; })
+            .key(function(d) { return d.religion; })
+            .key(function(d) { return d.culture; })
+            // .key(function(d) { return d.province; })
+            .meta((preData || {})[1] || {})
+            .entries((preData || {})[0] || {})
+        },
+        total: preData[0].reduce((a,b) => { return (+a || 0) + (b.size || 0) })
+      })
+    }
   }
 
   _countSize = (obj, key, out) => {
@@ -136,9 +128,40 @@ export default class ChartSunburst extends React.Component {
     this.setState({modeIndex});
   }
 
+  _handleMouseOver = node => {
+    const { clicked, modeIndex } = this.state
+    const { angle, angle0 } = node
+    if (clicked) {
+      return;
+    }
+
+    const path = this.getKeyPath(node).reverse()
+
+    if (modeIndex === -1) {
+      const pathAsMap = path.reduce((res, row) => {
+        res[row] = true;
+        return res;
+      }, {})
+
+      this.setState({
+        finalValue: path[path.length - 1],
+        pathValue: path.join(' > ') + ' (' + Math.round((angle-angle0)/fullRadian * 1000) / 10 + '%)',
+        data: updateData(this.state.data, pathAsMap)
+      })
+    } else {
+      const pathAsMap = path.reduce((res, row) => {
+        res[row] = true
+        return res
+      }, {})
+      this.setState({
+        pathValue: path.join(' > '),
+        data: updateData(this.state.data, pathAsMap)
+      })
+    }
+  }
+
   render () {
-    const { clicked, data, finalValue, useCirclePacking, pathValue, isMinimized, modeIndex } = this.state
-    const { preData } = this.props
+    const { clicked, data, finalValue, pathValue, isMinimized, modeIndex } = this.state
 
     const chartProps = {
       animation: {
@@ -146,34 +169,44 @@ export default class ChartSunburst extends React.Component {
         stiffness: 300
       },
       data: data,
-      onLeafMouseOver: x => this.setState({hoveredNode: x}),
-      onLeafMouseOut: () => this.setState({hoveredNode: false}),
-      onLeafClick: (n) => console.debug('clicked on ',n),
-      height: 300,
+      onLeafMouseOver: this._handleMouseOver,
+      onLeafMouseOut: () => this.setState({pathValue: ''}),
+      onLeafClick: (n) => { console.debug('gorandom'); this.props.selectAreaItemWrapper("random") },
+      height: 400,
       mode: MODE[modeIndex],
-      getLabel: x => x.name,
-      width: 350,
+      getLabel: (modeIndex === -1) ? () => '' : x => x.name,
+      width: 450,
       colorType: 'literal',
       getSize: d => d.size,
-      getLabel: x => x.name,
-      getColor: (d) => { /*console.debug(d);*/ return d.hex},
-        style: {
+      getColor: (d) => { return d.hex },
+      style: {
         stroke: '#ddd',
           strokeOpacity: 0.3,
           strokeWidth: '0.5'
+      },
+      hideRootNode: true,
+      onValueMouseOver: this._handleMouseOver,
+      onValueMouseOut: () => clicked ? () => {} : this.setState({
+        pathValue: false,
+        finalValue: false,
+        data: updateData(this.state.data, false)
+      }),
+      onValueClick: (node) => {
+        this.setState({clicked: !clicked})
       }
-    };
+
+  }
 
     return (
 
       <Paper zDepth={3} style={{
              position: 'fixed',
-             left:  (isMinimized ? '-103px' : '-408px'),
+             left:  (isMinimized ? '-103px' : '-508px'),
              top: '64px',
              padding: '1em',
              transition: 'all .2s ease-in-out',
-             width: (isMinimized ? '95' : '400px'),
-             height: (isMinimized ? '95px' : '424px'),
+             width: (isMinimized ? '95' : '500px'),
+             height: (isMinimized ? '95px' : '524px'),
              overflow: 'hidden'
            }}>
         <AppBar
@@ -181,46 +214,7 @@ export default class ChartSunburst extends React.Component {
           iconElementLeft={<div></div>}
           iconElementRight={this.state.isMinimized ? <IconButton style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton> :  <IconButton onClick={() => this._minimize()}><ChevronRight /></IconButton>}
         />
-      { !isMinimized && (modeIndex === -1) && <Sunburst
-          animation={{damping: 20, stiffness: 300}}
-          hideRootNode
-          onValueMouseOver={node => {
-            const { angle, angle0 } = node
-            if (clicked) {
-              return;
-            }
-            let partialCount = 0
-            const path = this.getKeyPath(node).reverse();
-            const pathAsMap = path.reduce((res, row) => {
-              res[row] = true;
-              return res;
-            }, {});
-
-            this.setState({
-              finalValue: path[path.length - 1],
-              pathValue: path.join(' > ') + ' (' + Math.round((angle-angle0)/fullRadian * 1000) / 10 + '%)',
-              data: updateData(this.state.data, pathAsMap)
-            });
-          }}
-          onValueMouseOut={() => clicked ? () => {} : this.setState({
-            pathValue: false,
-            finalValue: false,
-            data: updateData(this.state.data, false)
-          })}
-          onValueClick={(node) => {
-          this.setState({clicked: !clicked})
-          }}
-          data={data}
-          colorType={'literal'}
-          getSize={d => d.size}
-          getColor={(d) => { /*console.debug(d);*/ return d.hex} }
-          style={{
-            stroke: '#ddd',
-            strokeOpacity: 0.3,
-            strokeWidth: '0.5'
-          }}
-          height={300}
-          width={350}>
+      { !isMinimized && (modeIndex === -1) && <Sunburst {...chartProps}>
           {finalValue && <LabelSeries data={[
             {x: 0, y: 0, label: finalValue, style: LABEL_STYLE}
           ]} />}
@@ -230,17 +224,16 @@ export default class ChartSunburst extends React.Component {
         <FlatButton
           style={{
             position: 'relative',
-            top: '-300px',
-            left: '251px'
+            top: '-400px',
+            left: '301px'
           }}
-          label="SWITCH CHART"
-                    onClick={() => this._updateModeIndex(true).bind(this)}
+          label="SWITCH CHART" onClick={() => this._updateModeIndex(true)}
         />
         <div style={{
-          width: '350px',
+          width: '450px',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
-          paddingTop: '4px',
+          marginTop: '-25px',
           textOverflow: 'ellipsis',
         }}>{pathValue}</div>
       </Paper>
