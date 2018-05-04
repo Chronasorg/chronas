@@ -20,7 +20,7 @@ export default class InfluenceChart extends React.Component {
       series: [],
       sortedData: []
     }
-    this.__mouseClick = this._mouseClick.bind(this)
+    this._mouseClick = this._mouseClick.bind(this)
     this._nearestXHandler = this._nearestXHandler.bind(this)
     this._mouseLeaveHandler = this._mouseLeaveHandler.bind(this)
     this._formatCrosshairItems = this._formatCrosshairItems.bind(this)
@@ -36,7 +36,9 @@ export default class InfluenceChart extends React.Component {
   _nearestXHandler (value, { event, innerX, index }) {
     const { series } = this.state
     this.setState({
-      crosshairValues: series.map(s => s.data[index])
+      crosshairValues: series.map((s, i) => {
+        return { ...s.data[index], top:  s.data[index].top + (( i !== 2) ? '' : '%') }
+      })
     })
   }
 
@@ -49,7 +51,7 @@ export default class InfluenceChart extends React.Component {
   }
 
   _mouseClick (value,e) {
-    console.debug('_mouseClick',value,e)
+    if ((((this.state || {}).crosshairValues || {})[0] || {}).left) this.props.setYear(+this.state.crosshairValues[0].left)
   }
 
   /**
@@ -85,13 +87,14 @@ export default class InfluenceChart extends React.Component {
     if (nextProps.newData.data && (nextProps.newData || {}).id !== (this.props.newData || {}).id || nextProps.selectedYear !== this.props.selectedYear) {
       const { selectedYear} = nextProps
 
-      const currentYearMarkerValues = nextProps.newData.data.map((s) => {
+      const currentYearMarkerValues = nextProps.newData.data.map((s, i) => {
         const nearestYear = s.data.map(y => +y.left).reduce(function(prev, curr) {
           return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
         }).toString()
         return {
           left: selectedYear,
-          top: s.data.filter(f => f.left ===  nearestYear)[0].top }
+          top: s.data.filter(f => f.left ===  nearestYear)[0].top + (( i !== 2) ? '' : '%')
+        }
       })
 
       this.setState({
@@ -117,7 +120,6 @@ export default class InfluenceChart extends React.Component {
             getX={d => d.left}
             getY={d => d.top}
             onClick={this._mouseClick}
-            onValueClick={this._mouseClick}
             onMouseLeave={this._mouseLeaveHandler}
             xDomain={[sortedData[0], sortedData[sortedData.length - 1]]}
             height={200}>
@@ -140,28 +142,11 @@ export default class InfluenceChart extends React.Component {
               tickSizeOuter={8}
             />
             <LineSeries
-              onSeriesMouseOver={this._mouseClick}
-              onclick={(val, event) => {
-                console.debug('line click', val, event)
-                // does something on click
-                // you can access the value of the event
-              }}
-              onSeriesClick={(event) => {
-                console.debug('line click', event, event.value)
-                // does something on click
-                // you can access the value of the event
-              }}
               color={entityColor}
               data={series[2].data}
               curve='curveMonotoneX'
               onNearestX={this._nearestXHandler} />
             <AreaSeries
-              onValueClick={this._mouseClick}
-              onSeriesClick={(event) => {
-                console.debug('area click', event, event.value)
-                // does something on click
-                // you can access the value of the event
-              }}
               color={'url(#CoolGradient)'}
               curve='curveMonotoneX'
               onNearestX={this._nearestXHandler}

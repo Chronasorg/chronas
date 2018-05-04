@@ -242,7 +242,9 @@ class RightDrawerRoutes extends PureComponent {
       const selectedProvince = selectedItem.value
       // is rulerEntity loaded?
       const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
-      const activeRulDim = ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
+      const activeRulDim = (activeAreaDim === 'religionGeneral')
+        ? this.props.metadata['religion'][((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]][3]
+        : ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
       if (this.state.rulerEntity.id !== activeRulDim) {
         axios.get(properties.chronasApiHost + '/metadata/a_' + activeAreaDim + '_' + activeRulDim + '?type=a_' + activeAreaDim)
           .then((newRulerEntity) => {

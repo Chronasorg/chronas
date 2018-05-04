@@ -47,8 +47,9 @@ function updateData (data, keyPath) {
   }
   data.style = {
     ...data.style,
-    fillOpacity: keyPath && !keyPath[data.name] ? 0.2 : 1
+    cursor: 'pointer',
   }
+  data.opacity = keyPath && !keyPath[data.name] ? 0.4 : 1
 
   return data
 }
@@ -57,8 +58,7 @@ export default class ChartSunburst extends React.Component {
   state = {
     pathValue: false,
     data: {},
-    finalValue: 'SUNBURST',
-    clicked: false,
+    finalValue: 'hover/ click items',
     total: 1,
     modeIndex: -1,
     isMinimized: false
@@ -66,12 +66,17 @@ export default class ChartSunburst extends React.Component {
 
   getKeyPath = (node) => {
     if (!node.parent) {
-      return [this.props.selectedEntity || '']
+      return // [this.props.selectedEntity]
     }
 
     const dataValue = node.data && node.data.name || node.name
     const dataColor = node.data && node.data.hex || node.hex
-    return ['<span style="color: ' + dataColor + '" >' + dataValue + '</span>'].concat(this.getKeyPath(node.parent))
+
+    if (!node.parent.parent) {
+      return [[dataValue, dataColor]]
+    } else {
+      return [[dataValue, dataColor]].concat(this.getKeyPath(node.parent))
+    }
   }
 
   componentWillReceiveProps (nextProps) {
@@ -136,39 +141,25 @@ export default class ChartSunburst extends React.Component {
   }
 
   _handleMouseOver = node => {
-    const { clicked, modeIndex } = this.state
+    const { modeIndex } = this.state
     const { angle, angle0 } = node
-    if (clicked) {
-      return
-    }
 
     const path = this.getKeyPath(node).reverse()
 
-    if (modeIndex === -1) {
-      const pathAsMap = path.reduce((res, row) => {
-        res[row] = true
-        return res
-      }, {})
+    const pathAsMap = path.map((el) => (el[0])).reduce((res, row) => {
+      res[row] = true
+      return res
+    }, {})
 
-      this.setState({
-        finalValue: path[path.length - 1],
-        pathValue: path.join(' > ') + ' (' + Math.round((angle - angle0) / fullRadian * 1000) / 10 + '%)',
-        data: updateData(this.state.data, pathAsMap)
-      })
-    } else {
-      const pathAsMap = path.reduce((res, row) => {
-        res[row] = true
-        return res
-      }, {})
-      this.setState({
-        pathValue: path.join(' > '),
-        data: updateData(this.state.data, pathAsMap)
-      })
-    }
+    this.setState({
+      finalValue: '<span style="color: ' + path[path.length - 1][1] + '" >' + path[path.length - 1][0] + '</span>',
+      pathValue: path.map((el) => ('<span style="color: ' + el[1] + '" >' + el[0] + '</span>')).join(' > ') + (modeIndex === -1 ? ' (' + Math.round((angle - angle0) / fullRadian * 1000) / 10 + '%)' : ''),
+      data: updateData(this.state.data, pathAsMap)
+    })
   }
 
   render () {
-    const { clicked, data, finalValue, pathValue, isMinimized, modeIndex } = this.state
+    const { data, finalValue, pathValue, isMinimized, modeIndex } = this.state
 
     const chartProps = {
       animation: {
@@ -176,10 +167,11 @@ export default class ChartSunburst extends React.Component {
         stiffness: 300
       },
       data: data,
-      onLeafMouseOver: this._handleMouseOver,
-      onLeafMouseOut: () => this.setState({ pathValue: '' }),
-      onLeafClick: (n) => { console.debug('gorandom'); this.props.selectAreaItemWrapper('random') },
-      height: 400,
+      onLeafClick: (node) => {
+        const wikiEntity = node.wiki || node.data.wiki
+        if (wikiEntity) this.props.setWikiId(wikiEntity)
+      },
+      height: 380,
       mode: MODE[modeIndex],
       getLabel: (modeIndex === -1) ? () => '' : x => x.name,
       width: 450,
@@ -193,25 +185,32 @@ export default class ChartSunburst extends React.Component {
       },
       hideRootNode: true,
       onValueMouseOver: this._handleMouseOver,
-      onValueMouseOut: () => clicked ? () => {} : this.setState({
+      onValueMouseOut: () => this.setState({
+        pathValue: false,
+        finalValue: false,
+        data: updateData(this.state.data, false)
+      }),
+      onLeafMouseOver: this._handleMouseOver,
+      onLeafMouseOut: () => this.setState({
         pathValue: false,
         finalValue: false,
         data: updateData(this.state.data, false)
       }),
       onValueClick: (node) => {
-        this.setState({ clicked: !clicked })
+        const wikiEntity = node.wiki || ( node.data && node.data.wiki)
+        const isProvince = node.isProvince || ( node.data && node.isProvince)
+        const provName = node.name || ( node.data && node.data.name)
+        if (wikiEntity) {
+          this.props.setWikiId(wikiEntity)
+          if (isProvince) {
+            this.props.selectValue(provName)
+          }
+        }
       }
 
     }
-    // var thisIsMyCopy = (
-    //   <p>copy copy copy <strong>strong copy</strong></p>
-    // );
-    var thisIsMyCopy = (
-      pathValue
-    )
 
     return (
-
       <Paper zDepth={3} style={{
         position: 'fixed',
         left:  (isMinimized ? '-103px' : '-508px'),
@@ -223,7 +222,9 @@ export default class ChartSunburst extends React.Component {
         overflow: 'hidden'
       }}>
         <AppBar
-          title={<span>Composition <span style={{ fontSize: '12px', color: '#06060669' }}>{this.state.total} subjects</span></span>}
+          style={{ marginBottom: 20 }}
+          title={<span>Composition <span style={{
+            fontSize: '12px', color: '#06060669' }}>{this.state.total} subjects</span></span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
             ? <IconButton style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>

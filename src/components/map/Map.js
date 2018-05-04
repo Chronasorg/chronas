@@ -725,7 +725,8 @@ class Map extends Component {
 
         this.props.selectMarkerItem(wikiId, { ...layerClicked.properties, 'coo': layerClicked.geometry.coordinates })
         if (this.props.modActive.type === TYPE_MARKER) return
-      } else {
+      }
+      else {
         itemName = layerClicked.properties.name
         wikiId = layerClicked.properties.wikiUrl
         utilsQuery.updateQueryStringParameter('type', TYPE_AREA)
@@ -749,15 +750,6 @@ class Map extends Component {
           this.props.selectAreaItem(wikiId, itemName)
         }
       }
-    }
-
-    if (itemName !== '') {
-      this.map.getMap().flyTo({
-        center: [
-          event.lngLat[0],
-          event.lngLat[1]
-        ]
-      })
     }
 
     // this.props.setRightDrawerVisibility(itemName !== '')

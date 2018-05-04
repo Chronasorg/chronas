@@ -10,7 +10,8 @@ import FlatButton from 'material-ui/FlatButton'
 import compose from 'recompose/compose'
 import { connect } from "react-redux"
 import { setYear  as setYearAction} from '../map/timeline/actionReducers'
-import {selectAreaItem, WIKI_PROVINCE_TIMELINE} from '../map/actionReducers'
+import { selectValue } from '../map/actionReducers'
+import { WIKI_PROVINCE_TIMELINE} from '../map/actionReducers'
 import InfluenceChart from "./Charts/ChartArea"
 
 /**
@@ -61,6 +62,7 @@ const styles = {
 
 class EntityTimeline extends React.Component {
   state = {
+    selectedWiki: false,
     stepIndex: -1,
     influenceChartData: {}
   }
@@ -84,17 +86,22 @@ class EntityTimeline extends React.Component {
   }
 
   getStepContent (stepIndex, sortedRulerKeys) {
+    const { selectedWiki, iframeLoading } = this.state
     const rulerEntityData = ((this.props.rulerEntity || {}).data || {}).ruler || {}
     const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (this.props.rulerProps || {})[2] || -1
-    return (wikiUrl === -1) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? '100%' : 'calc(100% - 128px)') }} src={'http://en.wikipedia.org/wiki/' + wikiUrl + '?printable=yes'} height='90%' frameBorder='0' />
+    return (wikiUrl === -1) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? '100%' : 'calc(100% - 128px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} height='90%' frameBorder='0' />
   }
 
   _selectRealm = () => {
-    this.setState({ stepIndex: -1 })
+    this.setState({ stepIndex: -1, selectedWiki: false })
   }
 
   _selectStepButton = (index, newYear) => {
-    this.setState({stepIndex: index})
+    this.setState({stepIndex: index, selectedWiki: false})
+    this.props.setYear(+newYear)
+  }
+
+  setYearWrapper = (newYear) => {
     this.props.setYear(+newYear)
   }
 
@@ -138,25 +145,28 @@ class EntityTimeline extends React.Component {
     }
   }
 
-  selectAreaItemWrapper = () => {
-    console.debug("selectAreaItemWrapper",this.props)
-    this.props.selectAreaItem("random")
+  setWikiIdWrapper = (wiki) => {
+    this.setState({ selectedWiki: wiki })
+  }
+
+  selectValueWrapper = (value) => {
+    this.props.selectValue(value)
   }
 
   render () {
-    const { stepIndex, selectedWiki, influenceChartData } = this.state
+    const { stepIndex, selectedWiki, influenceChartData, iframeLoading } = this.state
     const { rulerEntity, selectedYear, rulerProps, newWidth, activeAreaDim, sunburstData } = this.props
 
-    const shouldLoad = (this.state.iframeLoading || selectedWiki === null)
+    const shouldLoad = (iframeLoading)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
     const sortedRulerKeys = Object.keys(rulerEntityData).sort((a, b) => +a - +b)
     const rulerDetected = sortedRulerKeys.length !== 0
 
     return (
       <div style={{ height: '100%' }}>
-        <ChartSunburst activeAreaDim={activeAreaDim} selectAreaItemWrapper={ this.selectAreaItemWrapper } preData={ sunburstData } selectedYear={selectedYear} />
+        <ChartSunburst activeAreaDim={activeAreaDim} setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} preData={ sunburstData } selectedYear={selectedYear} />
         <div style={{ height: '200px', width: '100%' }}>
-          <InfluenceChart rulerProps={rulerProps} newData={influenceChartData} selectedYear={selectedYear} />
+          <InfluenceChart rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div>
         { rulerDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 200px)', overflow: 'auto', display: 'inline-block' }}>
           <FlatButton backgroundColor={(rulerProps[1] || 'grey')} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
@@ -205,8 +215,8 @@ class EntityTimeline extends React.Component {
           height: '100%'
         }}>
           <div style={styles.contentStyle}>
-            {(selectedWiki === null || shouldLoad)
-              ? <span>loadin1g placeholder...</span>
+            {(shouldLoad)
+              ? <span>loading placeholder...</span>
               : this.getStepContent(stepIndex, sortedRulerKeys)}
             { rulerDetected && <div style={ styles.navTitle }>
               <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (rulerEntityData[sortedRulerKeys[stepIndex]] || {} )[0] } </span>
@@ -240,7 +250,7 @@ const enhance = compose(
   connect(state => ({
   }), {
     setYear: setYearAction,
-    selectAreaItem
+    selectValue
   })
 )
 

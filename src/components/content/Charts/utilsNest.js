@@ -120,17 +120,21 @@ export default function() {
         const s = {
           name: v[0].province,
           hex: "rgba(0,0,0,0.4)",
+          isProvince: true,
+          wiki: (meta[v[0].province] || {}),
           size: v[0].size
         }
         array.push({
           name: k,
-          "hex": (meta[k] || {})[1] || "#12939A",
+          hex: (meta[k] || {})[1] || "#12939A",
+          wiki: (meta[k] || {})[2],
           children: entries([s], depth)
         })
       } else {
         array.push({
           name: k,
           "hex": (meta[k] || {})[1] || "#12939A",
+          wiki: (meta[k] || {})[2],
           children: entries(v, depth)})
       }
     });
