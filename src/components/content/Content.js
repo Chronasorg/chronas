@@ -1,14 +1,17 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import Badge from 'material-ui/Badge';
 import PropTypes from 'prop-types'
-import IconButton from 'material-ui/IconButton'
-import SettingsIcon from 'material-ui/svg-icons/action/settings'
-import LayersIcon from 'material-ui/svg-icons/maps/layers'
-import { Link } from 'react-router-dom'
+import Paper from 'material-ui/Paper'
+import Menu from 'material-ui/Menu'
+import MenuItem from 'material-ui/MenuItem'
+import Divider from 'material-ui/Divider'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme, showNotification } from 'admin-on-rest'
+import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
+import ContentLink from 'material-ui/svg-icons/content/link'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { setFullModActive, resetModActive } from '../restricted/shared/buttons/actionReducers'
 import { TYPE_AREA, TYPE_MARKER, TYPE_LINKED, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE } from '../map/actionReducers'
@@ -20,12 +23,40 @@ import ProvinceTimeline from './ProvinceTimeline'
 import properties from '../../properties'
 
 const styles = {
+  contentLeftMenu: {
+    display: 'inline-block',
+    margin: '16px 32px 16px 0',
+    position: 'fixed',
+    left: '-70px',
+    top: '48px',
+    width: '64px',
+    overflow: 'hidden'
+  },
   main: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
     height: 'calc(100% - 64px)',
-    padding: '8px 4px'
+    padding: '8px 0px',
+    boxShadow: 'inset 0 5px 6px -3px rgba(0,0,0,.4)'
+  },
+  menuIcon: {
+    left: 20
+  },
+  menuIconBadge: {
+    top: '-4px',
+    left: '14px',
+    fontSize: '12px',
+    width: '20px',
+    height: '20px'
+  },
+  menuIconBadgeContainer: {
+    left: '-16px',
+    position: 'relative',
+    top: '-16px',
+  },
+  menuItem: {
+    width: '64px'
   },
   iframe: {
     display: 'block',
@@ -36,10 +67,13 @@ const styles = {
 
 class Content extends Component {
   state = {
+    itemHasLinkedItems: false,
     iframeLoading: true,
     iframeSource: '',
     selectedWiki: null,
-    sunburstData: []
+    sunburstData: [],
+    linkedItems: [],
+    activeContentMenuItem: 'sunburst'
   }
 
   componentDidMount = () => {
@@ -51,13 +85,22 @@ class Content extends Component {
     // TODO: this is not called on historypush!
     this.setState({
       iframeLoading: true,
-      selectedWiki: null
+      selectedWiki: null,
+      linkedItems: []
     })
     this._cleanUp()
   }
 
   _cleanUp = () => {
     this.props.resetModActive()
+  }
+
+  _setContentMenuItem = (newContentMenuItem) => {
+    this.setState({ activeContentMenuItem: newContentMenuItem })
+  }
+
+  _toggleContentMenuItem = (newContentMenuItem) => {
+    this.setState({ activeContentMenuItem:  (newContentMenuItem === this.state.activeContentMenuItem) ? '' : newContentMenuItem })
   }
 
   _handleUrlChange = (e) => {
@@ -142,6 +185,18 @@ class Content extends Component {
         iframeLoading: true,
         selectedWiki: selectedWiki
       })
+
+      // look for linked linked items based on wiki
+      axios.get(properties.chronasApiHost + '/metadata?linked=' + selectedWiki)
+        .then((linkedItemResult) => {
+          if (linkedItemResult.status === 200) {
+            const linkedItems = linkedItemResult.data
+            showNotification(linkedItems.length + ' linked item' + (linkedItems.length === 1 ) ? '' : 's' + ' found')
+            this.setState({ linkedItems })
+          } else {
+            showNotification('No linked items found, consider adding one') // TODO: notifications don't seem to work on this page
+          }
+        })
     }
 
     // religionGeneral - religion - culture - prov
@@ -158,18 +213,38 @@ class Content extends Component {
   }
 
   render () {
-    const { sunburstData, iframeLoading, selectedWiki } = this.state
+    const { activeContentMenuItem, sunburstData, iframeLoading, selectedWiki, itemHasLinkedItems, linkedItems } = this.state
     const { activeArea, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata, newWidth } = this.props
     const shouldLoad = (iframeLoading || selectedWiki === null)
 
     const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
-    const rulerTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
+    const entityTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
 
+    const linkedItemCount =  (linkedItems || []).length
+
     return <div style={styles.main}>
-      { shouldLoad && !rulerTimelineOpen && !provinceTimelineOpen && <span>loading placeholder...</span> }
-      {rulerTimelineOpen
-        ? <EntityTimeline newWidth={newWidth} activeAreaDim={activeAreaDim} rulerProps={metadata[activeAreaDim][rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} />
+      { entityTimelineOpen && <div>
+        <Paper style={styles.contentLeftMenu}>
+          <Menu desktop={true}>
+            <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={ styles.menuIcon } />} />
+            <Divider />
+            <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'links') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('links')} leftIcon={
+              <Badge
+                badgeStyle={ { ...styles.menuIconBadge, backgroundColor: (linkedItemCount > 0) ? 'rgb(255, 64, 129)' : 'rgb(205, 205, 205)'  } }
+                badgeContent={ linkedItemCount }
+                primary={true}
+              >
+                <ContentLink
+                  style={ styles.menuIconBadgeContainer } />
+              </Badge>
+            } disabled={itemHasLinkedItems} />
+          </Menu>
+        </Paper>
+      </div>}
+      { shouldLoad && !entityTimelineOpen && !provinceTimelineOpen && <span>loading placeholder...</span> }
+      {entityTimelineOpen
+        ? <EntityTimeline newWidth={newWidth} setContentMenuItem={this._setContentMenuItem} activeContentMenuItem={activeContentMenuItem} activeAreaDim={activeAreaDim} rulerProps={metadata[activeAreaDim][rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} />
         : provinceTimelineOpen
           ? <ProvinceTimeline metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
           : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}

@@ -55,9 +55,13 @@ import utils from "../map/utils/general";
 import properties from "../../properties";
 
 const styles = {
+  articleHeader: {
+    backgroundColor: '#eceff1',
+    height: '56px'
+  },
   iconElementRightStyle: {
+    backgroundColor: '#eceff1',
     position: 'fixed',
-    background: 'white',
     whiteSpace:  'nowrap',
     right: 0
   },
@@ -158,6 +162,7 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   componentWillReceiveProps (nextProps) {
+    // TODO: this gets called too much!
     this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.setState({
@@ -385,15 +390,20 @@ class RightDrawerRoutes extends PureComponent {
 
     const modUrl = '/mod/' + selectedItem.type
 
-    const articletHeader = <AppBar
+    const articleHeader = <AppBar
+      className='articleHeader'
+      style={ styles.articleHeader }
       iconElementLeft={
         (selectedItem.type === TYPE_AREA) ? <BottomNavigation
+
+          style={ styles.articleHeader }
           onChange={this.handleChange}
           selectedIndex={ (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
             ? 0
             : selectedIndexObject[activeArea.color] }>
           <BottomNavigationItem
             onClick={() => { setWikiId(WIKI_PROVINCE_TIMELINE); setAreaColorLabel('ruler', 'ruler') }}
+            className='bottomNavigationItem'
             icon={<CardHeader
               title={ selectedProvince }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -403,10 +413,10 @@ class RightDrawerRoutes extends PureComponent {
               subtitle={ 'Summary' }
               avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
             />}
-            // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             onClick={() => { setWikiId(''); setAreaColorLabel('ruler', 'ruler') }}
+            className='bottomNavigationItem'
             icon={<CardHeader
                 title={ rulerName }
                 titleStyle={ styles.cardHeader.titleStyle }
@@ -416,10 +426,10 @@ class RightDrawerRoutes extends PureComponent {
                 subtitle="Ruler"
                 avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
               />}
-            // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             onClick={() => { setWikiId(''); setAreaColorLabel('culture', 'culture') }}
+            className='bottomNavigationItem'
             icon={<CardHeader
               title={ cultureName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -428,10 +438,10 @@ class RightDrawerRoutes extends PureComponent {
               subtitle="Culture"
               avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
             />}
-            // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             onClick={() => { setWikiId(''); setAreaColorLabel('religion','religion') }}
+            className='bottomNavigationItem'
             icon={<CardHeader
               title={ religionName + ' [' + religionGeneralName + ']' }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -441,10 +451,10 @@ class RightDrawerRoutes extends PureComponent {
               subtitle="Religion"
               avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
             />}
-            // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             onClick={() => { setWikiId(''); changeColor('population') }}
+            className='bottomNavigationItem'
             icon={<CardHeader
               title={ capitalName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -454,10 +464,10 @@ class RightDrawerRoutes extends PureComponent {
               subtitle="Capital"
               avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
             />}
-            // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             onClick={() => { setWikiId(''); changeColor('population')} }
+            className='bottomNavigationItem'
             icon={<CardHeader
               title={ populationName }
               titleStyle={ styles.cardHeader.titleStyle }
@@ -549,7 +559,7 @@ class RightDrawerRoutes extends PureComponent {
           <Route
             exact
             path={'/article'}
-            render={restrictPage(articletHeader, Content, '', { metadata, rulerEntity, provinceEntity, selectedYear, newWidth } )}
+            render={restrictPage(articleHeader, Content, '', { metadata, rulerEntity, provinceEntity, selectedYear, newWidth } )}
         />
           <Route
             exact

@@ -548,7 +548,7 @@ class Discover extends PureComponent {
           </ToolbarGroup>
           <ToolbarGroup>
             <FloatingActionButton
-              onClick={this._handleAdd}
+              onClick={() => this._handleAdd}
               style={ addButtonDynamicStyle }>
               <ContentAdd />
             </FloatingActionButton>
@@ -556,7 +556,7 @@ class Discover extends PureComponent {
               backgroundColor={'transparent'}
               style={styles.closeButton}
               key={'close'}
-              onClick={this.handleClose}
+              onClick={() => this.handleClose}
             >
               <CloseIcon color={styles.toolbarTitleStyle.color} />
             </FloatingActionButton >

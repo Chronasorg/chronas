@@ -89,7 +89,7 @@ class EntityTimeline extends React.Component {
     const { selectedWiki, iframeLoading } = this.state
     const rulerEntityData = ((this.props.rulerEntity || {}).data || {}).ruler || {}
     const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (this.props.rulerProps || {})[2] || -1
-    return (wikiUrl === -1) ? null : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? '100%' : 'calc(100% - 128px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} height='90%' frameBorder='0' />
+    return (wikiUrl === -1 && !selectedWiki) ? <span>no wiki linked, consider adding one _here_</span> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
   }
 
   _selectRealm = () => {
@@ -153,9 +153,10 @@ class EntityTimeline extends React.Component {
     this.props.selectValue(value)
   }
 
+
   render () {
     const { stepIndex, selectedWiki, influenceChartData, iframeLoading } = this.state
-    const { rulerEntity, selectedYear, rulerProps, newWidth, activeAreaDim, sunburstData } = this.props
+    const { rulerEntity, selectedYear, rulerProps, newWidth, activeAreaDim, sunburstData, setContentMenuItem, activeContentMenuItem } = this.props
 
     const shouldLoad = (iframeLoading)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
@@ -164,16 +165,16 @@ class EntityTimeline extends React.Component {
 
     return (
       <div style={{ height: '100%' }}>
-        <ChartSunburst activeAreaDim={activeAreaDim} setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} preData={ sunburstData } selectedYear={selectedYear} />
+        <ChartSunburst activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'sunburst' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} preData={ sunburstData } selectedYear={selectedYear} />
         <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div>
         { rulerDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 200px)', overflow: 'auto', display: 'inline-block' }}>
-          <FlatButton backgroundColor={(rulerProps[1] || 'grey')} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
+          <FlatButton backgroundColor={(rulerProps || {})[1] || 'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}
             orientation='vertical'
-            style={{ float: 'left', width: '100%', paddingRight: '1em' }}>
+            style={{ float: 'left', width: '100%', paddingRight: '1em', background: '#eceff2' }}>
             {sortedRulerKeys.map((yearKey, i) => (
               (rulerEntityData[yearKey][0] !== "null") ? <Step key={i} style={ styles.stepContainer}>
                 <StepButton iconContainerStyle={{ background: (( (+(sortedRulerKeys[i]) <= +selectedYear) && (+selectedYear < +(sortedRulerKeys[i+1] || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{sortedRulerKeys[i]}</span>} onClick={() => this._selectStepButton(i, sortedRulerKeys[i]) }>

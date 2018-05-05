@@ -501,7 +501,7 @@ const utils = {
           metadata.provinces.features[i].properties.c = tmpCul
           metadata.provinces.features[i].properties.e = tmpRel
           metadata.provinces.features[i].properties.g = tmpPop
-          metadata.provinces.features[i].properties.c = tmpCap
+          metadata.provinces.features[i].properties.a = tmpCap
 
           if (this.activeTextFeat === "ruler" && metadata['ruler'][tmpRul]) {
             metadata.provinces.features[i].properties.nameLabel = metadata['ruler'][tmpRul][0]

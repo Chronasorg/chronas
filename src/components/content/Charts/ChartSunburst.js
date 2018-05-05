@@ -22,12 +22,11 @@ const MODE = [
   'partition'
 ]
 
-/*
-whiteSpace: 'nowrap',
-textOverflow: 'ellipsis',
-overflow: 'hidden'
-*/
-
+const styles = {
+  chartContainer: {
+    padding: '16px'
+  }
+}
 /**
  * Recursively modify data depending on whether or not each cell has been selected by the hover/highlight
  * @param {Object} data - the current node being considered
@@ -54,14 +53,15 @@ function updateData (data, keyPath) {
   return data
 }
 
+const defaultPathValue = '<span style="font-style: italic">hover/ click items</span>'
+
 export default class ChartSunburst extends React.Component {
   state = {
-    pathValue: false,
+    pathValue: defaultPathValue,
     data: {},
     finalValue: 'hover/ click items',
     total: 1,
-    modeIndex: -1,
-    isMinimized: false
+    modeIndex: -1
   }
 
   getKeyPath = (node) => {
@@ -126,11 +126,7 @@ export default class ChartSunburst extends React.Component {
   }
 
   _minimize = () => {
-    this.setState({ isMinimized: true })
-  }
-
-  _maximize = () => {
-    this.setState({ isMinimized: false })
+    this.props.setContentMenuItem('')
   }
 
   _updateModeIndex = (increment) => {
@@ -159,7 +155,8 @@ export default class ChartSunburst extends React.Component {
   }
 
   render () {
-    const { data, finalValue, pathValue, isMinimized, modeIndex } = this.state
+    const { isMinimized } = this.props
+    const { data, finalValue, pathValue, modeIndex } = this.state
 
     const chartProps = {
       animation: {
@@ -181,18 +178,19 @@ export default class ChartSunburst extends React.Component {
       style: {
         stroke: '#ddd',
         strokeOpacity: 0.3,
-        strokeWidth: '0.5'
+        strokeWidth: '0.5',
+
       },
       hideRootNode: true,
       onValueMouseOver: this._handleMouseOver,
       onValueMouseOut: () => this.setState({
-        pathValue: false,
+        pathValue: defaultPathValue,
         finalValue: false,
         data: updateData(this.state.data, false)
       }),
       onLeafMouseOver: this._handleMouseOver,
       onLeafMouseOut: () => this.setState({
-        pathValue: false,
+        pathValue: defaultPathValue,
         finalValue: false,
         data: updateData(this.state.data, false)
       }),
@@ -213,42 +211,51 @@ export default class ChartSunburst extends React.Component {
     return (
       <Paper zDepth={3} style={{
         position: 'fixed',
-        left:  (isMinimized ? '-103px' : '-508px'),
+        left:  (isMinimized ? '-52px' : '-574px'),
         top: '64px',
-        padding: '1em',
-        transition: 'all .2s ease-in-out',
-        width: (isMinimized ? '95' : '500px'),
-        height: (isMinimized ? '95px' : '524px'),
+        padding: '0em',
+        transition: 'all .3s ease-in-out',
+        width: (isMinimized ? '30px' : '500px'),
+        height: (isMinimized ? '30px' : '524px'),
+        pointerEvents: (isMinimized ? 'none' : 'inherit'),
+        opacity: (isMinimized ? '0' : 'inherit'),
         overflow: 'hidden'
       }}>
         <AppBar
-          style={{ marginBottom: 20 }}
-          title={<span>Composition <span style={{
-            fontSize: '12px', color: '#06060669' }}>{this.state.total} subjects</span></span>}
+          style={
+            {
+              marginBottom: 20,
+              transition: 'all .5s ease-in-out',
+              background: (isMinimized ? 'white' : 'rgba(55, 57, 49, 0.19)')
+            }
+          }
+          title={<span>Composition <span style={{ fontSize: 'inherit', color: 'inherit' }}>of {this.state.total} subjects</span></span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
-            ? <IconButton style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
+            ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
             : <IconButton onClick={() => this._minimize()}><ChevronRight /></IconButton>}
         />
+        <div style={styles.chartContainer}>
         { !isMinimized && (modeIndex === -1) && <Sunburst {...chartProps}>
 
           { finalValue &&  <div style={{
             textShadow: 'black 1px 0px 1px',
             position: 'absolute',
-            left: 122,
-            top: 190,
+            left: 123,
+            top: 178,
             width: 200,
             textAlign: 'center'
           }} dangerouslySetInnerHTML={{__html: finalValue}}></div>
           }
         </Sunburst>}
         { !isMinimized && (modeIndex !== -1) && <Treemap {...chartProps} /> }
-
+        </div>
         <FlatButton
           style={{
+            color: 'rgba(0,0,0,0.5',
             position: 'relative',
-            top: '-400px',
-            left: '301px'
+            top: '-418px',
+            left: '352px'
           }}
           label='SWITCH CHART' onClick={() => this._updateModeIndex(true)}
         />
@@ -256,10 +263,11 @@ export default class ChartSunburst extends React.Component {
           width: '450px',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
-          marginTop: '-25px',
           textOverflow: 'ellipsis',
+          marginTop: '-42px',
+          marginLeft: '1em',
         }}>
-          { pathValue &&  <div style={{textShadow: 'black 1px 0px 1px'}} dangerouslySetInnerHTML={{__html: pathValue}}></div>
+          { pathValue &&  <div dangerouslySetInnerHTML={{__html: pathValue}}></div>
           }
         </div>
       </Paper>
