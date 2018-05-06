@@ -5,6 +5,7 @@ import {
   StepButton,
 } from 'material-ui/Stepper'
 import ChartSunburst from './Charts/ChartSunburst'
+import LinkedGallery from './contentMenuItems/LinkedGallery'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 import compose from 'recompose/compose'
@@ -155,8 +156,8 @@ class EntityTimeline extends React.Component {
 
 
   render () {
-    const { stepIndex, selectedWiki, influenceChartData, iframeLoading } = this.state
-    const { rulerEntity, selectedYear, rulerProps, newWidth, activeAreaDim, sunburstData, setContentMenuItem, activeContentMenuItem } = this.props
+    const { stepIndex, selectedWiki, influenceChartData, translate, iframeLoading } = this.state
+    const { rulerEntity, selectedYear, rulerProps, newWidth, activeAreaDim, sunburstData, linkedItems, setContentMenuItem, activeContentMenuItem } = this.props
 
     const shouldLoad = (iframeLoading)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
@@ -166,15 +167,16 @@ class EntityTimeline extends React.Component {
     return (
       <div style={{ height: '100%' }}>
         <ChartSunburst activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'sunburst' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} preData={ sunburstData } selectedYear={selectedYear} />
+        <LinkedGallery activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems } selectedYear={selectedYear} />
         <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div>
-        { rulerDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 200px)', overflow: 'auto', display: 'inline-block' }}>
+        { rulerDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 184px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden' }}>
           <FlatButton backgroundColor={(rulerProps || {})[1] || 'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}
             orientation='vertical'
-            style={{ float: 'left', width: '100%', paddingRight: '1em', background: '#eceff2' }}>
+            style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
             {sortedRulerKeys.map((yearKey, i) => (
               (rulerEntityData[yearKey][0] !== "null") ? <Step key={i} style={ styles.stepContainer}>
                 <StepButton iconContainerStyle={{ background: (( (+(sortedRulerKeys[i]) <= +selectedYear) && (+selectedYear < +(sortedRulerKeys[i+1] || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{sortedRulerKeys[i]}</span>} onClick={() => this._selectStepButton(i, sortedRulerKeys[i]) }>

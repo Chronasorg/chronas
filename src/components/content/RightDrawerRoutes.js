@@ -63,7 +63,8 @@ const styles = {
     backgroundColor: '#eceff1',
     position: 'fixed',
     whiteSpace:  'nowrap',
-    right: 0
+    right: 0,
+    height: 56
   },
   menuButtons: {
     margin: 12,
@@ -285,42 +286,50 @@ class RightDrawerRoutes extends PureComponent {
   render() {
     const { list, create, edit, show, remove, options, onMenuTap,
       translate, rightDrawerOpen, deselectItem, setWikiId, setRightDrawerVisibility,
-      selectedYear, selectedItem, activeArea, children, muiTheme,
-      setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor, setAreaColorLabel } = this.props
+      selectedYear, selectedItem, activeArea, children, muiTheme, setAreaColorLabel,
+      setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor } = this.props
     const { newWidth, rulerEntity, provinceEntity } = this.state
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
     const modHeader = <AppBar
+      className='articleHeader'
+      style={ styles.articleHeader }
       iconElementLeft={
         <BottomNavigation
+        style={ styles.articleHeader }
         onChange={this.handleChange}
         selectedIndex={ this.state.selectedIndex }>
           <BottomNavigationItem
+            className='bottomNavigationItem'
             containerElement={<Link to="/mod/markers/create" />}
             label="Add Marker"
             icon={nearbyIcon}
             onClick={() => this.select(0)}
           />
           <BottomNavigationItem
+            className='bottomNavigationItem'
             containerElement={<Link to="/mod/metadata/create" />}
             label="Add Entity"
             icon={nearbyIcon}
             onClick={() => { this.select(1) }}
           />
           <BottomNavigationItem
+            className='bottomNavigationItem'
             containerElement={<Link to="/mod/areas" />}
             label="Edit Entity"
             icon={nearbyIcon}
             onClick={() => { this.select(2) }}
           />
           <BottomNavigationItem
+            className='bottomNavigationItem'
             containerElement={<Link to="/mod/markers" />}
             label="Edit Marker"
             icon={nearbyIcon}
             onClick={() => this.select(3)}
           />
           <BottomNavigationItem
+            className='bottomNavigationItem'
             containerElement={<Link to="/mod/metadata" />}
             label="Edit Meta"
             icon={nearbyIcon}

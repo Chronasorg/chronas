@@ -73,7 +73,7 @@ class Content extends Component {
     selectedWiki: null,
     sunburstData: [],
     linkedItems: [],
-    activeContentMenuItem: 'sunburst'
+    activeContentMenuItem: (localStorage.getItem('activeContentMenuItem') !== null) ? localStorage.getItem('activeContentMenuItem') : 'sunburst'
   }
 
   componentDidMount = () => {
@@ -96,11 +96,14 @@ class Content extends Component {
   }
 
   _setContentMenuItem = (newContentMenuItem) => {
+    localStorage.setItem('activeContentMenuItem', newContentMenuItem)
     this.setState({ activeContentMenuItem: newContentMenuItem })
   }
 
-  _toggleContentMenuItem = (newContentMenuItem) => {
-    this.setState({ activeContentMenuItem:  (newContentMenuItem === this.state.activeContentMenuItem) ? '' : newContentMenuItem })
+  _toggleContentMenuItem = (preContentMenuItem) => {
+    const newContentMenuItem = (preContentMenuItem === this.state.activeContentMenuItem) ? '' : preContentMenuItem
+    localStorage.setItem('activeContentMenuItem', newContentMenuItem)
+    this.setState({ activeContentMenuItem:  newContentMenuItem })
   }
 
   _handleUrlChange = (e) => {
@@ -187,11 +190,23 @@ class Content extends Component {
       })
 
       // look for linked linked items based on wiki
-      axios.get(properties.chronasApiHost + '/metadata?linked=' + selectedWiki)
+      axios.get(properties.chronasApiHost + '/metadata?type=i&wiki=Battle_of_Clontarf' /*+ selectedWiki*/)
         .then((linkedItemResult) => {
           if (linkedItemResult.status === 200) {
-            const linkedItems = linkedItemResult.data
+            const linkedItems = []
+            const res = linkedItemResult.data
             showNotification(linkedItems.length + ' linked item' + (linkedItems.length === 1 ) ? '' : 's' + ' found')
+            res.forEach((imageItem) => {
+              linkedItems.push({
+                src: imageItem._id,
+                wiki: imageItem.wiki,
+                title: imageItem.data.title,
+                subtype: imageItem.subtype,
+                source: imageItem.data.source,
+                subtitle: imageItem.year,
+                score: imageItem.score,
+              })
+            })
             this.setState({ linkedItems })
           } else {
             showNotification('No linked items found, consider adding one') // TODO: notifications don't seem to work on this page
@@ -229,7 +244,7 @@ class Content extends Component {
           <Menu desktop={true}>
             <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={ styles.menuIcon } />} />
             <Divider />
-            <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'links') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('links')} leftIcon={
+            <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
               <Badge
                 badgeStyle={ { ...styles.menuIconBadge, backgroundColor: (linkedItemCount > 0) ? 'rgb(255, 64, 129)' : 'rgb(205, 205, 205)'  } }
                 badgeContent={ linkedItemCount }
@@ -244,7 +259,7 @@ class Content extends Component {
       </div>}
       { shouldLoad && !entityTimelineOpen && !provinceTimelineOpen && <span>loading placeholder...</span> }
       {entityTimelineOpen
-        ? <EntityTimeline newWidth={newWidth} setContentMenuItem={this._setContentMenuItem} activeContentMenuItem={activeContentMenuItem} activeAreaDim={activeAreaDim} rulerProps={metadata[activeAreaDim][rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} />
+        ? <EntityTimeline newWidth={newWidth} setContentMenuItem={this._setContentMenuItem} activeContentMenuItem={activeContentMenuItem} activeAreaDim={activeAreaDim} rulerProps={metadata[activeAreaDim][rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} linkedItems={linkedItems} />
         : provinceTimelineOpen
           ? <ProvinceTimeline metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
           : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}

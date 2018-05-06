@@ -22,6 +22,8 @@ const styles = {
     justifyContent: 'flex-start',
     height: '100%',
     padding: '18px 14px',
+    background: 'white',
+    boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset'
   },
 };
 

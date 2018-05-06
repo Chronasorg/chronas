@@ -1,11 +1,27 @@
-import React, { PureComponent } from 'react'
-import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import React from 'react'
+import { Sunburst, LabelSeries, Treemap, } from 'react-vis'
+import AppBar from 'material-ui/AppBar'
+import Paper from 'material-ui/Paper'
+import {selectLinkedItem, selectMarkerItem} from '../../map/actionReducers'
+import Divider from 'material-ui/Divider'
+import FlatButton from 'material-ui/FlatButton'
+import IconButton from 'material-ui/IconButton'
+import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
+import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left'
+import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
+import ImageGallery from 'react-image-gallery'
 import YouTube from 'react-youtube'
+import axios from 'axios'
+import Badge from 'material-ui/Badge';
+import PropTypes from 'prop-types'
+import Menu from 'material-ui/Menu'
+import MenuItem from 'material-ui/MenuItem'
+import pure from 'recompose/pure'
+import { connect } from 'react-redux'
+import compose from 'recompose/compose'
 import { Player } from 'video-react'
 import Dialog from 'material-ui/Dialog'
 import { GridList, GridTile } from 'material-ui/GridList'
-import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import IconThumbUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
@@ -13,22 +29,29 @@ import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
 import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconEdit from 'material-ui/svg-icons/content/create'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
-import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentAdd from 'material-ui/svg-icons/content/add'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import { Tabs, Tab } from 'material-ui/Tabs'
-import ImageGallery from 'react-image-gallery'
 import SwipeableViews from 'react-swipeable-views'
 import { translate, ViewTitle, showNotification } from 'admin-on-rest'
-import axios from 'axios'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
-import { setRightDrawerVisibility } from '../../content/actionReducers'
-import {selectLinkedItem, selectMarkerItem} from '../../map/actionReducers'
-import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 import properties from "../../../properties";
+import {resetModActive, setFullModActive} from "../../restricted/shared/buttons/actionReducers";
+import {toggleRightDrawer as toggleRightDrawerAction} from "../actionReducers";
+
+const fullRadian = Math.PI * 2
+
+const MODE = [
+  'circlePack',
+  'partition'
+]
 
 const imgButton = { width: 20, height: 20}
 const styles = {
+  container: {
+    padding: '16px'
+  },
   addButton: {
     zIndex: 15000,
     marginTop: '3em',
@@ -102,7 +125,7 @@ const styles = {
     position: 'fixed',
     left: 64,
     right: 0,
-},
+  },
   headline: {
     fontSize: 24,
     paddingTop: 16,
@@ -147,7 +170,7 @@ const styles = {
   },
   selectedIMG: {
     height: 'auto',
-/* transform: translateY(-50%); */
+    /* transform: translateY(-50%); */
     position: 'relative',
     left: 0,
     width: '100%',
@@ -206,11 +229,11 @@ const YOUTUBEOPTS = {
     autoplay: 0
   }
 }
-
-class Discover extends PureComponent {
+class LinkedGallery extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      data: {},
       selectedImage: { src: '', year: '', title: '', wiki: '', source: '' },
       slideIndex: 0,
       currentYearLoaded: 3000,
@@ -362,9 +385,9 @@ class Discover extends PureComponent {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
             .then(() => {
               tileData[stateDataId] = tileData[stateDataId].map((el) => {
-                  if (encodeURIComponent(el.src) === id) el.score += 2
-                  return el
-                })
+                if (encodeURIComponent(el.src) === id) el.score += 2
+                return el
+              })
               this.setState({ tileData: tileData  })
               this.forceUpdate()
             })
@@ -376,9 +399,9 @@ class Discover extends PureComponent {
         .then(() => {
           this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score += 1
-              return el
-            })
+            if (encodeURIComponent(el.src) === id) el.score += 1
+            return el
+          })
           this.setState({ tileData: tileData  })
           this.forceUpdate()
         })
@@ -396,9 +419,9 @@ class Discover extends PureComponent {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score += 1
-              return el
-            })
+            if (encodeURIComponent(el.src) === id) el.score += 1
+            return el
+          })
           this.setState({ tileData: tileData  })
           this.forceUpdate()
         })
@@ -411,9 +434,9 @@ class Discover extends PureComponent {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
             .then(() => {
               tileData[stateDataId] = tileData[stateDataId].map((el) => {
-                  if (encodeURIComponent(el.src) === id) el.score -= 2
-                  return el
-                })
+                if (encodeURIComponent(el.src) === id) el.score -= 2
+                return el
+              })
               this.setState({ tileData: tileData  })
               this.forceUpdate()
             })
@@ -425,13 +448,17 @@ class Discover extends PureComponent {
         .then(() => {
           this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score -= 1
-              return el
-            })
+            if (encodeURIComponent(el.src) === id) el.score -= 1
+            return el
+          })
           this.setState({ tileData: tileData  })
           this.forceUpdate()
         })
     }
+  }
+
+  _minimize = () => {
+    this.props.setContentMenuItem('')
   }
 
   _handleEdit = (id, dataKey = false) => {
@@ -456,6 +483,7 @@ class Discover extends PureComponent {
   }
 
   _getYoutubeId = (url) => {
+    if (typeof url === 'undefined') return false
     const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
     if (match && match[2].length == 11) {
@@ -480,12 +508,10 @@ class Discover extends PureComponent {
   }
 
   render () {
-    const {  selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
+    const { isMinimized, linkedItems, selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
     const { slidesData, selectedImage, slideIndex, tileData, tabDataKeys } = this.state
-    if (rightDrawerOpen) setRightDrawerVisibility(false)
 
-    const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
-    const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
+    if (typeof linkedItems === 'undefined') return null
 
     const slideButtons = (score, id, source, stateData) => {
       console.debug(id, source, source || id)
@@ -537,253 +563,145 @@ class Discover extends PureComponent {
       </div>
     }
 
-    const titleText = (selectedImage.src !== '') ? '' : translate('pos.discover_label') + selectedYear
-
-    const addButtonDynamicStyle = {...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit'}
     return (
-      <div>
-        <Toolbar style={{ zIndex: 15000, color: 'white', boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px' }}>
-          <ToolbarGroup>
-            <ToolbarTitle style={styles.toolbarTitleStyle} text={titleText} />
-          </ToolbarGroup>
-          <ToolbarGroup>
-            <FloatingActionButton
-              onClick={() => this._handleAdd}
-              style={ addButtonDynamicStyle }>
-              <ContentAdd />
-            </FloatingActionButton>
-            <FloatingActionButton
-              backgroundColor={'transparent'}
-              style={styles.closeButton}
-              key={'close'}
-              onClick={this.handleClose}
+      <Paper zDepth={3} style={{
+        position: 'fixed',
+        left:  (isMinimized ? '-52px' : '-574px'),
+        top: '64px',
+        padding: '0em',
+        transition: 'all .3s ease-in-out',
+        width: (isMinimized ? '30px' : '500px'),
+        height: (isMinimized ? '30px' : 'calc(100% - 200px)'),
+        pointerEvents: (isMinimized ? 'none' : 'inherit'),
+        opacity: (isMinimized ? '0' : 'inherit'),
+        overflow: 'auto',
+      }}>
+        <AppBar
+          style={
+            {
+              marginBottom: 20,
+              transition: 'all .5s ease-in-out',
+              background: (isMinimized ? 'white' : 'rgba(55, 57, 49, 0.19)')
+            }
+          }
+          title={<span>Linked Items</span>}
+          iconElementLeft={<div />}
+          iconElementRight={this.state.isMinimized
+            ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
+            : <IconButton onClick={() => this._minimize()}><ChevronRight /></IconButton>}
+        />
+        <div style={styles.container}>
+          <div style={styles.root}>
+            // TODO: filter mit badge nummer and categories
+            <GridList
+              className='linkedGalleryGridList'
+              cellHeight={180}
+              padding={1}
+              cols={1}
+              style={styles.gridList}
             >
-              <CloseIcon color={styles.toolbarTitleStyle.color} />
-            </FloatingActionButton >
-          </ToolbarGroup>
-        </Toolbar>
-        <Dialog open
-          autoDetectWindowHeight={false}
-          modal={false}
-          onRequestClose={this.handleClose}
-          contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogBackgroundHack'}
-          contentStyle={styles.discoverDialogStyle}
-          bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
-          actionsContainerStyle={{ backgroundColor: red400 }}
-          overlayStyle={styles.overlayStyle}
-          style={{ backgroundColor: 'transparent', overflow: 'auto' }}
-          titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
-          autoScrollBodyContent={false}>
-
-          <ImageGallery
-            showPlayButton={false}
-            showFullscreenButton={false}
-            autoPlay={true}
-            slideDuration={1200}
-            showBullets={true}
-            showThumbnails={false}
-            items={slidesData}
-            onClick={(event) => {
-              const src = event.target.src
-              const selectedSlide = slidesData.filter(el => (el.original === src))[0]
-
-              this.setState({ selectedImage: {
-                src: selectedSlide.original,
-                year: selectedSlide.originalTitle,
-                title: selectedSlide.description,
-                wiki: selectedSlide.wiki,
-                source: selectedSlide.source
-              } })
-            }}
-          />
-
-          <Tabs
-            onChange={this.handleChange}
-            value={slideIndex}
-            tabItemContainerStyle={{
-              backgroundColor: 'rgba(0,0,0,0)',
-              margin: '0 auto',
-              maxWidth: '800px'
-            }}
-            style={{
-              margin: '0 auto',
-              width: '800px',
-              marginBottom: '1em',
-              marginTop: '1em' }}
-          >
-            {tabDataKeys.map((tabKey, i) => (
-            <Tab disabled={tileData[tabKey[0]].length > 0 ? false : true}  style={tileData[tabKey[0]].length > 0 ? {} : {opacity: 0.3, cursor: 'not-allowed'}} key={'tabHeader_' + i} label={tabKey[1]} value={i} />
-              ))}
-          </Tabs>
-          <SwipeableViews
-            index={slideIndex}
-            onChangeIndex={this.handleChange}>
-            {tabDataKeys.map((tabKey, i) => (
-            <div style={styles.root} key={'tab_' + i}>
-              <GridList
-                cellHeight={180}
-                padding={1}
-                cols={(tabKey[2] !== 'videos')
-                  ? (tabKey[2] === 'audios') ?
-                    1 : 3
-                  : 2
-                }
-                style={styles.gridList}
-              >
-                {tileData[tabKey[0]].length > 0 ? tileData[tabKey[0]].map((tile, j) => (
-                    (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles') ? <GridTile
-                        key={tile.src}
-                        style={{border: '1px solid black', cursor: 'pointer' }}
-                        titleStyle={styles.title}
-                        subtitleStyle={styles.subtitle}
-                        title={tile.subtitle}
-                        subtitle={tile.title}
-                        actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
-                        actionPosition='right'
-                        titlePosition='bottom'
-                        titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                        cols={((j+3)%4 < 2) ? 1 : 2}
-                        rows={2}
-                      >
-                        <img src={tile.src}
-                                     onError={() => this._removeTile(tabKey[0], tile.src)}
-                                     onClick={() => { this.setState({ selectedImage: {
-                                         src: tile.src,
-                                         year: tile.subtitle,
-                                         title: tile.title,
-                                         wiki: tile.wiki,
-                                         source: tile.source
-                                       } })}}
-                          />
-                      </GridTile>
-                    : (tile.subtype === 'articles' || tile.subtype === 'ps')
-                      ? <GridTile
-                          key={tile.src}
-                          style={{border: '1px solid black', cursor: 'pointer'}}
-                          titleStyle={styles.title}
-                          subtitleStyle={styles.subtitle}
-                          title={tile.subtitle}
-                          subtitle={tile.title}
-                          actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
-                          actionPosition='right'
-                          titlePosition='bottom'
-                          titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                          cols={((j+3)%4 < 2) ? 1 : 2}
-                          rows={2}
-                        ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
-                               onError={() => this._removeTile(tabKey[0], tile.src)}
-                               onClick={() => { this.setState({ selectedImage: {
-                                   src: tile.src,
-                                   year: tile.subtitle,
-                                   title: tile.title,
-                                   wiki: tile.wiki,
-                                   source: tile.source
-                                 } })}}
+              {linkedItems.length > 0 ? linkedItems.map((tile, j) => (
+                (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
+                  ? <GridTile
+                    key={tile.src}
+                    style={{border: '1px solid black', cursor: 'pointer' }}
+                    titleStyle={styles.title}
+                    subtitleStyle={styles.subtitle}
+                    title={tile.subtitle}
+                    subtitle={tile.title}
+                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[0])}
+                    actionPosition='right'
+                    titlePosition='bottom'
+                    titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                    cols={1}
+                    rows={2}
+                  >
+                    <img src={tile.src}
+                         onError={() => this._removeTile(tabKey[0], tile.src)}
+                         onClick={() => { this.setState({ selectedImage: {
+                             src: tile.src,
+                             year: tile.subtitle,
+                             title: tile.title,
+                             wiki: tile.wiki,
+                             source: tile.source
+                           } })}}
+                    />
+                  </GridTile>
+                  : (tile.subtype === 'articles' || tile.subtype === 'ps')
+                    ? <GridTile
+                      key={tile.src}
+                      style={{border: '1px solid black', cursor: 'pointer'}}
+                      titleStyle={styles.title}
+                      subtitleStyle={styles.subtitle}
+                      title={tile.subtitle}
+                      subtitle={tile.title}
+                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[0])}
+                      actionPosition='right'
+                      titlePosition='bottom'
+                      titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                      cols={1}
+                      rows={2}
+                    ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
+                          onError={() => this._removeTile(tabKey[0], tile.src)}
+                          onClick={() => { this.setState({ selectedImage: {
+                              src: tile.src,
+                              year: tile.subtitle,
+                              title: tile.title,
+                              wiki: tile.wiki,
+                              source: tile.source
+                            } })}}
+                    />
+                    </GridTile>
+                    : <GridTile
+                      key={tile.src}
+                      style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
+                      titleStyle={styles.title}
+                      subtitleStyle={styles.subtitle}
+                      title={tile.subtitle}
+                      subtitle={tile.title}
+                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[0])}
+                      actionPosition='right'
+                      titlePosition='bottom'
+                      titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                      rows={2}
+                    >
+                      {this._getYoutubeId(tile.src)
+                        ? <YouTube
+                          className='videoContent'
+                          videoId={this._getYoutubeId(tile.src)}
+                          opts={YOUTUBEOPTS}
+                          onError={() => this._removeTile(tabKey[0], tile.src)}
                         />
-                        </GridTile>
-                        : <GridTile
-                            key={tile.src}
-                            style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
-                            titleStyle={styles.title}
-                            subtitleStyle={styles.subtitle}
-                            title={tile.subtitle}
-                            subtitle={tile.title}
-                            actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
-                            actionPosition='right'
-                            titlePosition='bottom'
-                            titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                            rows={ tile.subtype === 'audios' ? 1 : 2}
-                          >
-                            {this._getYoutubeId(tile.src)
-                              ? <YouTube
-                                  className='videoContent'
-                                  videoId={this._getYoutubeId(tile.src)}
-                                  opts={YOUTUBEOPTS}
-                                  onError={() => this._removeTile(tabKey[0], tile.src)}
-                                />
-                              : <Player className='videoContent' fluid={false} ref="player">
-                                <source src={tile.src} />
-                              </Player>
-                            }
-                          </GridTile>
-                    )) : <span> - nothing here - </span>}
-              </GridList>
-            </div>))}
-          </SwipeableViews>
-        </Dialog>
-        <Dialog
-          autoDetectWindowHeight={false}
-          modal={false}
-          contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogImageBackgroundHack'}
-          contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', maxWidth: 'calc(100% - 64px)'}}
-          bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
-          actionsContainerStyle={{ backgroundColor: red400 }}
-          style={{ backgroundColor: 'transparent', overflow: 'auto' }}
-          titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
-          autoScrollBodyContent={false}
-          open={(selectedImage.src !== '')}
-          onRequestClose={this.handleImageClose}
-        >
-          <img src={selectedImage.src} style={styles.selectedIMG} />
-          <div style={styles.selectedImageContent}>
-            <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
-            <p style={styles.selectedImageDescription}>{selectedImage.title}</p>
-            <div style={styles.selectedImageButtonContainer}>
-
-              <IconButton
-                style={{ ...styles.buttonOpenArticle, paddingRight: '1em' }}
-                tooltipPosition="bottom-center"
-                tooltip={hasWiki ? translate('pos.discover.hasNoArticle') : translate('pos.discover.openArticle')}>
-                  <RaisedButton
-                    disabled={hasWiki}
-                    label="Open Article"
-                    primary={true}
-                    onClick={() => this._handleOpenArticle(selectedImage)}
-                  />
-              </IconButton>
-
-              <IconButton
-                style={styles.buttonOpenArticle}
-                tooltipPosition="bottom-center"
-                tooltip={hasWiki ? translate('pos.discover.hasNoSource') : translate('pos.discover.openSource')}>
-                <RaisedButton
-                  disabled={hasSource}
-                  label="Open Source"
-                  primary={true}
-                  onClick={() => this._handleOpenSource(selectedImage.source)} >
-                  <IconOutbound color="white" style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
-                </RaisedButton>
-              </IconButton>
-              <IconButton
-                style={styles.buttonOpenArticle}
-                tooltipPosition="bottom-center"
-                tooltip={translate('pos.discover.edit')}>
-                <RaisedButton
-                  label="Edit"
-                  primary={true}
-                  onClick={() => this._handleEdit(selectedImage.source)} />
-              </IconButton>
-            </div>
+                        : <Player className='videoContent' fluid={false} ref="player">
+                          <source src={tile.src} />
+                        </Player>
+                      }
+                    </GridTile>
+              )) : <span> - nothing here - </span>}
+            </GridList>
           </div>
-        </Dialog>
-      </div>
+        </div>
+      </Paper>
     )
   }
 }
 
-const mapStateToProps = state => ({
-  selectedYear: state.selectedYear,
-  rightDrawerOpen: state.rightDrawerOpen,
-  theme: state.theme,
-  locale: state.locale,
-  menuItemActive: state.menuItemActive,
-})
+const enhance = compose(
+  connect(state => ({
+    theme: state.theme,
+    locale: state.locale,
+    selectedItem: state.selectedItem,
+    activeArea: state.activeArea,
+    rightDrawerOpen: state.rightDrawerOpen,
+  }), {
+    toggleRightDrawer: toggleRightDrawerAction,
+    setFullModActive,
+    selectLinkedItem,
+    resetModActive,
+    showNotification,
+  }),
+  pure,
+  translate,
+)
 
-export default connect(mapStateToProps, {
-  changeLocale: changeLocaleAction,
-  changeTheme: changeThemeAction,
-  setRightDrawerVisibility,
-  selectLinkedItem,
-  selectMarkerItem,
-  showNotification
-})(translate(Discover))
+export default enhance(LinkedGallery)
