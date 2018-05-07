@@ -68,14 +68,16 @@ class EntityTimeline extends React.Component {
     influenceChartData: {}
   }
 
-  handleNext = () => {
+  handleNext = (newYear) => {
     const { stepIndex } = this.state
-    this.setState({ stepIndex: stepIndex + 1 })
+    this.setState({ stepIndex: stepIndex + 1, selectedWiki: false})
+    this.props.setYear(+newYear)
   };
 
-  handlePrev = () => {
+  handlePrev = (newYear) => {
     const { stepIndex } = this.state
-    this.setState({ stepIndex: stepIndex - 1 })
+    this.setState({ stepIndex: stepIndex - 1, selectedWiki: false})
+    this.props.setYear(+newYear)
   };
 
   _handleUrlChange = (e) => {
@@ -112,6 +114,7 @@ class EntityTimeline extends React.Component {
     console.error('setting up influenceChartData, this should only be done once', rulerEntity.id)
 
     this.setState({
+      stepIndex: -1,
       influenceChartData: {
         id: rulerEntity.id,
         data: [
@@ -161,7 +164,7 @@ class EntityTimeline extends React.Component {
 
     const shouldLoad = (iframeLoading)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
-    const sortedRulerKeys = Object.keys(rulerEntityData).sort((a, b) => +a - +b)
+    const sortedRulerKeys = Object.keys(rulerEntityData).filter((key) => rulerEntityData[key][0] !== "null").sort((a, b) => +a - +b)
     const rulerDetected = sortedRulerKeys.length !== 0
 
     return (
@@ -231,15 +234,15 @@ class EntityTimeline extends React.Component {
             { rulerDetected && <div style={ styles.navButtons }>
               <FlatButton
                 label='Back'
-                disabled={stepIndex === 0}
-                onClick={this.handlePrev}
+                disabled={stepIndex < 1}
+                onClick={() => this.handlePrev(sortedRulerKeys[stepIndex-1])}
                 style={{ marginRight: 12 }}
               />
               <RaisedButton
                 label='Next'
-                disabled={stepIndex === sortedRulerKeys.length-1}
+                disabled={stepIndex >= sortedRulerKeys.length-1}
                 primary
-                onClick={this.handleNext}
+                onClick={() => this.handleNext(sortedRulerKeys[stepIndex+1])}
               />
             </div> }
           </div>

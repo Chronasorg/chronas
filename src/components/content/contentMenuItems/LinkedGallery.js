@@ -9,6 +9,7 @@ import IconButton from 'material-ui/IconButton'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
 import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left'
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
+import ContentFilter from 'material-ui/svg-icons/content/filter-list'
 import ImageGallery from 'react-image-gallery'
 import YouTube from 'react-youtube'
 import axios from 'axios'
@@ -31,6 +32,7 @@ import IconEdit from 'material-ui/svg-icons/content/create'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import ContentAdd from 'material-ui/svg-icons/content/add'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
+import IconMenu from 'material-ui/IconMenu'
 import { Tabs, Tab } from 'material-ui/Tabs'
 import SwipeableViews from 'react-swipeable-views'
 import { translate, ViewTitle, showNotification } from 'admin-on-rest'
@@ -233,6 +235,17 @@ class LinkedGallery extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      filtered:[
+        'articles',
+        'stories',
+        'people',
+        'cities',
+        'battles',
+        'misc',
+        'videos',
+        'audios',
+        'ps'
+      ],
       data: {},
       selectedImage: { src: '', year: '', title: '', wiki: '', source: '' },
       slideIndex: 0,
@@ -251,20 +264,25 @@ class LinkedGallery extends React.Component {
         tilesPodcastsData: [],
         tilesPsData: []
       },
-      tabDataKeys: [
-        ['tilesHighlightData','HIGHLIGHTS',''],
-        ['tilesArticlesData','ARTICLES','articles'],
-        ['tilesStoriesData','STORIES','stories'],
-        ['tilesPeopleData','PEOPLE','people'],
-        ['tilesCitiesData','CITIES','cities'],
-        ['tilesBattlesData','BATTLES','battles'],
-        ['tilesOtherData','OTHER','misc'],
-        ['tilesVideosData','VIDEOS','videos'],
-        ['tilesPodcastsData','PODCASTS','audios'],
-        ['tilesPsData','PRIMARY SOURCES','ps']
+      categories: [
+       'articles',
+       'stories',
+       'people',
+       'cities',
+       'battles',
+       'misc',
+       'videos',
+       'audios',
+        'ps'
       ]
     }
   }
+
+  handleChangeFilter = (event, value) => {
+    this.setState({
+      filtered: value,
+    });
+  };
 
   handleChange = (value) => {
     this.setState({ slideIndex: value })
@@ -333,30 +351,6 @@ class LinkedGallery extends React.Component {
           slidesData: newSlideData,
         })
       })
-
-    // Load tab data
-    this.state.tabDataKeys.forEach(categoryObj => {
-      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=' + categoryObj[2])
-        .then(response => {
-          const newTilesData = []
-          const res = response.data
-          res.forEach((imageItem) => {
-            newTilesData.push({
-              src: imageItem._id,
-              wiki: imageItem.wiki,
-              title: imageItem.data.title,
-              subtype: imageItem.subtype,
-              source: imageItem.data.source,
-              subtitle: imageItem.year,
-              score: imageItem.score,
-            })
-          })
-          this.setState({
-            currentYearLoaded: selectedYear,
-            tileData: {...this.state.tileData, [categoryObj[0]]: newTilesData}
-          })
-        })
-    })
   }
 
   _handleUpvote = (id, stateDataId) => {
@@ -509,7 +503,7 @@ class LinkedGallery extends React.Component {
 
   render () {
     const { isMinimized, linkedItems, selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
-    const { slidesData, selectedImage, slideIndex, tileData, tabDataKeys } = this.state
+    const { slidesData, selectedImage, filtered, slideIndex, tileData, categories } = this.state
 
     if (typeof linkedItems === 'undefined') return null
 
@@ -592,7 +586,14 @@ class LinkedGallery extends React.Component {
         />
         <div style={styles.container}>
           <div style={styles.root}>
-            // TODO: filter mit badge nummer and categories
+            FILTER <IconMenu
+              iconButtonElement={<IconButton><ContentFilter /></IconButton>}
+              onChange={this.handleChangeFilter}
+              value={filtered}
+              multiple={true}
+            >
+              {categories.map((category) => <MenuItem value={category} primaryText={category} disabled={!linkedItems.some(linkedItem => linkedItem.subtype === category)} />)}
+            </IconMenu>
             <GridList
               className='linkedGalleryGridList'
               cellHeight={180}
@@ -600,8 +601,8 @@ class LinkedGallery extends React.Component {
               cols={1}
               style={styles.gridList}
             >
-              {linkedItems.length > 0 ? linkedItems.map((tile, j) => (
-                (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
+              {linkedItems.length > 0 ? linkedItems.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1 )).map((tile, j) => (
+                  (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
                   ? <GridTile
                     key={tile.src}
                     style={{border: '1px solid black', cursor: 'pointer' }}
@@ -609,7 +610,7 @@ class LinkedGallery extends React.Component {
                     subtitleStyle={styles.subtitle}
                     title={tile.subtitle}
                     subtitle={tile.title}
-                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[0])}
+                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0])}
                     actionPosition='right'
                     titlePosition='bottom'
                     titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
@@ -635,7 +636,7 @@ class LinkedGallery extends React.Component {
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
                       subtitle={tile.title}
-                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[0])}
+                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
                       actionPosition='right'
                       titlePosition='bottom'
                       titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
@@ -659,7 +660,7 @@ class LinkedGallery extends React.Component {
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
                       subtitle={tile.title}
-                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[0])}
+                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
                       actionPosition='right'
                       titlePosition='bottom'
                       titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
