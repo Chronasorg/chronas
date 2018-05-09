@@ -17,6 +17,8 @@ export default class InfluenceChart extends React.Component {
     this.state = {
       crosshairValues: [],
       currentYearMarkerValues: [],
+      crosshairStartValues: [],
+      crosshairEndValues: [],
       series: [],
       sortedData: []
     }
@@ -35,11 +37,19 @@ export default class InfluenceChart extends React.Component {
    */
   _nearestXHandler (value, { event, innerX, index }) {
     const { series } = this.state
-    this.setState({
-      crosshairValues: series[0].map((s, i) => {
-        return { ...s.data[index], top:  s.data[index].top + ((i !== 2) ? '' : '%') }
+    if (this.props.epicMeta) {
+      this.setState({
+        crosshairValues: series.map((s, i) => {
+          return { ...s[0].data[index], left: value.left, top: ((s[0].data[index] || {}).top || 0) + '%' }
+        })
       })
-    })
+    } else {
+      this.setState({
+        crosshairValues: series[0].map((s, i) => {
+          return { ...s.data[index], top: ((s.data[index] || {}).top || 0) + ((i !== 2) ? '' : '%') }
+        })
+      })
+    }
   }
 
   /**
@@ -74,17 +84,30 @@ export default class InfluenceChart extends React.Component {
    * @private
    */
   _formatCrosshairItems (values) {
+    const { rulerProps, epicMeta } = this.props
     const { series } = this.state
-    return values.map((v, i) => {
-      return {
-        title: series[0][i].title,
-        value: v.top
-      }
-    })
+
+    if (epicMeta) {
+      return values.map((v, i) => {
+        return {
+          title: ((rulerProps || {})[i] || {})[0],
+          value: v.top
+        }
+      })
+    } else {
+      return values.map((v, i) => {
+        return {
+          title: series[0][i].title,
+          value: v.top
+        }
+      })
+    }
   }
 
   componentWillReceiveProps (nextProps) {
-    if (((nextProps.newData || [])[0] || {}).data && (nextProps.newData[0] || {}).id !== ((this.props.newData || [])[0] || {}).id || nextProps.selectedYear !== this.props.selectedYear) {
+    if (((nextProps.newData || [])[0] || {}).data &&
+      (nextProps.newData[0] || {}).id !== ((this.props.newData || [])[0] || {}).id ||
+      nextProps.selectedYear !== this.props.selectedYear) {
       const { selectedYear } = nextProps
 
       const currentYearMarkerValues = nextProps.newData[0].data.map((s, i) => {
@@ -97,22 +120,32 @@ export default class InfluenceChart extends React.Component {
         }
       })
 
+      const crosshairStartValues = nextProps.epicMeta ? [{
+        left: +nextProps.epicMeta.start
+      }] : undefined
+      const crosshairEndValues = nextProps.epicMeta ? [{
+        left: +nextProps.epicMeta.end || +nextProps.epicMeta.start
+      }] : undefined
 
       this.setState({
         sortedData: nextProps.newData[0].data[0].data.map((el) => { if (!isNaN(el.left)) return el.left }).sort((a, b) => +a - +b),
         series: nextProps.newData.map((seriesEl) => seriesEl.data),
-        currentYearMarkerValues
+        currentYearMarkerValues,
+        crosshairStartValues,
+        crosshairEndValues
       })
     }
   }
 
   render () {
-    const { series, crosshairValues, currentYearMarkerValues, sortedData } = this.state
-    const { rulerProps, selectedYear } = this.props
+    const { series, crosshairValues, currentYearMarkerValues, crosshairStartValues, crosshairEndValues, sortedData } = this.state
+    const { rulerProps, selectedYear, epicMeta } = this.props
 
     if (!sortedData || sortedData.length === 0) return null
 
-    const entityColor = (rulerProps || {})[1] || 'grey'
+    const entityColor = epicMeta ? 'red' : (rulerProps || {})[1] || 'blue'
+    const xDomain = epicMeta ? [(+epicMeta.start - 50), ((+epicMeta.end || +epicMeta.start) + 50)] : [sortedData[0], sortedData[sortedData.length - 1]]
+
     return (
       <div>
         <div className='influenceChart'>
@@ -122,14 +155,17 @@ export default class InfluenceChart extends React.Component {
             getY={d => d.top}
             onClick={this._mouseClick}
             onMouseLeave={this._mouseLeaveHandler}
-            xDomain={[sortedData[0], sortedData[sortedData.length - 1]]}
+            xDomain={xDomain}
             height={200}>
             <HorizontalGridLines />
             <GradientDefs>
-              <linearGradient id='CoolGradient' x1='0' x2='0' y1='0' y2='1'>
+              { epicMeta ? rulerProps.map((rulerEl, i) => <linearGradient id={'CoolGradient' + i} x1='0' x2='0' y1='0' y2='1'>
+                <stop offset='0%' stopColor={(rulerEl || {})[1] || 'grey'} stopOpacity={0.8} />
+                <stop offset='100%' stopColor='white' stopOpacity={0.3} />
+              </linearGradient>) : <linearGradient id='CoolGradient0' x1='0' x2='0' y1='0' y2='1'>
                 <stop offset='0%' stopColor={entityColor} stopOpacity={0.8} />
                 <stop offset='100%' stopColor='white' stopOpacity={0.3} />
-              </linearGradient>
+              </linearGradient> }
             </GradientDefs>
             <YAxis
               orientation='left' title='Population'
@@ -140,27 +176,36 @@ export default class InfluenceChart extends React.Component {
               tickSizeInner={0}
               tickSizeOuter={8}
             />
-            {series.map(seriesEl => <LineMarkSeries
-                color={entityColor}
-                data={seriesEl[2].data}
-                curve='curveMonotoneX'
-                onNearestX={this._nearestXHandler} />
-            )}
-            {series.map(seriesEl => <AreaSeries
-              color={'url(#CoolGradient)'}
+            {series.map((seriesEl, i) => <LineMarkSeries
+              color={epicMeta ? ((rulerProps || {})[i] || {})[1] || 'grey' : (rulerProps || {})[1]}
+              data={epicMeta ? seriesEl[0].data : seriesEl[2].data}
               curve='curveMonotoneX'
-              onNearestX={this._nearestXHandler}
-              data={seriesEl[2].data} />
+              onNearestX={this._nearestXHandler} />
             )}
+            {series.map((seriesEl, i) => <AreaSeries
+              color={'url(#CoolGradient' + i + ')'}
+              curve='curveMonotoneX'
+              data={epicMeta ? seriesEl[0].data : seriesEl[2].data} />
+            )}
+            { epicMeta && <Crosshair
+              className='startMarker'
+              itemsFormat={this._formatCrosshairItems}
+              titleFormat={this._formatCrosshairTitle}
+              values={crosshairStartValues} />}
+            { epicMeta && <Crosshair
+              className='endMarker'
+              itemsFormat={this._formatCrosshairItems}
+              titleFormat={this._formatCrosshairTitle}
+              values={crosshairEndValues} />}
             <Crosshair
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
               values={crosshairValues} />
-            <Crosshair
+            { !epicMeta && <Crosshair
               className='currentYearMarker'
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
-              values={currentYearMarkerValues} />
+              values={currentYearMarkerValues} />}
           </FlexibleWidthXYPlot>
         </div>
       </div>

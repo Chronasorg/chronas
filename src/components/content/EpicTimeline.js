@@ -88,15 +88,15 @@ class EpicTimeline extends React.Component {
     } // TODO: do this with ref
   }
 
-  getStepContent (stepIndex, sortedRulerKeys) {
+  getStepContent (stepIndex, epicEntitiesData) {
+    const { epicData } =  this.props
     const { selectedWiki, iframeLoading } = this.state
-    const epicEntitiesData = ((this.props.epicData || {}).data || {}).ruler || {}
-    const wikiUrl = (epicEntitiesData[sortedRulerKeys[stepIndex]] || {})[2] || (this.props.rulerProps || {})[2] || -1
-    return (wikiUrl === -1 && !selectedWiki) ? <span>no wiki linked, consider adding one epic _here_</span> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
+    const wikiUrl = (epicEntitiesData[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || -1
+    return (wikiUrl === -1 && !selectedWiki) ? <span>no wiki linked, consider adding one epic _here_</span> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (epicEntitiesData.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
   }
 
-  _selectRealm = () => {
-    this.setState({ stepIndex: -1, selectedWiki: false })
+  _selectMainArticle = () => {
+    this.setState({ stepIndex: -1 })
   }
 
   _selectStepButton = (index, newYear) => {
@@ -119,16 +119,6 @@ class EpicTimeline extends React.Component {
         return {
           id: epicEntity._id,
           data: [
-            {
-              title: 'Provinces',
-              disabled: false,
-              data: epicEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][0] } })
-            },
-            {
-              title: 'Population Total',
-              disabled: false,
-              data: epicEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][1] } })
-            },
             {
               title: 'Population Share',
               disabled: false,
@@ -165,25 +155,25 @@ class EpicTimeline extends React.Component {
     const { epicData, selectedYear, rulerProps, newWidth, history, activeAreaDim, linkedItems, setContentMenuItem, activeContentMenuItem } = this.props
 
     const shouldLoad = (iframeLoading)
-    const epicEntitiesData = ((epicData || {}).data || {}).ruler || {}
-    const sortedRulerKeys = Object.keys(epicEntitiesData).filter((key) => epicEntitiesData[key][0] !== "null").sort((a, b) => +a - +b)
-    const rulerDetected = sortedRulerKeys.length !== 0
+    const epicMeta = ((epicData || {}).data || {}).data || {}
+    const epicEntitiesData = epicMeta.content || [].sort((a, b) => +a - +b)
+    const contentDetected = epicEntitiesData.length !== 0
 
     return (
       <div style={{ height: '100%' }}>
         <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems } selectedYear={selectedYear} />
         <div style={{ height: '200px', width: '100%' }}>
-          <InfluenceChart rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
+          <InfluenceChart epicMeta={epicMeta} rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div>
-        { rulerDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 184px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden' }}>
-          <FlatButton backgroundColor={(rulerProps || {})[1] || 'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectRealm.bind(this)} />
+        { contentDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 184px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden' }}>
+          <FlatButton backgroundColor={'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(epicMeta || {}).title || 'Epic Main'} onClick={this._selectMainArticle.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}
             orientation='vertical'
             style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
-            {sortedRulerKeys.map((yearKey, i) => (
-              (epicEntitiesData[yearKey][0] !== "null") ? <Step key={i} style={ styles.stepContainer}>
-                <StepButton iconContainerStyle={{ background: (( (+(sortedRulerKeys[i]) <= +selectedYear) && (+selectedYear < +(sortedRulerKeys[i+1] || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{sortedRulerKeys[i]}</span>} onClick={() => this._selectStepButton(i, sortedRulerKeys[i]) }>
+            {epicEntitiesData.map((epicContent, i) => (
+              <Step key={i} style={ styles.stepContainer}>
+                <StepButton iconContainerStyle={{ background: (( (+(epicEntitiesData[i].date) <= +selectedYear) && (+selectedYear < +((epicEntitiesData[i+1] || {}).date || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{epicEntitiesData[i].date}</span>} onClick={() => this._selectStepButton(i, epicEntitiesData[i].date) }>
                   <div style={{
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
@@ -194,7 +184,7 @@ class EpicTimeline extends React.Component {
                     top: '16px',
                     fontSize: '15px'
                   }}>
-                    {epicEntitiesData[yearKey][0]}
+                    {epicContent.wiki}
                   </div>
                   <div style={{
                     overflow: 'hidden',
@@ -206,16 +196,16 @@ class EpicTimeline extends React.Component {
                     top: '32px',
                     fontSize: '12px'
                   }}>
-                    {epicEntitiesData[yearKey][1]}
+                    {epicContent.type}
                   </div>
 
                 </StepButton>
-              </Step> : null
+              </Step>
             ))}
           </Stepper>
         </div> }
         <div style={{
-          width: (rulerDetected ? '80%' : '100%'),
+          width: (contentDetected ? '80%' : '100%'),
           minWidth: 'calc(100% - 210px)',
           display: 'inline-block',
           float: 'right',
@@ -224,26 +214,26 @@ class EpicTimeline extends React.Component {
           <div style={styles.contentStyle}>
             {(shouldLoad)
               ? <span>loading epic placeholder...</span>
-              : this.getStepContent(stepIndex, sortedRulerKeys)}
-            { rulerDetected && <div style={ styles.navTitle }>
-              <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (epicEntitiesData[sortedRulerKeys[stepIndex]] || {} )[0] } </span>
+              : this.getStepContent(stepIndex, epicEntitiesData)}
+            { contentDetected && <div style={ styles.navTitle }>
+              <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (epicEntitiesData[epicEntitiesData[stepIndex]] || {} )[0] } </span>
               <span style={{ fontWeight: 300, paddingRight: '.6em'}}>
-                {(epicEntitiesData[sortedRulerKeys[stepIndex]] || {} )[1]}
+                {(epicEntitiesData[epicEntitiesData[stepIndex]] || {} )[1]}
               </span>
-              <span style={{ paddingRight: '2em'}}> ({stepIndex + 1} / {sortedRulerKeys.length})</span>
+              <span style={{ paddingRight: '2em'}}> ({stepIndex + 1} / {epicEntitiesData.length})</span>
             </div> }
-            { rulerDetected && <div style={ styles.navButtons }>
+            { contentDetected && <div style={ styles.navButtons }>
               <FlatButton
                 label='Back'
                 disabled={stepIndex < 1}
-                onClick={() => this.handlePrev(sortedRulerKeys[stepIndex-1])}
+                onClick={() => this.handlePrev(epicEntitiesData[stepIndex-1])}
                 style={{ marginRight: 12 }}
               />
               <RaisedButton
                 label='Next'
-                disabled={stepIndex >= sortedRulerKeys.length-1}
+                disabled={stepIndex >= epicEntitiesData.length-1}
                 primary
-                onClick={() => this.handleNext(sortedRulerKeys[stepIndex+1])}
+                onClick={() => this.handleNext(epicEntitiesData[stepIndex+1])}
               />
             </div> }
           </div>

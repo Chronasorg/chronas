@@ -85,3 +85,26 @@
     }
   }
 }
+
+.startMarker, .endMarker {
+  .rv-crosshair__line {
+    background: #ff7f6e;
+    width: 4px;
+  }
+
+  .rv-crosshair__inner__content {
+    display: none;
+  }
+
+  .rv-crosshair__inner.rv-crosshair__inner--right {
+    .rv-crosshair__inner__content {
+      margin-left: -2px;
+    }
+  }
+
+  .rv-crosshair__inner.rv-crosshair__inner--left {
+    .rv-crosshair__inner__content {
+      margin-right: -2px;
+    }
+  }
+}

@@ -279,29 +279,28 @@ class RightDrawerRoutes extends PureComponent {
       axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
         .then((newEpicEntitiesRes) => {
           const newEpicEntities = newEpicEntitiesRes.data
-          console.debug(newEpicEntities, newEpicEntitiesRes)
 
           const teamMapping = {}
-          const rulerPromises = []
-          newEpicEntities.data.participants.forEach((team, teamIndex) => {
+          const rulerPromises = [];
+          const participants = (newEpicEntities.data.participants || [])
+          const flatternedParticipants = []
+
+          participants.forEach((team, teamIndex) => {
             team.forEach((participant) => {
               teamMapping[participant] = teamIndex
               rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + participant))
+              flatternedParticipants.push(participant)
             })
           })
 
+          console.debug(newEpicEntities, newEpicEntitiesRes)
+
           axios.all(rulerPromises)
             .then(axios.spread((...args) => {
-              console.debug({
-                id: newEpicEntities._id,
-                data: newEpicEntities,
-                rulerEntities: args.map(res => res.data)
-              })
-
               this.setState({ epicData: {
                   id: newEpicEntities._id,
                   data: newEpicEntities,
-                  rulerEntities: args.map(res => res.data)
+                  rulerEntities: args.map((res, i) => { return { ...res.data, id: flatternedParticipants[i] }})
                 }})
             }))
         })

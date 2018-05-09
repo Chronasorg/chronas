@@ -271,10 +271,10 @@ class Content extends Component {
               setContentMenuItem={this._setContentMenuItem}
               activeContentMenuItem={activeContentMenuItem}
               activeAreaDim={activeAreaDim}
-              rulerProps={metadata[activeAreaDim][rulerEntity.id]}
               selectedYear={selectedYear}
               selectedItem={selectedItem}
               epicData={epicData}
+              rulerProps={epicData.rulerEntities.map( el => metadata['ruler'][el.id] )}
               linkedItems={linkedItems} />
             : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}
                       height='100%' frameBorder='0' />}
