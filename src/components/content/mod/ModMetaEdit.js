@@ -65,7 +65,7 @@ export const ModMetaEdit = (props) => {
     province: {
       name: (metadata['province'][props.metadataEntity] || {})[0] || '',
       url: 'https://en.wikipedia.org/wiki/' + (metadata['province'][props.metadataEntity] || {})[2] || '',
-}
+    }
   }
 
   const choicesRuler = Object.keys(metadata['ruler']).map((rulerId) => {

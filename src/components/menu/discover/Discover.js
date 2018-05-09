@@ -218,6 +218,7 @@ class Discover extends PureComponent {
       slidesData: [],
       tileData: {
         tilesHighlightData: [],
+        tilesArtefactsData: [],
         tilesArticlesData: [],
         tilesStoriesData: [],
         tilesPeopleData: [],
@@ -230,6 +231,7 @@ class Discover extends PureComponent {
       },
       tabDataKeys: [
         ['tilesHighlightData','HIGHLIGHTS',''],
+        ['tilesArtefactsData','ARTEFACTS','artefacts'],
         ['tilesArticlesData','ARTICLES','articles'],
         ['tilesStoriesData','STORIES','stories'],
         ['tilesPeopleData','PEOPLE','people'],
@@ -450,9 +452,8 @@ class Discover extends PureComponent {
   }
 
   _handleOpenArticle = (selectedImage) => {
-    // Albert_Einstein
     this.props.selectLinkedItem(selectedImage.wiki)
-    this.props.history.push('/article') //TODO not working yet
+    this.props.history.push('/article')
   }
 
   _getYoutubeId = (url) => {

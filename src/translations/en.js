@@ -43,7 +43,7 @@ export default {
       light: 'Light',
       dark: 'Dark',
     },
-    discover: {
+    discover_component: {
       openArticle: 'Open related Wikipedia article',
       hasNoArticle: 'No Wiki article linked yet, please consider editing this item',
       openSource: 'Open source in new tab',

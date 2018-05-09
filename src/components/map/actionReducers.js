@@ -4,12 +4,13 @@ export const SET_MARKER_ITEM = 'SET_MARKER_ITEM'
 export const SET_LINKED_ITEM = 'SET_LINKED_ITEM'
 export const SET_VALUE = 'SET_VALUE'
 export const SET_FULL_ITEM = 'SET_FULL_ITEM'
-
+export const SET_EPIC_ITEM = 'SET_EPIC_ITEM'
 export const DESELECT_ITEM = 'DESELECT_ITEM'
 
 export const TYPE_AREA = 'areas'
 export const TYPE_MARKER = 'markers'
 export const TYPE_LINKED = 'linked'
+export const TYPE_EPIC = 'epic'
 
 export const WIKI_RULER_TIMELINE = 'WIKI_RULER_TIMELINE'
 export const WIKI_PROVINCE_TIMELINE = 'WIKI_PROVINCE_TIMELINE'
@@ -33,6 +34,11 @@ export const setFullItem = (wiki, province, type) => ({
 
 export const selectAreaItem = (wiki, province) => ({
   type: SET_AREA_ITEM,
+  payload: [wiki, province],
+})
+
+export const selectEpicItem = (wiki, province) => ({
+  type: SET_EPIC_ITEM,
   payload: [wiki, province],
 })
 
@@ -76,6 +82,12 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
           wiki: payload[0],
           value: payload[1],
           type: TYPE_AREA
+        }
+      case SET_EPIC_ITEM:
+        return {
+          wiki: payload[0],
+          value: payload[1],
+          type: TYPE_EPIC
         }
       case SET_LINKED_ITEM:
         return {

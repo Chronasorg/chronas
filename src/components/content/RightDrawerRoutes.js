@@ -43,7 +43,7 @@ import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIco
 import { setRightDrawerVisibility } from './actionReducers'
 import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
-  deselectItem as deselectItemAction, TYPE_LINKED
+  deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC
 } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
@@ -158,6 +158,11 @@ class RightDrawerRoutes extends PureComponent {
       provinceEntity: {
         "id": null,
         "data": null
+      },
+      epicData: {
+        "id": null,
+        "data": null,
+        "rulerEntities": []
       }
     }
   }
@@ -252,11 +257,11 @@ class RightDrawerRoutes extends PureComponent {
         ? this.props.metadata['religion'][((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]][3]
         : ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
       if (this.state.rulerEntity.id !== activeRulDim) {
-        axios.get(properties.chronasApiHost + '/metadata/a_' + activeAreaDim + '_' + activeRulDim + '?type=a_' + activeAreaDim)
+        axios.get(properties.chronasApiHost + '/metadata/a_' + activeAreaDim + '_' + activeRulDim)
           .then((newRulerEntity) => {
             this.setState({ rulerEntity: {
                 id: activeRulDim,
-                data: newRulerEntity.data
+                data: newRulerEntity.data.data
               }})
           })
       }
@@ -265,10 +270,41 @@ class RightDrawerRoutes extends PureComponent {
           .then((newProvinceEntity) => {
             this.setState({ provinceEntity: {
                 id: selectedProvince,
-                data: newProvinceEntity.data
+                data: newProvinceEntity.data.data
               }})
           })
       }
+    } else if (selectedItem.type === TYPE_EPIC) {
+      const epicWiki = selectedItem.wiki
+      axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
+        .then((newEpicEntitiesRes) => {
+          const newEpicEntities = newEpicEntitiesRes.data
+          console.debug(newEpicEntities, newEpicEntitiesRes)
+
+          const teamMapping = {}
+          const rulerPromises = []
+          newEpicEntities.data.participants.forEach((team, teamIndex) => {
+            team.forEach((participant) => {
+              teamMapping[participant] = teamIndex
+              rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + participant))
+            })
+          })
+
+          axios.all(rulerPromises)
+            .then(axios.spread((...args) => {
+              console.debug({
+                id: newEpicEntities._id,
+                data: newEpicEntities,
+                rulerEntities: args.map(res => res.data)
+              })
+
+              this.setState({ epicData: {
+                  id: newEpicEntities._id,
+                  data: newEpicEntities,
+                  rulerEntities: args.map(res => res.data)
+                }})
+            }))
+        })
     }
   }
 
@@ -288,7 +324,7 @@ class RightDrawerRoutes extends PureComponent {
       translate, rightDrawerOpen, deselectItem, setWikiId, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, children, muiTheme, setAreaColorLabel,
       setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor } = this.props
-    const { newWidth, rulerEntity, provinceEntity } = this.state
+    const { newWidth, rulerEntity, provinceEntity, epicData } = this.state
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
@@ -568,7 +604,7 @@ class RightDrawerRoutes extends PureComponent {
           <Route
             exact
             path={'/article'}
-            render={restrictPage(articleHeader, Content, '', { metadata, rulerEntity, provinceEntity, selectedYear, newWidth } )}
+            render={restrictPage(articleHeader, Content, '', { metadata, rulerEntity, provinceEntity, epicData, selectedYear, newWidth, history } )}
         />
           <Route
             exact

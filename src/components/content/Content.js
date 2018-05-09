@@ -14,11 +14,12 @@ import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
 import ContentLink from 'material-ui/svg-icons/content/link'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { setFullModActive, resetModActive } from '../restricted/shared/buttons/actionReducers'
-import { TYPE_AREA, TYPE_MARKER, TYPE_LINKED, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE } from '../map/actionReducers'
+import { TYPE_AREA, TYPE_MARKER, TYPE_LINKED, TYPE_EPIC, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE } from '../map/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
 import EntityTimeline from './EntityTimeline'
+import EpicTimeline from './EpicTimeline'
 import ProvinceTimeline from './ProvinceTimeline'
 import properties from '../../properties'
 
@@ -229,11 +230,12 @@ class Content extends Component {
 
   render () {
     const { activeContentMenuItem, sunburstData, iframeLoading, selectedWiki, itemHasLinkedItems, linkedItems } = this.state
-    const { activeArea, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata, newWidth } = this.props
+    const { activeArea, selectedItem, rulerEntity, epicData, provinceEntity, selectedYear, metadata, newWidth, history } = this.props
     const shouldLoad = (iframeLoading || selectedWiki === null)
 
     const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
     const entityTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
+    const epicTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_EPIC)
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
 
     const linkedItemCount =  (linkedItems || []).length
@@ -257,13 +259,25 @@ class Content extends Component {
           </Menu>
         </Paper>
       </div>}
-      { shouldLoad && !entityTimelineOpen && !provinceTimelineOpen && <span>loading placeholder...</span> }
+      { shouldLoad && !entityTimelineOpen && !provinceTimelineOpen && !epicTimelineOpen && <span>loading placeholder...</span> }
       {entityTimelineOpen
-        ? <EntityTimeline newWidth={newWidth} setContentMenuItem={this._setContentMenuItem} activeContentMenuItem={activeContentMenuItem} activeAreaDim={activeAreaDim} rulerProps={metadata[activeAreaDim][rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} linkedItems={linkedItems} />
+        ? <EntityTimeline history={history} newWidth={newWidth} setContentMenuItem={this._setContentMenuItem} activeContentMenuItem={activeContentMenuItem} activeAreaDim={activeAreaDim} rulerProps={metadata[activeAreaDim][rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} linkedItems={linkedItems} />
         : provinceTimelineOpen
           ? <ProvinceTimeline metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
-          : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}
-            height='100%' frameBorder='0' />}
+          : epicTimelineOpen
+            ? <EpicTimeline
+              history={history}
+              newWidth={newWidth}
+              setContentMenuItem={this._setContentMenuItem}
+              activeContentMenuItem={activeContentMenuItem}
+              activeAreaDim={activeAreaDim}
+              rulerProps={metadata[activeAreaDim][rulerEntity.id]}
+              selectedYear={selectedYear}
+              selectedItem={selectedItem}
+              epicData={epicData}
+              linkedItems={linkedItems} />
+            : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}
+                      height='100%' frameBorder='0' />}
     </div>
   }
 }

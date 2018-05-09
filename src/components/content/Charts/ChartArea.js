@@ -6,7 +6,7 @@ import {
   HorizontalGridLines,
   GradientDefs,
   AreaSeries,
-  LineSeries,
+  LineMarkSeries,
   VerticalRectSeries,
   Crosshair
 } from 'react-vis'
@@ -36,8 +36,8 @@ export default class InfluenceChart extends React.Component {
   _nearestXHandler (value, { event, innerX, index }) {
     const { series } = this.state
     this.setState({
-      crosshairValues: series.map((s, i) => {
-        return { ...s.data[index], top:  s.data[index].top + (( i !== 2) ? '' : '%') }
+      crosshairValues: series[0].map((s, i) => {
+        return { ...s.data[index], top:  s.data[index].top + ((i !== 2) ? '' : '%') }
       })
     })
   }
@@ -50,7 +50,7 @@ export default class InfluenceChart extends React.Component {
     this.setState({ crosshairValues: [] })
   }
 
-  _mouseClick (value,e) {
+  _mouseClick (value, e) {
     if ((((this.state || {}).crosshairValues || {})[0] || {}).left) this.props.setYear(+this.state.crosshairValues[0].left)
   }
 
@@ -77,29 +77,30 @@ export default class InfluenceChart extends React.Component {
     const { series } = this.state
     return values.map((v, i) => {
       return {
-        title: series[i].title,
+        title: series[0][i].title,
         value: v.top
       }
     })
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.newData.data && (nextProps.newData || {}).id !== (this.props.newData || {}).id || nextProps.selectedYear !== this.props.selectedYear) {
-      const { selectedYear} = nextProps
+    if (((nextProps.newData || [])[0] || {}).data && (nextProps.newData[0] || {}).id !== ((this.props.newData || [])[0] || {}).id || nextProps.selectedYear !== this.props.selectedYear) {
+      const { selectedYear } = nextProps
 
-      const currentYearMarkerValues = nextProps.newData.data.map((s, i) => {
-        const nearestYear = s.data.map(y => +y.left).reduce(function(prev, curr) {
+      const currentYearMarkerValues = nextProps.newData[0].data.map((s, i) => {
+        const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
           return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
         }).toString()
         return {
           left: selectedYear,
-          top: s.data.filter(f => f.left ===  nearestYear)[0].top + (( i !== 2) ? '' : '%')
+          top: s.data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
         }
       })
 
+
       this.setState({
-        sortedData: nextProps.newData.data[0].data.map((el) => { if (!isNaN(el.left)) return el.left }).sort((a, b) => +a - +b),
-        series: nextProps.newData.data,
+        sortedData: nextProps.newData[0].data[0].data.map((el) => { if (!isNaN(el.left)) return el.left }).sort((a, b) => +a - +b),
+        series: nextProps.newData.map((seriesEl) => seriesEl.data),
         currentYearMarkerValues
       })
     }
@@ -107,7 +108,7 @@ export default class InfluenceChart extends React.Component {
 
   render () {
     const { series, crosshairValues, currentYearMarkerValues, sortedData } = this.state
-    const { rulerProps, selectedYear} = this.props
+    const { rulerProps, selectedYear } = this.props
 
     if (!sortedData || sortedData.length === 0) return null
 
@@ -125,33 +126,32 @@ export default class InfluenceChart extends React.Component {
             height={200}>
             <HorizontalGridLines />
             <GradientDefs>
-              <linearGradient id="CoolGradient" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor={entityColor} stopOpacity={0.8} />
-                <stop offset="100%" stopColor="white" stopOpacity={0.3} />
+              <linearGradient id='CoolGradient' x1='0' x2='0' y1='0' y2='1'>
+                <stop offset='0%' stopColor={entityColor} stopOpacity={0.8} />
+                <stop offset='100%' stopColor='white' stopOpacity={0.3} />
               </linearGradient>
             </GradientDefs>
             <YAxis
               orientation='left' title='Population'
-              className='cool-custom-name'
               tickSizeInner={0}
               tickSizeOuter={8}
             />
             <XAxis
-              className='even-cooler-custom-name'
               tickSizeInner={0}
               tickSizeOuter={8}
             />
-            <LineSeries
-              color={entityColor}
-              data={series[2].data}
-              curve='curveMonotoneX'
-              onNearestX={this._nearestXHandler} />
-            <AreaSeries
+            {series.map(seriesEl => <LineMarkSeries
+                color={entityColor}
+                data={seriesEl[2].data}
+                curve='curveMonotoneX'
+                onNearestX={this._nearestXHandler} />
+            )}
+            {series.map(seriesEl => <AreaSeries
               color={'url(#CoolGradient)'}
               curve='curveMonotoneX'
               onNearestX={this._nearestXHandler}
-              data={series[2].data}
-            />
+              data={seriesEl[2].data} />
+            )}
             <Crosshair
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}

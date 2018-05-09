@@ -61,11 +61,11 @@ const styles = {
   }
 }
 
-class EntityTimeline extends React.Component {
+class EpicTimeline extends React.Component {
   state = {
     selectedWiki: false,
     stepIndex: -1,
-    influenceChartData: []
+    influenceChartData: {}
   }
 
   handleNext = (newYear) => {
@@ -90,9 +90,9 @@ class EntityTimeline extends React.Component {
 
   getStepContent (stepIndex, sortedRulerKeys) {
     const { selectedWiki, iframeLoading } = this.state
-    const rulerEntityData = ((this.props.rulerEntity || {}).data || {}).ruler || {}
-    const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (this.props.rulerProps || {})[2] || -1
-    return (wikiUrl === -1 && !selectedWiki) ? <span>no wiki linked, consider adding one _here_</span> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
+    const epicEntitiesData = ((this.props.epicData || {}).data || {}).ruler || {}
+    const wikiUrl = (epicEntitiesData[sortedRulerKeys[stepIndex]] || {})[2] || (this.props.rulerProps || {})[2] || -1
+    return (wikiUrl === -1 && !selectedWiki) ? <span>no wiki linked, consider adding one epic _here_</span> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
   }
 
   _selectRealm = () => {
@@ -108,44 +108,46 @@ class EntityTimeline extends React.Component {
     this.props.setYear(+newYear)
   }
 
-  setUpInfluenceChart = (rulerEntity) => {
-    if (!rulerEntity || !rulerEntity.data) return
+  setUpInfluenceChart = (epicData) => {
+    if (!epicData || !epicData.data) return
 
-    console.error('setting up influenceChartData, this should only be done once', rulerEntity.id)
+    console.error('setting up influenceChartData, this should only be done once for so many entities', epicData.length)
 
     this.setState({
       stepIndex: -1,
-      influenceChartData: [{
-        id: rulerEntity.id,
-        data: [
-          {
-            title: 'Provinces',
-            disabled: false,
-            data: rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][0] } })
-          },
-          {
-            title: 'Population Total',
-            disabled: false,
-            data: rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][1] } })
-          },
-          {
-            title: 'Population Share',
-            disabled: false,
-            data: rulerEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][2] } })
-          }
-        ]
-      }]
+      influenceChartData: (epicData.rulerEntities || []).map((epicEntity) => {
+        return {
+          id: epicEntity._id,
+          data: [
+            {
+              title: 'Provinces',
+              disabled: false,
+              data: epicEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][0] } })
+            },
+            {
+              title: 'Population Total',
+              disabled: false,
+              data: epicEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][1] } })
+            },
+            {
+              title: 'Population Share',
+              disabled: false,
+              data: epicEntity.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][2] } })
+            }
+          ]
+        }
+      })
     })
   }
 
   componentDidMount = () => {
-    this.setUpInfluenceChart(this.props.rulerEntity)
+    this.setUpInfluenceChart(this.props.epicData)
   }
 
   componentWillReceiveProps = (nextProps) => {
 
-    if ((nextProps.rulerEntity || {}).id !== (this.props.rulerEntity || {}).id && nextProps.selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
-      this.setUpInfluenceChart(nextProps.rulerEntity)
+    if ((nextProps.epicData || {}).id !== (this.props.epicData || {}).id && nextProps.selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
+      this.setUpInfluenceChart(nextProps.epicData)
     }
   }
 
@@ -160,16 +162,15 @@ class EntityTimeline extends React.Component {
 
   render () {
     const { stepIndex, selectedWiki, influenceChartData, translate, iframeLoading } = this.state
-    const { rulerEntity, selectedYear, rulerProps, newWidth, history, activeAreaDim, sunburstData, linkedItems, setContentMenuItem, activeContentMenuItem } = this.props
+    const { epicData, selectedYear, rulerProps, newWidth, history, activeAreaDim, linkedItems, setContentMenuItem, activeContentMenuItem } = this.props
 
     const shouldLoad = (iframeLoading)
-    const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
-    const sortedRulerKeys = Object.keys(rulerEntityData).filter((key) => rulerEntityData[key][0] !== "null").sort((a, b) => +a - +b)
+    const epicEntitiesData = ((epicData || {}).data || {}).ruler || {}
+    const sortedRulerKeys = Object.keys(epicEntitiesData).filter((key) => epicEntitiesData[key][0] !== "null").sort((a, b) => +a - +b)
     const rulerDetected = sortedRulerKeys.length !== 0
 
     return (
       <div style={{ height: '100%' }}>
-        <ChartSunburst activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'sunburst' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} preData={ sunburstData } selectedYear={selectedYear} />
         <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems } selectedYear={selectedYear} />
         <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
@@ -181,7 +182,7 @@ class EntityTimeline extends React.Component {
             orientation='vertical'
             style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
             {sortedRulerKeys.map((yearKey, i) => (
-              (rulerEntityData[yearKey][0] !== "null") ? <Step key={i} style={ styles.stepContainer}>
+              (epicEntitiesData[yearKey][0] !== "null") ? <Step key={i} style={ styles.stepContainer}>
                 <StepButton iconContainerStyle={{ background: (( (+(sortedRulerKeys[i]) <= +selectedYear) && (+selectedYear < +(sortedRulerKeys[i+1] || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{sortedRulerKeys[i]}</span>} onClick={() => this._selectStepButton(i, sortedRulerKeys[i]) }>
                   <div style={{
                     overflow: 'hidden',
@@ -193,7 +194,7 @@ class EntityTimeline extends React.Component {
                     top: '16px',
                     fontSize: '15px'
                   }}>
-                    {rulerEntityData[yearKey][0]}
+                    {epicEntitiesData[yearKey][0]}
                   </div>
                   <div style={{
                     overflow: 'hidden',
@@ -205,7 +206,7 @@ class EntityTimeline extends React.Component {
                     top: '32px',
                     fontSize: '12px'
                   }}>
-                    {rulerEntityData[yearKey][1]}
+                    {epicEntitiesData[yearKey][1]}
                   </div>
 
                 </StepButton>
@@ -222,12 +223,12 @@ class EntityTimeline extends React.Component {
         }}>
           <div style={styles.contentStyle}>
             {(shouldLoad)
-              ? <span>loading placeholder...</span>
+              ? <span>loading epic placeholder...</span>
               : this.getStepContent(stepIndex, sortedRulerKeys)}
             { rulerDetected && <div style={ styles.navTitle }>
-              <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (rulerEntityData[sortedRulerKeys[stepIndex]] || {} )[0] } </span>
+              <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (epicEntitiesData[sortedRulerKeys[stepIndex]] || {} )[0] } </span>
               <span style={{ fontWeight: 300, paddingRight: '.6em'}}>
-                {(rulerEntityData[sortedRulerKeys[stepIndex]] || {} )[1]}
+                {(epicEntitiesData[sortedRulerKeys[stepIndex]] || {} )[1]}
               </span>
               <span style={{ paddingRight: '2em'}}> ({stepIndex + 1} / {sortedRulerKeys.length})</span>
             </div> }
@@ -260,4 +261,4 @@ const enhance = compose(
   })
 )
 
-export default enhance(EntityTimeline)
+export default enhance(EpicTimeline)

@@ -97,7 +97,7 @@ const styles = {
   },
   label: { width: '10em', display: 'inline-block' },
   button: { margin: '1em' },
-  discoverDialogStyle: {
+  linkedGalleryDialogStyle: {
     width: '100%',
     // maxWidth: 'none',
     transform: '',
@@ -236,6 +236,7 @@ class LinkedGallery extends React.Component {
     super(props)
     this.state = {
       filtered:[
+        'artefacts',
         'articles',
         'stories',
         'people',
@@ -251,20 +252,9 @@ class LinkedGallery extends React.Component {
       slideIndex: 0,
       currentYearLoaded: 3000,
       hiddenElement: true,
-      slidesData: [],
-      tileData: {
-        tilesHighlightData: [],
-        tilesArticlesData: [],
-        tilesStoriesData: [],
-        tilesPeopleData: [],
-        tilesCitiesData: [],
-        tilesBattlesData: [],
-        tilesOtherData: [],
-        tilesVideosData: [],
-        tilesPodcastsData: [],
-        tilesPsData: []
-      },
+      tileData: [],
       categories: [
+       'artefacts',
        'articles',
        'stories',
        'people',
@@ -276,6 +266,13 @@ class LinkedGallery extends React.Component {
         'ps'
       ]
     }
+  }
+
+  loadLinkedItemsToTileData = (nextLinkedItems) => {
+    this.setState({
+      tileData: nextLinkedItems,
+    },
+      this.forceUpdate);
   }
 
   handleChangeFilter = (event, value) => {
@@ -305,10 +302,7 @@ class LinkedGallery extends React.Component {
   }
 
   componentWillMount = () => {
-    console.debug("componentWillMountcomponentWillMount")
-    if (this.props.selectedYear !== this.state.currentYearLoaded) {
-      this._updateImages(this.props.selectedYear)
-    }
+    this.loadLinkedItemsToTileData(this.props.linkedItems)
   }
 
   componentWillUnmount = () => {
@@ -316,41 +310,13 @@ class LinkedGallery extends React.Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
-    const { selectedYear } = this.props
-    console.debug('### DISCOVER componentWillReceiveProps', this.props)
+    const { linkedItems } = this.props
+    console.debug('### LinkedGallery componentWillReceiveProps', this.props)
 
-    /** Acting on store changes **/
-    if (nextProps.selectedYear !== selectedYear) {
-      this._updateImages(nextProps.selectedYear)
+    if (linkedItems && nextProps.linkedItems && linkedItems.toString() !== nextProps.linkedItems.toString()) {
+      this.loadLinkedItemsToTileData(nextProps.linkedItems)
     }
-  }
 
-  _updateImages = (selectedYear) => {
-    // Load slides data
-    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i')
-      .then(response => {
-        const newSlideData = []
-        const res = response.data
-        res.forEach((imageItem, i) => {
-          if (i < 10) {
-            newSlideData.push({
-              original: imageItem._id,
-              thumbnail: imageItem._id,
-              description: imageItem.data.title,
-              source: imageItem.data.source,
-              subtype: imageItem.subtype,
-              wiki: imageItem.wiki,
-              originalTitle: imageItem.year,
-              thumbnailTitle: imageItem.year,
-              score: imageItem.score,
-            })
-          }
-        })
-        this.setState({
-          currentYearLoaded: selectedYear,
-          slidesData: newSlideData,
-        })
-      })
   }
 
   _handleUpvote = (id, stateDataId) => {
@@ -363,11 +329,10 @@ class LinkedGallery extends React.Component {
       localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
-          tileData[stateDataId] = tileData[stateDataId].map((el) => {
-            if (encodeURIComponent(el.src) === id) el.score -= 1
-            return el
-          })
-          this.setState({ tileData: tileData  })
+          this.setState({ tileData: tileData.map((el) => {
+              if (encodeURIComponent(el.src) === id) el.score -= 1
+              return el
+            }) })
           this.forceUpdate()
         })
     } else if (downvotedItems.indexOf(id) > -1) {
@@ -378,11 +343,10 @@ class LinkedGallery extends React.Component {
         .then(() => {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
             .then(() => {
-              tileData[stateDataId] = tileData[stateDataId].map((el) => {
-                if (encodeURIComponent(el.src) === id) el.score += 2
-                return el
-              })
-              this.setState({ tileData: tileData  })
+              this.setState({ tileData: tileData.map((el) => {
+                  if (encodeURIComponent(el.src) === id) el.score += 2
+                  return el
+                }) })
               this.forceUpdate()
             })
         })
@@ -392,17 +356,16 @@ class LinkedGallery extends React.Component {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
           this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          tileData[stateDataId] = tileData[stateDataId].map((el) => {
-            if (encodeURIComponent(el.src) === id) el.score += 1
-            return el
-          })
-          this.setState({ tileData: tileData  })
+          this.setState({ tileData: tileData.map((el) => {
+              if (encodeURIComponent(el.src) === id) el.score += 1
+              return el
+            }) })
           this.forceUpdate()
         })
     }
   }
 
-  _handleDownvote = (id, stateDataId) => {
+  _handleDownvote = (id) => {
     const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
     const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
     const tileData = this.state.tileData
@@ -412,11 +375,10 @@ class LinkedGallery extends React.Component {
       localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
-          tileData[stateDataId] = tileData[stateDataId].map((el) => {
-            if (encodeURIComponent(el.src) === id) el.score += 1
-            return el
-          })
-          this.setState({ tileData: tileData  })
+          this.setState({ tileData: tileData.map((el) => {
+              if (encodeURIComponent(el.src) === id) el.score += 1
+              return el
+            }) })
           this.forceUpdate()
         })
     } else if (upvotedItems.indexOf(id) > -1) {
@@ -427,11 +389,10 @@ class LinkedGallery extends React.Component {
         .then(() => {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
             .then(() => {
-              tileData[stateDataId] = tileData[stateDataId].map((el) => {
-                if (encodeURIComponent(el.src) === id) el.score -= 2
-                return el
-              })
-              this.setState({ tileData: tileData  })
+              this.setState({ tileData: tileData.map((el) => {
+                  if (encodeURIComponent(el.src) === id) el.score -= 2
+                  return el
+                }) })
               this.forceUpdate()
             })
         })
@@ -441,11 +402,10 @@ class LinkedGallery extends React.Component {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
         .then(() => {
           this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          tileData[stateDataId] = tileData[stateDataId].map((el) => {
-            if (encodeURIComponent(el.src) === id) el.score -= 1
-            return el
-          })
-          this.setState({ tileData: tileData  })
+          this.setState({ tileData: tileData.map((el) => {f
+              if (encodeURIComponent(el.src) === id) el.score -= 1
+              return el
+            }) })
           this.forceUpdate()
         })
     }
@@ -455,8 +415,8 @@ class LinkedGallery extends React.Component {
     this.props.setContentMenuItem('')
   }
 
-  _handleEdit = (id, dataKey = false) => {
-    const selectedItem = (dataKey) ? this.state.tileData[dataKey].filter(el => (el.src === decodeURIComponent(id)))[0] : this.state.selectedImage
+  _handleEdit = (id) => {
+    const selectedItem = this.state.tileData.filter(el => (el.src === decodeURIComponent(id)))[0]
     this.props.selectLinkedItem(selectedItem)
     this.props.history.push('/mod/linked')
   }
@@ -470,12 +430,6 @@ class LinkedGallery extends React.Component {
     window.open(source, '_blank').focus()
   }
 
-  _handleOpenArticle = (selectedImage) => {
-    // Albert_Einstein
-    this.props.selectLinkedItem(selectedImage.wiki)
-    this.props.history.push('/article') //TODO not working yet
-  }
-
   _getYoutubeId = (url) => {
     if (typeof url === 'undefined') return false
     const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -487,14 +441,10 @@ class LinkedGallery extends React.Component {
     }
   }
 
-  _removeTile = (tileDataKey, tileSrc) => {
-    const originalTileData = this.state.tileData
-    const originalSlideData = this.state.slidesData
-
-    originalTileData[tileDataKey] = originalTileData[tileDataKey].filter(el => el.src !== tileSrc)
+  _removeTile = (tileSrc) => {
+    const originalTileData = this.state.tileData.filter(el => el.src !== tileSrc)
 
     this.setState({
-      slidesData: originalSlideData.filter(el => el.original !== tileSrc),
       tileData: originalTileData
     })
 
@@ -503,9 +453,12 @@ class LinkedGallery extends React.Component {
 
   render () {
     const { isMinimized, linkedItems, selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
-    const { slidesData, selectedImage, filtered, slideIndex, tileData, categories } = this.state
+    const { selectedImage, filtered, slideIndex, tileData, categories } = this.state
 
-    if (typeof linkedItems === 'undefined') return null
+    if (typeof linkedItems === 'undefined' || (tileData && tileData.length === 0)) return null
+
+    const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
+    const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
 
     const slideButtons = (score, id, source, stateData) => {
       console.debug(id, source, source || id)
@@ -519,7 +472,7 @@ class LinkedGallery extends React.Component {
 
       return <div className="slideButtons" style={(stateData[2] !== 'audios') ? styles.buttonContainer : { ...styles.buttonContainer, bottom: 100} }>
         <IconButton
-          onClick={() => this._handleUpvote(id, stateData[0])}
+          onClick={() => this._handleUpvote(id)}
           color='red'
           style={ styles.upArrow }
           tooltipPosition="center-left"
@@ -528,7 +481,7 @@ class LinkedGallery extends React.Component {
         ><IconThumbUp color={upvoteColor} />
         </IconButton>
         <IconButton
-          onClick={() => this._handleDownvote(id, stateData[0])}
+          onClick={() => this._handleDownvote(id)}
           style={ styles.downArrow }
           iconStyle={ styles.iconButton }
           tooltipPosition="center-left"
@@ -540,7 +493,7 @@ class LinkedGallery extends React.Component {
           tooltipPosition="bottom-center"
           tooltip={sourceSelected}
           onClick={() => this._handleOpenSource(sourceSelected)} >
-          tooltip={hasWiki ? translate('pos.discover.hasNoSource') : translate('pos.discover.openSource')}>
+          tooltip={hasWiki ? translate('pos.linkedGallery.hasNoSource') : translate('pos.linkedGallery.openSource')}>
           <FloatingActionButton
             mini={true}
             backgroundColor='#aaaaaaba'
@@ -549,13 +502,15 @@ class LinkedGallery extends React.Component {
         </IconButton> : null }
         <FloatingActionButton
           mini={true}
-          onClick={() => this._handleEdit(id, stateData[0])}
+          onClick={() => this._handleEdit(id)}
           backgroundColor='#aaaaaaba'
           style={ styles.editButton }
         ><IconEdit color='white' />
         </FloatingActionButton >
       </div>
     }
+
+    const addButtonDynamicStyle = {...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit'}
 
     return (
       <Paper zDepth={3} style={{
@@ -586,13 +541,18 @@ class LinkedGallery extends React.Component {
         />
         <div style={styles.container}>
           <div style={styles.root}>
+            <FloatingActionButton
+              onClick={this._handleAdd}
+              style={ addButtonDynamicStyle }>
+              <ContentAdd />
+            </FloatingActionButton>
             FILTER <IconMenu
               iconButtonElement={<IconButton><ContentFilter /></IconButton>}
               onChange={this.handleChangeFilter}
               value={filtered}
               multiple={true}
             >
-              {categories.map((category) => <MenuItem value={category} primaryText={category} disabled={!linkedItems.some(linkedItem => linkedItem.subtype === category)} />)}
+              {categories.map((category) => <MenuItem value={category} primaryText={category} disabled={!tileData.some(linkedItem => linkedItem.subtype === category)} />)}
             </IconMenu>
             <GridList
               className='linkedGalleryGridList'
@@ -601,7 +561,7 @@ class LinkedGallery extends React.Component {
               cols={1}
               style={styles.gridList}
             >
-              {linkedItems.length > 0 ? linkedItems.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1 )).map((tile, j) => (
+              {tileData.length > 0 ? tileData.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1 )).map((tile, j) => (
                   (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
                   ? <GridTile
                     key={tile.src}
@@ -618,7 +578,7 @@ class LinkedGallery extends React.Component {
                     rows={2}
                   >
                     <img src={tile.src}
-                         onError={() => this._removeTile(tabKey[0], tile.src)}
+                         onError={() => this._removeTile(tile.src)}
                          onClick={() => { this.setState({ selectedImage: {
                              src: tile.src,
                              year: tile.subtitle,
@@ -643,7 +603,7 @@ class LinkedGallery extends React.Component {
                       cols={1}
                       rows={2}
                     ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
-                          onError={() => this._removeTile(tabKey[0], tile.src)}
+                          onError={() => this._removeTile(tile.src)}
                           onClick={() => { this.setState({ selectedImage: {
                               src: tile.src,
                               year: tile.subtitle,
@@ -671,7 +631,7 @@ class LinkedGallery extends React.Component {
                           className='videoContent'
                           videoId={this._getYoutubeId(tile.src)}
                           opts={YOUTUBEOPTS}
-                          onError={() => this._removeTile(tabKey[0], tile.src)}
+                          onError={() => this._removeTile(tile.src)}
                         />
                         : <Player className='videoContent' fluid={false} ref="player">
                           <source src={tile.src} />
@@ -681,6 +641,48 @@ class LinkedGallery extends React.Component {
               )) : <span> - nothing here - </span>}
             </GridList>
           </div>
+          <Dialog
+            autoDetectWindowHeight={false}
+            modal={false}
+            contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogImageBackgroundHack'}
+            contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', maxWidth: 'calc(100% - 64px)'}}
+            bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
+            actionsContainerStyle={{ backgroundColor: red400 }}
+            style={{ backgroundColor: 'transparent', overflow: 'auto' }}
+            titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
+            autoScrollBodyContent={false}
+            open={(selectedImage.src !== '')}
+            onRequestClose={this.handleImageClose}
+          >
+            <img src={selectedImage.src} style={styles.selectedIMG} />
+            <div style={styles.selectedImageContent}>
+              <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
+              <p style={styles.selectedImageDescription}>{selectedImage.title}</p>
+              <div style={styles.selectedImageButtonContainer}>
+                <IconButton
+                  style={styles.buttonOpenArticle}
+                  tooltipPosition="bottom-center"
+                  tooltip={hasWiki ? translate('pos.discover.hasNoSource') : translate('pos.discover.openSource')}>
+                  <RaisedButton
+                    disabled={hasSource}
+                    label="Open Source"
+                    primary={true}
+                    onClick={() => this._handleOpenSource(selectedImage.source)} >
+                    <IconOutbound color="white" style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
+                  </RaisedButton>
+                </IconButton>
+                <IconButton
+                  style={styles.buttonOpenArticle}
+                  tooltipPosition="bottom-center"
+                  tooltip={translate('pos.discover.edit')}>
+                  <RaisedButton
+                    label="Edit"
+                    primary={true}
+                    onClick={() => this._handleEdit(selectedImage.source)} />
+                </IconButton>
+              </div>
+            </div>
+          </Dialog>
         </div>
       </Paper>
     )

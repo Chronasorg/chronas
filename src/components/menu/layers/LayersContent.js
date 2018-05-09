@@ -6,6 +6,7 @@ import compose from 'recompose/compose'
 import RaisedButton from 'material-ui/RaisedButton'
 import { translate, defaultTheme } from 'admin-on-rest'
 import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actionReducers'
+import { selectEpicItem } from '../../map/actionReducers'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import {
@@ -29,7 +30,7 @@ const styles = {
 
 const allMarkers = ['Politicians', 'Battles']
 
-const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker }) => (
+const LayerContent = ({ activeArea, selectedText, selectEpicItem, activeMarkers,  selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker }) => (
   <div style={styles.main}>
     <h4>Basemap</h4>
     <RaisedButton style={styles.button} label="None" primary={basemap === ''} onClick={() => changeBasemap('')} />
@@ -69,6 +70,8 @@ const LayerContent = ({ activeArea, selectedText, activeMarkers,  selectedYear, 
         onClick={() => {console.debug(id.toLowerCase()); toggleMarker(id.toLowerCase())}} />)}
     {activeMarkers}
     <br/>
+    <RaisedButton style={styles.button} label='Test Epic' onClick={() => selectEpicItem('Byzantine–Sasanian_War_of_602–628', 'Byzantine–Sasanian War of 602–628')} />
+
     <h4>Year</h4>
     {selectedYear}
   </div>
@@ -100,7 +103,8 @@ const enhance = compose(
     changeLabel: changeLabelAction,
     changeColor: changeColorAction,
     toggleMarker: toggleMarkerAction,
-    toggleMenuDrawer: toggleMenuDrawerAction
+    toggleMenuDrawer: toggleMenuDrawerAction,
+    selectEpicItem
   }),
   pure,
   translate,
