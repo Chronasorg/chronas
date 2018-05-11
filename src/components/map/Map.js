@@ -11,10 +11,10 @@ import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionRed
 import { fromJS } from 'immutable'
 import _ from 'lodash'
 import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
-import { setRightDrawerVisibility as setRightDrawerVisibilityAction } from '../content/actionReducers'
+import { setRightDrawerVisibility } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import {
-  TYPE_MARKER, TYPE_AREA, TYPE_LINKED, selectValue, selectAreaItem as selectAreaItemAction,
+  TYPE_MARKER, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
 import properties from '../../properties'
@@ -155,53 +155,85 @@ class Map extends Component {
     this.setState({ mapStyle })
   }
 
-  _getAreaViewportAndOutlines = (nextActiveColorDim, nextActiveColorValue, prevActiveColorDim = false, prevActiveColorValue = false) => {
-    const activeColorDim = (nextActiveColorDim === 'population' && prevActiveColorDim) ? prevActiveColorDim : nextActiveColorDim
-    const activeColorValue = (nextActiveColorDim === 'population' && prevActiveColorValue) ? prevActiveColorValue : nextActiveColorValue
+  _getAreaViewportAndOutlines = (nextActiveColorDim, nextActiveColorValue, prevActiveColorDim = false, prevActiveColorValue = false, teams = false) => {
+    const webMercatorViewport = new WebMercatorViewport({
+      width: this.props.width || (window.innerWidth - 56),
+      height: this.props.height || window.innerHeight
+    })
 
-    let geometryToOutline
-    if (activeColorValue && typeof activeColorValue !== 'undefined' && activeColorValue !== '' && activeColorValue !== 'undefined' && activeColorValue !== 'null')
-    if (activeColorDim === 'ruler') {
-      geometryToOutline = this.state.mapStyle
-            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.r === activeColorValue)
-    } else if (activeColorDim === 'culture') {
-      geometryToOutline = this.state.mapStyle
-            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.c === activeColorValue)
-    } else if (activeColorDim === 'religion') {
-      geometryToOutline = this.state.mapStyle
-            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.e === activeColorValue)
-    } else if (activeColorDim === 'religionGeneral') {
-      geometryToOutline = this.state.mapStyle
-            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.g === activeColorValue)
-    }
-        // turf.unkinkPolygon.apply(null,geometryToOutline)
-    if (typeof geometryToOutline !== 'undefined' && geometryToOutline.length !== 0) {
-      const multiPolygonToOutline = turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), []))
+    if (teams && teams.length > 0) {
+      // from epic war (multiple entities)
 
-      const webMercatorViewport = new WebMercatorViewport({
-        width: this.props.width || (window.innerWidth - 56),
-        height: this.props.height || window.innerHeight
-      })
+      const geometryToOutlines = teams.map((team) => this.state.mapStyle
+        .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => team.indexOf(el.properties.r) > -1))
 
-      const bbox = turf.bbox(multiPolygonToOutline)
+      if (typeof geometryToOutlines !== 'undefined' && geometryToOutlines.length !== 0) {
+        const multiPolygonToOutlines = geometryToOutlines.filter((geometryToOutline) => (geometryToOutline && geometryToOutline.length !== 0)).map((geometryToOutline) => turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), [])))
 
-      const bounds = webMercatorViewport.fitBounds(
-            [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
-            { padding: 20, offset: [0, -40] }
-          )
+        const bbox = turf.bbox({
+          "type": "FeatureCollection",
+          "features": multiPolygonToOutlines
+        })
 
-      const viewport = {
-        ...this.state.viewport,
-        ...bounds,
-        zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)),
-        transitionDuration: 1000,
-        transitionInterpolator: new FlyToInterpolator(),
-        transitionEasing: easeCubic
+        const bounds = webMercatorViewport.fitBounds(
+          [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
+          { padding: 20, offset: [0, -40] }
+        )
+
+        const viewport = {
+          ...this.state.viewport,
+          ...bounds,
+          zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)),
+          transitionDuration: 1000,
+          transitionInterpolator: new FlyToInterpolator(),
+          transitionEasing: easeCubic
+        }
+
+        return { viewport, multiPolygonToOutlines }
       }
+    } else {
+      // from epic ruler (single entity)
+      const activeColorDim = (nextActiveColorDim === 'population' && prevActiveColorDim) ? prevActiveColorDim : nextActiveColorDim
+      const activeColorValue = (nextActiveColorDim === 'population' && prevActiveColorValue) ? prevActiveColorValue : nextActiveColorValue
 
-      return { viewport, multiPolygonToOutline }
+      let geometryToOutline
+      if (activeColorValue && typeof activeColorValue !== 'undefined' && activeColorValue !== '' && activeColorValue !== 'undefined' && activeColorValue !== 'null')
+      if (activeColorDim === 'ruler') {
+        geometryToOutline = this.state.mapStyle
+              .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.r === activeColorValue)
+      } else if (activeColorDim === 'culture') {
+        geometryToOutline = this.state.mapStyle
+              .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.c === activeColorValue)
+      } else if (activeColorDim === 'religion') {
+        geometryToOutline = this.state.mapStyle
+              .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.e === activeColorValue)
+      } else if (activeColorDim === 'religionGeneral') {
+        geometryToOutline = this.state.mapStyle
+              .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.g === activeColorValue)
+      }
+          // turf.unkinkPolygon.apply(null,geometryToOutline)
+      if (typeof geometryToOutline !== 'undefined' && geometryToOutline.length !== 0) {
+        const multiPolygonToOutline = turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), []))
+
+        const bbox = turf.bbox(multiPolygonToOutline)
+
+        const bounds = webMercatorViewport.fitBounds(
+              [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
+              { padding: 20, offset: [0, -40] }
+            )
+
+        const viewport = {
+          ...this.state.viewport,
+          ...bounds,
+          zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)),
+          transitionDuration: 1000,
+          transitionInterpolator: new FlyToInterpolator(),
+          transitionEasing: easeCubic
+        }
+
+        return { viewport, multiPolygonToOutline }
+      }
     }
-
     console.error('We got something wrong with the turf.union or turf.unkinkPolygon')
     return {}
   }
@@ -308,6 +340,8 @@ class Map extends Component {
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
     const { basemap, activeArea, selectedYear, metadata, modActive, history, activeMarkers, selectedItem, selectAreaItem } = this.props
+    const rightDrawerOpen = nextProps.rightDrawerOpen
+
     console.debug('### MAP componentWillReceiveProps', this.props, nextProps)
 
     /** Acting on store changes **/
@@ -327,25 +361,98 @@ class Map extends Component {
         console.debug('data pool: ', dataPool)
         const randomItem = dataPool[getRandomInt(0, dataPool.length - 1)]
         const provinceId = randomItem.properties.name
-        this.props.setRightDrawerVisibility(true)
-        this.props.selectAreaItem('', provinceId) // set query url
-        this.props.history.push('/article')
-      } else {
-        // new item selected!
+        if (history.location.pathname.indexOf('article') === -1) history.push('/article')
 
-        if (nextProps.selectedItem.type === TYPE_AREA &&
+        this.props.selectAreaItem('', provinceId) // set query url
+      }
+      else if ((nextProps.selectedItem.type === TYPE_AREA &&
           nextProps.selectedItem.value !== '' &&
           nextProps.activeArea.color !== '' &&
-          nextProps.activeArea.color === activeArea.color) {
-          const nextActiveprovinceValue = (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)]
-          const prevActiveprovinceValue = (activeArea.data[selectedItem.value] || {})[utils.activeAreaDataAccessor(activeArea.color)]
-          const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, nextActiveprovinceValue, activeArea.color, prevActiveprovinceValue)
+          nextProps.activeArea.color === activeArea.color)) {
+        const nextActiveprovinceValue = (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)]
+        const prevActiveprovinceValue = (activeArea.data[selectedItem.value] || {})[utils.activeAreaDataAccessor(activeArea.color)]
+        const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, nextActiveprovinceValue, activeArea.color, prevActiveprovinceValue)
 
-          if (typeof multiPolygonToOutline !== 'undefined') {
+        if (typeof multiPolygonToOutline !== 'undefined') {
+          this.setState({
+            viewport,
+            mapStyle: this.state.mapStyle
+              .setIn(['sources', 'entity-outlines', 'data'], fromJS({
+                'type': 'FeatureCollection',
+                'features': [ ]
+              })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
+                'type': 'FeatureCollection',
+                'features': [ ]
+              }))
+              .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutline)),
+            hoverInfo: null
+          })
+        } else {
+          this.setState({
+            mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
+              'type': 'FeatureCollection',
+              'features': [ ]
+            })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+              'type': 'FeatureCollection',
+              'features': [ ]
+            })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
+              'type': 'FeatureCollection',
+              'features': [ ]
+            })),
+            hoverInfo: null
+          })
+        }
+      }
+      else if (nextProps.selectedItem.type !== TYPE_EPIC) {
+        // setTimeout(() => {
+        this.setState({
+          mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
+            'type': 'FeatureCollection',
+            'features': [ ]
+          })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+            'type': 'FeatureCollection',
+            'features': [ ]
+          })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
+            'type': 'FeatureCollection',
+            'features': [ ]
+          })),
+          hoverInfo: null
+        })
+        // }, 2000)
+      }
+    }
+
+    // Leaving Epic? -> cleanup
+    if (selectedItem.type === TYPE_EPIC && nextProps.selectedItem.type !== TYPE_EPIC) {
+      this._removeGeoJson(TYPE_MARKER, TYPE_EPIC)
+    }
+
+    if (nextProps.selectedItem.type === TYPE_EPIC && nextProps.selectedItem.wiki !== selectedItem.wiki) {
+      if (selectedItem.type === TYPE_EPIC) this._removeGeoJson(TYPE_MARKER, TYPE_EPIC)
+      const epicWiki = nextProps.selectedItem.wiki
+      axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
+        .then((newEpicEntitiesRes) => {
+          const newEpicEntities = newEpicEntitiesRes.data
+
+          if (!newEpicEntities.data) return
+
+          const participants = (newEpicEntities.data.participants || [])
+
+          const { viewport, multiPolygonToOutlines } = this._getAreaViewportAndOutlines('ruler', '', false, false, participants)
+
+          if (typeof multiPolygonToOutlines !== 'undefined') {
             this.setState({
               viewport,
               mapStyle: this.state.mapStyle
-                .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutline)),
+                .setIn(['sources', 'entity-outlines', 'data'], fromJS({
+                  'type': 'FeatureCollection',
+                  'features': [ ]
+                })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
+                  'type': 'FeatureCollection',
+                  'features': [ ]
+                }))
+                .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutlines[0]))
+                .setIn(['sources', 'entity-outlines2', 'data'], fromJS(multiPolygonToOutlines[1])),
               hoverInfo: null
             })
           } else {
@@ -356,25 +463,47 @@ class Map extends Component {
               })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
                 'type': 'FeatureCollection',
                 'features': [ ]
+              })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
+                'type': 'FeatureCollection',
+                'features': [ ]
               })),
               hoverInfo: null
             })
           }
-        } else {
-          // setTimeout(() => {
-          this.setState({
-            mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
-              'type': 'FeatureCollection',
-              'features': [ ]
-            })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
-              'type': 'FeatureCollection',
-              'features': [ ]
-            })),
-            hoverInfo: null
+
+          const teamMapping = {}
+          const rulerPromises = []
+          const flatternedParticipants = []
+
+          if (epicWiki) {
+            rulerPromises.push(axios.get(properties.chronasApiHost + '/markers?linked=' + epicWiki))
+          }
+
+          participants.forEach((team, teamIndex) => {
+            team.forEach((participant) => {
+              teamMapping[participant] = teamIndex
+              rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + participant))
+              flatternedParticipants.push(participant)
+            })
           })
-          // }, 2000)
-        }
-      }
+
+          axios.all(rulerPromises)
+            .then(axios.spread((...args) => {
+              if (epicWiki && args.length > 0) {
+                newEpicEntities.data.content = args[0].data
+                this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
+                args.shift()
+              }
+              this.props.selectValue({
+                id: newEpicEntities._id,
+                data: newEpicEntities,
+                rulerEntities: args.map((res, i) => { return { ...res.data, id: flatternedParticipants[i] }})
+              })
+
+              this.props.history.push('/article')
+              if (!rightDrawerOpen) this.props.setRightDrawerVisibility(true)
+            }))
+        })
     }
 
     // Leaving Area Mod?
@@ -571,8 +700,16 @@ class Map extends Component {
     this.setState({ mapStyle })
   };
 
-  _addGeoJson = (sourceId, entityId) => {
-    if (entityId.toString() !== '') {
+  _addGeoJson = (sourceId, entityId, fullData = false) => {
+    if (fullData) {
+      const mapStyle = this.state.mapStyle
+        .updateIn(['sources', TYPE_MARKER, 'data', 'features'], list => list.concat(fullData.map((feature) => {
+          feature.properties.isEpic = true
+          return feature
+        })))
+      this.setState({ mapStyle })
+    }
+    else if (entityId.toString() !== '') {
       axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + this.props.selectedYear)
       .then(features => {
         const mapStyle = this.state.mapStyle
@@ -583,12 +720,28 @@ class Map extends Component {
   }
 
   _removeGeoJson = (sourceId, entityId) => {
-    const mapStyle = this.state.mapStyle
-      .updateIn(['sources', sourceId, 'data', 'features'], list => list.filter(function (obj) {
-        return (obj.properties.t !== entityId)
-      }))
-
-    this.setState({ mapStyle })
+    if (entityId === TYPE_EPIC) {
+      const mapStyle = this.state.mapStyle
+        .updateIn(['sources', sourceId, 'data', 'features'], list => list.filter(function (obj) {
+          return (obj.properties.isEpic !== true)
+        })).setIn(['sources', 'area-hover', 'data'], fromJS({
+          'type': 'FeatureCollection',
+          'features': [ ]
+        })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+          'type': 'FeatureCollection',
+          'features': [ ]
+        })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
+          'type': 'FeatureCollection',
+          'features': [ ]
+        }))
+      this.setState({ mapStyle })
+    } else {
+      const mapStyle = this.state.mapStyle
+        .updateIn(['sources', sourceId, 'data', 'features'], list => list.filter(function (obj) {
+          return (obj.properties.t !== entityId)
+        }))
+      this.setState({ mapStyle })
+    }
   }
 
   _updateGeoJson = (sourceId, entityId) => {
@@ -658,9 +811,7 @@ class Map extends Component {
       this.setState({ mapStyle: this.state.mapStyle
           .setIn(['sources', 'area-hover', 'data', 'features'], [{
             'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
-          }])/* .setIn(['sources', 'area-outlines', 'data', 'features'], [{
-            'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
-          }]) */
+          }])
       })
     } else {
       const prevMapStyle = this.state.mapStyle
@@ -685,7 +836,8 @@ class Map extends Component {
     if (this.props.modActive.type === TYPE_MARKER && this.props.modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    } else if (this.props.modActive.type === TYPE_AREA) {
+    }
+    else if (this.props.modActive.type === TYPE_AREA) {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = this.props.modActive.data
@@ -758,7 +910,6 @@ class Map extends Component {
       }
     }
 
-    // this.props.setRightDrawerVisibility(itemName !== '')
     this.props.history.push('/article')
   }
 
@@ -864,7 +1015,7 @@ const enhance = compose(
     modActive: state.modActive,
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
-    setRightDrawerVisibility: setRightDrawerVisibilityAction,
+    setRightDrawerVisibility,
     selectAreaItem: selectAreaItemAction,
     selectValue,
     selectMarkerItem : selectMarkerItemAction,

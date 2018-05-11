@@ -71,13 +71,14 @@ class EpicTimeline extends React.Component {
   handleNext = (newYear) => {
     const { stepIndex } = this.state
     this.setState({ stepIndex: stepIndex + 1, selectedWiki: false})
-    this.props.setYear(+newYear)
+    if (!isNaN(newYear)) this.props.setYear(+newYear)
+
   };
 
   handlePrev = (newYear) => {
     const { stepIndex } = this.state
     this.setState({ stepIndex: stepIndex - 1, selectedWiki: false})
-    this.props.setYear(+newYear)
+    if (!isNaN(newYear)) this.props.setYear(+newYear)
   };
 
   _handleUrlChange = (e) => {
@@ -88,11 +89,11 @@ class EpicTimeline extends React.Component {
     } // TODO: do this with ref
   }
 
-  getStepContent (stepIndex, epicEntitiesData) {
+  getStepContent (stepIndex, epicLinkedArticles) {
     const { epicData } =  this.props
     const { selectedWiki, iframeLoading } = this.state
-    const wikiUrl = (epicEntitiesData[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || -1
-    return (wikiUrl === -1 && !selectedWiki) ? <span>no wiki linked, consider adding one epic _here_</span> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (epicEntitiesData.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
+    const wikiUrl = (epicLinkedArticles[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || -1
+    return (wikiUrl === -1 && !selectedWiki) ? <span>no wiki linked, consider adding one epic _here_</span> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (epicLinkedArticles.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
   }
 
   _selectMainArticle = () => {
@@ -101,11 +102,11 @@ class EpicTimeline extends React.Component {
 
   _selectStepButton = (index, newYear) => {
     this.setState({stepIndex: index, selectedWiki: false})
-    this.props.setYear(+newYear)
+    if (!isNaN(newYear)) this.props.setYear(+newYear)
   }
 
   setYearWrapper = (newYear) => {
-    this.props.setYear(+newYear)
+    if (!isNaN(newYear)) this.props.setYear(+newYear)
   }
 
   setUpInfluenceChart = (epicData) => {
@@ -136,7 +137,7 @@ class EpicTimeline extends React.Component {
 
   componentWillReceiveProps = (nextProps) => {
 
-    if ((nextProps.epicData || {}).id !== (this.props.epicData || {}).id && nextProps.selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
+    if ((nextProps.epicData || {}).id !== (this.props.epicData || {}).id) {
       this.setUpInfluenceChart(nextProps.epicData)
     }
   }
@@ -156,8 +157,14 @@ class EpicTimeline extends React.Component {
 
     const shouldLoad = (iframeLoading)
     const epicMeta = ((epicData || {}).data || {}).data || {}
-    const epicEntitiesData = epicMeta.content || [].sort((a, b) => +a - +b)
-    const contentDetected = epicEntitiesData.length !== 0
+    const epicLinkedArticles = (epicMeta.content || []).map((linkedItem) => {
+      return {
+        "name": linkedItem.properties.n || linkedItem.properties.w,
+        "wiki": linkedItem.properties.w,
+        "type": linkedItem.properties.t,
+        "date": linkedItem.properties.y
+    }}).sort((a, b) => +a.date - +b.date)
+    const contentDetected = epicLinkedArticles.length !== 0
 
     return (
       <div style={{ height: '100%' }}>
@@ -171,9 +178,9 @@ class EpicTimeline extends React.Component {
             activeStep={stepIndex}
             orientation='vertical'
             style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
-            {epicEntitiesData.map((epicContent, i) => (
+            {epicLinkedArticles.map((epicContent, i) => (
               <Step key={i} style={ styles.stepContainer}>
-                <StepButton iconContainerStyle={{ background: (( (+(epicEntitiesData[i].date) <= +selectedYear) && (+selectedYear < +((epicEntitiesData[i+1] || {}).date || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{epicEntitiesData[i].date}</span>} onClick={() => this._selectStepButton(i, epicEntitiesData[i].date) }>
+                <StepButton iconContainerStyle={{ background: (( (+(epicLinkedArticles[i].date) <= +selectedYear) && (+selectedYear < +((epicLinkedArticles[i+1] || {}).date || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{epicLinkedArticles[i].date}</span>} onClick={() => this._selectStepButton(i, epicLinkedArticles[i].date) }>
                   <div style={{
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
@@ -214,26 +221,26 @@ class EpicTimeline extends React.Component {
           <div style={styles.contentStyle}>
             {(shouldLoad)
               ? <span>loading epic placeholder...</span>
-              : this.getStepContent(stepIndex, epicEntitiesData)}
+              : this.getStepContent(stepIndex, epicLinkedArticles)}
             { contentDetected && <div style={ styles.navTitle }>
-              <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (epicEntitiesData[epicEntitiesData[stepIndex]] || {} )[0] } </span>
+              <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (epicLinkedArticles[epicLinkedArticles[stepIndex]] || {} )[0] } </span>
               <span style={{ fontWeight: 300, paddingRight: '.6em'}}>
-                {(epicEntitiesData[epicEntitiesData[stepIndex]] || {} )[1]}
+                {(epicLinkedArticles[epicLinkedArticles[stepIndex]] || {} )[1]}
               </span>
-              <span style={{ paddingRight: '2em'}}> ({stepIndex + 1} / {epicEntitiesData.length})</span>
+              <span style={{ paddingRight: '2em'}}> ({stepIndex + 1} / {epicLinkedArticles.length})</span>
             </div> }
             { contentDetected && <div style={ styles.navButtons }>
               <FlatButton
                 label='Back'
                 disabled={stepIndex < 1}
-                onClick={() => this.handlePrev(epicEntitiesData[stepIndex-1])}
+                onClick={() => this.handlePrev(epicLinkedArticles[stepIndex-1].date)}
                 style={{ marginRight: 12 }}
               />
               <RaisedButton
                 label='Next'
-                disabled={stepIndex >= epicEntitiesData.length-1}
+                disabled={stepIndex >= epicLinkedArticles.length-1}
                 primary
-                onClick={() => this.handleNext(epicEntitiesData[stepIndex+1])}
+                onClick={() => this.handleNext(epicLinkedArticles[stepIndex+1].date)}
               />
             </div> }
           </div>

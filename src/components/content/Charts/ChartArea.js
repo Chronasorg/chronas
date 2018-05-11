@@ -109,8 +109,19 @@ export default class InfluenceChart extends React.Component {
       (nextProps.newData[0] || {}).id !== ((this.props.newData || [])[0] || {}).id ||
       nextProps.selectedYear !== this.props.selectedYear) {
       const { selectedYear } = nextProps
+      const nextSeries = nextProps.newData.map((seriesEl) => seriesEl.data)
 
-      const currentYearMarkerValues = nextProps.newData[0].data.map((s, i) => {
+      const currentYearMarkerValues = nextProps.epicMeta
+        ? nextSeries.map((s, i) => {
+        const nearestYear = s[0].data.map(y => +y.left).reduce(function (prev, curr) {
+          return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
+        }).toString()
+        return {
+          left: selectedYear,
+          top: s[0].data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
+        }
+      })
+        : nextProps.newData[0].data.map((s, i) => {
         const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
           return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
         }).toString()
@@ -129,7 +140,7 @@ export default class InfluenceChart extends React.Component {
 
       this.setState({
         sortedData: nextProps.newData[0].data[0].data.map((el) => { if (!isNaN(el.left)) return el.left }).sort((a, b) => +a - +b),
-        series: nextProps.newData.map((seriesEl) => seriesEl.data),
+        series: nextSeries,
         currentYearMarkerValues,
         crosshairStartValues,
         crosshairEndValues
@@ -201,11 +212,11 @@ export default class InfluenceChart extends React.Component {
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
               values={crosshairValues} />
-            { !epicMeta && <Crosshair
+            <Crosshair
               className='currentYearMarker'
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
-              values={currentYearMarkerValues} />}
+              values={currentYearMarkerValues} />
           </FlexibleWidthXYPlot>
         </div>
       </div>

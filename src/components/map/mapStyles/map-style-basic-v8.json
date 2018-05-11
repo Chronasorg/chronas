@@ -36,6 +36,13 @@
         "features": [ ]
       }
     },
+    "entity-outlines2": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [ ]
+      }
+    },
     "provinces": {
       "type": "geojson",
       "data": {
@@ -173,6 +180,20 @@
       },
       "paint": {
         "line-color": "#bc0000",
+        "line-width": 8,
+        "line-blur": 4
+      }
+    },
+    {
+      "id": "entity-outlines2",
+      "type": "line",
+      "source": "entity-outlines2",
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#003ebc",
         "line-width": 8,
         "line-blur": 4
       }

@@ -43,7 +43,7 @@ import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIco
 import { setRightDrawerVisibility } from './actionReducers'
 import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
-  deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC
+  selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC
 } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
@@ -159,17 +159,16 @@ class RightDrawerRoutes extends PureComponent {
         "id": null,
         "data": null
       },
-      epicData: {
-        "id": null,
-        "data": null,
-        "rulerEntities": []
-      }
     }
   }
 
   componentWillReceiveProps (nextProps) {
     // TODO: this gets called too much!
-    this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
+    if (
+      !(nextProps.selectedItem.type === TYPE_EPIC && this.props.selectedItem.type === TYPE_EPIC) // don't load twice with type_epic
+    ) {
+      this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
+    }
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.setState({
         selectedIndex: menuIndexByLocation[nextProps.location.pathname] || -1
@@ -274,36 +273,6 @@ class RightDrawerRoutes extends PureComponent {
               }})
           })
       }
-    } else if (selectedItem.type === TYPE_EPIC) {
-      const epicWiki = selectedItem.wiki
-      axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
-        .then((newEpicEntitiesRes) => {
-          const newEpicEntities = newEpicEntitiesRes.data
-
-          const teamMapping = {}
-          const rulerPromises = [];
-          const participants = (newEpicEntities.data.participants || [])
-          const flatternedParticipants = []
-
-          participants.forEach((team, teamIndex) => {
-            team.forEach((participant) => {
-              teamMapping[participant] = teamIndex
-              rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + participant))
-              flatternedParticipants.push(participant)
-            })
-          })
-
-          console.debug(newEpicEntities, newEpicEntitiesRes)
-
-          axios.all(rulerPromises)
-            .then(axios.spread((...args) => {
-              this.setState({ epicData: {
-                  id: newEpicEntities._id,
-                  data: newEpicEntities,
-                  rulerEntities: args.map((res, i) => { return { ...res.data, id: flatternedParticipants[i] }})
-                }})
-            }))
-        })
     }
   }
 
@@ -319,11 +288,10 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   render() {
-    const { list, create, edit, show, remove, options, onMenuTap,
-      translate, rightDrawerOpen, deselectItem, setWikiId, setRightDrawerVisibility,
-      selectedYear, selectedItem, activeArea, children, muiTheme, setAreaColorLabel,
-      setModData, setModDataLng, setModDataLat, location, history, metadata, changeColor } = this.props
-    const { newWidth, rulerEntity, provinceEntity, epicData } = this.state
+    const { options, setWikiId, setRightDrawerVisibility,
+      selectedYear, selectedItem, activeArea, setAreaColorLabel,
+      setModData, setModDataLng, setModDataLat, history, metadata, changeColor } = this.props
+    const { newWidth, rulerEntity, provinceEntity } = this.state
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
@@ -603,7 +571,7 @@ class RightDrawerRoutes extends PureComponent {
           <Route
             exact
             path={'/article'}
-            render={restrictPage(articleHeader, Content, '', { metadata, rulerEntity, provinceEntity, epicData, selectedYear, newWidth, history } )}
+            render={restrictPage(articleHeader, Content, '', { metadata, rulerEntity, provinceEntity, selectedYear, newWidth, history } )}
         />
           <Route
             exact
@@ -689,6 +657,7 @@ const enhance = compose(
       setAreaColorLabel,
       changeColor,
       setWikiId,
+      selectValue,
       deselectItem: deselectItemAction,
       toggleRightDrawer: toggleRightDrawerAction,
       setModData: setModDataAction,
