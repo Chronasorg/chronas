@@ -136,9 +136,13 @@ class EpicTimeline extends React.Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
+    const { selectedItem, epicData } = this.props
 
-    if ((nextProps.epicData || {}).id !== (this.props.epicData || {}).id) {
+    if ((nextProps.epicData || {}).id !== (epicData || {}).id) {
       this.setUpInfluenceChart(nextProps.epicData)
+    }
+    else if (nextProps.selectedItem.wiki !== selectedItem.wiki) {
+      this.setState({ selectedWiki: nextProps.selectedItem.wiki })
     }
   }
 
@@ -252,6 +256,7 @@ class EpicTimeline extends React.Component {
 
 const enhance = compose(
   connect(state => ({
+    selectedItem: state.selectedItem,
   }), {
     setYear: setYearAction,
     selectValue

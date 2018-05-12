@@ -168,7 +168,8 @@ class Content extends Component {
         : (activeAreaDim === 'province' || activeAreaDim === 'capital')
           ? (metadata[activeAreaDim][activeprovinceValue] || {})
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
-    } else if (selectedItem.type === TYPE_MARKER) {
+    }
+    else if (selectedItem.type === TYPE_MARKER) {
       selectedWiki = selectedItem.wiki
     } else if (selectedItem.type === TYPE_LINKED) {
       selectedWiki = selectedItem.wiki
@@ -272,8 +273,8 @@ class Content extends Component {
               activeContentMenuItem={activeContentMenuItem}
               activeAreaDim={activeAreaDim}
               selectedYear={selectedYear}
-              epicData={selectedItem.value}
-              rulerProps={(selectedItem.value.rulerEntities || []).map(el => metadata['ruler'][el.id] )}
+              epicData={selectedItem.data}
+              rulerProps={(selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id] )}
               linkedItems={linkedItems} />
             : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}
                       height='100%' frameBorder='0' />}

@@ -71,7 +71,6 @@ const LayerContent = ({ activeArea, selectedText, selectEpicItem, activeMarkers,
     {activeMarkers}
     <br/>
     <RaisedButton style={styles.button} label='Test Epic' onClick={() => selectEpicItem('Byzantine–Sasanian_War_of_602–628')} />
-
     <h4>Year</h4>
     {selectedYear}
   </div>

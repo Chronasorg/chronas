@@ -1,4 +1,5 @@
 export const SET_WIKI_ID = 'SET_WIKI_ID'
+export const SET_DATA = 'SET_DATA'
 export const SET_AREA_ITEM = 'SET_AREA_ITEM'
 export const SET_MARKER_ITEM = 'SET_MARKER_ITEM'
 export const SET_LINKED_ITEM = 'SET_LINKED_ITEM'
@@ -27,9 +28,14 @@ export const selectValue = value => ({
   payload: value,
 })
 
-export const setFullItem = (wiki, province, type) => ({
+export const setData = data => ({
+  type: SET_DATA,
+  payload: data,
+})
+
+export const setFullItem = (wiki, province, type, data) => ({
   type: SET_FULL_ITEM,
-  payload: [wiki, province, type],
+  payload: [wiki, province, type, data],
 })
 
 export const selectAreaItem = (wiki, province) => ({
@@ -37,9 +43,9 @@ export const selectAreaItem = (wiki, province) => ({
   payload: [wiki, province],
 })
 
-export const selectEpicItem = (wiki) => ({
+export const selectEpicItem = (value) => ({
   type: SET_EPIC_ITEM,
-  payload:wiki,
+  payload: value,
 })
 
 export const selectLinkedItem = (value) => ({
@@ -58,48 +64,58 @@ export const deselectItem = () => ({
 
 /** Reducers **/
 
-export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'value': '' }) =>
+export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'value': '', 'data': false }) =>
   (previousState = defaultState, { type, payload }) => {
     switch (type) {
       case SET_VALUE:
         return {
           ...previousState,
-          value: payload
+          value: payload,
         }
       case SET_WIKI_ID:
         return {
           ...previousState,
-          wiki: payload
+          wiki: payload,
+        }
+      case SET_DATA:
+        return {
+          ...previousState,
+          data: payload,
         }
       case SET_FULL_ITEM:
         return {
           wiki: payload[0],
           value: payload[1],
-          type: payload[2]
+          type: payload[2],
+          data: payload[3]
         }
       case SET_AREA_ITEM:
         return {
           wiki: payload[0],
           value: payload[1],
-          type: TYPE_AREA
+          type: TYPE_AREA,
+          data: false
         }
       case SET_EPIC_ITEM:
         return {
           ...previousState,
-          wiki: payload,
-          type: TYPE_EPIC
+          value: payload,
+          type: TYPE_EPIC,
+          data: false
         }
       case SET_LINKED_ITEM:
         return {
           wiki: payload[0],
           value: payload[1],
-          type: TYPE_LINKED
+          type: TYPE_LINKED,
+          data: false
         }
       case SET_MARKER_ITEM:
         return {
           wiki: payload[0],
           value: payload[1],
-          type: TYPE_MARKER
+          type: TYPE_MARKER,
+          data: false
         }
       case DESELECT_ITEM:
         return defaultState

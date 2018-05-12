@@ -14,7 +14,7 @@ import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import {
-  TYPE_MARKER, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, selectAreaItem as selectAreaItemAction,
+  TYPE_MARKER, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId,  setData, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
 import properties from '../../properties'
@@ -268,7 +268,7 @@ class Map extends Component {
 
       if (typeof multiPolygonToOutline !== 'undefined') {
         let newMapStyle = mapStyle
-          .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutline))
+          .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: {color: 'green'} }))
 
         if (newColor === 'population' && prevColor && prevColor !== 'population') {
           const populationStops = [[0, populationColorScale[0]]]
@@ -380,11 +380,8 @@ class Map extends Component {
               .setIn(['sources', 'entity-outlines', 'data'], fromJS({
                 'type': 'FeatureCollection',
                 'features': [ ]
-              })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
-                'type': 'FeatureCollection',
-                'features': [ ]
               }))
-              .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutline)),
+              .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: { color: metadata[nextProps.activeArea.color][nextActiveprovinceValue][1] } })),
             hoverInfo: null
           })
         } else {
@@ -393,9 +390,6 @@ class Map extends Component {
               'type': 'FeatureCollection',
               'features': [ ]
             })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
-              'type': 'FeatureCollection',
-              'features': [ ]
-            })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
               'type': 'FeatureCollection',
               'features': [ ]
             })),
@@ -412,9 +406,6 @@ class Map extends Component {
           })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
             'type': 'FeatureCollection',
             'features': [ ]
-          })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
-            'type': 'FeatureCollection',
-            'features': [ ]
           })),
           hoverInfo: null
         })
@@ -427,9 +418,10 @@ class Map extends Component {
       this._removeGeoJson(TYPE_MARKER, TYPE_EPIC)
     }
 
-    if (nextProps.selectedItem.type === TYPE_EPIC && nextProps.selectedItem.wiki !== selectedItem.wiki) {
+    if (nextProps.selectedItem.type === TYPE_EPIC && nextProps.selectedItem.value !== selectedItem.value) {
+      // setup new epic!
       if (selectedItem.type === TYPE_EPIC) this._removeGeoJson(TYPE_MARKER, TYPE_EPIC)
-      const epicWiki = nextProps.selectedItem.wiki
+      const epicWiki = nextProps.selectedItem.value
       axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
         .then((newEpicEntitiesRes) => {
           const newEpicEntities = newEpicEntitiesRes.data
@@ -447,12 +439,12 @@ class Map extends Component {
                 .setIn(['sources', 'entity-outlines', 'data'], fromJS({
                   'type': 'FeatureCollection',
                   'features': [ ]
-                })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
+                }))// Todo: multiPolygonToOutlines[0] has properties! does that slow things down?
+                .setIn(['sources', 'entity-outlines', 'data'], fromJS({
                   'type': 'FeatureCollection',
-                  'features': [ ]
-                }))
-                .setIn(['sources', 'entity-outlines', 'data'], fromJS(multiPolygonToOutlines[0]))
-                .setIn(['sources', 'entity-outlines2', 'data'], fromJS(multiPolygonToOutlines[1])),
+                  'features': [{ ...multiPolygonToOutlines[0], properties: { color: 'red'}},{ ...multiPolygonToOutlines[1], properties: { color: 'blue'}}]
+                })),
+                // .setIn(['sources', 'entity-outlines2', 'data'], fromJS({ ...multiPolygonToOutlines[1], properties: { color: 'black'}})),
               hoverInfo: null
             })
           } else {
@@ -461,9 +453,6 @@ class Map extends Component {
                 'type': 'FeatureCollection',
                 'features': [ ]
               })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
-                'type': 'FeatureCollection',
-                'features': [ ]
-              })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
                 'type': 'FeatureCollection',
                 'features': [ ]
               })),
@@ -494,7 +483,7 @@ class Map extends Component {
                 this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
                 args.shift()
               }
-              this.props.selectValue({
+              this.props.setData({
                 id: newEpicEntities._id,
                 data: newEpicEntities,
                 rulerEntities: args.map((res, i) => { return { ...res.data, id: flatternedParticipants[i] }})
@@ -730,9 +719,6 @@ class Map extends Component {
         })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
           'type': 'FeatureCollection',
           'features': [ ]
-        })).setIn(['sources', 'entity-outlines2', 'data'], fromJS({
-          'type': 'FeatureCollection',
-          'features': [ ]
         }))
       this.setState({ mapStyle })
     } else {
@@ -830,17 +816,19 @@ class Map extends Component {
 
   _onClick = event => {
     event.stopPropagation()
+
+    const { modActive, selectedItem } = this.props
     let itemName = ''
     let wikiId = ''
 
-    if (this.props.modActive.type === TYPE_MARKER && this.props.modActive.selectActive) {
+    if (modActive.type === TYPE_MARKER && modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
     }
-    else if (this.props.modActive.type === TYPE_AREA) {
+    else if (modActive.type === TYPE_AREA) {
       let provinceName = ''
       const province = event.features && event.features[0]
-      const prevModData = this.props.modActive.data
+      const prevModData = modActive.data
 
       if (province) {
         provinceName = province.properties.name
@@ -869,8 +857,6 @@ class Map extends Component {
       if (layerClicked.layer.id === TYPE_MARKER) {
         itemName = layerClicked.properties.n
         wikiId = layerClicked.properties.w
-        utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
-        utilsQuery.updateQueryStringParameter('value', wikiId)
 
         const prevMapStyle = this.state.mapStyle
         let mapStyle = prevMapStyle
@@ -882,8 +868,17 @@ class Map extends Component {
           hoverInfo: null,
           mapStyle
         })
+        // setWikiId
 
-        this.props.selectMarkerItem(wikiId, { ...layerClicked.properties, 'coo': layerClicked.geometry.coordinates })
+        if (selectedItem.type === TYPE_EPIC) {
+          utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
+          // utilsQuery.updateQueryStringParameter('wiki', wikiId)
+          this.props.setWikiId(wikiId)
+        } else {
+          utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
+          utilsQuery.updateQueryStringParameter('value', wikiId)
+          this.props.selectMarkerItem(wikiId, { ...layerClicked.properties, 'coo': layerClicked.geometry.coordinates })
+        }
         if (this.props.modActive.type === TYPE_MARKER) return
       } else {
         itemName = layerClicked.properties.name
@@ -902,7 +897,7 @@ class Map extends Component {
           mapStyle
         })
 
-        if (this.props.selectedItem.wiki === WIKI_PROVINCE_TIMELINE || this.props.selectedItem.wiki === WIKI_RULER_TIMELINE) {
+        if (selectedItem.wiki === WIKI_PROVINCE_TIMELINE || selectedItem.wiki === WIKI_RULER_TIMELINE) {
           this.props.selectValue(itemName)
         } else {
           this.props.selectAreaItem(wikiId, itemName)
@@ -1015,9 +1010,11 @@ const enhance = compose(
     modActive: state.modActive,
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
+    setData,
     setRightDrawerVisibility,
     selectAreaItem: selectAreaItemAction,
     selectValue,
+    setWikiId,
     selectMarkerItem : selectMarkerItemAction,
     setModData: setModDataAction,
     removeModData: removeModDataAction,
