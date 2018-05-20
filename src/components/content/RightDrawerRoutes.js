@@ -54,6 +54,15 @@ import { chronasMainColor } from '../../styles/chronasColors'
 import utils from "../map/utils/general";
 import properties from "../../properties";
 
+const defaultIcons = {
+  ruler: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
+  religion: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
+  religionGeneral: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
+  culture: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
+  capital: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
+  province: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
+}
+
 const styles = {
   articleHeader: {
     backgroundColor: '#eceff1',
@@ -393,7 +402,35 @@ class RightDrawerRoutes extends PureComponent {
       })
     }
 
-    const rulerName = metadata['ruler'][rulerId][0]
+    const entityObject = {
+      ruler: metadata['ruler'][rulerId],
+      religion: (metadata['religion'][religionId] || {}),
+      religionGeneral: metadata['religionGeneral'][metadata['religion'][religionId][3]] || {},
+      culture: (metadata['culture'][cultureId] || {}),
+      capital: (activeArea.data[selectedProvince] || {}),
+      province: (metadata['province'][selectedProvince] || {}),
+    }
+    const entityMeta = {
+      ruler: {
+        name: entityObject.ruler[0], icon: entityObject.ruler[3]
+      },
+      religion: {
+        name: entityObject.religion[0], icon: entityObject.religion[4]
+      },
+      religionGeneral: {
+        name: entityObject.religionGeneral[0], icon: entityObject.religionGeneral[3]
+      },
+      culture: {
+        name: entityObject.culture[0], icon: entityObject.culture[3]
+      },
+      capital: {
+        name: entityObject.capital[0], icon: entityObject.capital[3]
+      },
+      province: {
+        name: entityObject.province[0], icon: entityObject.province[3]
+      }
+    }
+    const rulerNameAndIcon = [entityObject.ruler[0]
     const religionName = (metadata['religion'][religionId] || {})[0] || 'n/a'
     const religionGeneralName = metadata['religionGeneral'][metadata['religion'][religionId][3]][0]
     const cultureName = (metadata['culture'][cultureId] || {})[0] || 'n/a'

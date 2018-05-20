@@ -14,7 +14,7 @@ import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import {
-  TYPE_MARKER, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId,  setData, selectAreaItem as selectAreaItemAction,
+  TYPE_MARKER, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
 import properties from '../../properties'
@@ -171,8 +171,8 @@ class Map extends Component {
         const multiPolygonToOutlines = geometryToOutlines.filter((geometryToOutline) => (geometryToOutline && geometryToOutline.length !== 0)).map((geometryToOutline) => turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), [])))
 
         const bbox = turf.bbox({
-          "type": "FeatureCollection",
-          "features": multiPolygonToOutlines
+          'type': 'FeatureCollection',
+          'features': multiPolygonToOutlines
         })
 
         const bounds = webMercatorViewport.fitBounds(
@@ -197,19 +197,20 @@ class Map extends Component {
       const activeColorValue = (nextActiveColorDim === 'population' && prevActiveColorValue) ? prevActiveColorValue : nextActiveColorValue
 
       let geometryToOutline
-      if (activeColorValue && typeof activeColorValue !== 'undefined' && activeColorValue !== '' && activeColorValue !== 'undefined' && activeColorValue !== 'null')
-      if (activeColorDim === 'ruler') {
-        geometryToOutline = this.state.mapStyle
+      if (activeColorValue && typeof activeColorValue !== 'undefined' && activeColorValue !== '' && activeColorValue !== 'undefined' && activeColorValue !== 'null') {
+        if (activeColorDim === 'ruler') {
+          geometryToOutline = this.state.mapStyle
               .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.r === activeColorValue)
-      } else if (activeColorDim === 'culture') {
-        geometryToOutline = this.state.mapStyle
+        } else if (activeColorDim === 'culture') {
+          geometryToOutline = this.state.mapStyle
               .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.c === activeColorValue)
-      } else if (activeColorDim === 'religion') {
-        geometryToOutline = this.state.mapStyle
+        } else if (activeColorDim === 'religion') {
+          geometryToOutline = this.state.mapStyle
               .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.e === activeColorValue)
-      } else if (activeColorDim === 'religionGeneral') {
-        geometryToOutline = this.state.mapStyle
+        } else if (activeColorDim === 'religionGeneral') {
+          geometryToOutline = this.state.mapStyle
               .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.g === activeColorValue)
+        }
       }
           // turf.unkinkPolygon.apply(null,geometryToOutline)
       if (typeof geometryToOutline !== 'undefined' && geometryToOutline.length !== 0) {
@@ -268,7 +269,7 @@ class Map extends Component {
 
       if (typeof multiPolygonToOutline !== 'undefined') {
         let newMapStyle = mapStyle
-          .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: {color: 'green'} }))
+          .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: { color: 'green' } }))
 
         if (newColor === 'population' && prevColor && prevColor !== 'population') {
           const populationStops = [[0, populationColorScale[0]]]
@@ -337,11 +338,20 @@ class Map extends Component {
     this.setState({ mapStyle })
   }
 
+  _getDirtyOrOriginalMapStyle = (mapStyleDirty) => {
+    if (mapStyleDirty) {
+      return mapStyleDirty
+    } else {
+      return this.state.mapStyle
+    }
+  }
+
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
     const { basemap, activeArea, selectedYear, metadata, modActive, history, activeMarkers, selectedItem, selectAreaItem } = this.props
     const rightDrawerOpen = nextProps.rightDrawerOpen
 
+    let mapStyleDirty = false
     console.debug('### MAP componentWillReceiveProps', this.props, nextProps)
 
     /** Acting on store changes **/
@@ -351,11 +361,15 @@ class Map extends Component {
       this.setState({ mapTimelineContainerClass: 'mapTimeline' })
     }
 
+    // Leaving Epic? -> cleanup
+    if (selectedItem.type === TYPE_EPIC && nextProps.selectedItem.type !== TYPE_EPIC) {
+      mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, TYPE_EPIC)
+    }
+
     if (selectedItem.value !== nextProps.selectedItem.value) {
       console.debug('###### Item changed')
       if (nextProps.selectedItem.wiki === 'random') {
-        const prevMapStyle = this.state.mapStyle
-        let dataPool = prevMapStyle
+        let dataPool = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
           .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.n !== 'undefined')
 
         console.debug('data pool: ', dataPool)
@@ -364,8 +378,7 @@ class Map extends Component {
         if (history.location.pathname.indexOf('article') === -1) history.push('/article')
 
         this.props.selectAreaItem('', provinceId) // set query url
-      }
-      else if ((nextProps.selectedItem.type === TYPE_AREA &&
+      } else if ((nextProps.selectedItem.type === TYPE_AREA &&
           nextProps.selectedItem.value !== '' &&
           nextProps.activeArea.color !== '' &&
           nextProps.activeArea.color === activeArea.color)) {
@@ -374,14 +387,14 @@ class Map extends Component {
         const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, nextActiveprovinceValue, activeArea.color, prevActiveprovinceValue)
 
         if (typeof multiPolygonToOutline !== 'undefined') {
+          mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
+            .setIn(['sources', 'entity-outlines', 'data'], fromJS({
+              'type': 'FeatureCollection',
+              'features': [ ]
+            }))
+            .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: { color: metadata[nextProps.activeArea.color][nextActiveprovinceValue][1] } }))
           this.setState({
             viewport,
-            mapStyle: this.state.mapStyle
-              .setIn(['sources', 'entity-outlines', 'data'], fromJS({
-                'type': 'FeatureCollection',
-                'features': [ ]
-              }))
-              .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: { color: metadata[nextProps.activeArea.color][nextActiveprovinceValue][1] } })),
             hoverInfo: null
           })
         } else {
@@ -396,103 +409,109 @@ class Map extends Component {
             hoverInfo: null
           })
         }
-      }
-      else if (nextProps.selectedItem.type !== TYPE_EPIC) {
+      } else if (nextProps.selectedItem.type !== TYPE_EPIC) {
         // setTimeout(() => {
-        this.setState({
-          mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
+        mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
+          .setIn(['sources', 'area-hover', 'data'], fromJS({
             'type': 'FeatureCollection',
             'features': [ ]
           })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
             'type': 'FeatureCollection',
             'features': [ ]
-          })),
+          }))
+        this.setState({
           hoverInfo: null
         })
-        // }, 2000)
       }
     }
 
-    // Leaving Epic? -> cleanup
-    if (selectedItem.type === TYPE_EPIC && nextProps.selectedItem.type !== TYPE_EPIC) {
-      this._removeGeoJson(TYPE_MARKER, TYPE_EPIC)
-    }
+    if (nextProps.selectedItem.type === TYPE_EPIC && (nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id))) {
 
-    if (nextProps.selectedItem.type === TYPE_EPIC && nextProps.selectedItem.value !== selectedItem.value) {
+      // TODO: only go ahead if selectedYear is starting year
+
       // setup new epic!
-      if (selectedItem.type === TYPE_EPIC) this._removeGeoJson(TYPE_MARKER, TYPE_EPIC)
-      const epicWiki = nextProps.selectedItem.value
-      axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
-        .then((newEpicEntitiesRes) => {
-          const newEpicEntities = newEpicEntitiesRes.data
+      if (selectedItem.type === TYPE_EPIC && !nextProps.selectedItem.data) {
+        // remove old geoJson // TODO: this could complicate with sequential wars
+        mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, TYPE_EPIC)
+      }
 
-          if (!newEpicEntities.data) return
+      if ((nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id) {
+        // draw outlines after main
+        const participants = (((nextProps.selectedItem.data || {}).data || {}).data || {}).participants
+        if (!participants) return
+        const { viewport, multiPolygonToOutlines } = this._getAreaViewportAndOutlines('ruler', '', false, false, participants)
 
-          const participants = (newEpicEntities.data.participants || [])
-
-          const { viewport, multiPolygonToOutlines } = this._getAreaViewportAndOutlines('ruler', '', false, false, participants)
-
-          if (typeof multiPolygonToOutlines !== 'undefined') {
-            this.setState({
-              viewport,
-              mapStyle: this.state.mapStyle
-                .setIn(['sources', 'entity-outlines', 'data'], fromJS({
-                  'type': 'FeatureCollection',
-                  'features': [ ]
-                }))// Todo: multiPolygonToOutlines[0] has properties! does that slow things down?
-                .setIn(['sources', 'entity-outlines', 'data'], fromJS({
-                  'type': 'FeatureCollection',
-                  'features': [{ ...multiPolygonToOutlines[0], properties: { color: 'red'}},{ ...multiPolygonToOutlines[1], properties: { color: 'blue'}}]
-                })),
-                // .setIn(['sources', 'entity-outlines2', 'data'], fromJS({ ...multiPolygonToOutlines[1], properties: { color: 'black'}})),
-              hoverInfo: null
-            })
-          } else {
-            this.setState({
-              mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
+        if (typeof multiPolygonToOutlines !== 'undefined') {
+          // Todo: multiPolygonToOutlines[0] has properties! does that slow things down?
+          this.setState({
+            mapStyle: this._getDirtyOrOriginalMapStyle(mapStyleDirty)
+              .setIn(['sources', 'entity-outlines', 'data'], fromJS({
                 'type': 'FeatureCollection',
                 'features': [ ]
-              })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+              }))
+              .setIn(['sources', 'entity-outlines', 'data'], fromJS({
                 'type': 'FeatureCollection',
-                'features': [ ]
+                'features': [{ ...multiPolygonToOutlines[0], properties: { color: 'red' } }, { ...multiPolygonToOutlines[1], properties: { color: 'blue' } }]
               })),
-              hoverInfo: null
-            })
-          }
-
-          const teamMapping = {}
-          const rulerPromises = []
-          const flatternedParticipants = []
-
-          if (epicWiki) {
-            rulerPromises.push(axios.get(properties.chronasApiHost + '/markers?linked=' + epicWiki))
-          }
-
-          participants.forEach((team, teamIndex) => {
-            team.forEach((participant) => {
-              teamMapping[participant] = teamIndex
-              rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + participant))
-              flatternedParticipants.push(participant)
-            })
+            viewport,
+            hoverInfo: null
           })
+        } else {
+          this.setState({
+            mapStyle: this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['sources', 'area-hover', 'data'], fromJS({
+              'type': 'FeatureCollection',
+              'features': [ ]
+            })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+              'type': 'FeatureCollection',
+              'features': [ ]
+            })),
+            hoverInfo: null
+          })
+        }
+      } else {
+        // load initial epic data object
+        const epicWiki = nextProps.selectedItem.value
+        axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
+          .then((newEpicEntitiesRes) => {
+            const newEpicEntities = newEpicEntitiesRes.data
 
-          axios.all(rulerPromises)
-            .then(axios.spread((...args) => {
-              if (epicWiki && args.length > 0) {
-                newEpicEntities.data.content = args[0].data
-                this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
-                args.shift()
-              }
-              this.props.setData({
-                id: newEpicEntities._id,
-                data: newEpicEntities,
-                rulerEntities: args.map((res, i) => { return { ...res.data, id: flatternedParticipants[i] }})
+            if (!newEpicEntities.data) return
+
+            const participants = (newEpicEntities.data.participants || [])
+            const teamMapping = {}
+            const rulerPromises = []
+            const flatternedParticipants = []
+
+            if (epicWiki) {
+              rulerPromises.push(axios.get(properties.chronasApiHost + '/markers?linked=' + epicWiki))
+            }
+
+            participants.forEach((team, teamIndex) => {
+              team.forEach((participant) => {
+                teamMapping[participant] = teamIndex
+                rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + participant))
+                flatternedParticipants.push(participant)
               })
+            })
 
-              this.props.history.push('/article')
-              if (!rightDrawerOpen) this.props.setRightDrawerVisibility(true)
-            }))
-        })
+            axios.all(rulerPromises)
+              .then(axios.spread((...args) => {
+                if (epicWiki && args.length > 0) {
+                  newEpicEntities.data.content = args[0].data
+                  this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
+                  args.shift()
+                }
+                this.props.setData({
+                  id: newEpicEntities._id,
+                  data: newEpicEntities,
+                  rulerEntities: args.map((res, i) => { return { ...res.data, id: flatternedParticipants[i] } })
+                })
+
+                this.props.history.push('/article')
+                if (!rightDrawerOpen) this.props.setRightDrawerVisibility(true)
+              }))
+          })
+      }
     }
 
     // Leaving Area Mod?
@@ -523,20 +542,18 @@ class Map extends Component {
       const addedProvinces = _.difference(nextProps.modActive.data, modActive.data)
 
       removedProvinces.forEach((removedProv) => {
-        this.setState({ mapStyle: this.state.mapStyle
+        mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
           .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== removedProv)))
-        })
       })
 
       addedProvinces.forEach((addedProv) => {
         // add province
-        const provGeometry = (this.state.mapStyle.getIn(['sources', 'provinces', 'data']).toJS().features.find((prov) => prov.properties.name === addedProv) || {}).geometry
+        const provGeometry = (this._getDirtyOrOriginalMapStyle(mapStyleDirty).getIn(['sources', 'provinces', 'data']).toJS().features.find((prov) => prov.properties.name === addedProv) || {}).geometry
         if (typeof provGeometry !== 'undefined') {
-          this.setState({ mapStyle: this.state.mapStyle
+          mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
             .updateIn(['sources', 'area-hover', 'data', 'features'], list => list.concat({
               'type': 'Feature', 'properties': { n: addedProv }, 'geometry': provGeometry
             }))
-          })
         }
       })
     } else if (nextProps.modActive.type === TYPE_LINKED && !_.isEqual(modActive.data, nextProps.modActive.data)) {
@@ -552,8 +569,7 @@ class Map extends Component {
 
     if (nextProps.modActive.type === TYPE_AREA) {
       if (modActive.type === '') {
-        const prevMapStyle = this.state.mapStyle
-        let mapStyle = prevMapStyle
+        mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
           .setIn(['sources', 'area-hover', 'data'], fromJS({
             'type': 'FeatureCollection',
             'features': [ ]
@@ -561,7 +577,6 @@ class Map extends Component {
         this.setState({
           hoverInfo: null
         })
-        this.setState({ mapStyle })
       }
 
       // Mod Provinces changed?
@@ -571,16 +586,13 @@ class Map extends Component {
 
         for (const provinceName of removedProvinces) {
             // remove province
-          this.setState({
-            mapStyle: this.state.mapStyle
+          mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
                 .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.filter((obj) => (obj.properties.name !== provinceName)))
-          })
         }
 
         for (const provinceName of addedProvinces) {
             // add province
-          this.setState({
-            mapStyle: this.state.mapStyle
+          mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
                 .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.concat({
                   'type': 'Feature',
                   'properties': { name: provinceName },
@@ -588,15 +600,11 @@ class Map extends Component {
                     .getIn(['sources', 'provinces', 'data']).toJS().features
                     .filter((el) => el.properties.name === provinceName) || {})[0] || {}).geometry
                 }))
-          })
         }
       }
     } else if (modActive.type === TYPE_AREA) {
       // clean up mod select
-      const prevMapStyle = this.state.mapStyle
-      let mapStyle = prevMapStyle
-        .setIn(['sources', 'area-mod', 'data', 'features'], [])
-      this.setState({ mapStyle })
+      mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['sources', 'area-mod', 'data', 'features'], [])
     }
 
     // Year changed?
@@ -608,10 +616,7 @@ class Map extends Component {
     // Basemap changed?
     if (basemap !== nextProps.basemap) {
       console.debug('###### Basemap changed')
-      const newMapStyle = this.state.mapStyle.setIn(['layers', basemapLayerIndex, 'source'], nextProps.basemap)
-      this.setState({
-        mapStyle: newMapStyle,
-      })
+      mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['layers', basemapLayerIndex, 'source'], nextProps.basemap)
     }
 
     // Area Label and Color changed?
@@ -653,7 +658,7 @@ class Map extends Component {
       // iterate to remove
       for (const removedMarker of removedMarkers) {
         console.log('removing Marker', removedMarker)
-        this._removeGeoJson(TYPE_MARKER, removedMarker)
+        mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, removedMarker)
       }
 
       // iterate to add
@@ -663,6 +668,9 @@ class Map extends Component {
       }
     }
 
+    if (mapStyleDirty) {
+      this.setState({ mapStyle: mapStyleDirty })
+    }
     // if drawer changed
     // this._resize() // TODO: is this necessary?
   }
@@ -697,8 +705,7 @@ class Map extends Component {
           return feature
         })))
       this.setState({ mapStyle })
-    }
-    else if (entityId.toString() !== '') {
+    } else if (entityId.toString() !== '') {
       axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + this.props.selectedYear)
       .then(features => {
         const mapStyle = this.state.mapStyle
@@ -708,10 +715,10 @@ class Map extends Component {
     }
   }
 
-  _removeGeoJson = (sourceId, entityId) => {
+  _removeGeoJson = (prevMapStyle, sourceId, entityId) => {
     if (entityId === TYPE_EPIC) {
-      const mapStyle = this.state.mapStyle
-        .updateIn(['sources', sourceId, 'data', 'features'], list => list.filter(function (obj) {
+      return prevMapStyle
+        .updateIn(['sources', TYPE_MARKER, 'data', 'features'], list => list.filter(function (obj) {
           return (obj.properties.isEpic !== true)
         })).setIn(['sources', 'area-hover', 'data'], fromJS({
           'type': 'FeatureCollection',
@@ -720,13 +727,11 @@ class Map extends Component {
           'type': 'FeatureCollection',
           'features': [ ]
         }))
-      this.setState({ mapStyle })
     } else {
-      const mapStyle = this.state.mapStyle
+      return prevMapStyle
         .updateIn(['sources', sourceId, 'data', 'features'], list => list.filter(function (obj) {
           return (obj.properties.t !== entityId)
         }))
-      this.setState({ mapStyle })
     }
   }
 
@@ -824,8 +829,7 @@ class Map extends Component {
     if (modActive.type === TYPE_MARKER && modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    }
-    else if (modActive.type === TYPE_AREA) {
+    } else if (modActive.type === TYPE_AREA) {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = modActive.data

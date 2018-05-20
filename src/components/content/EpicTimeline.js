@@ -65,7 +65,9 @@ class EpicTimeline extends React.Component {
   state = {
     selectedWiki: false,
     stepIndex: -1,
-    influenceChartData: {}
+    influenceChartData: {},
+    epicMeta: false,
+    epicLinkedArticles: []
   }
 
   handleNext = (newYear) => {
@@ -89,9 +91,9 @@ class EpicTimeline extends React.Component {
     } // TODO: do this with ref
   }
 
-  getStepContent (stepIndex, epicLinkedArticles) {
+  getStepContent (stepIndex) {
     const { epicData } =  this.props
-    const { selectedWiki, iframeLoading } = this.state
+    const { selectedWiki, iframeLoading, epicLinkedArticles } = this.state
     const wikiUrl = (epicLinkedArticles[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || -1
     return (wikiUrl === -1 && !selectedWiki) ? <span>no wiki linked, consider adding one epic _here_</span> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (epicLinkedArticles.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
   }
@@ -138,11 +140,32 @@ class EpicTimeline extends React.Component {
   componentWillReceiveProps = (nextProps) => {
     const { selectedItem, epicData } = this.props
 
-    if ((nextProps.epicData || {}).id !== (epicData || {}).id) {
+    if ((nextProps.epicData || {}).id !== (epicData || {}).id || ((nextProps.epicData || {}).id && !this.state.epicMeta)) {
       this.setUpInfluenceChart(nextProps.epicData)
+
+      const epicMeta = ((nextProps.epicData || {}).data || {}).data || {}
+      const epicLinkedArticles = (epicMeta.content || []).map((linkedItem) => {
+        return {
+          "name": linkedItem.properties.n || linkedItem.properties.w,
+          "wiki": linkedItem.properties.w,
+          "type": linkedItem.properties.t,
+          "date": linkedItem.properties.y
+        }}).sort((a, b) => +a.date - +b.date)
+      this.setState({
+        epicMeta,
+        epicLinkedArticles
+      })
     }
     else if (nextProps.selectedItem.wiki !== selectedItem.wiki) {
-      this.setState({ selectedWiki: nextProps.selectedItem.wiki })
+      const { epicLinkedArticles } = this.state
+
+      const newWiki = nextProps.selectedItem.wiki
+      const articleIndex = epicLinkedArticles.findIndex(x => x.wiki === newWiki);
+      if (articleIndex) {
+        this._selectStepButton(articleIndex, epicLinkedArticles[articleIndex].date)
+      } else {
+        this.setState({ selectedWiki: newWiki })
+      }
     }
   }
 
@@ -154,20 +177,11 @@ class EpicTimeline extends React.Component {
     this.props.selectValue(value)
   }
 
-
   render () {
-    const { stepIndex, selectedWiki, influenceChartData, translate, iframeLoading } = this.state
-    const { epicData, selectedYear, rulerProps, newWidth, history, activeAreaDim, linkedItems, setContentMenuItem, activeContentMenuItem } = this.props
+    const { epicMeta, epicLinkedArticles, stepIndex, selectedWiki, influenceChartData, translate, iframeLoading } = this.state
+    const { selectedYear, rulerProps, newWidth, history, activeAreaDim, linkedItems, setContentMenuItem, activeContentMenuItem } = this.props
 
     const shouldLoad = (iframeLoading)
-    const epicMeta = ((epicData || {}).data || {}).data || {}
-    const epicLinkedArticles = (epicMeta.content || []).map((linkedItem) => {
-      return {
-        "name": linkedItem.properties.n || linkedItem.properties.w,
-        "wiki": linkedItem.properties.w,
-        "type": linkedItem.properties.t,
-        "date": linkedItem.properties.y
-    }}).sort((a, b) => +a.date - +b.date)
     const contentDetected = epicLinkedArticles.length !== 0
 
     return (
@@ -225,7 +239,7 @@ class EpicTimeline extends React.Component {
           <div style={styles.contentStyle}>
             {(shouldLoad)
               ? <span>loading epic placeholder...</span>
-              : this.getStepContent(stepIndex, epicLinkedArticles)}
+              : this.getStepContent(stepIndex)}
             { contentDetected && <div style={ styles.navTitle }>
               <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (epicLinkedArticles[epicLinkedArticles[stepIndex]] || {} )[0] } </span>
               <span style={{ fontWeight: 300, paddingRight: '.6em'}}>

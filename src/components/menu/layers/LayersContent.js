@@ -70,7 +70,9 @@ const LayerContent = ({ activeArea, selectedText, selectEpicItem, activeMarkers,
         onClick={() => {console.debug(id.toLowerCase()); toggleMarker(id.toLowerCase())}} />)}
     {activeMarkers}
     <br/>
-    <RaisedButton style={styles.button} label='Test Epic' onClick={() => selectEpicItem('Byzantine–Sasanian_War_of_602–628')} />
+    <RaisedButton style={styles.button} label='Test Epic' onClick={() => {
+      selectEpicItem('Byzantine–Sasanian_War_of_602–628', 602)
+    }} />
     <h4>Year</h4>
     {selectedYear}
   </div>

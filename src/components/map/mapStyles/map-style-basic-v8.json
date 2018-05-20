@@ -177,8 +177,8 @@
           "type": "identity",
           "default": "#bc0000"
         },
-        "line-width": 8,
-        "line-blur": 4
+        "line-width": 10,
+        "line-blur": 5
       }
     },
     {

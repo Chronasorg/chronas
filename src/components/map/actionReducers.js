@@ -43,9 +43,9 @@ export const selectAreaItem = (wiki, province) => ({
   payload: [wiki, province],
 })
 
-export const selectEpicItem = (value) => ({
+export const selectEpicItem = (wiki, year) => ({
   type: SET_EPIC_ITEM,
-  payload: value,
+  payload: [wiki, year],
 })
 
 export const selectLinkedItem = (value) => ({
@@ -99,7 +99,7 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
       case SET_EPIC_ITEM:
         return {
           ...previousState,
-          value: payload,
+          value: payload[0],
           type: TYPE_EPIC,
           data: false
         }
