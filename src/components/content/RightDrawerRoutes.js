@@ -302,6 +302,8 @@ class RightDrawerRoutes extends PureComponent {
       setModData, setModDataLng, setModDataLat, history, metadata, changeColor } = this.props
     const { newWidth, rulerEntity, provinceEntity } = this.state
 
+    if (!selectedItem.wiki || selectedItem.wiki === "" || !selectedItem.value || selectedItem.value === "" ) return null
+
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
     const modHeader = <AppBar
@@ -407,30 +409,30 @@ class RightDrawerRoutes extends PureComponent {
       religion: (metadata['religion'][religionId] || {}),
       religionGeneral: metadata['religionGeneral'][metadata['religion'][religionId][3]] || {},
       culture: (metadata['culture'][cultureId] || {}),
-      capital: (activeArea.data[selectedProvince] || {}),
+      capital: ((metadata['capital'][(activeArea.data[selectedProvince] || {})[3]]) || {}),
       province: (metadata['province'][selectedProvince] || {}),
     }
     const entityMeta = {
       ruler: {
-        name: entityObject.ruler[0], icon: entityObject.ruler[3]
+        name: entityObject.ruler[0] || "n/a", icon: entityObject.ruler[3] || defaultIcons.ruler
       },
       religion: {
-        name: entityObject.religion[0], icon: entityObject.religion[4]
+        name: entityObject.religion[0] || "n/a", icon: entityObject.religion[4] || defaultIcons.religion
       },
       religionGeneral: {
-        name: entityObject.religionGeneral[0], icon: entityObject.religionGeneral[3]
+        name: entityObject.religionGeneral[0] || "n/a", icon: entityObject.religionGeneral[3] || defaultIcons.religionGeneral
       },
       culture: {
-        name: entityObject.culture[0], icon: entityObject.culture[3]
+        name: entityObject.culture[0] || "n/a", icon: entityObject.culture[3] || defaultIcons.culture
       },
       capital: {
-        name: entityObject.capital[0], icon: entityObject.capital[3]
+        name: entityObject.capital[0] || "n/a", icon: entityObject.capital[1] || defaultIcons.capital
       },
       province: {
-        name: entityObject.province[0], icon: entityObject.province[3]
+        name: entityObject.province[0] || "n/a", icon: entityObject.province[1] || defaultIcons.province
       }
     }
-    const rulerNameAndIcon = [entityObject.ruler[0]
+    // const rulerNameAndIcon = [entityObject.ruler[0]
     const religionName = (metadata['religion'][religionId] || {})[0] || 'n/a'
     const religionGeneralName = metadata['religionGeneral'][metadata['religion'][religionId][3]][0]
     const cultureName = (metadata['culture'][cultureId] || {})[0] || 'n/a'
@@ -460,62 +462,62 @@ class RightDrawerRoutes extends PureComponent {
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle={ 'Summary' }
-              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+              avatar= { entityMeta.province.icon }
             />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(''); setAreaColorLabel('ruler', 'ruler') }}
+            onClick={() => { setWikiId(selectedItem.value); setAreaColorLabel('ruler', 'ruler') }}
             className='bottomNavigationItem'
             icon={<CardHeader
-                title={ rulerName }
+                title={ entityMeta.ruler.name }
                 titleStyle={ styles.cardHeader.titleStyle }
                 subtitleStyle={ styles.cardHeader.titleStyle }
                 textStyle={ styles.cardHeader.textStyle }
                 style={ styles.cardHeader.style }
                 subtitle="Ruler"
-                avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+                avatar={ entityMeta.ruler.icon }
               />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(''); setAreaColorLabel('culture', 'culture') }}
+            onClick={() => { setWikiId(selectedItem.value); setAreaColorLabel('culture', 'culture') }}
             className='bottomNavigationItem'
             icon={<CardHeader
-              title={ cultureName }
+              title={ entityMeta.culture.name  }
               titleStyle={ styles.cardHeader.titleStyle }
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Culture"
-              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+              avatar= { entityMeta.culture.icon }
             />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(''); setAreaColorLabel('religion','religion') }}
+            onClick={() => { setWikiId(selectedItem.value); setAreaColorLabel('religion','religion') }}
             className='bottomNavigationItem'
             icon={<CardHeader
-              title={ religionName + ' [' + religionGeneralName + ']' }
+              title={ entityMeta.religion.name  + ' [' + entityMeta.religionGeneral.name  + ']' }
               titleStyle={ styles.cardHeader.titleStyle }
               subtitleStyle={ styles.cardHeader.titleStyle }
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Religion"
-              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+              avatar= { entityMeta.religion.icon }
             />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(''); changeColor('population') }}
+            onClick={() => { setWikiId(selectedItem.value); changeColor('population') }}
             className='bottomNavigationItem'
             icon={<CardHeader
-              title={ capitalName }
+              title={ entityMeta.capital.name  }
               titleStyle={ styles.cardHeader.titleStyle }
               subtitleStyle={ styles.cardHeader.titleStyle }
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Capital"
-              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+              avatar= { entityMeta.capital.icon }
             />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(''); changeColor('population')} }
+            onClick={() => { setWikiId(selectedItem.value); changeColor('population')} }
             className='bottomNavigationItem'
             icon={<CardHeader
               title={ populationName }
@@ -523,7 +525,7 @@ class RightDrawerRoutes extends PureComponent {
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Population"
-              avatar="https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png"
+              avatar={ entityMeta.religionGeneral.icon }
             />}
             // onClick={() => this.select(0)}
           />

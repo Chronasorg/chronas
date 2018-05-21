@@ -134,6 +134,7 @@ class Content extends Component {
           const currProvData = activeData[provKey]
           if (currProvData[utils.activeAreaDataAccessor(activeAreaDim)] === activeprovinceValue) {
             const ruler = metadata['ruler'][currProvData[utils.activeAreaDataAccessor('ruler')]] || {}
+            // const province = metadata['province'][currProvData[utils.activeAreaDataAccessor('ruler')]] || {}
             const culture = metadata['culture'][currProvData[utils.activeAreaDataAccessor('culture')]] || {}
             const religion = metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {}
             const religionGeneral = metadata['religionGeneral'][(metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {})[3]] || {}
@@ -148,7 +149,7 @@ class Content extends Component {
                 size: currProvData[utils.activeAreaDataAccessor('population')]
               }
 
-            sunburstDataMeta[provKey] = metadata['province'][provKey]
+            sunburstDataMeta[provKey] = (metadata['province'][provKey] || {})
             sunburstDataMeta[ruler[0]] = ruler
             sunburstDataMeta[culture[0]] = culture
             sunburstDataMeta[religion[0]] = religion

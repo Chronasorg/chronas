@@ -14,6 +14,7 @@ import { setYear  as setYearAction} from '../map/timeline/actionReducers'
 import { selectValue } from '../map/actionReducers'
 import { WIKI_PROVINCE_TIMELINE} from '../map/actionReducers'
 import InfluenceChart from "./Charts/ChartArea"
+import ArticleIframe from "./ArticleIframe";
 
 /**
  * Non-linear steppers allow users to enter a multi-step flow at any point.
@@ -92,7 +93,9 @@ class EntityTimeline extends React.Component {
     const { selectedWiki, iframeLoading } = this.state
     const rulerEntityData = ((this.props.rulerEntity || {}).data || {}).ruler || {}
     const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (this.props.rulerProps || {})[2] || -1
-    return (wikiUrl === -1 && !selectedWiki) ? <span>no wiki linked, consider adding one _here_</span> : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
+    //(wikiUrl === -1 && !selectedWiki) ? <span>no entity wiki linked, consider adding one _here_</span> :
+    return <ArticleIframe customStyle={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
+      // <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
   }
 
   _selectMainArticle = () => {
