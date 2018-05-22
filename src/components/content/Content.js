@@ -18,6 +18,7 @@ import { TYPE_AREA, TYPE_MARKER, TYPE_LINKED, TYPE_EPIC, WIKI_PROVINCE_TIMELINE,
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import utils from '../map/utils/general'
+import ArticleIframe from './ArticleIframe'
 import EntityTimeline from './EntityTimeline'
 import EpicTimeline from './EpicTimeline'
 import ProvinceTimeline from './ProvinceTimeline'
@@ -105,14 +106,6 @@ class Content extends Component {
     const newContentMenuItem = (preContentMenuItem === this.state.activeContentMenuItem) ? '' : preContentMenuItem
     localStorage.setItem('activeContentMenuItem', newContentMenuItem)
     this.setState({ activeContentMenuItem:  newContentMenuItem })
-  }
-
-  _handleUrlChange = (e) => {
-    this.setState({ iframeLoading: false })
-    const currSrc = document.getElementById('articleIframe').getAttribute('src')
-    if (currSrc.indexOf('?printable=yes') === 1) {
-      document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
-    } // TODO: do this with ref
   }
 
   _handleNewData = (selectedItem, metadata, activeArea, doCleanup = false) => {
@@ -277,8 +270,8 @@ class Content extends Component {
               epicData={selectedItem.data}
               rulerProps={(selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id] )}
               linkedItems={linkedItems} />
-            : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'}
-                      height='100%' frameBorder='0' />}
+            : <ArticleIframe customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } />
+      }
     </div>
   }
 }

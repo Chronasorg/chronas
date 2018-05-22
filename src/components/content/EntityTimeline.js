@@ -81,21 +81,11 @@ class EntityTimeline extends React.Component {
     this.props.setYear(+newYear)
   };
 
-  _handleUrlChange = (e) => {
-    this.setState({ iframeLoading: false })
-    const currSrc = document.getElementById('articleIframe').getAttribute('src')
-    if (currSrc.indexOf('?printable=yes') === 1) {
-      document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
-    } // TODO: do this with ref
-  }
-
   getStepContent (stepIndex, sortedRulerKeys) {
-    const { selectedWiki, iframeLoading } = this.state
+    const { selectedWiki } = this.state
     const rulerEntityData = ((this.props.rulerEntity || {}).data || {}).ruler || {}
     const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (this.props.rulerProps || {})[2] || -1
-    //(wikiUrl === -1 && !selectedWiki) ? <span>no entity wiki linked, consider adding one _here_</span> :
-    return <ArticleIframe customStyle={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
-      // <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (iframeLoading ? 'none' : ''), height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} src={'http://en.wikipedia.org/wiki/' + (selectedWiki || wikiUrl) + '?printable=yes'} frameBorder='0' />
+    return <ArticleIframe customStyle={{ ...styles.iframe, height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
   }
 
   _selectMainArticle = () => {
@@ -162,10 +152,9 @@ class EntityTimeline extends React.Component {
 
 
   render () {
-    const { stepIndex, selectedWiki, influenceChartData, translate, iframeLoading } = this.state
+    const { stepIndex, selectedWiki, influenceChartData, translate } = this.state
     const { rulerEntity, selectedYear, rulerProps, newWidth, history, activeAreaDim, sunburstData, linkedItems, setContentMenuItem, activeContentMenuItem } = this.props
 
-    const shouldLoad = (iframeLoading)
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
     const sortedRulerKeys = Object.keys(rulerEntityData).filter((key) => rulerEntityData[key][0] !== "null").sort((a, b) => +a - +b)
     const rulerDetected = sortedRulerKeys.length !== 0
@@ -224,9 +213,7 @@ class EntityTimeline extends React.Component {
           height: '100%'
         }}>
           <div style={styles.contentStyle}>
-            {(shouldLoad)
-              ? <span>loading placeholder...</span>
-              : this.getStepContent(stepIndex, sortedRulerKeys)}
+            { this.getStepContent(stepIndex, sortedRulerKeys)}
             { rulerDetected && <div style={ styles.navTitle }>
               <span style={{ fontWeight: 600, paddingRight: '.2em'}}>{ (rulerEntityData[sortedRulerKeys[stepIndex]] || {} )[0] } </span>
               <span style={{ fontWeight: 300, paddingRight: '.6em'}}>

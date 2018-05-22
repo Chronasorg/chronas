@@ -1,15 +1,7 @@
 import React from 'react'
-import {
-  Step,
-  Stepper,
-  StepButton,
-} from 'material-ui/Stepper'
-
-import RaisedButton from 'material-ui/RaisedButton'
-import FlatButton from 'material-ui/FlatButton'
+import ReactDOM from 'react-dom'
 import Timeline from 'react-visjs-timeline'
-// import './mapTimeline.scss'
-import ReactDOM from "react-dom";
+import ArticleIframe from './ArticleIframe'
 
 const start = '0000-01-01',
   min = '-002000-01-01T00:00:00.000Z',
@@ -92,41 +84,15 @@ class ProvinceTimeline extends React.Component {
   }
 
   _onClickTimeline = (props, event) => {
-    // const currentDate = event.time
-    console.debug('_onClickTimeline currentYear', props, event)
-    // this.setState({year: event.time})
-
     const wikiId = (props.group === 'capital') ? this.props.metadata[props.group][props.item.split(":")[2]] : this.props.metadata[props.group][props.item.split(":")[2]][2]
     this.setState({
       selectedWiki: wikiId
     })
   };
 
-  _onRangeChangeTimeline = event => {
-    console.debug(event)
-  };
-
-  handleNext = () => {
-    const { stepIndex } = this.state
-    this.setState({ stepIndex: stepIndex + 1 })
-  };
-
-  handlePrev = () => {
-    const { stepIndex } = this.state
-    this.setState({ stepIndex: stepIndex - 1 })
-  };
-
-  _handleUrlChange = (e) => {
-    this.setState({ iframeLoading: false })
-    const currSrc = document.getElementById('articleIframe').getAttribute('src')
-    if (currSrc.indexOf('?printable=yes') === 1) {
-      document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
-    } // TODO: do this with ref
-  }
-
   render () {
-    const { timelineOptions, customTimes } = this.state
-    const { stepIndex, selectedWiki } = this.state
+    const { timelineOptions } = this.state
+    const { selectedWiki } = this.state
     const { activeArea, selectedYear, provinceEntity, metadata } = this.props
     const contentStyle = {
       padding: '8px 0px 0px 8px',
@@ -134,7 +100,6 @@ class ProvinceTimeline extends React.Component {
       display: 'block'
     }
 
-    const shouldLoad = (this.state.iframeLoading || selectedWiki === null)
     const provinceEntityData = (provinceEntity || {}).data || {}
 
     const groups = [{
@@ -190,9 +155,7 @@ class ProvinceTimeline extends React.Component {
           clickHandler={this._onClickTimeline.bind(this)}
         />
         <div style={contentStyle}>
-          {(selectedWiki === null || shouldLoad)
-            ? <span>loadin1g placeholder...</span>
-            : <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (this.state.iframeLoading ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' />}
+          <ArticleIframe customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } />
         </div>
       </div>
     )

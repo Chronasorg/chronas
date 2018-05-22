@@ -76,7 +76,6 @@ export default class ArticleIframe extends React.Component {
 
         { shouldLoad && <span>iframe loading placeholder...</span> }
         <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' />
-
       </div>
     )
   }
