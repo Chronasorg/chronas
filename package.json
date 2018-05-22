@@ -35,6 +35,7 @@
     "d3-scale": "^1.0.6",
     "express": "^4.16.2",
     "font-awesome": "^4.7.0",
+    "jsonp": "^0.2.1",
     "jwt-decode": "^2.2.0",
     "material-ui": "~0.20.0",
     "node-mandrill": "^1.0.1",

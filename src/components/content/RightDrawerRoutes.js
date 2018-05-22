@@ -432,13 +432,8 @@ class RightDrawerRoutes extends PureComponent {
         name: entityObject.province[0] || "n/a", icon: entityObject.province[1] || defaultIcons.province
       }
     }
-    // const rulerNameAndIcon = [entityObject.ruler[0]
-    const religionName = (metadata['religion'][religionId] || {})[0] || 'n/a'
-    const religionGeneralName = metadata['religionGeneral'][metadata['religion'][religionId][3]][0]
-    const cultureName = (metadata['culture'][cultureId] || {})[0] || 'n/a'
-    const capitalName = (activeArea.data[selectedProvince] || {})[3] + '[' + (activeArea.data[selectedProvince] || {})[4] + ']'
-    const populationName = entityPop + ' [' + parseInt(entityPop / totalPop * 1000) / 10 + '%]'
 
+    const populationName = entityPop + ' [' + parseInt(entityPop / totalPop * 1000) / 10 + '%]'
     const modUrl = '/mod/' + selectedItem.type
 
     const articleHeader = <AppBar

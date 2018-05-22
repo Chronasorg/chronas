@@ -47,6 +47,7 @@ export const ModMetaEdit = (props) => {
       name: (metadata['ruler'][props.metadataEntity] || {})[0] || '',
       color: (metadata['ruler'][props.metadataEntity] || {})[1] || '',
       url: 'https://en.wikipedia.org/wiki/' + (metadata['ruler'][props.metadataEntity] || {})[2] || '',
+      icon: (metadata['ruler'][props.metadataEntity] || {})[3] || '',
     },
     culture: {
       name: (metadata['culture'][props.metadataEntity] || {})[0] || '',
@@ -94,7 +95,8 @@ export const ModMetaEdit = (props) => {
 
     const errors = {}
 
-    if (values.name === (defaultValues[props.metadataType] || {}).name &&
+    if (values.icon === (defaultValues[props.metadataType] || {}).icon &&
+      values.name === (defaultValues[props.metadataType] || {}).name &&
       ((props.metadataType !== "capital" && props.metadataType !== "province") || values.color === (defaultValues[props.metadataType] || {}).color) &&
       values.url === (defaultValues[props.metadataType] || {}).url &&
       ((props.metadataType !== "religion") || values.parentname === (defaultValues[props.metadataType] || {}).parentname)) {
@@ -103,11 +105,16 @@ export const ModMetaEdit = (props) => {
       errors.url = ['At least one of ruler, culture, religion, capital or population is required']
     }
 
-
     if (values.url !== (defaultValues[props.metadataType] || {}).url &&
       values.url &&
       values.url.indexOf('.wikipedia.org/wiki/') === -1) {
       errors.url = ["The URL needs to be a full Wikipedia URL"]
+    }
+
+    if (values.icon !== (defaultValues[props.metadataType] || {}).icon &&
+      values.icon &&
+      (values.icon.indexOf('.wikipedia.org/') === -1 && values.icon.indexOf('.wikimedia.org/') === -1)) {
+      errors.icon = ["The icon URL needs to be a full wikipedia or wikimedia URL, for example: 'https://en.wikipedia.org/wiki/Battle_of_Vienna#/media/File:Chor%C4%85giew_kr%C3%B3lewska_kr%C3%B3la_Zygmunta_III_Wazy.svg'"]
     }
 
     return errors
@@ -123,6 +130,7 @@ export const ModMetaEdit = (props) => {
         {(props.metadataEntity !== '') ? <TextInput errorText='will be changed' source="name" label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues['ruler'].name } /> : null}
         {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues['ruler'].color } label="resources.areas.fields.color" picker="Compact"/> : null}
         {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues['ruler'].url } /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues['ruler'].icon } /> : null}
 
       </MetaForm>,
     'religion':

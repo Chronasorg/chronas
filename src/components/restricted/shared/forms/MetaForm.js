@@ -11,6 +11,7 @@ import { setModType, setModData } from '../buttons/actionReducers'
 import { updateSingleMetadata } from './../../../map/data/actionReducers'
 import properties from '../../../../properties'
 import { showNotification } from 'admin-on-rest'
+const jsonp = require('jsonp')
 const formStyle = { padding: '0 1em 1em 1em' }
 export class MetaForm extends Component {
   state = {
@@ -26,68 +27,88 @@ export class MetaForm extends Component {
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
       let newWikiURL
       if (wikiIndex > -1) {
-        newWikiURL = wikiURL.substring(wikiIndex + 20, wikiURL.length)
+        newWikiURL = wikiURL.substr(wikiIndex + 20)
       } else {
         return 'Not a full Wikipedia URL'
       }
 
-      const nextBodyByType = {
-        ruler: [values.name, values.color, newWikiURL],
-        culture: [values.name, values.color, newWikiURL],
-        religion: [values.name, values.color, newWikiURL],
-        capital: values.url,
-        province: values.url
-      }
-
-      const bodyToSend = {}
-      const metadataItem = values.type
-      bodyToSend['subEntityId'] = values.select || values.name
-      bodyToSend['nextBody'] = nextBodyByType[metadataItem]
-
-      const token = localStorage.getItem('token')
-      fetch(properties.chronasApiHost + '/metadata/' + metadataItem + '/single', {
-        method: 'PUT',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(bodyToSend)
+      const iconURL = values.icon
+      const fileIndex = iconURL.indexOf('media/File:') + 6
+      const iconUrlPromise = new Promise((resolve, reject) => {
+        if (fileIndex > -1) {
+          const filePath = iconURL.substr(fileIndex)
+          jsonp('https://commons.wikimedia.org/w/api.php?action=query&titles=' + filePath + '&prop=imageinfo&&iiprop=url&iiurlwidth=100&format=json', null, (err, rulerMetadata) => {
+            if (err) {
+              resolve('')
+            } else {
+              const newiconURL = Object.values(rulerMetadata.query.pages)[0].imageinfo[0].thumburl
+              resolve(newiconURL)
+            }
+          })
+        } else {
+          resolve(iconURL)
+        }
       })
-        .then((res) => {
-          if (res.status === 200) {
-            console.debug(res, this.props)
 
-            this.setState({
-              metaToUpdate: metadataItem,
-              successFullyUpdated: true
-            })
-            this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
-            this.props.history.goBack()
-            // this.props.save(values, redirect)
-            // this.props.history.push('/article')
-            // this.props.handleClose()
-            // this.forceUpdate()
-          } else {
-            this.setState({
-              metaToUpdate: '',
-              successFullyUpdated: false
-            })
-            this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
-          }
+      iconUrlPromise.then((iconUrl) => {
+        const nextBodyByType = {
+          ruler: [values.name, values.color, newWikiURL, iconUrl],
+          culture: [values.name, values.color, newWikiURL, iconUrl],
+          religion: [values.name, values.color, newWikiURL, iconUrl],
+          capital: [values.url, iconUrl],
+          province: [values.url, iconUrl]
+        }
+
+        const bodyToSend = {}
+        const metadataItem = values.type
+        bodyToSend['subEntityId'] = values.select || values.name
+        bodyToSend['nextBody'] = nextBodyByType[metadataItem]
+
+        const token = localStorage.getItem('token')
+        fetch(properties.chronasApiHost + '/metadata/' + metadataItem + '/single', {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(bodyToSend)
         })
-    });
+          .then((res) => {
+            if (res.status === 200) {
+              console.debug(res, this.props)
+
+              this.setState({
+                metaToUpdate: metadataItem,
+                successFullyUpdated: true
+              })
+              this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
+              this.props.history.goBack()
+              // this.props.save(values, redirect)
+              // this.props.history.push('/article')
+              // this.props.handleClose()
+              // this.forceUpdate()
+            } else {
+              this.setState({
+                metaToUpdate: '',
+                successFullyUpdated: false
+              })
+              this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
+            }
+          })
+      })
+    })
 
   componentWillUnmount () {
     const { metaToUpdate } = this.state
     const { setModType, updateSingleMetadata } = this.props
 
     // only update relevant
-    axios.get(properties.chronasApiHost + "/metadata/" + metaToUpdate)
-      .then( (metadata) => {
+    axios.get(properties.chronasApiHost + '/metadata/' + metaToUpdate)
+      .then((metadata) => {
         updateSingleMetadata(metaToUpdate, metadata.data)
       })
-      .then( () => {
+      .then(() => {
         setModType('', [], metaToUpdate)
       })
       .catch((err) => setModType(''))

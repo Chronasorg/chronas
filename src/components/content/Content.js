@@ -254,7 +254,6 @@ class Content extends Component {
           </Menu>
         </Paper>
       </div>}
-      { shouldLoad && !entityTimelineOpen && !provinceTimelineOpen && !epicTimelineOpen && <span>loading placeholder...</span> }
       {entityTimelineOpen
         ? <EntityTimeline history={history} newWidth={newWidth} setContentMenuItem={this._setContentMenuItem} activeContentMenuItem={activeContentMenuItem} activeAreaDim={activeAreaDim} rulerProps={metadata[activeAreaDim][rulerEntity.id]} selectedYear={selectedYear} selectedItem={selectedItem} rulerEntity={rulerEntity} sunburstData={sunburstData} linkedItems={linkedItems} />
         : provinceTimelineOpen

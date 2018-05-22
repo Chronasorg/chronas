@@ -13,7 +13,7 @@ import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
 import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconEdit from 'material-ui/svg-icons/content/create'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
-import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentAdd from 'material-ui/svg-icons/content/add'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import { Tabs, Tab } from 'material-ui/Tabs'
 import ImageGallery from 'react-image-gallery'

@@ -33,6 +33,16 @@ body {
   right: 0;
 }
 
+.fullWikiArticle > div {
+  height: 100%;
+  > div {
+    height: 100%;
+    > div {
+      height: 100%;
+    }
+  }
+}
+
 .dialogImageBackgroundHack > div > div {
   padding: 0 !important;
 }
