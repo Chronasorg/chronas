@@ -57,7 +57,7 @@ import properties from "../../properties";
 const defaultIcons = {
   ruler: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
   religion: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
-  religionGeneral: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
+  religionGeneral: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of _Austria.svg.png",
   culture: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
   capital: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
   province: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png",
@@ -207,7 +207,7 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   setMetadataType = (metadataType) => {
-    this.setState({ metadataType })
+    this.setState({ metadataType, metadataEntity: '' })
   }
 
   setMetadataEntity = (metadataEntity) => {

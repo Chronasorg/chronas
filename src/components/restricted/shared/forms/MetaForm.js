@@ -21,8 +21,7 @@ export class MetaForm extends Component {
 
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      console.debug(this.props)
-
+      const { history } = this.props
       const wikiURL = values.url
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
       let newWikiURL
@@ -35,7 +34,7 @@ export class MetaForm extends Component {
       const iconURL = values.icon
       const fileIndex = iconURL.indexOf('media/File:') + 6
       const iconUrlPromise = new Promise((resolve, reject) => {
-        if (fileIndex > -1) {
+        if (fileIndex !== 5) {
           const filePath = iconURL.substr(fileIndex)
           jsonp('https://commons.wikimedia.org/w/api.php?action=query&titles=' + filePath + '&prop=imageinfo&&iiprop=url&iiurlwidth=100&format=json', null, (err, rulerMetadata) => {
             if (err) {
@@ -45,6 +44,11 @@ export class MetaForm extends Component {
               resolve(newiconURL)
             }
           })
+        } else if ((iconURL.indexOf('/thumb/') > -1) && (iconURL.indexOf('/100px-') === -1)) {
+            // wikicommons thumb, but not in right resolution!
+          const afterRes = iconURL.indexOf('px-')
+          const beforeRes = iconURL.substring(0, afterRes).lastIndexOf('/')
+          resolve(iconURL.substring(0, beforeRes) + '/100' + iconURL.substr(afterRes))
         } else {
           resolve(iconURL)
         }
@@ -54,7 +58,8 @@ export class MetaForm extends Component {
         const nextBodyByType = {
           ruler: [values.name, values.color, newWikiURL, iconUrl],
           culture: [values.name, values.color, newWikiURL, iconUrl],
-          religion: [values.name, values.color, newWikiURL, iconUrl],
+          religion:        [values.name, values.color, newWikiURL, values.parentname, iconUrl],
+          religionGeneral: [values.name, values.color, newWikiURL, iconUrl],
           capital: [values.url, iconUrl],
           province: [values.url, iconUrl]
         }
@@ -76,14 +81,12 @@ export class MetaForm extends Component {
         })
           .then((res) => {
             if (res.status === 200) {
-              console.debug(res, this.props)
-
               this.setState({
                 metaToUpdate: metadataItem,
                 successFullyUpdated: true
               })
               this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
-              this.props.history.goBack()
+              history.goBack()
               // this.props.save(values, redirect)
               // this.props.history.push('/article')
               // this.props.handleClose()
@@ -106,7 +109,7 @@ export class MetaForm extends Component {
     // only update relevant
     axios.get(properties.chronasApiHost + '/metadata/' + metaToUpdate)
       .then((metadata) => {
-        updateSingleMetadata(metaToUpdate, metadata.data)
+        updateSingleMetadata(metaToUpdate, metadata.data.data)
       })
       .then(() => {
         setModType('', [], metaToUpdate)
@@ -119,13 +122,6 @@ export class MetaForm extends Component {
     const selectedProvince = selectedItem.value
     if (selectedProvince) setModData([selectedProvince])
     setModType('metadata')
-
-    // const currLocation = this.props.location.pathname
-    // const selectedProvinces = currLocation.split("/mod/areas/")[1]
-    // if (typeof selectedProvinces !== "undefined" && selectedProvinces !== "") {
-    //   this.props.change ("provinces" , selectedProvinces)
-    //   selectedProvinces.split(",").forEach( (prov) => this.props.addModData(prov) )
-    // }
   }
 
   render () {
@@ -169,6 +165,7 @@ MetaForm.propTypes = {
   defaultValue: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
   handleSubmit: PropTypes.func, // passed by redux-form
   invalid: PropTypes.bool,
+  history: PropTypes.object,
   record: PropTypes.object,
   resource: PropTypes.string,
   redirect: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),

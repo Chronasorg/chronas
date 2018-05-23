@@ -42,32 +42,17 @@ export const ModMetaEdit = (props) => {
   const selectedProvince = (props.selectedItem || {}).province || ''
   const activeArea = props.activeArea || { data: {} }
 
-  const defaultValues = {
-    ruler: {
-      name: (metadata['ruler'][props.metadataEntity] || {})[0] || '',
-      color: (metadata['ruler'][props.metadataEntity] || {})[1] || '',
-      url: 'https://en.wikipedia.org/wiki/' + (metadata['ruler'][props.metadataEntity] || {})[2] || '',
-      icon: (metadata['ruler'][props.metadataEntity] || {})[3] || '',
-    },
-    culture: {
-      name: (metadata['culture'][props.metadataEntity] || {})[0] || '',
-      color: (metadata['culture'][props.metadataEntity] || {})[1] || '',
-      url: 'https://en.wikipedia.org/wiki/' + (metadata['culture'][props.metadataEntity] || {})[2] || '',
-    },
-    religion: {
-      name: (metadata['religion'][props.metadataEntity] || {})[0] || '',
-      color: (metadata['religion'][props.metadataEntity] || {})[1] || '',
-      url: 'https://en.wikipedia.org/wiki/' + (metadata['religion'][props.metadataEntity] || {})[2] || '',
-    },
-    capital: {
-      name: (metadata['capital'][props.metadataEntity] || {})[0] || '',
-      url: 'https://en.wikipedia.org/wiki/' + (metadata['capital'][props.metadataEntity] || {})[2] || '',
-    },
-    province: {
-      name: (metadata['province'][props.metadataEntity] || {})[0] || '',
-      url: 'https://en.wikipedia.org/wiki/' + (metadata['province'][props.metadataEntity] || {})[2] || '',
+  const defaultValues = {//dataParentname
+      dataName: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[0] || '',
+      dataColor: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[1] || '',
+      dataUrl: (props.metadataType === 'capital' || props.metadataType === 'province') ? 'https://en.wikipedia.org/wiki/' + ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[0] || '' : 'https://en.wikipedia.org/wiki/' + ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[2] || '',
+      dataIcon: (props.metadataType === 'capital' || props.metadataType === 'province')
+        ? ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[1] || ''
+        : (props.metadataType === 'religion')
+          ? ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[4] || ''
+          : ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[3] || '',
+      dataParentname: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[3] || '',
     }
-  }
 
   const choicesRuler = Object.keys(metadata['ruler']).map((rulerId) => {
     return { id: rulerId, name: metadata['ruler'][rulerId][0]}
@@ -77,41 +62,52 @@ export const ModMetaEdit = (props) => {
     return { id: religionId, name: metadata['religion'][religionId][0]}
   }) || {}
 
+  const choicesReligionGeneral = Object.keys(metadata['religionGeneral']).map((religionId) => {
+    return { id: religionId, name: metadata['religionGeneral'][religionId][0]}
+  }) || {}
+
+  const choicesCulture = Object.keys(metadata['culture']).map((cultureId) => {
+    return { id: cultureId, name: metadata['culture'][cultureId][0]}
+  }) || {}
+
+  const choicesCapital = Object.keys(metadata['capital']).map((capitalId) => {
+    return { id: capitalId, name: metadata['capital'][capitalId][0]}
+  }) || {}
+
+  const choicesProvince = Object.keys(metadata['province']).map((capitalId) => {
+    return { id: capitalId, name: metadata['province'][capitalId][0]}
+  }) || {}
+
   const choicesType = [
     { id: 'ruler', name: 'Ruler' },
     { id: 'culture', name: 'Culture' },
     { id: 'religion', name: 'Religion' },
+    { id: 'religionGeneral', name: 'Religion General' },
     { id: 'capital', name: 'Capital' },
-    { id: 'provinces', name: 'Provinces' },
+    { id: 'province', name: 'Province' },
   ]
-
-  const choicesCulture = [ { id: 'todo', name: 'todo' } ]
-  const choicesCapital = [ { id: 'todo', name: 'todo' } ]
-  const choicesProvince = [ { id: 'todo', name: 'todo' } ]
-  const choicesMainRuler = [ { id: 'todo', name: 'todo' } ]
-  const choicesMainReligion = [ { id: 'todo', name: 'todo' } ]
 
   const validateValueInput = (values) => {
 
     const errors = {}
 
-    if (values.icon === (defaultValues[props.metadataType] || {}).icon &&
-      values.name === (defaultValues[props.metadataType] || {}).name &&
-      ((props.metadataType !== "capital" && props.metadataType !== "province") || values.color === (defaultValues[props.metadataType] || {}).color) &&
-      values.url === (defaultValues[props.metadataType] || {}).url &&
-      ((props.metadataType !== "religion") || values.parentname === (defaultValues[props.metadataType] || {}).parentname)) {
+    if (values.icon === defaultValues.dataIcon &&
+      values.name === defaultValues.dataName &&
+      (props.metadataType === "capital" || props.metadataType === "province" || values.color === defaultValues.dataColor) &&
+      values.url === defaultValues.dataUrl &&
+      ((props.metadataType !== "religion") || values.parentname === defaultValues.dataParentname)) {
       errors.name = ['At least one of ruler, culture, religion, capital or population is required']
       errors.color = ['At least one of ruler, culture, religion, capital or population is required']
       errors.url = ['At least one of ruler, culture, religion, capital or population is required']
     }
 
-    if (values.url !== (defaultValues[props.metadataType] || {}).url &&
+    if (values.url !== defaultValues.dataUrl &&
       values.url &&
       values.url.indexOf('.wikipedia.org/wiki/') === -1) {
       errors.url = ["The URL needs to be a full Wikipedia URL"]
     }
 
-    if (values.icon !== (defaultValues[props.metadataType] || {}).icon &&
+    if (values.icon !== defaultValues.dataIcon &&
       values.icon &&
       (values.icon.indexOf('.wikipedia.org/') === -1 && values.icon.indexOf('.wikimedia.org/') === -1)) {
       errors.icon = ["The icon URL needs to be a full wikipedia or wikimedia URL, for example: 'https://en.wikipedia.org/wiki/Battle_of_Vienna#/media/File:Chor%C4%85giew_kr%C3%B3lewska_kr%C3%B3la_Zygmunta_III_Wazy.svg'"]
@@ -127,48 +123,59 @@ export const ModMetaEdit = (props) => {
         <h4 className='modal-title' style={{ margin: '0 auto' }}>Which entity do you like to modify?</h4>
         <AutocompleteInput  source="select" choices={choicesRuler} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.display_name" />
 
-        {(props.metadataEntity !== '') ? <TextInput errorText='will be changed' source="name" label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues['ruler'].name } /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues['ruler'].color } label="resources.areas.fields.color" picker="Compact"/> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues['ruler'].url } /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues['ruler'].icon } /> : null}
+        {(props.metadataEntity !== '') ? <TextInput errorText='will be changed' source="name" label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues.dataName } /> : null}
+        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl } /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
 
       </MetaForm>,
     'religion':
       <MetaForm validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <AutocompleteInput source="select" choices={choicesReligion} onChange={(val,v) => { props.setMetadataEntity(v) }} defaultValue={defaultValues.dataReligion} label="resources.areas.fields.display_name" />
+        <AutocompleteInput source="select" choices={choicesReligion} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
+        {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
+        {(props.metadataEntity !== '') ? <AutocompleteInput source="parentname" choices={choicesReligionGeneral} label="resources.areas.fields.main_religion_name" defaultValue={defaultValues.dataParentname} /> : null}
+        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
+      </MetaForm>,
+    'religionGeneral':
+      <MetaForm validate={validateValueInput} {...props} >
+        <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
+        <AutocompleteInput source="select" choices={choicesReligionGeneral} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
 
-        {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataReligion} label="resources.areas.fields.display_name" /> : null}
-        {(props.metadataEntity !== '') ? <AutocompleteInput source="parentname" choices={choicesMainReligion} label="resources.areas.fields.main_religion_name" defaultValue={defaultValues.dataReligion} /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput source="color" label="resources.areas.fields.color" picker="Compact"/> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataReligion} /> : null}
-
+        {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
+        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'culture':
       <MetaForm validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <AutocompleteInput source="select" choices={choicesCulture} onChange={(val,v) => { props.setMetadataEntity(v) }} defaultValue={defaultValues.dataCulture} label="resources.areas.fields.display_name" />
+        <AutocompleteInput source="select" choices={choicesCulture} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
 
-        {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataCulture} label="resources.areas.fields.display_name" /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput source="color" label="resources.areas.fields.color" picker="Compact" /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataReligion} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
+        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact" /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
 
       </MetaForm>,
     'capital':
       <MetaForm validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <AutocompleteInput source="select" choices={choicesCapital} onChange={(val,v) => { props.setMetadataEntity(v) }} defaultValue={defaultValues.dataCapital} label="resources.areas.fields.display_name" />
+        <AutocompleteInput source="select" choices={choicesCapital} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
 
-        {(props.metadataEntity !== '') ? <AutocompleteInput source="name" onChange={(val,v) => { props.setMetadataEntity(v) }} defaultValue={defaultValues.dataCapital} label="resources.areas.fields.display_name" /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url"  source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataReligion} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url"  source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
 
       </MetaForm>,
     'province':
       <MetaForm validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <AutocompleteInput source="select" choices={choicesProvince} onChange={(val,v) => { props.setMetadataEntity(v) }} defaultValue={defaultValues['province'].name} label="resources.areas.fields.display_name" />
-        {(props.metadataEntity !== '') ? <AutocompleteInput source="name" onChange={(val,v) => { props.setMetadataEntity(v) }} defaultValue={defaultValues['province'].name} label="resources.areas.fields.display_name" /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url"  source="url" label="resources.areas.fields.province_url" defaultValue={defaultValues['province'].url} /> : null}
+        <AutocompleteInput source="select" choices={choicesProvince} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
+
+        {(props.metadataEntity !== '') ? <TextInput type="url"  source="url" label="resources.areas.fields.province_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'default':
       <MetaForm validate={validateValueInput} {...props} >

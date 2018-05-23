@@ -105,7 +105,6 @@ export const ModMetaAdd = (props) => {
       <MetaForm validate={validateValueInput} {...props} >
         <SelectInput validate={required} source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteDisallowInput source="name" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.display_name" />
-        {/*<AutocompleteInput validate={required} source="parentname" choices={choicesMainRuler} label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues.dataReligion} />*/}
         <ColorInput validate={required} source="color" label="resources.areas.fields.color" picker="Compact" />
         <AutocompleteDisallowInput source="url" choices={choicesReligion} defaultValue={defaultValues.dataReligion} label="resources.areas.fields.wiki_url" />
     </MetaForm>,
