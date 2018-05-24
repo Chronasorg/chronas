@@ -82,13 +82,12 @@ export const ModMetaEdit = (props) => {
     { id: 'ruler', name: 'Ruler' },
     { id: 'culture', name: 'Culture' },
     { id: 'religion', name: 'Religion' },
-    { id: 'religionGeneral', name: 'Religion General' },
+    { id: 'religionGeneral', name: 'Religion (General)' },
     { id: 'capital', name: 'Capital' },
     { id: 'province', name: 'Province' },
   ]
 
   const validateValueInput = (values) => {
-
     const errors = {}
 
     if (values.icon === defaultValues.dataIcon &&
@@ -107,8 +106,8 @@ export const ModMetaEdit = (props) => {
       errors.url = ["The URL needs to be a full Wikipedia URL"]
     }
 
-    if (values.icon !== defaultValues.dataIcon &&
-      values.icon &&
+    if (values.icon &&
+      values.icon !== defaultValues.dataIcon &&
       (values.icon.indexOf('.wikipedia.org/') === -1 && values.icon.indexOf('.wikimedia.org/') === -1)) {
       errors.icon = ["The icon URL needs to be a full wikipedia or wikimedia URL, for example: 'https://en.wikipedia.org/wiki/Battle_of_Vienna#/media/File:Chor%C4%85giew_kr%C3%B3lewska_kr%C3%B3la_Zygmunta_III_Wazy.svg'"]
     }
@@ -127,12 +126,12 @@ export const ModMetaEdit = (props) => {
         {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
         {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl } /> : null}
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
-
       </MetaForm>,
     'religion':
       <MetaForm validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesReligion} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
+
         {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
         {(props.metadataEntity !== '') ? <AutocompleteInput source="parentname" choices={choicesReligionGeneral} label="resources.areas.fields.main_religion_name" defaultValue={defaultValues.dataParentname} /> : null}
         {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
@@ -158,7 +157,6 @@ export const ModMetaEdit = (props) => {
         {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact" /> : null}
         {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
-
       </MetaForm>,
     'capital':
       <MetaForm validate={validateValueInput} {...props} >
@@ -167,7 +165,6 @@ export const ModMetaEdit = (props) => {
 
         {(props.metadataEntity !== '') ? <TextInput type="url"  source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
-
       </MetaForm>,
     'province':
       <MetaForm validate={validateValueInput} {...props} >

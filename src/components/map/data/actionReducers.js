@@ -37,7 +37,6 @@ export const metadataReducer = (defaultState = {}) =>
       case SET_METADATA:
         return payload
       case UPDATE_SINGLE_METADATA:
-        console.debug('reducer',previousState,payload,{ ...previousState, [payload[0]]: payload[1] })
         return { ...previousState, [payload[0]]: payload[1] }
       default:
         return previousState

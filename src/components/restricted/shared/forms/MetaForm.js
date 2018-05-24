@@ -21,7 +21,7 @@ export class MetaForm extends Component {
 
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const { history } = this.props
+      const { initialValues, history } = this.props
       const wikiURL = values.url
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
       let newWikiURL
@@ -34,20 +34,27 @@ export class MetaForm extends Component {
       const iconURL = values.icon
       const fileIndex = iconURL.indexOf('media/File:') + 6
       const iconUrlPromise = new Promise((resolve, reject) => {
-        if (fileIndex !== 5) {
+        if (values.icon === initialValues.icon) {
+          resolve(iconURL)
+        } else if (fileIndex !== 5) {
           const filePath = iconURL.substr(fileIndex)
           jsonp('https://commons.wikimedia.org/w/api.php?action=query&titles=' + filePath + '&prop=imageinfo&&iiprop=url&iiurlwidth=100&format=json', null, (err, rulerMetadata) => {
             if (err) {
               resolve('')
             } else {
-              const newiconURL = Object.values(rulerMetadata.query.pages)[0].imageinfo[0].thumburl
-              resolve(newiconURL)
+              let thumbUrl = Object.values(rulerMetadata.query.pages)[0].imageinfo[0].thumburl
+              const startUrl = thumbUrl.indexOf("commons/thumb/") + "commons/thumb/".length
+              const endUrl = thumbUrl.substr(52).lastIndexOf("/") + startUrl -1
+              thumbUrl = thumbUrl.substring(startUrl, endUrl)
+
+              resolve(thumbUrl)
             }
           })
         } else if ((iconURL.indexOf('/thumb/') > -1) && (iconURL.indexOf('/100px-') === -1)) {
             // wikicommons thumb, but not in right resolution!
           const afterRes = iconURL.indexOf('px-')
           const beforeRes = iconURL.substring(0, afterRes).lastIndexOf('/')
+
           resolve(iconURL.substring(0, beforeRes) + '/100' + iconURL.substr(afterRes))
         } else {
           resolve(iconURL)
@@ -66,7 +73,7 @@ export class MetaForm extends Component {
 
         const bodyToSend = {}
         const metadataItem = values.type
-        bodyToSend['subEntityId'] = values.select || values.name
+        bodyToSend['subEntityId'] = values.select || '_' + values.name.replace(/ /g, '_')
         bodyToSend['nextBody'] = nextBodyByType[metadataItem]
 
         const token = localStorage.getItem('token')
@@ -87,10 +94,6 @@ export class MetaForm extends Component {
               })
               this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
               history.goBack()
-              // this.props.save(values, redirect)
-              // this.props.history.push('/article')
-              // this.props.handleClose()
-              // this.forceUpdate()
             } else {
               this.setState({
                 metaToUpdate: '',

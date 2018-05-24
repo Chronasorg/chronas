@@ -5,6 +5,7 @@ export const SET_MODDATA_LNG = 'SET_MODDATA_LNG'
 export const SET_MODDATA_LAT = 'SET_MODDATA_LAT'
 export const SET_RESETMODACTIVE = 'SET_RESETMODACTIVE'
 export const SET_MODSELECTACTIVE = 'SET_MODSELECTACTIVE'
+export const SET_UPDATE = 'SET_UPDATE'
 export const REMOVE_MODDATA = 'REMOVE_MODDATA'
 export const ADD_MODDATA = 'ADD_MODDATA'
 
@@ -27,6 +28,11 @@ export const resetModActive = () => ({
 export const setModSelectActive = isActive => ({
   type: SET_MODSELECTACTIVE,
   payload: isActive,
+})
+
+export const setModToUpdate = toUpdate => ({
+  type: SET_UPDATE,
+  payload: toUpdate,
 })
 
 export const setModData = modData => ({
@@ -95,6 +101,11 @@ export const modActiveReducer = (defaultState = { 'data': [], 'type': '', 'toUpd
         return {
           ...previousState,
           selectActive: payload
+        }
+      case SET_UPDATE:
+        return {
+          ...previousState,
+          toUpdate: payload
         }
       case SET_MODDATA:
         return {

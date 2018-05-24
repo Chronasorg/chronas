@@ -73,9 +73,9 @@ class Map extends Component {
       })
   }
 
-  _updateMetaMapStyle = () => {
+  _updateMetaMapStyle = (shouldReset = false) => {
     console.log('### updating metadata mapstyles')
-    const { metadata } = this.props
+    const { metadata, setModToUpdate } = this.props
 
     const rulStops = []
     const relStops = []
@@ -153,6 +153,7 @@ class Map extends Component {
       ))
 
     this.setState({ mapStyle })
+    if (shouldReset) setModToUpdate('')
   }
 
   _getAreaViewportAndOutlines = (nextActiveColorDim, nextActiveColorValue, prevActiveColorDim = false, prevActiveColorValue = false, teams = false) => {
@@ -269,7 +270,7 @@ class Map extends Component {
 
       if (typeof multiPolygonToOutline !== 'undefined') {
         let newMapStyle = mapStyle
-          .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: { color: 'green' } }))
+          .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: { color: metadata[newColor][activeprovinceValue][1] } }))
 
         if (newColor === 'population' && prevColor && prevColor !== 'population') {
           const populationStops = [[0, populationColorScale[0]]]
@@ -521,18 +522,17 @@ class Map extends Component {
         // refresh this year data
         this._changeYear(nextProps.selectedYear)
       }
-    } else if (modActive.type === 'metadata' && nextProps.modActive.type === '') {
-      // Leaving Metadata Mod
-      if (nextProps.modActive.toUpdate !== '') {
-        // refresh mapstyles and links
-        this._updateMetaMapStyle(nextProps.modActive.toUpdate)
-      }
     } else if (modActive.type === TYPE_MARKER && nextProps.modActive.type === '') {
       // Leaving Metadata Mod
       if (nextProps.modActive.toUpdate !== '') {
         // refresh mapstyles and links
         this._updateGeoJson(TYPE_MARKER, nextProps.modActive.toUpdate)
       }
+    }
+
+    if (modActive.toUpdate === '' && nextProps.modActive.toUpdate !== '') {
+      // refresh mapstyles and links
+      this._updateMetaMapStyle(nextProps.modActive.toUpdate)
     }
 
     // Highlight mod area

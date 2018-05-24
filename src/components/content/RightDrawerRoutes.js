@@ -296,6 +296,10 @@ class RightDrawerRoutes extends PureComponent {
     window.removeEventListener('mouseup', e => this.handleMouseup(e), false);
   }
 
+  _getFullIconURL(iconPath) {
+    return "https://upload.wikimedia.org/wikipedia/commons/thumb/" + iconPath + "/100px-" + iconPath.substr(iconPath.lastIndexOf("/") + 1) + ((iconPath.toLowerCase().indexOf("svg") > -1) ? ".PNG" : "")
+  }
+
   render() {
     const { options, setWikiId, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, setAreaColorLabel,
@@ -456,8 +460,8 @@ class RightDrawerRoutes extends PureComponent {
               subtitleStyle={ styles.cardHeader.titleStyle }
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
-              subtitle={ 'Summary' }
-              avatar= { entityMeta.province.icon }
+              subtitle="Summary"
+              avatar= { this._getFullIconURL(entityMeta.province.icon) }
             />}
           />
           <BottomNavigationItem
@@ -470,7 +474,7 @@ class RightDrawerRoutes extends PureComponent {
                 textStyle={ styles.cardHeader.textStyle }
                 style={ styles.cardHeader.style }
                 subtitle="Ruler"
-                avatar={ entityMeta.ruler.icon }
+                avatar={ this._getFullIconURL(entityMeta.ruler.icon) }
               />}
           />
           <BottomNavigationItem
@@ -482,7 +486,7 @@ class RightDrawerRoutes extends PureComponent {
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Culture"
-              avatar= { entityMeta.culture.icon }
+              avatar= { this._getFullIconURL(entityMeta.culture.icon) }
             />}
           />
           <BottomNavigationItem
@@ -495,7 +499,7 @@ class RightDrawerRoutes extends PureComponent {
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Religion"
-              avatar= { entityMeta.religion.icon }
+              avatar= { this._getFullIconURL(entityMeta.religion.icon) }
             />}
           />
           <BottomNavigationItem
@@ -508,7 +512,7 @@ class RightDrawerRoutes extends PureComponent {
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Capital"
-              avatar= { entityMeta.capital.icon }
+              avatar= { this._getFullIconURL(entityMeta.capital.icon) }
             />}
           />
           <BottomNavigationItem
@@ -520,7 +524,7 @@ class RightDrawerRoutes extends PureComponent {
               textStyle={ styles.cardHeader.textStyle }
               style={ styles.cardHeader.style }
               subtitle="Population"
-              avatar={ entityMeta.religionGeneral.icon }
+              avatar={ this._getFullIconURL(entityMeta.religionGeneral.icon) }
             />}
             // onClick={() => this.select(0)}
           />
