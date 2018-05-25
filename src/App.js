@@ -125,7 +125,6 @@ class App extends Component {
 
   componentDidMount () {
     const { setMetadata, setLoadStatus, setUser } = this.props
-
     axios.get(properties.chronasApiHost + '/metadata?f=provinces,ruler,culture,religion,capital,province,religionGeneral')
       .then((metadata) => {
         setMetadata(metadata.data)

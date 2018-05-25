@@ -7,14 +7,13 @@ import RaisedButton from 'material-ui/RaisedButton'
 import { translate, defaultTheme } from 'admin-on-rest'
 import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actionReducers'
 import { selectEpicItem } from '../../map/actionReducers'
-import { chronasMainColor } from '../../../styles/chronasColors'
-import { tooltip } from '../../../styles/chronasStyleComponents'
 import {
   changeBasemap as changeBasemapAction,
   setAreaColorLabel as setAreaColorLabelAction,
   changeLabel as changeLabelAction,
   changeColor as changeColorAction,
-  toggleMarker as toggleMarkerAction } from './actionReducers'
+  toggleMarker as toggleMarkerAction,
+  toggleEpic as toggleEpicAction } from './actionReducers'
 
 const styles = {
   main: {
@@ -30,7 +29,9 @@ const styles = {
 
 const allMarkers = ['Politicians', 'Battles']
 
-const LayerContent = ({ activeArea, selectedText, selectEpicItem, activeMarkers,  selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker }) => (
+const allEpics = ['War', 'Battles']
+
+const LayerContent = ({ activeArea, selectedText, selectEpicItem, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker, toggleEpic }) => (
   <div style={styles.main}>
     <h4>Basemap</h4>
     <RaisedButton style={styles.button} label="None" primary={basemap === ''} onClick={() => changeBasemap('')} />
@@ -67,8 +68,18 @@ const LayerContent = ({ activeArea, selectedText, selectEpicItem, activeMarkers,
         label={id}
         key={id}
         primary={activeMarkers.indexOf(id.toLowerCase()) > -1}
-        onClick={() => {console.debug(id.toLowerCase()); toggleMarker(id.toLowerCase())}} />)}
+        onClick={() => { toggleMarker(id.toLowerCase()) }} />)}
     {activeMarkers}
+    <br/>
+    <h4>Epics</h4>
+    {allEpics.map(id =>
+      <RaisedButton
+        style={styles.button}
+        label={id}
+        key={id}
+        primary={activeEpics.indexOf(id.toLowerCase()) > -1}
+        onClick={() => { toggleEpic(id.toLowerCase()) }} />)}
+    {activeEpics}
     <br/>
     <RaisedButton style={styles.button} label='Test Epic' onClick={() => {
       selectEpicItem('Byzantine–Sasanian_War_of_602–628', 602)
@@ -94,6 +105,7 @@ const enhance = compose(
   connect(state => ({
     activeArea: state.activeArea,
     activeMarkers: state.activeMarkers,
+    activeEpics: state.activeEpics,
     selectedYear: state.selectedYear,
     theme: state.theme,
     locale: state.locale,
@@ -104,6 +116,7 @@ const enhance = compose(
     changeLabel: changeLabelAction,
     changeColor: changeColorAction,
     toggleMarker: toggleMarkerAction,
+    toggleEpic: toggleEpicAction,
     toggleMenuDrawer: toggleMenuDrawerAction,
     selectEpicItem
   }),

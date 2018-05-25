@@ -27,6 +27,8 @@ import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
 const turf = require('@turf/turf')
 
+// const MAPBOX_TOKEN = "pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A"
+
 const getRandomInt = (min, max) => {
   min = Math.ceil(min)
   max = Math.floor(max)
@@ -39,6 +41,7 @@ class Map extends Component {
     mapTimelineContainerClass: 'mapTimeline',
     year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
     data: null,
+    epics: [],
     viewport: {
       latitude: 30.88,
       longitude: 0,
@@ -55,6 +58,7 @@ class Map extends Component {
 
   componentDidMount = () => {
     this._addGeoJson(TYPE_MARKER, this.props.activeMarkers)
+    this._addEpic(this.props.activeEpics)
     window.addEventListener('resize', this._resize)
     this._resize()
   }
@@ -349,7 +353,7 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { basemap, activeArea, selectedYear, metadata, modActive, history, activeMarkers, selectedItem, selectAreaItem } = this.props
+    const { basemap, activeArea, selectedYear, metadata, modActive, history, activeEpics, activeMarkers, selectedItem, selectAreaItem } = this.props
     const rightDrawerOpen = nextProps.rightDrawerOpen
 
     let mapStyleDirty = false
@@ -649,7 +653,7 @@ class Map extends Component {
     }
 
     // Markers changed?
-    if (!_.isEqual(activeMarkers.sort(), nextProps.activeMarkers.sort())) { // expensive comparison! // TODO
+    if (!_.isEqual(activeMarkers.sort(), nextProps.activeMarkers.sort())) {
       console.debug('###### Markers changed')
       utilsQuery.updateQueryStringParameter('markers', nextProps.activeMarkers)
       const removedMarkers = _.difference(activeMarkers, nextProps.activeMarkers)
@@ -665,6 +669,26 @@ class Map extends Component {
       for (const addedMarker of addedMarkers) {
         console.log('addedMarker', addedMarker)
         this._addGeoJson(TYPE_MARKER, addedMarker)
+      }
+    }
+
+    // Epics changed?
+    if (!_.isEqual(activeEpics.sort(), nextProps.activeEpics.sort())) {
+      console.debug('###### Epics changed')
+      utilsQuery.updateQueryStringParameter('epics', nextProps.activeEpics)
+      const removedEpics = _.difference(activeEpics, nextProps.activeEpics)
+      const addedEpics = _.difference(nextProps.activeEpics, activeEpics)
+
+      // iterate to remove
+      for (const removedEpic of removedEpics) {
+        console.log('removing Epic', removedEpic)
+        mapStyleDirty = this._removeEpic(removedEpic)
+      }
+
+      // iterate to add
+      for (const addedEpic of addedEpics) {
+        console.log('addedEpic', addedEpic)
+        this._addEpic(addedEpic)
       }
     }
 
@@ -707,14 +731,38 @@ class Map extends Component {
       this.setState({ mapStyle })
     } else if (entityId.toString() !== '') {
       axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + this.props.selectedYear)
-      .then(features => {
-        const mapStyle = this.state.mapStyle
-          .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
-        this.setState({ mapStyle })
+        .then(features => {
+          const mapStyle = this.state.mapStyle
+            .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
+          this.setState({ mapStyle })
+        })
+    }
+  }
+
+  _addEpic = (subtype) => {
+    if (subtype.toString() !== '') {
+      axios.get(properties.chronasApiHost + '/metadata?type=e&end=10000&subtype=' + subtype)
+      .then(res => {
+        this.setState({
+          epics: this.state.epics.concat(res.data.map((el) => {
+            const endYear = el.data.end
+            return {
+              start: el.data.start + '-01-01',
+              end: endYear ? el.data.end + '-01-01' : undefined,
+              content: el.data.title,
+              group: 1
+            }
+          }))
+        })
       })
     }
   }
 
+  _removeEpic = (subtype) => {
+    this.setState({
+      epics: _.omit(this.state.epics, subtype)
+    })
+  }
   _removeGeoJson = (prevMapStyle, sourceId, entityId) => {
     if (entityId === TYPE_EPIC) {
       return prevMapStyle
@@ -936,7 +984,7 @@ class Map extends Component {
   }
 
   render () {
-    const { viewport, mapStyle, mapTimelineContainerClass } = this.state
+    const { epics, mapStyle, mapTimelineContainerClass, viewport } = this.state
     const { modActive, menuDrawerOpen, rightDrawerOpen } = this.props
 
     let leftOffset = (menuDrawerOpen) ? 156 : 56
@@ -971,6 +1019,7 @@ class Map extends Component {
           {...viewport}
           mapStyle={mapStyle}
           onViewportChange={this._onViewportChange}
+          // mapboxApiAccessToken={MAPBOX_TOKEN}
           onHover={this._onHover}
           onClick={this._onClick}
           onLoad={this._initializeMap}
@@ -980,7 +1029,10 @@ class Map extends Component {
           {this._renderPopup()}
         </MapGL>
         <div className={mapTimelineContainerClass}>
-          <Timeline />
+          <Timeline groupItems={epics} groups={[{
+            id: 1,
+            content: 'Group A',
+          }]} />
         </div>
       </div>
     )
@@ -1006,6 +1058,7 @@ const enhance = compose(
     location: state.location,
     basemap: state.basemap,
     activeArea: state.activeArea,
+    activeEpics: state.activeEpics,
     activeMarkers: state.activeMarkers,
     selectedYear: state.selectedYear,
     selectedItem: state.selectedItem,

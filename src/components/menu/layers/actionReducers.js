@@ -4,10 +4,16 @@ export const SET_AREA_COLOR_LABEL = 'SET_AREA_COLOR_LABEL'
 export const CHANGE_AREA_DATA = 'CHANGE_AREA_DATA'
 export const CHANGE_LABEL = 'CHANGE_LABEL'
 export const CHANGE_COLOR = 'CHANGE_COLOR'
+
 export const ADD_MARKER = 'ADD_MARKER'
 export const REMOVE_MARKER = 'REMOVE_MARKER'
 export const SET_MARKER = 'SET_MARKER'
 export const TOGGLE_MARKER = 'TOGGLE_MARKER'
+
+export const ADD_EPIC = 'ADD_EPIC'
+export const REMOVE_EPIC = 'REMOVE_EPIC'
+export const SET_EPIC = 'SET_EPIC'
+export const TOGGLE_EPIC = 'TOGGLE_EPIC'
 
 /** Actions **/
 
@@ -61,6 +67,25 @@ export const toggleMarker = marker => ({
   payload: marker,
 })
 
+export const addEpic = epic => ({
+  type: ADD_EPIC,
+  payload: epic,
+})
+
+export const removeEpic = epic => ({
+  type: REMOVE_EPIC,
+  payload: epic,
+})
+
+export const setEpic = epics => ({
+  type: SET_EPIC,
+  payload: epics,
+})
+
+export const toggleEpic = epic => ({
+  type: TOGGLE_EPIC,
+  payload: epic,
+})
 
 /** Reducers **/
 
@@ -140,6 +165,39 @@ export const markerReducer = (initial = []) => (
         ]
       default:
         return prevMarker
+    }
+  }
+)
+
+export const epicReducer = (initial = []) => (
+  (prevEpic = initial, { type, payload }) => {
+    switch (type) {
+      case SET_EPIC:
+        return payload
+      case TOGGLE_EPIC:
+        if (prevEpic.indexOf(payload) > -1) {
+          return [
+            ...prevEpic.filter(epic =>
+              epic !== payload)
+          ]
+        } else {
+          return [
+            ...prevEpic,
+            payload
+          ]
+        }
+      case ADD_EPIC:
+        return [
+          ...prevEpic,
+          payload
+        ]
+      case REMOVE_EPIC:
+        return [
+          ...prevEpic.filter(epic =>
+            epic !== payload)
+        ]
+      default:
+        return prevEpic
     }
   }
 )

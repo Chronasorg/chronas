@@ -33,6 +33,16 @@ class MapTimeline extends Component {
         selectedYear: new Date(new Date(0, 1, 1).setFullYear(this.props.selectedYear)).toISOString()
       },
       year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
+      groups: [{
+        id: 1,
+        content: 'Group A',
+      }],
+      items: [{
+        start: '0000-01-01',
+        end: '1000-01-01',  // end is optional
+        content: 'War A',
+        group: 1
+      }]
     }
   }
 
@@ -40,6 +50,8 @@ class MapTimeline extends Component {
     // Hack for issue https://github.com/Lighthouse-io/react-visjs-timeline/issues/40
     ReactDOM.findDOMNode(this).children[0].style.visibility = 'visible'
     ReactDOM.findDOMNode(this).children[0].style.width = '100%'
+
+    // http://localhost:4040/v1/metadata?type=e&end=10000&subtype=war add wars
 
     let timelineOptions = this.state.timelineOptions
     delete timelineOptions.start
@@ -79,7 +91,8 @@ class MapTimeline extends Component {
   };
 
   render () {
-    const { timelineOptions, customTimes } = this.state
+    const { timelineOptions, customTimes, items } = this.state
+    const { groupItems, groups } = this.props
 
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
@@ -87,6 +100,8 @@ class MapTimeline extends Component {
     return (
       <Timeline
         options={timelineOptions}
+        groups={groups}
+        items={groupItems}
         customTimes={customTimes}
         clickHandler={this._onClickTimeline}
         rangeChangeHandler={this._onRangeChangeTimeline}
