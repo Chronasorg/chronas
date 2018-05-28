@@ -137,10 +137,10 @@ class EpicTimeline extends React.Component {
       const epicMeta = ((nextProps.epicData || {}).data || {}).data || {}
       const epicLinkedArticles = (epicMeta.content || []).map((linkedItem) => {
         return {
-          "name": linkedItem.properties.n || linkedItem.properties.w,
-          "wiki": linkedItem.properties.w,
-          "type": linkedItem.properties.t,
-          "date": linkedItem.properties.y
+          "name": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.n || linkedItem.properties.w,
+          "wiki": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
+          "type": (!linkedItem.properties) ? linkedItem.type : linkedItem.properties.t,
+          "date": (!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y
         }}).sort((a, b) => +a.date - +b.date)
       this.setState({
         epicMeta,
@@ -152,7 +152,7 @@ class EpicTimeline extends React.Component {
 
       const newWiki = nextProps.selectedItem.wiki
       const articleIndex = epicLinkedArticles.findIndex(x => x.wiki === newWiki);
-      if (articleIndex) {
+      if (articleIndex !== -1) {
         this._selectStepButton(articleIndex, epicLinkedArticles[articleIndex].date)
       } else {
         this.setState({ selectedWiki: newWiki })

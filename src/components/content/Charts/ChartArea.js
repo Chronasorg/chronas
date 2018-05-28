@@ -106,8 +106,8 @@ export default class InfluenceChart extends React.Component {
 
   componentWillReceiveProps (nextProps) {
     if (((nextProps.newData || [])[0] || {}).data &&
-      (nextProps.newData[0] || {}).id !== ((this.props.newData || [])[0] || {}).id ||
-      nextProps.selectedYear !== this.props.selectedYear) {
+      ((nextProps.newData[0] || {}).id !== ((this.props.newData || [])[0] || {}).id ||
+      nextProps.selectedYear !== this.props.selectedYear)) {
       const { selectedYear } = nextProps
       const nextSeries = nextProps.newData.map((seriesEl) => seriesEl.data)
 
@@ -154,8 +154,8 @@ export default class InfluenceChart extends React.Component {
 
     if (!sortedData || sortedData.length === 0) return null
 
-    const entityColor = epicMeta ? 'red' : (rulerProps || {})[1] || 'blue'
-    const xDomain = epicMeta ? [(+epicMeta.start - 50), ((+epicMeta.end || +epicMeta.start) + 50)] : [sortedData[0], sortedData[sortedData.length - 1]]
+    const entityColor = (epicMeta && epicMeta.start) ? 'red' : (rulerProps || {})[1] || 'blue'
+    const xDomain = (epicMeta && epicMeta.start) ? [(+epicMeta.start - 50), ((+epicMeta.end || +epicMeta.start) + 50)] : [sortedData[0], sortedData[sortedData.length - 1]]
 
     return (
       <div>

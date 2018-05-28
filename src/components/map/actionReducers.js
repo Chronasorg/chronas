@@ -10,6 +10,7 @@ export const DESELECT_ITEM = 'DESELECT_ITEM'
 
 export const TYPE_AREA = 'areas'
 export const TYPE_MARKER = 'markers'
+export const TYPE_METADATA = 'metadata'
 export const TYPE_LINKED = 'linked'
 export const TYPE_EPIC = 'epic'
 
@@ -99,6 +100,7 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
       case SET_EPIC_ITEM:
         return {
           ...previousState,
+          wiki: payload[0],
           value: payload[0],
           type: TYPE_EPIC,
           data: false

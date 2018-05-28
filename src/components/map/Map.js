@@ -14,7 +14,7 @@ import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import {
-  TYPE_MARKER, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectAreaItem as selectAreaItemAction,
+  TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
 import properties from '../../properties'
@@ -29,6 +29,8 @@ const turf = require('@turf/turf')
 
 // const MAPBOX_TOKEN = "pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A"
 
+// defines fill-opacity when Population Opacity is switched on
+const opacityPopBounds = [0.3, 0.8]
 const getRandomInt = (min, max) => {
   min = Math.ceil(min)
   max = Math.floor(max)
@@ -248,6 +250,19 @@ class Map extends Component {
     const { activeArea, metadata, selectedItem } = this.props
     let mapStyle = this.state.mapStyle
 
+    if (activeArea.popOpacity) {
+      const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
+        return (provValue !== null) ? +provValue[4] : 0
+      }))
+      mapStyle = mapStyle
+        .setIn(['layers', areaColorLayerIndex[newColor], 'paint', 'fill-opacity'], fromJS(
+          ['interpolate', ['linear'], ['get', 'p'],
+            0, opacityPopBounds[0],
+            populationMax / 20, opacityPopBounds[1]
+          ]
+        ))
+    }
+
     if (typeof newColor !== 'undefined') {
       for (let areaColorLayer of properties.areaColorLayers) {
         if (areaColorLayer !== newColor) {
@@ -277,24 +292,18 @@ class Map extends Component {
           .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: { color: metadata[newColor][activeprovinceValue][1] } }))
 
         if (newColor === 'population' && prevColor && prevColor !== 'population') {
-          const populationStops = [[0, populationColorScale[0]]]
-          populationStops.push([Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
+          const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
             return (provValue !== null && provValue[utils.activeAreaDataAccessor(prevColor)] === prevActiveprovinceValue) ? +provValue[4] : 0
-          })), populationColorScale[1]])
+          }))
 
           newMapStyle = newMapStyle
-          .setIn(['layers', areaColorLayerIndex['population'], 'paint'], fromJS(
-            {
-              'fill-color': ['interpolate', ['linear'], ['get', 'p'],
-                populationStops[0][0], populationStops[0][1],
-                populationStops[1][0], populationStops[1][1]
-              ],
-              'fill-opacity': 0.6,
-              'fill-outline-color': 'rgba(0,0,0,.2)'
-            }
+          .setIn(['layers', areaColorLayerIndex[newColor], 'paint', 'fill-opacity'], fromJS(
+            ['interpolate', ['linear'], ['get', 'p'],
+              0, opacityPopBounds[0],
+              populationMax/20, opacityPopBounds[1]
+            ]
           ))
         }
-
         this.setState({
           viewport,
           mapStyle: newMapStyle
@@ -312,13 +321,13 @@ class Map extends Component {
 
   _simulateYearChange = (areaDefs) => {
     const { religionGeneral, religion } = this.props.metadata
+    const { activeArea } = this.props
+
     const sourceId = 'provinces'
     const prevMapStyle = this.state.mapStyle
-    const populationStops = [[0, populationColorScale[0]]]
-
-    populationStops.push([Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
+    const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
       return (provValue !== null) ? +provValue[4] : 0
-    })), populationColorScale[1]])
+    }))
 
     let mapStyle = prevMapStyle
       .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function (feature) {
@@ -329,17 +338,17 @@ class Map extends Component {
         feature.properties.g = (religionGeneral[(religion[provValue[2]] || [])[3]] || 'undefined')[0]
         feature.properties.p = provValue[4]
         return feature
-      }))
-      .setIn(['layers', areaColorLayerIndex['population'], 'paint'], fromJS(
-        {
-          'fill-color': ['interpolate', ['linear'], ['get', 'p'],
-            populationStops[0][0], populationStops[0][1],
-            populationStops[1][0], populationStops[1][1]
-          ],
-          'fill-opacity': 0.6,
-          'fill-outline-color': 'rgba(0,0,0,.2)'
-        }
+      })) // areaColorLayerIndex['ruler']
+
+    if (activeArea.popOpacity || activeArea.color === 'population') {
+      mapStyle = mapStyle.setIn(['layers', areaColorLayerIndex[activeArea.color], 'paint', 'fill-opacity'], fromJS(
+        ['interpolate', ['linear'], ['get', 'p'],
+          0, opacityPopBounds[0],
+          populationMax / 20, opacityPopBounds[1]
+        ]
       ))
+    }
+
     this.setState({ mapStyle })
   }
 
@@ -502,8 +511,8 @@ class Map extends Component {
             axios.all(rulerPromises)
               .then(axios.spread((...args) => {
                 if (epicWiki && args.length > 0) {
-                  newEpicEntities.data.content = args[0].data
-                  this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
+                  // newEpicEntities.data.content = args[0].data //TODO: it should be this way later on with proper linked items
+                  // this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
                   args.shift()
                 }
                 this.props.setData({
@@ -652,6 +661,29 @@ class Map extends Component {
       if (provinceWithOldRuler) selectAreaItem(provinceWithOldRuler, provinceWithOldRuler)
     }
 
+    if (activeArea.popOpacity !== nextProps.activeArea.popOpacity) {
+      // popOpacity changed
+      const populationMax = Math.max.apply(Math, Object.values(nextProps.activeArea.data).map(function (provValue) {
+        return (provValue !== null) ? +provValue[4] : 0
+      }))
+
+      if (nextProps.activeArea.popOpacity) {
+        // was switched on
+        mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['layers', areaColorLayerIndex[activeArea.color], 'paint', 'fill-opacity'], fromJS(
+          ['interpolate', ['linear'], ['get', 'p'],
+            0, opacityPopBounds[0],
+            populationMax / 20, opacityPopBounds[1]
+          ]
+        ))
+      } else {
+        // was switched off -- revert
+        mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
+          .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-opacity'], fromJS(0.6))
+          .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-opacity'], fromJS(0.6))
+          .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-opacity'], fromJS(0.6))
+          .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-opacity'], fromJS(0.6))
+      }
+    }
     // Markers changed?
     if (!_.isEqual(activeMarkers.sort(), nextProps.activeMarkers.sort())) {
       console.debug('###### Markers changed')
@@ -744,12 +776,16 @@ class Map extends Component {
       axios.get(properties.chronasApiHost + '/metadata?type=e&end=10000&subtype=' + subtype)
       .then(res => {
         this.setState({
-          epics: this.state.epics.concat(res.data.map((el) => {
+          epics: this.state.epics.concat(res.data.filter(el => el.data.participants.length > 0 && el.data.content.length > 0).map((el) => {
             const endYear = el.data.end
             return {
-              start: el.data.start + '-01-01',
-              end: endYear ? el.data.end + '-01-01' : undefined,
+              start: new Date(new Date(0, 1, 1).setFullYear(+el.data.start)),
+              className: 'timelineItem_wars',
+              editable: false,
+              end: endYear ? new Date(new Date(0, 1, 1).setFullYear(+endYear)) : undefined,
               content: el.data.title,
+              title: el.data.title,
+              wiki: el.data.wiki,
               group: 1
             }
           }))
@@ -874,7 +910,7 @@ class Map extends Component {
     let itemName = ''
     let wikiId = ''
 
-    if (modActive.type === TYPE_MARKER && modActive.selectActive) {
+    if ((modActive.type === TYPE_MARKER || modActive.type === TYPE_METADATA)&& modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
     } else if (modActive.type === TYPE_AREA) {
@@ -955,9 +991,8 @@ class Map extends Component {
           this.props.selectAreaItem(wikiId, itemName)
         }
       }
+      this.props.history.push('/article')
     }
-
-    this.props.history.push('/article')
   }
 
   _renderPopup () {
@@ -1029,10 +1064,7 @@ class Map extends Component {
           {this._renderPopup()}
         </MapGL>
         <div className={mapTimelineContainerClass}>
-          <Timeline groupItems={epics} groups={[{
-            id: 1,
-            content: 'Group A',
-          }]} />
+          <Timeline groupItems={epics} />
         </div>
       </div>
     )

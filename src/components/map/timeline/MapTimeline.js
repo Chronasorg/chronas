@@ -5,6 +5,7 @@ import { render } from 'react-dom'
 import compose from 'recompose/compose'
 import update from 'react/lib/update'
 import { setYear as setYearAction } from './actionReducers'
+import { selectEpicItem } from '../actionReducers'
 
 import Timeline from 'react-visjs-timeline'
 import './mapTimeline.scss'
@@ -13,9 +14,18 @@ const start = '0000-01-01',
   min = '-002000-01-01T00:00:00.000Z',
   max = '2017-01-01'
 
+const timelineGroups = [{
+  id: 1,
+  content: 'Wars',
+  title: 'EpicS',
+  className: 'timelineGroup_wars',
+  subgroupStack: false
+}]
+
 class MapTimeline extends Component {
   constructor (props) {
     super(props)
+    this._onClickTimeline = this._onClickTimeline.bind(this)
 
     this.state = {
       timelineOptions: {
@@ -30,7 +40,7 @@ class MapTimeline extends Component {
           // showMajorLabels: false
       },
       customTimes: {
-        selectedYear: new Date(new Date(0, 1, 1).setFullYear(this.props.selectedYear)).toISOString()
+        selectedYear: new Date(new Date(0, 1, 1).setFullYear(+this.props.selectedYear)).toISOString()
       },
       year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
       groups: [{
@@ -59,21 +69,30 @@ class MapTimeline extends Component {
     this.setState({ timelineOptions })
   }
 
-  _onClickTimeline = event => {
-    const currentDate = event.time
-    console.debug('_onClickTimeline currentYear', currentDate)
-    // this.setState({year: event.time})
+  _onClickTimeline = (event) => {
+    const { selectEpicItem, groupItems, setYear } = this.props
 
-    this.props.setYear(new Date(currentDate).getFullYear())
+    const currentDate = event.time
+    const clickedYear = new Date(currentDate).getFullYear()
+    const selectedItemId = event.item
+
+    if (selectedItemId) {
+      const selectedItem = groupItems.filter(el => el.id === selectedItemId)[0]
+      const selectedItemDate = selectedItem.start.getFullYear()
+      selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear)
+    } else {
+      setYear(clickedYear)
+    }
+
     this.setState({
       customTimes: {
-        selectedYear: currentDate
+        selectedYear: event.time
       }
     })
   };
 
   componentWillReceiveProps = (nextProps) => {
-    const { selectedYear } = this.props
+    const { groupItems, selectedYear, selectEpicItem } = this.props
     const { customTimes } = this.state
 
     /** Acting on store changes **/
@@ -86,13 +105,22 @@ class MapTimeline extends Component {
     }
   }
 
+  shouldComponentUpdate (nextProps) {
+    return true
+    // if (nextProps.groupItems.length > this.props.groupItems.length) {
+    //   return true
+    // }
+  }
+
   _onRangeChangeTimeline = event => {
     console.debug(event)
   };
 
   render () {
     const { timelineOptions, customTimes, items } = this.state
-    const { groupItems, groups } = this.props
+    const { groupItems } = this.props
+
+    console.debug("rendering maptimeline")
 
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
@@ -100,7 +128,7 @@ class MapTimeline extends Component {
     return (
       <Timeline
         options={timelineOptions}
-        groups={groups}
+        groups={timelineGroups}
         items={groupItems}
         customTimes={customTimes}
         clickHandler={this._onClickTimeline}
@@ -116,6 +144,7 @@ const enhance = compose(
     selectedYear: state.selectedYear,
   }), {
     setYear: setYearAction,
+    selectEpicItem
   })
 )
 

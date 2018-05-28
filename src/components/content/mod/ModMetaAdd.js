@@ -28,12 +28,14 @@ import {
   required,
   minLength
 } from 'admin-on-rest'
+import { EmbeddedArrayInput } from 'aor-embedded-array'
 import { Link } from 'react-router-dom'
 import { List, ListItem } from 'material-ui/List'
 import Divider from 'material-ui/Divider'
 import Subheader from 'material-ui/Subheader'
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import MetaForm from '../../restricted/shared/forms/MetaForm'
+import ModButton from '../../restricted/shared/buttons/ModButton'
 import utils from '../../map/utils/general'
 import ColorInput from 'aor-color-input'
 import AutocompleteDisallowInput from '../../restricted/shared/inputs/AutocompleteDisallowInput'
@@ -82,6 +84,20 @@ export const ModMetaAdd = (props) => {
     return { id: capitalId, name: metadata['province'][capitalId][0] }
   }) || {}
 
+  const choicesIcons = [
+    { id: 'battleIcon', name: 'Battle Icon' },
+    { id: 'campaignIcon', name: 'Campaign Icon' },
+    { id: 'siegeIcon', name: 'Siege Icon' },
+    { id: 'conflictIcon', name: 'Conflict Icon'}
+  ]
+
+  const choicesEpicSubtypes = [
+    { id: 'war', name: 'War' },
+    { id: 'battle', name: 'Battle' },
+    { id: 'siege', name: 'Siege' },
+    { id: 'campaign', name: 'Campaign'}
+  ]
+
   const choicesType = [
     { id: 'ruler', name: 'Ruler' },
     { id: 'culture', name: 'Culture' },
@@ -89,6 +105,7 @@ export const ModMetaAdd = (props) => {
     { id: 'religionGeneral', name: 'Religion (General)' },
     { id: 'capital', name: 'Capital' },
     { id: 'province', name: 'Province' },
+    { id: 'e', name: 'Epic' },
   ]
 
   const validateValueInput = (values) => {
@@ -115,13 +132,42 @@ export const ModMetaAdd = (props) => {
   }
 
   const typeInputs = {
+    'e':
+      <MetaForm validate={validateValueInput} {...props} redirect='create'>
+        <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
+        <TextInput validate={required} type='url' source='wiki' label='resources.areas.fields.wiki_url' />
+        <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' />
+        <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' />
+        <TextInput type='number' source='end' label='resources.areas.fields.end' />
+        <EmbeddedArrayInput source="linked">
+          <TextInput validate={required} type='text' source='url' label='resources.areas.fields.wiki_url' />
+        </EmbeddedArrayInput>
+        <EmbeddedArrayInput source="participants">
+          <EmbeddedArrayInput source="participantTeam">
+            <AutocompleteInput source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
+          </EmbeddedArrayInput>
+        </EmbeddedArrayInput>
+        <EmbeddedArrayInput source="content">
+          <TextInput type='text' source='title' label='resources.areas.fields.title' />
+          <AutocompleteInput source='icon' choices={choicesIcons} label='resources.areas.fields.icon' />
+          <TextInput validate={required} type='number' source='date' label='resources.areas.fields.date' />
+          <TextInput validate={required} type='text' source='url' label='resources.areas.fields.wiki_url' />
+          <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
+          <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
+        </EmbeddedArrayInput>
+        <TextInput validate={required} type='text' source='title' label='resources.areas.fields.title' />
+        <ModButton modType='marker' />
+        <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
+        <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
+        <TextInput validate={required} type='text' source='partOf' label='resources.areas.fields.partOf' />
+      </MetaForm>,
     'ruler':
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput source='name' choices={choicesRuler} label='resources.areas.fields.display_name' />
     <ColorInput validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
     <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-    <TextInput validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
+    <TextInput validate={required} type='text' source='icon' label='resources.areas.fields.text' />
   </MetaForm>,
     'religion':
   <MetaForm validate={validateValueInput} {...props} >

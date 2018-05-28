@@ -4,6 +4,7 @@ export const SET_AREA_COLOR_LABEL = 'SET_AREA_COLOR_LABEL'
 export const CHANGE_AREA_DATA = 'CHANGE_AREA_DATA'
 export const CHANGE_LABEL = 'CHANGE_LABEL'
 export const CHANGE_COLOR = 'CHANGE_COLOR'
+export const SET_POPOPACITY = 'SET_POPOPACITY'
 
 export const ADD_MARKER = 'ADD_MARKER'
 export const REMOVE_MARKER = 'REMOVE_MARKER'
@@ -25,6 +26,11 @@ export const changeBasemap = basemap => ({
 export const setArea = (data, color, label) => ({
   type: SET_AREA,
   payload: [data, color, label],
+})
+
+export const setPopOpacity = popopacityActive => ({
+  type: SET_POPOPACITY,
+  payload: popopacityActive,
 })
 
 export const setAreaColorLabel = (color, label) => ({
@@ -89,22 +95,27 @@ export const toggleEpic = epic => ({
 
 /** Reducers **/
 
-export const basemapReducer = (initial = 'watercolor') => (
+export const basemapReducer = (initial = 'watercolor') =>
   (initialBasemap = initial, { type, payload }) => {
     switch (type) {
       case CHANGE_BASEMAP:
-        return payload;
+        return payload
       default:
-        return initialBasemap;
+        return initialBasemap
     }
   }
-)
 
-export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': 'ruler' }) => (
+export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': 'ruler', 'popOpacity': false }) =>
   (prevArea = initial, { type, payload }) => {
     switch (type) {
+      case SET_POPOPACITY:
+        return {
+          ...prevArea,
+          popOpacity: payload
+        }
       case SET_AREA:
         return {
+          ...prevArea,
           data: payload[0],
           color: payload[1],
           label: payload[2]
@@ -113,7 +124,7 @@ export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': '
         return {
           ...prevArea,
           color: payload[0],
-          label: payload[1]
+          label: payload[1],
         }
       case CHANGE_COLOR:
         return {
@@ -124,19 +135,18 @@ export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': '
         return {
           ...prevArea,
           label: payload
-        };
+        }
       case CHANGE_AREA_DATA:
         return {
           ...prevArea,
           data: payload
-        };
+        }
       default:
-        return prevArea;
+        return prevArea
     }
   }
-)
 
-export const markerReducer = (initial = []) => (
+export const markerReducer = (initial = []) =>
   (prevMarker = initial, { type, payload }) => {
     switch (type) {
       case SET_MARKER:
@@ -167,9 +177,8 @@ export const markerReducer = (initial = []) => (
         return prevMarker
     }
   }
-)
 
-export const epicReducer = (initial = []) => (
+export const epicReducer = (initial = []) =>
   (prevEpic = initial, { type, payload }) => {
     switch (type) {
       case SET_EPIC:
@@ -200,4 +209,3 @@ export const epicReducer = (initial = []) => (
         return prevEpic
     }
   }
-)

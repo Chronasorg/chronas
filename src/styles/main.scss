@@ -21,6 +21,22 @@ body {
   box-sizing: inherit;
 }
 
+.timelineGroup_wars {
+  top: -20px;
+}
+
+.vis-panel.vis-center {
+  top: 4px !important;
+}
+
+.vis-selected {
+  top: -20px !important;
+}
+
+.timelineItem_wars {
+  height: 20px;
+}
+
 .classReveal {
   opacity: 1 !important;
 }

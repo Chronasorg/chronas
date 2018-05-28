@@ -10,6 +10,7 @@ import { selectEpicItem } from '../../map/actionReducers'
 import {
   changeBasemap as changeBasemapAction,
   setAreaColorLabel as setAreaColorLabelAction,
+  setPopOpacity as setPopOpacityAction,
   changeLabel as changeLabelAction,
   changeColor as changeColorAction,
   toggleMarker as toggleMarkerAction,
@@ -19,6 +20,10 @@ const styles = {
   main: {
     display: 'flex',
     flexDirection: 'column',
+    width: '100%',
+    maxHeight: 'calc(100% - 64px)',
+    position: 'initial',
+    overflow: 'auto',
     justifyContent: 'flex-start',
     height: '100%',
     padding: '18px 14px',
@@ -31,7 +36,7 @@ const allMarkers = ['Politicians', 'Battles']
 
 const allEpics = ['War', 'Battles']
 
-const LayerContent = ({ activeArea, selectedText, selectEpicItem, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker, toggleEpic }) => (
+const LayerContent = ({ activeArea, setPopOpacity, selectedText, selectEpicItem, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker, toggleEpic }) => (
   <div style={styles.main}>
     <h4>Basemap</h4>
     <RaisedButton style={styles.button} label="None" primary={basemap === ''} onClick={() => changeBasemap('')} />
@@ -39,6 +44,8 @@ const LayerContent = ({ activeArea, selectedText, selectEpicItem, activeMarkers,
     <RaisedButton style={styles.button} label="Topographic" primary={basemap === 'topographic'} onClick={() => changeBasemap('topographic')} />
     <br/>
     <h4>Area</h4>
+    Population Opacity:
+    <RaisedButton style={styles.button} label="PopOpacity" primary={activeArea.popOpacity} onClick={() => setPopOpacity(!activeArea.popOpacity)} />
     Both:
     <RaisedButton style={styles.button} label="Ruler" primary={activeArea.label === 'ruler' && activeArea.color === 'ruler'} onClick={() => setAreaColorLabel('ruler','ruler')} />
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion' && activeArea.color === 'religion'} onClick={() => setAreaColorLabel('religion','religion')} />
@@ -113,6 +120,7 @@ const enhance = compose(
   }), {
     changeBasemap: changeBasemapAction,
     setAreaColorLabel: setAreaColorLabelAction,
+    setPopOpacity: setPopOpacityAction,
     changeLabel: changeLabelAction,
     changeColor: changeColorAction,
     toggleMarker: toggleMarkerAction,

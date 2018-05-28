@@ -24,6 +24,7 @@
   "dependencies": {
     "@turf/turf": "^5.1.6",
     "admin-on-rest": "1.4.0",
+    "aor-embedded-array": "^0.1.0",
     "aor-json-rest-client": "2.1.0",
     "aor-language-french": "^1.8.1",
     "aor-rich-text-input": "^1.0.2",

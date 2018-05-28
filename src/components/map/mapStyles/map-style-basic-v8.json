@@ -148,7 +148,9 @@
         "visibility": "none"
       },
       "interactive": true,
-      "paint": {}
+      "paint": {
+        "fill-color": "rgb(199,0,2)"
+      }
     },
     {
       "id": "area-outlines",
