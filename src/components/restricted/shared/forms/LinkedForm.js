@@ -31,6 +31,7 @@ export class MarkerForm extends Component {
         // updating linked metadata
         if (values.year !== initialValues.year) bodyToSend.year = values.year
         if (values.subtype !== initialValues.subtype) bodyToSend.subtype = values.subtype
+        if (!values.coo.every( e => initialValues.coo.includes(e) )) bodyToSend.coo = values.coo
         if (values.wiki !== initialValues.wiki) bodyToSend.wiki = values.wiki
 
         // any data changed?
@@ -51,6 +52,7 @@ export class MarkerForm extends Component {
         if (values.year) bodyToSend.year = values.year
         if (values.subtype) bodyToSend.subtype = values.subtype
         if (values.wiki) bodyToSend.wiki = values.wiki
+        if (values.coo) bodyToSend.coo = values.coo
 
         // any data changed?
         if (values.description || values.source) {
@@ -84,6 +86,11 @@ export class MarkerForm extends Component {
 
   componentWillUnmount () {
     this.props.setModType('')
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) { this.props.change('coo[0]', nextProps.modActive.data[0]) }
+    if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) { this.props.change('coo[1]', nextProps.modActive.data[1]) }
   }
 
   componentWillMount () {

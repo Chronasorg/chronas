@@ -39,7 +39,7 @@ export class MetaForm extends Component {
     this.props.handleSubmit(values => {
       const { initialValues, history } = this.props
 
-      const wikiURL = values.wiki
+      const wikiURL = values.url
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
       let newWikiURL
       if (wikiIndex > -1) {

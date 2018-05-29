@@ -220,7 +220,7 @@ class Discover extends PureComponent {
         tilesHighlightData: [],
         tilesArtefactsData: [],
         tilesArticlesData: [],
-        tilesStoriesData: [],
+        tilesEpicsData: [],
         tilesPeopleData: [],
         tilesCitiesData: [],
         tilesBattlesData: [],
@@ -233,7 +233,7 @@ class Discover extends PureComponent {
         ['tilesHighlightData','HIGHLIGHTS',''],
         ['tilesArtefactsData','ARTEFACTS','artefacts'],
         ['tilesArticlesData','ARTICLES','articles'],
-        ['tilesStoriesData','STORIES','stories'],
+        ['tilesEpicsData','EPICS','epics'],
         ['tilesPeopleData','PEOPLE','people'],
         ['tilesCitiesData','CITIES','cities'],
         ['tilesBattlesData','BATTLES','battles'],
@@ -327,6 +327,7 @@ class Discover extends PureComponent {
               subtype: imageItem.subtype,
               source: imageItem.data.source,
               subtitle: imageItem.year,
+              coo: imageItem.coo,
               score: imageItem.score,
             })
           })
