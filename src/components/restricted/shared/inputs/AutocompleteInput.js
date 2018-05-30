@@ -114,6 +114,7 @@ export class AutocompleteInput extends Component {
 
   handleUpdateInput = searchText => {
     this.setState({ searchText });
+    this.props.onSearchChange(searchText);
     const { setFilter } = this.props;
     setFilter && setFilter(searchText);
   };
@@ -206,6 +207,7 @@ AutocompleteInput.propTypes = {
   isRequired: PropTypes.bool,
   label: PropTypes.string,
   meta: PropTypes.object,
+  onSearchChange: PropTypes.func,
   options: PropTypes.object,
   optionElement: PropTypes.element,
   optionText: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
@@ -224,6 +226,7 @@ AutocompleteInput.defaultProps = {
   choices: [],
   filter: AutoComplete.fuzzyFilter,
   options: {},
+  onSearchChange: () => {},
   optionText: 'name',
   optionValue: 'id',
   translateChoice: true,

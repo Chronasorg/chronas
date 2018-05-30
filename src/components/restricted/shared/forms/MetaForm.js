@@ -57,7 +57,7 @@ export class MetaForm extends Component {
             'start': +values.start,
             'end':  +values.end,
             'participants': values.participants.map(el => el.participantTeam.map(el2 => el2.name)),
-            'content': values.content,
+            'content': values.content.map((el) => { return { type: el.contentType, id: el.name } }),
             'partOf': values.partOf,
             'coo':  values.coo,
           },
@@ -65,7 +65,6 @@ export class MetaForm extends Component {
           'subtype': values.subtype,
           'year': +values.start,
           'score': 0,
-          'linked': values.linked.map(el => el.url),
           'type': values.type
         }
 

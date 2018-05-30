@@ -84,21 +84,28 @@ export const ModMetaAdd = (props) => {
     return { id: capitalId, name: metadata['province'][capitalId][0] }
   }) || {}
 
-  const elemenType = [
-    { id: 'e', name: 'Epic' },
-    { id: 'marker', name: 'Marker' },
-    { id: 'i', name: 'Image' },
-    { id: 'i', name: 'Audio' },
-    { id: 'i', name: 'External Article or Primary Source' },
-    { id: 'i', name: 'Video' },
-    { id: 'i', name: 'Other' }
-  ]
-
-  const choicesIcons = [
-    { id: 'battleIcon', name: 'Battle Icon' },
-    { id: 'campaignIcon', name: 'Campaign Icon' },
-    { id: 'siegeIcon', name: 'Siege Icon' },
-    { id: 'conflictIcon', name: 'Conflict Icon'}
+  const contentType = [
+    { type: 'markers', name: '[Marker] Artifacts', id: 'm_artifacts' },
+    { type: 'markers', name: '[Marker] Battles -> Battles', id: 'm_battles' },
+    { type: 'markers', name: '[Marker] Battles -> Sieges', id: 'm_sieges' },
+    { type: 'markers', name: '[Marker] Cities -> Cities', id: 'm_cities' },
+    { type: 'markers', name: '[Marker] Cities -> Castles', id: 'm_castles' },
+    { type: 'markers', name: '[Marker] People -> Military', id: 'm_military' },
+    { type: 'markers', name: '[Marker] People -> Politicians', id: 'politicians' },
+    { type: 'markers', name: '[Marker] People -> Explorers', id: 'm_explorers' },
+    { type: 'markers', name: '[Marker] People -> Scientists', id: 'm_scientists' },
+    { type: 'markers', name: '[Marker] People -> Artists', id: 'm_artists' },
+    { type: 'markers', name: '[Marker] People -> Religious', id: 'm_religious' },
+    { type: 'markers', name: '[Marker] People -> Athletes', id: 'm_athletes' },
+    { type: 'markers', name: '[Marker] People -> Unclassified', id: 'm_unclassified' },
+    { type: 'markers', name: '[Marker] Other -> Area Info', id: 'm_areainfo' },
+    { type: 'markers', name: '[Marker] Other -> Unknown', id: 'm_unknown' },
+    { type: 'metadata', id: 'meta_story', name: 'Story' },
+    { type: 'metadata', id: 'meta_image', name: 'Image' },
+    { type: 'metadata', id: 'meta_audio', name: 'Audio' },
+    { type: 'metadata', id: 'meta_text', name: 'External Article or Primary Source' },
+    { type: 'metadata', id: 'meta_video', name: 'Video' },
+    { type: 'metadata', id: 'meta_other', name: 'Other' }
   ]
 
   const choicesEpicSubtypes = [
@@ -145,37 +152,24 @@ export const ModMetaAdd = (props) => {
     'e':
       <MetaForm validate={validateValueInput} {...props} redirect='create'>
         <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <TextInput
-          hintText='Hint: Linked items show up under "see also"1'
-          floatingLabelText='Hint: Linked items show up under "see also"2'
-          validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
+        <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
         <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' />
         <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' />
         <TextInput type='number' source='end' label='resources.areas.fields.end' />
-        <EmbeddedArrayInput source="linked" label='Linked (shows up under "see also")' options={{
-          hintText: 'Hint: Linked items show up under "see also"'
-        }}>
-          <TextInput validate={required} type='text' source='url' label='resources.areas.fields.wiki_url' />
-          <TextInput validate={required} type='text' source='url' label='resources.areas.fields.wiki_url' />
-        </EmbeddedArrayInput>
-        <EmbeddedArrayInput source="participants">
-          <EmbeddedArrayInput source="participantTeam">
+        <EmbeddedArrayInput source='participants'>
+          <EmbeddedArrayInput source='participantTeam'>
             <AutocompleteInput source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
           </EmbeddedArrayInput>
         </EmbeddedArrayInput>
-        <EmbeddedArrayInput source="content" label='Content (shows up in left content column, if it doesnt exist yet, you can create _linked_ and _markers_ to be added here)'>
-          <TextInput validate={required} type='text' source='url' label='resources.areas.fields.wiki_url' />
-          <TextInput type='text' source='title' label='resources.areas.fields.title' />
-          <AutocompleteInput source='icon' choices={choicesIcons} label='resources.areas.fields.icon' />
-          <TextInput validate={required} type='number' source='date' label='resources.areas.fields.date' />
-          <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
-          <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
+        <EmbeddedArrayInput validate={required} source="content" label='Content (shows up in left content column, if it doesnt exist yet, you can create _media/ others_ and _markers_ to be added here)'>
+          <SelectInput validate={required} source='contentType' choices={contentType} onChange={(val, v) => { props.setContentType(v) }} defaultValue={props.contentType} />
+          <AutocompleteInput validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { console.debug(val); return props.setSearchSnippet(val) }} />
         </EmbeddedArrayInput>
-        <TextInput validate={required} type='text' source='title' label='resources.areas.fields.title' />
+        <TextInput type='text' source='title' label='resources.areas.fields.title' />
         <ModButton modType='marker' />
         <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
         <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
-        <TextInput validate={required} type='text' source='partOf' label='resources.areas.fields.partOf' />
+        <TextInput type='text' source='partOf' label='resources.areas.fields.partOf' />
       </MetaForm>,
     'ruler':
   <MetaForm validate={validateValueInput} {...props} >

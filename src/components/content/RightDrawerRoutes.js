@@ -153,6 +153,10 @@ class RightDrawerRoutes extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
+      contentType: '',
+      searchText: '',
+      isFetchingSearch: false,
+      contentChoice: [],
       isResizing: false,
       lastDownX: 0,
       newWidth: '50%',
@@ -208,6 +212,32 @@ class RightDrawerRoutes extends PureComponent {
 
   setMetadataType = (metadataType) => {
     this.setState({ metadataType, metadataEntity: '' })
+  }
+
+  setContentType = (contentTypeRaw) => {
+    const contentType = (contentTypeRaw.substr(0,2) === 'm_') ? 'markers' : 'metadata'
+    this.setState({ contentType, contentChoice: [] })
+  }
+
+  setSearchSnippet = (searchText) => {
+    // contentChoice
+    if (searchText.length > 3) {
+      if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
+        this.setState({ isFetchingSearch: new Date().getTime() })
+        axios.get(properties.chronasApiHost + '/' + this.state.contentType + '?search=' + searchText)
+          .then(response => {
+            this.setState({
+              isFetchingSearch: false,
+              contentChoice: response.data.map( (el) => { return { id: el, name: el } })
+            })
+          })
+          .catch(() => {
+            this.setState({ isFetchingSearch: false, contentChoice: [] })
+          })
+      }
+    } else {
+      this.setState({ searchText })
+    }
   }
 
   setMetadataEntity = (metadataEntity) => {
@@ -633,7 +663,7 @@ class RightDrawerRoutes extends PureComponent {
           if (resourceKey === 'areas') {
             finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, handleClose: this.handleClose }
           } else if (resourceKey === 'metadata') {
-            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType }
+            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, contentType: this.state.contentType, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType, setContentType: this.setContentType, setSearchSnippet: this.setSearchSnippet, contentChoice: this.state.contentChoice  }
           } else if (resourceKey === TYPE_MARKER) {
             finalProps = { ...commonProps, selectedItem, selectedYear, setModDataLng, setModDataLat }
           } else if (resourceKey === TYPE_LINKED) {

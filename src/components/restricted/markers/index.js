@@ -43,6 +43,11 @@ import { TYPE_MARKER } from '../../map/actionReducers'
 export const MarkerIcon = Icon
 
 const markerTypes = [
+  { name: 'Artifacts', id: 'artifacts' },
+  { name: 'Battles -> Battles', id: 'battles' },
+  { name: 'Battles -> Sieges', id: 'sieges' },
+  { name: 'Cities -> Cities', id: 'cities' },
+  { name: 'Cities -> Castles', id: 'castles' },
   { name: 'People -> Military', id: 'military' },
   { name: 'People -> Politicians', id: 'politicians' },
   { name: 'People -> Explorers', id: 'explorers' },
@@ -51,11 +56,6 @@ const markerTypes = [
   { name: 'People -> Religious', id: 'religious' },
   { name: 'People -> Athletes', id: 'athletes' },
   { name: 'People -> Unclassified', id: 'unclassified' },
-  { name: 'Cities -> Cities', id: 'cities' },
-  { name: 'Cities -> Castles', id: 'castles' },
-  { name: 'Battles -> Battles', id: 'battles' },
-  { name: 'Battles -> Sieges', id: 'sieges' },
-  { name: 'People -> Artifacts', id: 'artifacts' },
   { name: 'Other -> Area Info', id: 'areainfo' },
   { name: 'Other -> Unknown', id: 'unknown' },
 ]
