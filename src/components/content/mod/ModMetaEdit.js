@@ -13,7 +13,7 @@ import {
   Filter,
   FormTab,
   Edit,
-  Delete,SimpleForm,
+  Delete, SimpleForm,
   UrlField,
   NullableBooleanInput,
   NumberField,
@@ -28,13 +28,15 @@ import {
   required,
   minLength
 } from 'admin-on-rest'
+import { EmbeddedArrayInput } from 'aor-embedded-array'
 import { Link } from 'react-router-dom'
-import {List, ListItem} from 'material-ui/List';
-import Divider from 'material-ui/Divider';
-import Subheader from 'material-ui/Subheader';
+import { List, ListItem } from 'material-ui/List'
+import Divider from 'material-ui/Divider'
+import Subheader from 'material-ui/Subheader'
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import MetaForm from '../../restricted/shared/forms/MetaForm'
-import utils from "../../map/utils/general"
+import ModButton from '../../restricted/shared/buttons/ModButton'
+import utils from '../../map/utils/general'
 import ColorInput from 'aor-color-input'
 
 export const ModMetaEdit = (props) => {
@@ -78,6 +80,37 @@ export const ModMetaEdit = (props) => {
     return { id: capitalId, name: metadata['province'][capitalId][0]}
   }) || {}
 
+  const contentType = [
+    { name: '[Marker] Artifacts', id: 'm_artifacts' },
+    { name: '[Marker] Battles -> Battles', id: 'm_battles' },
+    { name: '[Marker] Battles -> Sieges', id: 'm_sieges' },
+    { name: '[Marker] Cities -> Cities', id: 'm_cities' },
+    { name: '[Marker] Cities -> Castles', id: 'm_castles' },
+    { name: '[Marker] People -> Military', id: 'm_military' },
+    { name: '[Marker] People -> Politicians', id: 'politicians' },
+    { name: '[Marker] People -> Explorers', id: 'm_explorers' },
+    { name: '[Marker] People -> Scientists', id: 'm_scientists' },
+    { name: '[Marker] People -> Artists', id: 'm_artists' },
+    { name: '[Marker] People -> Religious', id: 'm_religious' },
+    { name: '[Marker] People -> Athletes', id: 'm_athletes' },
+    { name: '[Marker] People -> Unclassified', id: 'm_unclassified' },
+    { name: '[Marker] Other -> Area Info', id: 'm_areainfo' },
+    { name: '[Marker] Other -> Unknown', id: 'm_unknown' },
+    { id: 'meta_story', name: 'Story' },
+    { id: 'meta_image', name: 'Image' },
+    { id: 'meta_audio', name: 'Audio' },
+    { id: 'meta_text', name: 'External Article or Primary Source' },
+    { id: 'meta_video', name: 'Video' },
+    { id: 'meta_other', name: 'Other' }
+  ]
+
+  const choicesEpicSubtypes = [
+    { id: 'war', name: 'War' },
+    { id: 'battle', name: 'Battle' },
+    { id: 'siege', name: 'Siege' },
+    { id: 'campaign', name: 'Campaign' }
+  ]
+
   const choicesType = [
     { id: 'ruler', name: 'Ruler' },
     { id: 'culture', name: 'Culture' },
@@ -85,7 +118,7 @@ export const ModMetaEdit = (props) => {
     { id: 'religionGeneral', name: 'Religion (General)' },
     { id: 'capital', name: 'Capital' },
     { id: 'province', name: 'Province' },
-    { id: 'epic', name: 'Epic' },
+    { id: 'e', name: 'Epic' },
   ]
 
   const validateValueInput = (values) => {
@@ -117,17 +150,29 @@ export const ModMetaEdit = (props) => {
   }
 
   const typeInputs = {
-    'epic':
-      <MetaForm validate={validateValueInput} {...props} >
-        <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <h4 className='modal-title' style={{ margin: '0 auto' }}>Which entity do you like to modify?</h4>
-        <AutocompleteInput  source="select" choices={choicesRuler} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.display_name" />
-
-        {(props.metadataEntity !== '') ? <TextInput errorText='will be changed' source="name" label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues.dataName } /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl } /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
-      </MetaForm>,
+    'e':
+  <MetaForm validate={validateValueInput} {...props} redirect='edit' defaultValue={props.defaultEpicValues}>
+    <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
+    <AutocompleteInput  source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.display_name" />
+    {(props.metadataEntity !== '') ? <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' /> : null}
+    {(props.metadataEntity !== '') ? <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput type='number' source='end' label='resources.areas.fields.end' /> : null}
+    {(props.metadataEntity !== '') ? <EmbeddedArrayInput source='participants'>
+      <EmbeddedArrayInput source='participantTeam'>
+        <AutocompleteInput source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
+      </EmbeddedArrayInput>
+    </EmbeddedArrayInput> : null}
+    {(props.metadataEntity !== '') ? <EmbeddedArrayInput validate={required} source='content' label='Content (shows up in left content column, if it doesnt exist yet, you can create _media/ others_ and _markers_ to be added here)'>
+      <SelectInput validate={required} source='contentType' choices={contentType} onChange={(val, v) => { props.setContentType(v) }} defaultValue={props.contentType} />
+      <AutocompleteInput validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { return props.setSearchSnippet(val) }} />
+    </EmbeddedArrayInput> : null}
+    {(props.metadataEntity !== '') ? <TextInput type='text' source='title' label='resources.areas.fields.title' /> : null}
+    {(props.metadataEntity !== '') ? <ModButton modType='marker' /> : null}
+    {(props.metadataEntity !== '') ? <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' /> : null}
+    {(props.metadataEntity !== '') ? <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput type='text' source='partOf' label='resources.areas.fields.partOf' /> : null}
+  </MetaForm>,
     'ruler':
       <MetaForm validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />

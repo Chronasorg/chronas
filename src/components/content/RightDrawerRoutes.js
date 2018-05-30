@@ -1,6 +1,6 @@
-import React, { createElement, PureComponent } from 'react'
+import React, {createElement, PureComponent} from 'react'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import compose from 'recompose/compose'
 import Avatar from 'material-ui/Avatar'
 import AppBar from 'material-ui/AppBar'
@@ -10,24 +10,24 @@ import RaisedButton from 'material-ui/RaisedButton'
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import FontIcon from 'material-ui/FontIcon'
 import Chip from 'material-ui/Chip'
-import { Link, Route, Switch } from 'react-router-dom'
+import {Link, Route, Switch} from 'react-router-dom'
 import pure from 'recompose/pure'
 import axios from 'axios'
-import { Restricted, translate } from 'admin-on-rest'
-import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
-import { grey600, grey400, chronasDark } from '../../styles/chronasColors'
+import {Restricted, translate} from 'admin-on-rest'
+import {toggleRightDrawer as toggleRightDrawerAction} from './actionReducers'
+import {grey600, grey400, chronasDark} from '../../styles/chronasColors'
 import Responsive from '../menu/Responsive'
 import Content from './Content'
-import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../restricted/users'
-import { ModAreasAll } from './mod/ModAreasAll'
-import { ModMetaAdd } from './mod/ModMetaAdd'
-import { ModMetaEdit } from './mod/ModMetaEdit'
-import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
-import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
-import { LinkedList, LinkedCreate, LinkedEdit, LinkedDelete, LinkedIcon } from '../restricted/linked'
+import {UserList, UserCreate, UserEdit, UserDelete, UserIcon} from '../restricted/users'
+import {ModAreasAll} from './mod/ModAreasAll'
+import {ModMetaAdd} from './mod/ModMetaAdd'
+import {ModMetaEdit} from './mod/ModMetaEdit'
+import {AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon} from '../restricted/areas'
+import {MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon} from '../restricted/markers'
+import {LinkedList, LinkedCreate, LinkedEdit, LinkedDelete, LinkedIcon} from '../restricted/linked'
 // import MarkerCreate from '../restricted/markers/MarkerCreate'
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import {BottomNavigation } from 'material-ui/BottomNavigation';
+import {BottomNavigation} from 'material-ui/BottomNavigation';
 import BottomNavigationItem from '../overwrites/BottomNavigationItem'
 import Paper from 'material-ui/Paper';
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
@@ -36,21 +36,25 @@ import IconClose from 'material-ui/svg-icons/navigation/close';
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import IconDrag from 'material-ui/svg-icons/editor/drag-handle';
 
-const nearbyIcon = <IconLocationOn />;
+const nearbyIcon = <IconLocationOn/>;
 
-import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../restricted/metadata'
-import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
-import { setRightDrawerVisibility } from './actionReducers'
+import {MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon} from '../restricted/metadata'
+import {RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon} from '../restricted/revisions'
+import {setRightDrawerVisibility} from './actionReducers'
 import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
   selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC
 } from '../map/actionReducers'
-import { ModHome } from './mod/ModHome'
-import { setModData as setModDataAction, setModDataLng as setModDataLngAction, setModDataLat as setModDataLatAction } from './../restricted/shared/buttons/actionReducers'
+import {ModHome} from './mod/ModHome'
+import {
+  setModData as setModDataAction,
+  setModDataLng as setModDataLngAction,
+  setModDataLat as setModDataLatAction
+} from './../restricted/shared/buttons/actionReducers'
 import utilsQuery from '../map/utils/query'
-import { changeColor, setAreaColorLabel } from '../menu/layers/actionReducers'
-import { tooltip } from '../../styles/chronasStyleComponents'
-import { chronasMainColor } from '../../styles/chronasColors'
+import {changeColor, setAreaColorLabel} from '../menu/layers/actionReducers'
+import {tooltip} from '../../styles/chronasStyleComponents'
+import {chronasMainColor} from '../../styles/chronasColors'
 import utils from "../map/utils/general";
 import properties from "../../properties";
 
@@ -71,7 +75,7 @@ const styles = {
   iconElementRightStyle: {
     backgroundColor: '#eceff1',
     position: 'fixed',
-    whiteSpace:  'nowrap',
+    whiteSpace: 'nowrap',
     right: 0,
     height: 56
   },
@@ -134,12 +138,12 @@ const selectedIndexObject = {
 }
 
 const resources = {
-  areas: { edit: ModAreasAll, permission: 1 },
-  linked: { create: LinkedCreate, edit: LinkedEdit, remove: LinkedDelete, permission: 1 },
-  markers: { create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
-  metadata: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
-  images: { create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
-  users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
+  areas: {edit: ModAreasAll, permission: 1},
+  linked: {create: LinkedCreate, edit: LinkedEdit, remove: LinkedDelete, permission: 1},
+  markers: {create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1},
+  metadata: {create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1},
+  images: {create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1},
+  users: {list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11},
 }
 
 const menuIndexByLocation = {
@@ -149,14 +153,192 @@ const menuIndexByLocation = {
   '/mod/markers': 3,
   '/mod/metadata': 4,
 }
+
 class RightDrawerRoutes extends PureComponent {
-  constructor (props) {
+  setMetadataType = (metadataType) => {
+    this.setState({metadataType, metadataEntity: ''})
+  }
+  setContentType = (contentTypeRaw) => {
+    const contentType = (contentTypeRaw.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
+    this.setState({contentType, contentChoice: []})
+  }
+  setSearchEpic = (searchText) => {
+    // contentChoice
+    if (searchText.length > 3) {
+      if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
+        this.setState({isFetchingSearch: new Date().getTime()})
+        axios.get(properties.chronasApiHost + '/metadata?type=e&search=' + searchText)
+          .then(response => {
+            this.setState({
+              isFetchingSearch: false,
+              epicsChoice: response.data.map((el) => {
+                return {id: el, name: el}
+              })
+            })
+          })
+          .catch(() => {
+            this.setState({isFetchingSearch: false, epicsChoice: []})
+          })
+      }
+    } else {
+      this.setState({searchText})
+    }
+  }
+  setSearchSnippet = (searchText) => {
+    // contentChoice
+    if (searchText.length > 3) {
+      if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
+        this.setState({isFetchingSearch: new Date().getTime()})
+        axios.get(properties.chronasApiHost + '/' + this.state.contentType + '?search=' + searchText)
+          .then(response => {
+            this.setState({
+              isFetchingSearch: false,
+              contentChoice: response.data.map((el) => {
+                return {id: el, name: el}
+              })
+            })
+          })
+          .catch(() => {
+            this.setState({isFetchingSearch: false, contentChoice: []})
+          })
+      }
+    } else {
+      this.setState({searchText})
+    }
+  }
+  setMetadataEntity = (metadataEntity) => {
+    if (this.state.metadataType === 'e' && metadataEntity !== this.state.metadataEntity) {
+      axios.get(properties.chronasApiHost + '/metadata/' + metadataEntity)
+        .then(response => {
+          const rawDefault = response.data
+          let contentChoice = []
+          let modifiedDefaultValues = {
+            "type": rawDefault.type,
+            "url": 'https://en.wikipedia.org/wiki/' + rawDefault.wiki,
+            "subtype": rawDefault.subtype,
+            "start": rawDefault.data.start,
+            "end": rawDefault.data.end,
+            "participants": [{"participantTeam": [{"name": "_kingdom_of_nri"}, {"name": "_Zhili_clique"}]}, {"participantTeam": [{"name": "_kingdom_of_nri"}]}],
+            "content": rawDefault.data.content.map((el) => {
+              const contentType = el.split(":")[0]
+              const name = el.split(":")[1]
+
+              contentChoice.push( {id: name, name: name} )
+              return {"contentType": contentType, "name": name}
+            }),
+            "coo": rawDefault.coo,
+            "partOf": rawDefault.partOf
+          }
+
+          // {
+          //   "_id":"e_Great_Turkish_War",
+          //   "data":
+          //     {"title":"Great Turkish War",
+          //       "wiki":"Great_Turkish_War",
+          //       "start":1683,
+          //       "end":1699,
+          //       "participants":[],
+          //       "content":[]},
+          //   "wiki":"Great_Turkish_War",
+          //   "subtype":"war",
+          //   "year":1683,
+          //   "linked":[],
+          //   "score":0,
+          //   "partOf":[],
+          //   "type":"e",
+          //   "coo":[]}
+
+          // {"type":"e","url":"https://en.wikipedia.org/wiki/Byzyyantine_Empire","subtype":"war","start":"100","end":"350","participants":[{"participantTeam":[{"name":"_kingdom_of_nri"},{"name":"_Zhili_clique"}]},{"participantTeam":[{"name":"_kingdom_of_nri"}]}],"content":[{"contentType":"m_religious","name":"Albert_Einstein"},{"contentType":"meta_image","name":"http://deremilitari.org/wp-content/uploads/2014/07/mounted-medieval-knights-in-battle-in-ken-welsh.jpg"}],"coo":[51.028,69.867],"partOf":"Roman_Empire"}
+          this.setState({
+            contentChoice: contentChoice,
+            metadataEntity,
+            defaultEpicValues: modifiedDefaultValues
+          })
+        })
+        .catch(() => {
+          this.setState({metadataEntity})
+        })
+    } else {
+      this.setState({metadataEntity})
+    }
+  }
+  handleBack = () => {
+    this.props.setRightDrawerVisibility(false)
+    this.props.history.goBack()
+  }
+  handleClose = () => {
+    this.props.history.push('/')
+    this.props.deselectItem()
+    this.props.setRightDrawerVisibility(false)
+    utilsQuery.updateQueryStringParameter('type', '')
+    utilsQuery.updateQueryStringParameter('value', '')
+  }
+  handleMousedown = e => {
+    this.setState({isResizing: true, lastDownX: e.clientX});
+    document.addEventListener('mousemove', e => this.handleMousemove(e), false);
+    document.addEventListener('mouseup', e => this.handleMouseup(e), false);
+  }
+  handleMouseup = e => {
+    this.setState({isResizing: false})
+    window.removeEventListener('mousemove', e => this.handleMousemove(e), false);
+    window.removeEventListener('mouseup', e => this.handleMouseup(e), false);
+  }
+  handleMousemove = e => {
+    // this shouldnt be called anyway if not resizing (eventlistener unregister!)
+    if (!this.state.isResizing) {
+      return;
+    }
+
+    let offsetRight =
+      document.body.offsetWidth - (e.clientX - document.body.offsetLeft);
+    let minWidth = +document.body.offsetWidth * 0.24
+    let maxWidth = +document.body.offsetWidth - 160
+    if (offsetRight > minWidth && offsetRight < maxWidth) {
+      this.setState({newWidth: offsetRight});
+    }
+  }
+  select = (index) => this.setState({selectedIndex: index})
+  _handleNewData = (selectedItem, activeArea = {}) => {
+    if (selectedItem.type === TYPE_AREA) {
+      const selectedProvince = selectedItem.value
+      // is rulerEntity loaded?
+      const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
+      const activeRulDim = (activeAreaDim === 'religionGeneral')
+        ? this.props.metadata['religion'][((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]][3]
+        : ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
+      if (this.state.rulerEntity.id !== activeRulDim) {
+        axios.get(properties.chronasApiHost + '/metadata/a_' + activeAreaDim + '_' + activeRulDim)
+          .then((newRulerEntity) => {
+            this.setState({
+              rulerEntity: {
+                id: activeRulDim,
+                data: newRulerEntity.data.data
+              }
+            })
+          })
+      }
+      else if (selectedItem.wiki === WIKI_PROVINCE_TIMELINE && this.state.provinceEntity.id !== activeRulDim) {
+        axios.get(properties.chronasApiHost + '/metadata/ap_' + selectedProvince.toLowerCase() + '?type=ap')
+          .then((newProvinceEntity) => {
+            this.setState({
+              provinceEntity: {
+                id: selectedProvince,
+                data: newProvinceEntity.data.data
+              }
+            })
+          })
+      }
+    }
+  }
+
+  constructor(props) {
     super(props)
     this.state = {
       contentType: '',
       searchText: '',
       isFetchingSearch: false,
       contentChoice: [],
+      defaultEpicValues: {},
       isResizing: false,
       lastDownX: 0,
       newWidth: '50%',
@@ -175,7 +357,7 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     // TODO: this gets called too much!
     if (
       !(nextProps.selectedItem.type === TYPE_EPIC && this.props.selectedItem.type === TYPE_EPIC) // don't load twice with type_epic
@@ -188,17 +370,17 @@ class RightDrawerRoutes extends PureComponent {
       })
     }
 
-    const { rightDrawerOpen, setRightDrawerVisibility } = this.props
+    const {rightDrawerOpen, setRightDrawerVisibility} = this.props
     console.debug('### MAP rightDrawerOpen', this.props, nextProps)
 
     /** Acting on store changes **/
     if (rightDrawerOpen != nextProps.rightDrawerOpen) {
       if (rightDrawerOpen) {
         console.debug('rightDrawer Closed')
-        this.setState({ hiddenElement: true })
+        this.setState({hiddenElement: true})
       } else {
         console.debug('rightDrawer Opened')
-        this.setState({ hiddenElement: false })
+        this.setState({hiddenElement: false})
       }
     }
 
@@ -210,118 +392,14 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
 
-  setMetadataType = (metadataType) => {
-    this.setState({ metadataType, metadataEntity: '' })
-  }
-
-  setContentType = (contentTypeRaw) => {
-    const contentType = (contentTypeRaw.substr(0,2) === 'm_') ? 'markers' : 'metadata'
-    this.setState({ contentType, contentChoice: [] })
-  }
-
-  setSearchSnippet = (searchText) => {
-    // contentChoice
-    if (searchText.length > 3) {
-      if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
-        this.setState({ isFetchingSearch: new Date().getTime() })
-        axios.get(properties.chronasApiHost + '/' + this.state.contentType + '?search=' + searchText)
-          .then(response => {
-            this.setState({
-              isFetchingSearch: false,
-              contentChoice: response.data.map( (el) => { return { id: el, name: el } })
-            })
-          })
-          .catch(() => {
-            this.setState({ isFetchingSearch: false, contentChoice: [] })
-          })
-      }
-    } else {
-      this.setState({ searchText })
-    }
-  }
-
-  setMetadataEntity = (metadataEntity) => {
-    this.setState({ metadataEntity })
-  }
-
-  handleBack = () => {
-    this.props.setRightDrawerVisibility(false)
-    this.props.history.goBack()
-  }
-
-  handleClose = () => {
-    this.props.history.push('/')
-    this.props.deselectItem()
-    this.props.setRightDrawerVisibility(false)
-    utilsQuery.updateQueryStringParameter('type', '')
-    utilsQuery.updateQueryStringParameter('value', '')
-  }
-
-  handleMousedown = e => {
-    this.setState({ isResizing: true, lastDownX: e.clientX });
-    document.addEventListener('mousemove', e => this.handleMousemove(e), false);
-    document.addEventListener('mouseup', e => this.handleMouseup(e), false);
-  }
-
-  handleMouseup = e => {
-    this.setState({ isResizing: false })
-    window.removeEventListener('mousemove', e => this.handleMousemove(e), false);
-    window.removeEventListener('mouseup', e => this.handleMouseup(e), false);
-  }
-
-  handleMousemove = e => {
-    // this shouldnt be called anyway if not resizing (eventlistener unregister!)
-    if (!this.state.isResizing) {
-      return;
-    }
-
-    let offsetRight =
-      document.body.offsetWidth - (e.clientX - document.body.offsetLeft);
-    let minWidth = +document.body.offsetWidth * 0.24
-    let maxWidth = +document.body.offsetWidth - 160
-    if (offsetRight > minWidth && offsetRight < maxWidth) {
-      this.setState({ newWidth: offsetRight });
-    }
-  }
-
-  select = (index) => this.setState({selectedIndex: index})
-
-  _handleNewData = (selectedItem, activeArea = {}) => {
-    if (selectedItem.type === TYPE_AREA) {
-      const selectedProvince = selectedItem.value
-      // is rulerEntity loaded?
-      const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
-      const activeRulDim = (activeAreaDim === 'religionGeneral')
-        ? this.props.metadata['religion'][((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]][3]
-        : ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
-      if (this.state.rulerEntity.id !== activeRulDim) {
-        axios.get(properties.chronasApiHost + '/metadata/a_' + activeAreaDim + '_' + activeRulDim)
-          .then((newRulerEntity) => {
-            this.setState({ rulerEntity: {
-                id: activeRulDim,
-                data: newRulerEntity.data.data
-              }})
-          })
-      }
-      else if (selectedItem.wiki === WIKI_PROVINCE_TIMELINE && this.state.provinceEntity.id !== activeRulDim) {
-        axios.get(properties.chronasApiHost + '/metadata/ap_' + selectedProvince.toLowerCase() + '?type=ap')
-          .then((newProvinceEntity) => {
-            this.setState({ provinceEntity: {
-                id: selectedProvince,
-                data: newProvinceEntity.data.data
-              }})
-          })
-      }
-    }
-  }
-
-  componentDidMount(){
+  componentDidMount() {
     console.debug('### RightDrawerRoutes mounted with props', this.props)
     this._handleNewData(this.props.selectedItem, this.props.activeArea)
     // window.addEventListener('mousemove', this.handleMouseOver.bind(this), false);
     // window.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
   }
-  componentWillUnmount(){
+
+  componentWillUnmount() {
     window.removeEventListener('mousemove', e => this.handleMousemove(e), false);
     window.removeEventListener('mouseup', e => this.handleMouseup(e), false);
   }
@@ -331,69 +409,75 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   render() {
-    const { options, setWikiId, setRightDrawerVisibility,
+    const {
+      options, setWikiId, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, setAreaColorLabel,
-      setModData, setModDataLng, setModDataLat, history, metadata, changeColor } = this.props
-    const { newWidth, rulerEntity, provinceEntity } = this.state
+      setModData, setModDataLng, setModDataLat, history, metadata, changeColor
+    } = this.props
+    const {newWidth, rulerEntity, provinceEntity} = this.state
 
-    if (!selectedItem.wiki || selectedItem.wiki === "" || !selectedItem.value || selectedItem.value === "" ) return null
+    if (!selectedItem.wiki || selectedItem.wiki === "" || !selectedItem.value || selectedItem.value === "") return null
 
     const currPrivilege = +localStorage.getItem("privilege")
-    const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
+    const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege)
     const modHeader = <AppBar
       className='articleHeader'
-      style={ styles.articleHeader }
+      style={styles.articleHeader}
       iconElementLeft={
         <BottomNavigation
-        style={ styles.articleHeader }
-        onChange={this.handleChange}
-        selectedIndex={ this.state.selectedIndex }>
+          style={styles.articleHeader}
+          onChange={this.handleChange}
+          selectedIndex={this.state.selectedIndex}>
           <BottomNavigationItem
             className='bottomNavigationItem'
-            containerElement={<Link to="/mod/markers/create" />}
+            containerElement={<Link to="/mod/markers/create"/>}
             label="Add Marker"
             icon={nearbyIcon}
             onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             className='bottomNavigationItem'
-            containerElement={<Link to="/mod/metadata/create" />}
+            containerElement={<Link to="/mod/markers"/>}
+            label="Edit Marker"
+            icon={nearbyIcon}
+            onClick={() => this.select(1)}
+          />
+          <BottomNavigationItem
+            className='bottomNavigationItem'
+            containerElement={<Link to="/mod/metadata/create"/>}
             label="Add Entity"
             icon={nearbyIcon}
-            onClick={() => { this.select(1) }}
+            onClick={() => {
+              this.select(2)
+            }}
           />
           <BottomNavigationItem
             className='bottomNavigationItem'
-            containerElement={<Link to="/mod/areas" />}
+            containerElement={<Link to="/mod/metadata"/>}
             label="Edit Entity"
-            icon={nearbyIcon}
-            onClick={() => { this.select(2) }}
-          />
-          <BottomNavigationItem
-            className='bottomNavigationItem'
-            containerElement={<Link to="/mod/markers" />}
-            label="Edit Marker"
             icon={nearbyIcon}
             onClick={() => this.select(3)}
           />
           <BottomNavigationItem
             className='bottomNavigationItem'
-            containerElement={<Link to="/mod/metadata" />}
-            label="Edit Meta"
+            containerElement={<Link to="/mod/areas"/>}
+            label="Edit Area"
             icon={nearbyIcon}
-            onClick={() => this.select(4)}
+            onClick={() => {
+              this.select(4)
+            }}
           />
         </BottomNavigation>
       }
       iconElementRight={
         <div style={styles.iconElementRightStyle}>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
-            onClick={() => this.handleBack()}>
-            <IconBack />
+          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
+                      onClick={() => this.handleBack()}>
+            <IconBack/>
           </IconButton>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
-            onClick={() => this.handleClose()}>
-            <IconClose />
+          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
+                      onClick={() => this.handleClose()}>
+            <IconClose/>
           </IconButton>
         </div>
       }
@@ -412,26 +496,26 @@ class RightDrawerRoutes extends PureComponent {
       totalPop = 0
 
     if (activeArea.color === 'ruler') {
-      Object.keys(activeArea.data).forEach((key)=> {
+      Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
         totalPop += currPop
         if ((activeArea.data[key] || {})[0] === rulerId) entityPop += currPop
       })
     } else if (activeArea.color === 'culture') {
-      Object.keys(activeArea.data).forEach((key)=> {
+      Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
         totalPop += currPop
         if ((activeArea.data[key] || {})[1] === cultureId) entityPop += currPop
       })
     } else if (activeArea.color === 'religion') {
-      Object.keys(activeArea.data).forEach((key)=> {
+      Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
         totalPop += currPop
         if ((activeArea.data[key] || {})[2] === religionId) entityPop += currPop
       })
     } else if (activeArea.color === 'religionGeneral') {
       const religionGeneralId = metadata['religion'][religionId][3]
-      Object.keys(activeArea.data).forEach((key)=> {
+      Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
         totalPop += currPop
         if ((metadata['religion'][(activeArea.data[key] || {})[2]] || {})[3] === religionGeneralId) entityPop += currPop
@@ -454,7 +538,8 @@ class RightDrawerRoutes extends PureComponent {
         name: entityObject.religion[0] || "n/a", icon: entityObject.religion[4] || defaultIcons.religion
       },
       religionGeneral: {
-        name: entityObject.religionGeneral[0] || "n/a", icon: entityObject.religionGeneral[3] || defaultIcons.religionGeneral
+        name: entityObject.religionGeneral[0] || "n/a",
+        icon: entityObject.religionGeneral[3] || defaultIcons.religionGeneral
       },
       culture: {
         name: entityObject.culture[0] || "n/a", icon: entityObject.culture[3] || defaultIcons.culture
@@ -472,89 +557,107 @@ class RightDrawerRoutes extends PureComponent {
 
     const articleHeader = <AppBar
       className='articleHeader'
-      style={ styles.articleHeader }
+      style={styles.articleHeader}
       iconElementLeft={
         (selectedItem.type === TYPE_AREA) ? <BottomNavigation
 
-          style={ styles.articleHeader }
+          style={styles.articleHeader}
           onChange={this.handleChange}
-          selectedIndex={ (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
+          selectedIndex={(selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
             ? 0
-            : selectedIndexObject[activeArea.color] }>
+            : selectedIndexObject[activeArea.color]}>
           <BottomNavigationItem
-            onClick={() => { setWikiId(WIKI_PROVINCE_TIMELINE); setAreaColorLabel('ruler', 'ruler') }}
+            onClick={() => {
+              setWikiId(WIKI_PROVINCE_TIMELINE);
+              setAreaColorLabel('ruler', 'ruler')
+            }}
             className='bottomNavigationItem'
             icon={<CardHeader
-              title={ selectedProvince }
-              titleStyle={ styles.cardHeader.titleStyle }
-              subtitleStyle={ styles.cardHeader.titleStyle }
-              textStyle={ styles.cardHeader.textStyle }
-              style={ styles.cardHeader.style }
+              title={selectedProvince}
+              titleStyle={styles.cardHeader.titleStyle}
+              subtitleStyle={styles.cardHeader.titleStyle}
+              textStyle={styles.cardHeader.textStyle}
+              style={styles.cardHeader.style}
               subtitle="Summary"
-              avatar= { this._getFullIconURL(entityMeta.province.icon) }
+              avatar={this._getFullIconURL(entityMeta.province.icon)}
             />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(selectedItem.value); setAreaColorLabel('ruler', 'ruler') }}
+            onClick={() => {
+              setWikiId(selectedItem.value);
+              setAreaColorLabel('ruler', 'ruler')
+            }}
             className='bottomNavigationItem'
             icon={<CardHeader
-                title={ entityMeta.ruler.name }
-                titleStyle={ styles.cardHeader.titleStyle }
-                subtitleStyle={ styles.cardHeader.titleStyle }
-                textStyle={ styles.cardHeader.textStyle }
-                style={ styles.cardHeader.style }
-                subtitle="Ruler"
-                avatar={ this._getFullIconURL(entityMeta.ruler.icon) }
-              />}
+              title={entityMeta.ruler.name}
+              titleStyle={styles.cardHeader.titleStyle}
+              subtitleStyle={styles.cardHeader.titleStyle}
+              textStyle={styles.cardHeader.textStyle}
+              style={styles.cardHeader.style}
+              subtitle="Ruler"
+              avatar={this._getFullIconURL(entityMeta.ruler.icon)}
+            />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(selectedItem.value); setAreaColorLabel('culture', 'culture') }}
+            onClick={() => {
+              setWikiId(selectedItem.value);
+              setAreaColorLabel('culture', 'culture')
+            }}
             className='bottomNavigationItem'
             icon={<CardHeader
-              title={ entityMeta.culture.name  }
-              titleStyle={ styles.cardHeader.titleStyle }
-              textStyle={ styles.cardHeader.textStyle }
-              style={ styles.cardHeader.style }
+              title={entityMeta.culture.name}
+              titleStyle={styles.cardHeader.titleStyle}
+              textStyle={styles.cardHeader.textStyle}
+              style={styles.cardHeader.style}
               subtitle="Culture"
-              avatar= { this._getFullIconURL(entityMeta.culture.icon) }
+              avatar={this._getFullIconURL(entityMeta.culture.icon)}
             />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(selectedItem.value); setAreaColorLabel('religion','religion') }}
+            onClick={() => {
+              setWikiId(selectedItem.value);
+              setAreaColorLabel('religion', 'religion')
+            }}
             className='bottomNavigationItem'
             icon={<CardHeader
-              title={ entityMeta.religion.name  + ' [' + entityMeta.religionGeneral.name  + ']' }
-              titleStyle={ styles.cardHeader.titleStyle }
-              subtitleStyle={ styles.cardHeader.titleStyle }
-              textStyle={ styles.cardHeader.textStyle }
-              style={ styles.cardHeader.style }
+              title={entityMeta.religion.name + ' [' + entityMeta.religionGeneral.name + ']'}
+              titleStyle={styles.cardHeader.titleStyle}
+              subtitleStyle={styles.cardHeader.titleStyle}
+              textStyle={styles.cardHeader.textStyle}
+              style={styles.cardHeader.style}
               subtitle="Religion"
-              avatar= { this._getFullIconURL(entityMeta.religion.icon) }
+              avatar={this._getFullIconURL(entityMeta.religion.icon)}
             />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(selectedItem.value); changeColor('population') }}
+            onClick={() => {
+              setWikiId(selectedItem.value);
+              changeColor('population')
+            }}
             className='bottomNavigationItem'
             icon={<CardHeader
-              title={ entityMeta.capital.name  }
-              titleStyle={ styles.cardHeader.titleStyle }
-              subtitleStyle={ styles.cardHeader.titleStyle }
-              textStyle={ styles.cardHeader.textStyle }
-              style={ styles.cardHeader.style }
+              title={entityMeta.capital.name}
+              titleStyle={styles.cardHeader.titleStyle}
+              subtitleStyle={styles.cardHeader.titleStyle}
+              textStyle={styles.cardHeader.textStyle}
+              style={styles.cardHeader.style}
               subtitle="Capital"
-              avatar= { this._getFullIconURL(entityMeta.capital.icon) }
+              avatar={this._getFullIconURL(entityMeta.capital.icon)}
             />}
           />
           <BottomNavigationItem
-            onClick={() => { setWikiId(selectedItem.value); changeColor('population')} }
+            onClick={() => {
+              setWikiId(selectedItem.value);
+              changeColor('population')
+            }}
             className='bottomNavigationItem'
             icon={<CardHeader
-              title={ populationName }
-              titleStyle={ styles.cardHeader.titleStyle }
-              textStyle={ styles.cardHeader.textStyle }
-              style={ styles.cardHeader.style }
+              title={populationName}
+              titleStyle={styles.cardHeader.titleStyle}
+              textStyle={styles.cardHeader.textStyle}
+              style={styles.cardHeader.style}
               subtitle="Population"
-              avatar={ this._getFullIconURL(entityMeta.religionGeneral.icon) }
+              avatar={this._getFullIconURL(entityMeta.religionGeneral.icon)}
             />}
             // onClick={() => this.select(0)}
           />
@@ -562,16 +665,16 @@ class RightDrawerRoutes extends PureComponent {
       }
       iconElementRight={
         <div style={styles.iconElementRightStyle}>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
-            containerElement={<Link to={modUrl} />}><IconEdit />
+          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
+                      containerElement={<Link to={modUrl}/>}><IconEdit/>
           </IconButton>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
-            onClick={() => this.handleBack()}>
-            <IconBack />
+          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
+                      onClick={() => this.handleBack()}>
+            <IconBack/>
           </IconButton>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
                       onClick={() => this.handleClose()}>
-            <IconClose />
+            <IconClose/>
           </IconButton>
         </div>
       }
@@ -579,7 +682,7 @@ class RightDrawerRoutes extends PureComponent {
     /*<Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'article' }}>  TODO: do pathname dynamicaly*!/*/
     const restrictPage = (headerComponent, component, route, commonProps) => {
       const RestrictedPage = routeProps => (
-        <Restricted location={{ pathname: 'mod/areas' }}  authParams={{ foo: 'bar' }} {...routeProps}>
+        <Restricted location={{pathname: 'mod/areas'}} authParams={{foo: 'bar'}} {...routeProps}>
           <Responsive
             small={
               <Drawer
@@ -598,16 +701,16 @@ class RightDrawerRoutes extends PureComponent {
               <Drawer
                 openSecondary
                 open
-                containerStyle={{ overflow: 'none'/*, zIndex: 10002*/}}
-                style={{ overflow: 'none', zIndex: 9 }}
+                containerStyle={{overflow: 'none'/*, zIndex: 10002*/}}
+                style={{overflow: 'none', zIndex: 9}}
                 width={this.state.newWidth}
-                overlayStyle={{ /*zIndex: 10001*/}}
+                overlayStyle={{/*zIndex: 10001*/}}
               >
                 <RaisedButton
                   className='dragHandle'
-                  icon={<IconDrag />}
+                  icon={<IconDrag/>}
                   style={styles.draggableButtonDiv}
-                  rippleStyle={{ width: '20px'}}
+                  rippleStyle={{width: '20px'}}
                   buttonStyle={styles.draggableButton}
                   onMouseDown={event => {
                     this.handleMousedown(event);
@@ -618,7 +721,7 @@ class RightDrawerRoutes extends PureComponent {
                   // onMouseUp={this.handleMouseUp.bind(this)}
                   // onClick={(event) => console.debug('onClick', event)}
                 />
-                <div style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
+                <div style={{display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit'}}>
                   {headerComponent}
                   {component && createElement(component, {
                     ...commonProps,
@@ -639,13 +742,20 @@ class RightDrawerRoutes extends PureComponent {
           <Route
             exact
             path={'/article'}
-            render={restrictPage(articleHeader, Content, '', { metadata, rulerEntity, provinceEntity, selectedYear, newWidth, history } )}
-        />
+            render={restrictPage(articleHeader, Content, '', {
+              metadata,
+              rulerEntity,
+              provinceEntity,
+              selectedYear,
+              newWidth,
+              history
+            })}
+          />
           <Route
             exact
             path={'/mod'}
             render={restrictPage(modHeader, ModHome)}
-        />
+          />
         </Switch>
         {resourceList.map((resourceKey) => {
           const commonProps = {
@@ -661,29 +771,65 @@ class RightDrawerRoutes extends PureComponent {
           let finalProps
 
           if (resourceKey === 'areas') {
-            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, handleClose: this.handleClose }
+            finalProps = {
+              ...commonProps,
+              setModData,
+              selectedYear,
+              selectedItem,
+              activeArea,
+              metadata,
+              handleClose: this.handleClose
+            }
           } else if (resourceKey === 'metadata') {
-            finalProps = { ...commonProps, setModData, selectedYear, selectedItem, activeArea, metadata, contentType: this.state.contentType, metadataType: this.state.metadataType, metadataEntity: this.state.metadataEntity, setMetadataEntity: this.setMetadataEntity, setMetadataType: this.setMetadataType, setContentType: this.setContentType, setSearchSnippet: this.setSearchSnippet, contentChoice: this.state.contentChoice  }
+            finalProps = {
+              ...commonProps,
+              setModData,
+              selectedYear,
+              selectedItem,
+              activeArea,
+              metadata,
+              contentType: this.state.contentType,
+              metadataType: this.state.metadataType,
+              defaultEpicValues: this.state.defaultEpicValues,
+              metadataEntity: this.state.metadataEntity,
+              setMetadataEntity: this.setMetadataEntity,
+              setMetadataType: this.setMetadataType,
+              setSearchEpic: this.setSearchEpic,
+              setContentType: this.setContentType,
+              setSearchSnippet: this.setSearchSnippet,
+              epicsChoice: this.state.epicsChoice,
+              contentChoice: this.state.contentChoice
+            }
           } else if (resourceKey === TYPE_MARKER) {
-            finalProps = { ...commonProps, selectedItem, selectedYear, setModDataLng, setModDataLat }
+            finalProps = {...commonProps, selectedItem, selectedYear, setModDataLng, setModDataLat}
           } else if (resourceKey === TYPE_LINKED) {
-            finalProps = { ...commonProps, selectedItem, selectedYear, setModDataLng, setModDataLat, resource: 'metadata' }
+            finalProps = {
+              ...commonProps,
+              selectedItem,
+              selectedYear,
+              setModDataLng,
+              setModDataLat,
+              resource: 'metadata'
+            }
           } else {
             finalProps = commonProps
           }
 
-          return (<Switch key={'rightDrawer_' + resourceKey} style={{ zIndex: 20000 }}>
+          return (<Switch key={'rightDrawer_' + resourceKey} style={{zIndex: 20000}}>
             {resources[resourceKey].create && (
               <Route
                 exact
                 path={'/mod/' + resourceKey + '/create'}
-                render={restrictPage(modHeader, resources[resourceKey].create, 'create', {...finalProps, redirect: 'create'})}
+                render={restrictPage(modHeader, resources[resourceKey].create, 'create', {
+                  ...finalProps,
+                  redirect: 'create'
+                })}
               />
             )}
             {resources[resourceKey].edit && (
               <Route
                 exact
-                path={'/mod/' + resourceKey }
+                path={'/mod/' + resourceKey}
                 render={restrictPage(modHeader, resources[resourceKey].edit, 'edit', finalProps)}
               />
             )}

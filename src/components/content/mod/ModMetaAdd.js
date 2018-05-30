@@ -85,34 +85,34 @@ export const ModMetaAdd = (props) => {
   }) || {}
 
   const contentType = [
-    { type: 'markers', name: '[Marker] Artifacts', id: 'm_artifacts' },
-    { type: 'markers', name: '[Marker] Battles -> Battles', id: 'm_battles' },
-    { type: 'markers', name: '[Marker] Battles -> Sieges', id: 'm_sieges' },
-    { type: 'markers', name: '[Marker] Cities -> Cities', id: 'm_cities' },
-    { type: 'markers', name: '[Marker] Cities -> Castles', id: 'm_castles' },
-    { type: 'markers', name: '[Marker] People -> Military', id: 'm_military' },
-    { type: 'markers', name: '[Marker] People -> Politicians', id: 'politicians' },
-    { type: 'markers', name: '[Marker] People -> Explorers', id: 'm_explorers' },
-    { type: 'markers', name: '[Marker] People -> Scientists', id: 'm_scientists' },
-    { type: 'markers', name: '[Marker] People -> Artists', id: 'm_artists' },
-    { type: 'markers', name: '[Marker] People -> Religious', id: 'm_religious' },
-    { type: 'markers', name: '[Marker] People -> Athletes', id: 'm_athletes' },
-    { type: 'markers', name: '[Marker] People -> Unclassified', id: 'm_unclassified' },
-    { type: 'markers', name: '[Marker] Other -> Area Info', id: 'm_areainfo' },
-    { type: 'markers', name: '[Marker] Other -> Unknown', id: 'm_unknown' },
-    { type: 'metadata', id: 'meta_story', name: 'Story' },
-    { type: 'metadata', id: 'meta_image', name: 'Image' },
-    { type: 'metadata', id: 'meta_audio', name: 'Audio' },
-    { type: 'metadata', id: 'meta_text', name: 'External Article or Primary Source' },
-    { type: 'metadata', id: 'meta_video', name: 'Video' },
-    { type: 'metadata', id: 'meta_other', name: 'Other' }
+    { name: '[Marker] Artifacts', id: 'm_artifacts' },
+    { name: '[Marker] Battles -> Battles', id: 'm_battles' },
+    { name: '[Marker] Battles -> Sieges', id: 'm_sieges' },
+    { name: '[Marker] Cities -> Cities', id: 'm_cities' },
+    { name: '[Marker] Cities -> Castles', id: 'm_castles' },
+    { name: '[Marker] People -> Military', id: 'm_military' },
+    { name: '[Marker] People -> Politicians', id: 'politicians' },
+    { name: '[Marker] People -> Explorers', id: 'm_explorers' },
+    { name: '[Marker] People -> Scientists', id: 'm_scientists' },
+    { name: '[Marker] People -> Artists', id: 'm_artists' },
+    { name: '[Marker] People -> Religious', id: 'm_religious' },
+    { name: '[Marker] People -> Athletes', id: 'm_athletes' },
+    { name: '[Marker] People -> Unclassified', id: 'm_unclassified' },
+    { name: '[Marker] Other -> Area Info', id: 'm_areainfo' },
+    { name: '[Marker] Other -> Unknown', id: 'm_unknown' },
+    { id: 'meta_story', name: 'Story' },
+    { id: 'meta_image', name: 'Image' },
+    { id: 'meta_audio', name: 'Audio' },
+    { id: 'meta_text', name: 'External Article or Primary Source' },
+    { id: 'meta_video', name: 'Video' },
+    { id: 'meta_other', name: 'Other' }
   ]
 
   const choicesEpicSubtypes = [
     { id: 'war', name: 'War' },
     { id: 'battle', name: 'Battle' },
     { id: 'siege', name: 'Siege' },
-    { id: 'campaign', name: 'Campaign'}
+    { id: 'campaign', name: 'Campaign' }
   ]
 
   const choicesType = [
@@ -150,27 +150,27 @@ export const ModMetaAdd = (props) => {
 
   const typeInputs = {
     'e':
-      <MetaForm validate={validateValueInput} {...props} redirect='create'>
-        <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-        <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' />
-        <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' />
-        <TextInput type='number' source='end' label='resources.areas.fields.end' />
-        <EmbeddedArrayInput source='participants'>
-          <EmbeddedArrayInput source='participantTeam'>
-            <AutocompleteInput source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
-          </EmbeddedArrayInput>
-        </EmbeddedArrayInput>
-        <EmbeddedArrayInput validate={required} source="content" label='Content (shows up in left content column, if it doesnt exist yet, you can create _media/ others_ and _markers_ to be added here)'>
-          <SelectInput validate={required} source='contentType' choices={contentType} onChange={(val, v) => { props.setContentType(v) }} defaultValue={props.contentType} />
-          <AutocompleteInput validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { console.debug(val); return props.setSearchSnippet(val) }} />
-        </EmbeddedArrayInput>
-        <TextInput type='text' source='title' label='resources.areas.fields.title' />
-        <ModButton modType='marker' />
-        <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
-        <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
-        <TextInput type='text' source='partOf' label='resources.areas.fields.partOf' />
-      </MetaForm>,
+  <MetaForm validate={validateValueInput} {...props} redirect='create'>
+    <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
+    <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
+    <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' />
+    <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' />
+    <TextInput type='number' source='end' label='resources.areas.fields.end' />
+    <EmbeddedArrayInput source='participants'>
+      <EmbeddedArrayInput source='participantTeam'>
+        <AutocompleteInput source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
+      </EmbeddedArrayInput>
+    </EmbeddedArrayInput>
+    <EmbeddedArrayInput validate={required} source='content' label='Content (shows up in left content column, if it doesnt exist yet, you can create _media/ others_ and _markers_ to be added here)'>
+      <SelectInput validate={required} source='contentType' choices={contentType} onChange={(val, v) => { props.setContentType(v) }} defaultValue={props.contentType} />
+      <AutocompleteInput validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { console.debug(val); return props.setSearchSnippet(val) }} />
+    </EmbeddedArrayInput>
+    <TextInput type='text' source='title' label='resources.areas.fields.title' />
+    <ModButton modType='marker' />
+    <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
+    <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
+    <TextInput type='text' source='partOf' label='resources.areas.fields.partOf' />
+  </MetaForm>,
     'ruler':
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />

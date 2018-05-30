@@ -174,7 +174,7 @@ class Map extends Component {
       const geometryToOutlines = teams.map((team) => this.state.mapStyle
         .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => team.indexOf(el.properties.r) > -1))
 
-      if (typeof geometryToOutlines !== 'undefined' && geometryToOutlines.length !== 0) {
+      if (typeof geometryToOutlines !== 'undefined' && geometryToOutlines.length !== 0 && geometryToOutlines[0].length !== 0) {
         const multiPolygonToOutlines = geometryToOutlines.filter((geometryToOutline) => (geometryToOutline && geometryToOutline.length !== 0)).map((geometryToOutline) => turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), [])))
 
         const bbox = turf.bbox({
@@ -524,6 +524,7 @@ class Map extends Component {
                 this.props.history.push('/article')
                 if (!rightDrawerOpen) this.props.setRightDrawerVisibility(true)
               }))
+              .catch((err) => console.debug('wer got an error', err))
           })
       }
     }

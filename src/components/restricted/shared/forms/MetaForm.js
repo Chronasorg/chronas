@@ -57,27 +57,24 @@ export class MetaForm extends Component {
             'start': +values.start,
             'end':  +values.end,
             'participants': values.participants.map(el => el.participantTeam.map(el2 => el2.name)),
-            'content': values.content.map((el) => { return { type: el.contentType, id: el.name } }),
+            'content': values.content.map((el) => {
+              const contentType = (el.contentType.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
+              return contentType + ':' + el.name
+            }),
             'partOf': values.partOf,
-            'coo':  values.coo,
           },
           'wiki': newWikiURL,
           'subtype': values.subtype,
           'year': +values.start,
           'score': 0,
+          'coo':  values.coo,
           'type': values.type
         }
 
-        let bodyToSend = { ...nextBodyByType }
+        const bodyToSend = { ...nextBodyByType }
         const metadataItem = values.type
-        if (redirect === 'create') {
-          bodyToSend = nextBodyByType
-        } else {
-          bodyToSend['subEntityId'] = values.select || '_' + values.name.replace(/ /g, '_')
-          bodyToSend['nextBody'] = nextBodyByType[metadataItem]
-        }
         const token = localStorage.getItem('token')
-        fetch((redirect === 'create') ? properties.chronasApiHost + '/metadata/' : properties.chronasApiHost + '/metadata/' + metadataItem + '/single', {
+        fetch((redirect === 'create') ? properties.chronasApiHost + '/metadata/' : properties.chronasApiHost + '/metadata/e_' + newWikiURL, {
           method: (redirect === 'create') ? 'POST' : 'PUT',
           headers: {
             'Authorization': 'Bearer ' + token,
