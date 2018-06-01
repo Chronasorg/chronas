@@ -29,10 +29,6 @@ import {
   minLength
 } from 'admin-on-rest'
 import { EmbeddedArrayInput } from 'aor-embedded-array'
-import { Link } from 'react-router-dom'
-import { List, ListItem } from 'material-ui/List'
-import Divider from 'material-ui/Divider'
-import Subheader from 'material-ui/Subheader'
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import MetaForm from '../../restricted/shared/forms/MetaForm'
 import ModButton from '../../restricted/shared/buttons/ModButton'

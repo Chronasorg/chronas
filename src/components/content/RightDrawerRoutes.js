@@ -19,6 +19,7 @@ import {grey600, grey400, chronasDark} from '../../styles/chronasColors'
 import Responsive from '../menu/Responsive'
 import Content from './Content'
 import {UserList, UserCreate, UserEdit, UserDelete, UserIcon} from '../restricted/users'
+import {ModLinksEdit} from './mod/ModLinksEdit'
 import {ModAreasAll} from './mod/ModAreasAll'
 import {ModMetaAdd} from './mod/ModMetaAdd'
 import {ModMetaEdit} from './mod/ModMetaEdit'
@@ -155,9 +156,20 @@ const menuIndexByLocation = {
 }
 
 class RightDrawerRoutes extends PureComponent {
+  setLinkedItemData = ({ linkedItemType1 = false, linkedItemType2 = false, linkedItemKey1 = false } = {}) => {
+    const prevLinkedItemData = this.state.linkedItemData
+
+    if (linkedItemType1) prevLinkedItemData.linkedItemType1 = linkedItemType1
+    if (linkedItemType2) prevLinkedItemData.linkedItemType2 = linkedItemType2
+    if (linkedItemKey1) prevLinkedItemData.linkedItemKey1 = linkedItemKey1
+
+    this.setState({ linkedItemData: prevLinkedItemData })
+  }
+
   setMetadataType = (metadataType) => {
     this.setState({metadataType, metadataEntity: ''})
   }
+
   setContentType = (contentTypeRaw) => {
     const contentType = (contentTypeRaw.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
     this.setState({contentType, contentChoice: []})
@@ -184,19 +196,33 @@ class RightDrawerRoutes extends PureComponent {
       this.setState({searchText})
     }
   }
-  setSearchSnippet = (searchText) => {
+
+  setSearchSnippet = (searchText, contentTypeRaw = false, stateItem = false) => {
     // contentChoice
     if (searchText.length > 3) {
       if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
         this.setState({isFetchingSearch: new Date().getTime()})
-        axios.get(properties.chronasApiHost + '/' + this.state.contentType + '?search=' + searchText)
+        const contentTypeTmp = contentTypeRaw ? ((contentTypeRaw.substr(0, 2) === 'm_') ? 'markers' : 'metadata') : this.state.contentType
+        axios.get(properties.chronasApiHost + '/' + contentTypeTmp + '?search=' + searchText)
           .then(response => {
-            this.setState({
-              isFetchingSearch: false,
-              contentChoice: response.data.map((el) => {
-                return {id: el, name: el}
+            if (stateItem) {
+              const newlinkedItemData = this.state.linkedItemData
+              newlinkedItemData[stateItem] = response.data.map((el) => {
+                return { id: el, name: el }
               })
-            })
+
+              this.setState({
+                isFetchingSearch: false,
+                linkedItemData: newlinkedItemData
+              })
+            } else {
+              this.setState({
+                isFetchingSearch: false,
+                contentChoice: response.data.map((el) => {
+                  return { id: el, name: el }
+                })
+              })
+            }
           })
           .catch(() => {
             this.setState({isFetchingSearch: false, contentChoice: []})
@@ -336,6 +362,9 @@ class RightDrawerRoutes extends PureComponent {
     this.state = {
       contentType: '',
       searchText: '',
+      linkedItemData: {
+        linkedItemType1: '', linkedItemType2: '', linkedItemKey1: '', linkedItemKey1choice: [], linkedItemKey2choice: []
+      },
       isFetchingSearch: false,
       contentChoice: [],
       defaultEpicValues: {},
@@ -465,6 +494,15 @@ class RightDrawerRoutes extends PureComponent {
             icon={nearbyIcon}
             onClick={() => {
               this.select(4)
+            }}
+          />
+          <BottomNavigationItem
+            className='bottomNavigationItem'
+            containerElement={<Link to="/mod/links"/>}
+            label="Edit Links"
+            icon={nearbyIcon}
+            onClick={() => {
+              this.select(5)
             }}
           />
         </BottomNavigation>
@@ -756,6 +794,32 @@ class RightDrawerRoutes extends PureComponent {
             path={'/mod'}
             render={restrictPage(modHeader, ModHome)}
           />
+          <Route
+            exact
+            path={'/mod/links'}
+            render={restrictPage(modHeader, ModLinksEdit, 'create', {
+              options,
+              hasList: false,
+              hasEdit: false,
+              hasShow: false,
+              hasCreate: true,
+              hasDelete: false,
+              resource: 'metadata',
+              metadata,
+              selectedItem,
+              setModData,
+              newWidth,
+              linkedItemData: this.state.linkedItemData,
+              contentChoice: this.state.contentChoice,
+              metadataEntity: this.state.metadataEntity,
+              metadataType: this.state.metadataType,
+              setLinkedItemData: this.setLinkedItemData,
+              setSearchSnippet: this.setSearchSnippet,
+              setContentType: this.setContentType,
+              redirect: 'create',
+              history
+            })}
+          />
         </Switch>
         {resourceList.map((resourceKey) => {
           const commonProps = {
@@ -789,6 +853,7 @@ class RightDrawerRoutes extends PureComponent {
               activeArea,
               metadata,
               contentType: this.state.contentType,
+              contentChoice: this.state.contentChoice,
               metadataType: this.state.metadataType,
               defaultEpicValues: this.state.defaultEpicValues,
               metadataEntity: this.state.metadataEntity,
@@ -797,8 +862,7 @@ class RightDrawerRoutes extends PureComponent {
               setSearchEpic: this.setSearchEpic,
               setContentType: this.setContentType,
               setSearchSnippet: this.setSearchSnippet,
-              epicsChoice: this.state.epicsChoice,
-              contentChoice: this.state.contentChoice
+              epicsChoice: this.state.epicsChoice
             }
           } else if (resourceKey === TYPE_MARKER) {
             finalProps = {...commonProps, selectedItem, selectedYear, setModDataLng, setModDataLat}

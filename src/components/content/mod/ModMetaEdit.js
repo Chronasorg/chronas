@@ -29,10 +29,6 @@ import {
   minLength
 } from 'admin-on-rest'
 import { EmbeddedArrayInput } from 'aor-embedded-array'
-import { Link } from 'react-router-dom'
-import { List, ListItem } from 'material-ui/List'
-import Divider from 'material-ui/Divider'
-import Subheader from 'material-ui/Subheader'
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import MetaForm from '../../restricted/shared/forms/MetaForm'
 import ModButton from '../../restricted/shared/buttons/ModButton'
@@ -41,10 +37,7 @@ import ColorInput from 'aor-color-input'
 
 export const ModMetaEdit = (props) => {
   const { metadata } = props
-  const selectedProvince = (props.selectedItem || {}).province || ''
-  const activeArea = props.activeArea || { data: {} }
-
-  const defaultValues = {//dataParentname
+  const defaultValues = {
       dataName: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[0] || '',
       dataColor: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[1] || '',
       dataUrl: (props.metadataType === 'capital' || props.metadataType === 'province') ? 'https://en.wikipedia.org/wiki/' + ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[0] || '' : 'https://en.wikipedia.org/wiki/' + ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[2] || '',
@@ -188,7 +181,6 @@ export const ModMetaEdit = (props) => {
       <MetaForm validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesReligion} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
-
         {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
         {(props.metadataEntity !== '') ? <AutocompleteInput source="parentname" choices={choicesReligionGeneral} label="resources.areas.fields.main_religion_name" defaultValue={defaultValues.dataParentname} /> : null}
         {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}

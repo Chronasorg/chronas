@@ -101,8 +101,13 @@ export class AutocompleteInput extends Component {
   }
 
   handleNewRequest = (chosenRequest, index) => {
-    const { allowEmpty, choices, input, optionValue } = this.props;
-    let choiceIndex = allowEmpty ? index - 1 : index;
+    const { setLinkedItemData } = this.props
+    console.debug("handleNewRequest", chosenRequest, index)
+
+    setLinkedItemData({ linkedItemKey1: chosenRequest.value })
+
+    const { allowEmpty, choices, input, optionValue } = this.props
+    let choiceIndex = allowEmpty ? index - 1 : index
 
     // The empty item is always at first position
     if (allowEmpty && index === 0) {
