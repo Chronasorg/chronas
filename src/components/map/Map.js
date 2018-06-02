@@ -497,7 +497,7 @@ class Map extends Component {
             const flatternedParticipants = []
 
             if (epicWiki) {
-              rulerPromises.push(axios.get(properties.chronasApiHost + '/markers?linked=' + epicWiki))
+              rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + epicWiki))
             }
 
             participants.forEach((team, teamIndex) => {

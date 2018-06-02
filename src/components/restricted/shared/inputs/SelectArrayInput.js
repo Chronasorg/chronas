@@ -74,6 +74,24 @@ export class SelectArrayInput extends Component {
     console.debug("remove chip", newValue)
     const values = this.state.values.filter(v => v.value !== newValue);
     this.setState({ values }, () => this.handleChange(this.state.values));
+
+    const linkedBody = {
+      linkedItemType1: (this.props.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
+      linkedItemType2: (this.props.linkedItemData.linkedItemType2.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
+      linkedItemKey1: this.props.linkedItemData.linkedItemKey1,
+      linkedItemKey2: newValue
+    }
+
+    axios.put(properties.chronasApiHost + '/metadata/links/removeLink', JSON.stringify(linkedBody), {
+      'headers': {
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(() => {
+        console.debug("linked added")
+      })
   };
 
   handleChange = eventOrValue => {
