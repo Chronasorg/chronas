@@ -11,8 +11,9 @@ import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionRed
 import { fromJS } from 'immutable'
 import _ from 'lodash'
 import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
+import DeckGLOverlay from './deckGlComponents/deckgl-overlay.js'
 import { setRightDrawerVisibility } from '../content/actionReducers'
-import { setModData as setModDataAction, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
+import { setModData as setModDataAction, setModToUpdate, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import {
   TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
@@ -44,6 +45,7 @@ class Map extends Component {
     year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
     data: null,
     epics: [],
+    arcData: [],
     viewport: {
       latitude: 30.88,
       longitude: 0,
@@ -109,57 +111,41 @@ class Map extends Component {
     }
 
     const mapStyle = this.state.mapStyle
-      .setIn(['layers', areaColorLayerIndex['ruler'], 'paint'], fromJS(
+      .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-color'], fromJS(
         {
-          'fill-color': {
-            'property': 'r',
-            'type': 'categorical',
-            'stops': rulStops,
-            'default': 'rgba(1,1,1,0.3)'
-          },
-          'fill-opacity': 0.6,
-          'fill-outline-color': 'rgba(0,0,0,.2)'
+          'property': 'r',
+          'type': 'categorical',
+          'stops': rulStops,
+          'default': 'rgba(1,1,1,0.3)'
         }
       ))
-      .setIn(['layers', areaColorLayerIndex['religion'], 'paint'], fromJS(
+      .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-color'], fromJS(
         {
-          'fill-color': {
-            'property': 'e',
-            'type': 'categorical',
-            'stops': relStops,
-            'default': 'rgba(1,1,1,0.3)'
-          },
-          'fill-opacity': 0.6,
-          'fill-outline-color': 'rgba(0,0,0,.2)'
+          'property': 'e',
+          'type': 'categorical',
+          'stops': relStops,
+          'default': 'rgba(1,1,1,0.3)'
         }
       ))
-      .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint'], fromJS(
+      .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-color'], fromJS(
         {
-          'fill-color': {
-            'property': 'g',
-            'type': 'categorical',
-            'stops': relGenStops,
-            'default': 'rgba(1,1,1,0.3)'
-          },
-          'fill-opacity': 0.6,
-          'fill-outline-color': 'rgba(0,0,0,.2)'
+          'property': 'g',
+          'type': 'categorical',
+          'stops': relGenStops,
+          'default': 'rgba(1,1,1,0.3)'
         }
       ))
-      .setIn(['layers', areaColorLayerIndex['culture'], 'paint'], fromJS(
+      .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-color'], fromJS(
         {
-          'fill-color': {
-            'property': 'c',
-            'type': 'categorical',
-            'stops': culStops,
-            'default': 'rgba(1,1,1,0.3)'
-          },
-          'fill-opacity': 0.6,
-          'fill-outline-color': 'rgba(0,0,0,.2)'
-        }
+          'property': 'c',
+          'type': 'categorical',
+          'stops': culStops,
+          'default': 'rgba(1,1,1,0.3)'
+          }
       ))
 
-    this.setState({ mapStyle })
     if (shouldReset) setModToUpdate('')
+    this.setState({ mapStyle })
   }
 
   _getAreaViewportAndOutlines = (nextActiveColorDim, nextActiveColorValue, prevActiveColorDim = false, prevActiveColorValue = false, teams = false) => {
@@ -247,10 +233,10 @@ class Map extends Component {
   }
 
   _changeArea = (areaDefs, newLabel, newColor, selectedProvince, prevColor = false) => {
-    const { activeArea, metadata, selectedItem } = this.props
+    const { activeArea, mapStyles, metadata, selectedItem } = this.props
     let mapStyle = this.state.mapStyle
 
-    if (activeArea.popOpacity) {
+    if (mapStyles.popOpacity) {
       const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
         return (provValue !== null) ? +provValue[4] : 0
       }))
@@ -321,7 +307,7 @@ class Map extends Component {
 
   _simulateYearChange = (areaDefs) => {
     const { religionGeneral, religion } = this.props.metadata
-    const { activeArea } = this.props
+    const { activeArea, mapStyles } = this.props
 
     const sourceId = 'provinces'
     const prevMapStyle = this.state.mapStyle
@@ -340,7 +326,7 @@ class Map extends Component {
         return feature
       })) // areaColorLayerIndex['ruler']
 
-    if (activeArea.popOpacity || activeArea.color === 'population') {
+    if (mapStyles.popOpacity || activeArea.color === 'population') {
       mapStyle = mapStyle.setIn(['layers', areaColorLayerIndex[activeArea.color], 'paint', 'fill-opacity'], fromJS(
         ['interpolate', ['linear'], ['get', 'p'],
           0, opacityPopBounds[0],
@@ -362,7 +348,7 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { basemap, activeArea, selectedYear, metadata, modActive, history, activeEpics, activeMarkers, selectedItem, selectAreaItem } = this.props
+    const { mapStyles, activeArea, selectedYear, metadata, modActive, history, activeEpics, activeMarkers, selectedItem, selectAreaItem } = this.props
     const rightDrawerOpen = nextProps.rightDrawerOpen
 
     let mapStyleDirty = false
@@ -378,6 +364,7 @@ class Map extends Component {
     // Leaving Epic? -> cleanup
     if (selectedItem.type === TYPE_EPIC && nextProps.selectedItem.type !== TYPE_EPIC) {
       mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, TYPE_EPIC)
+      this.setState({ arcData: [] })
     }
 
     if (selectedItem.value !== nextProps.selectedItem.value) {
@@ -456,6 +443,42 @@ class Map extends Component {
         const { viewport, multiPolygonToOutlines } = this._getAreaViewportAndOutlines('ruler', '', false, false, participants)
 
         if (typeof multiPolygonToOutlines !== 'undefined') {
+          const warEndYear = (((nextProps.selectedItem.data || {}).data || {}).data || {}).end
+          if (!isNaN(warEndYear)) {
+            axios.get(properties.chronasApiHost + '/areas/' + warEndYear)
+              .then((endYearDataRes) => {
+                const endYearData = endYearDataRes.data
+                const participantFlatList = participants.reduce((acc, val) => acc.concat(val), [])
+                const centroidsParticipants = {}
+                const arcData = []
+                const nextData = nextProps.activeArea.data
+
+                Object.keys(nextData).map(provId => {
+                  const provinceGeojsonArr = metadata.provinces.features
+                  let currRuler = nextData[provId][0]
+                  if (participantFlatList.indexOf(currRuler) > -1) {
+                    let newRuler = endYearData[provId][0]
+                    if (newRuler !== currRuler && participantFlatList.indexOf(newRuler) > -1) {
+                      if (!centroidsParticipants[newRuler]) {
+                        // centroids not set up for this ruler
+                        const ownedProvIds = Object.keys(nextData).filter(prov => nextData[prov][0] === newRuler)
+                        centroidsParticipants[newRuler] = provinceGeojsonArr.filter(prov => ownedProvIds.indexOf(prov.properties.name) > -1).map(prov => turf.centroid(prov))
+                      }
+
+                      const provInQuestion = provinceGeojsonArr.find(prov => prov.properties.name === provId)
+                      const targetCentroid = turf.centroid(provInQuestion)
+                      const sourceCentroid = turf.nearest(targetCentroid,  turf.featureCollection(centroidsParticipants[newRuler]))
+                      const rulerColorPr = metadata.ruler[newRuler][1]
+                      const rulerColor = (rulerColorPr.indexOf("rgb(") > -1) ? rulerColorPr.substring(4, rulerColorPr.length - 1).split(",").map(el => +el) : [100, 100, 100]
+
+                      arcData.push([sourceCentroid.geometry.coordinates, targetCentroid.geometry.coordinates, rulerColor])
+                    }
+                  }
+                })
+                this.setState({ arcData })
+              })
+          }
+
           // Todo: multiPolygonToOutlines[0] has properties! does that slow things down?
           this.setState({
             mapStyle: this._getDirtyOrOriginalMapStyle(mapStyleDirty)
@@ -511,7 +534,7 @@ class Map extends Component {
             axios.all(rulerPromises)
               .then(axios.spread((...args) => {
                 if (epicWiki && args.length > 0) {
-                  newEpicEntities.data.content = args[0].data //TODO: it should be this way later on with proper linked items
+                  newEpicEntities.data.content = (args[0].data || {}).map //TODO: it should be this way later on with proper linked items
                   this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
                   args.shift()
                 }
@@ -628,9 +651,29 @@ class Map extends Component {
     }
 
     // Basemap changed?
-    if (basemap !== nextProps.basemap) {
+    if (mapStyles.basemap !== nextProps.mapStyles.basemap) {
       console.debug('###### Basemap changed')
-      mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['layers', basemapLayerIndex, 'source'], nextProps.basemap)
+      mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['layers', basemapLayerIndex, 'source'], nextProps.mapStyles.basemap)
+    }
+
+    // Province Borders Display changed?
+    if (mapStyles.showProvinceBorders !== nextProps.mapStyles.showProvinceBorders) {
+      console.debug('###### Show Province Borders changed')
+      if (nextProps.mapStyles.showProvinceBorders) {
+        // display province borders!
+        mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
+          .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,.2)"))
+          .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,.2)"))
+          .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,.2)"))
+          .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,.2)"))
+      } else {
+        // hide province borders!
+        mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
+          .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,0)"))
+          .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,0)"))
+          .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,0)"))
+          .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,0)"))
+      }
     }
 
     // Area Label and Color changed?
@@ -662,13 +705,13 @@ class Map extends Component {
       if (provinceWithOldRuler) selectAreaItem(provinceWithOldRuler, provinceWithOldRuler)
     }
 
-    if (activeArea.popOpacity !== nextProps.activeArea.popOpacity) {
+    if (mapStyles.popOpacity !== nextProps.mapStyles.popOpacity) {
       // popOpacity changed
       const populationMax = Math.max.apply(Math, Object.values(nextProps.activeArea.data).map(function (provValue) {
         return (provValue !== null) ? +provValue[4] : 0
       }))
 
-      if (nextProps.activeArea.popOpacity) {
+      if (nextProps.mapStyles.popOpacity) {
         // was switched on
         mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['layers', areaColorLayerIndex[activeArea.color], 'paint', 'fill-opacity'], fromJS(
           ['interpolate', ['linear'], ['get', 'p'],
@@ -1020,7 +1063,7 @@ class Map extends Component {
   }
 
   render () {
-    const { epics, mapStyle, mapTimelineContainerClass, viewport } = this.state
+    const { epics, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
     const { modActive, menuDrawerOpen, rightDrawerOpen } = this.props
 
     let leftOffset = (menuDrawerOpen) ? 156 : 56
@@ -1060,8 +1103,16 @@ class Map extends Component {
           onClick={this._onClick}
           onLoad={this._initializeMap}
         >
-          {modMarker}
+          <DeckGLOverlay
+            viewport={viewport}
+            data={arcData}
+            // selectedFeature={selectedCounty}
+            // onHover={this._onHover.bind(this)}
+            // onClick={this._onClick.bind(this)}
+            strokeWidth={20}
+          />
 
+          {modMarker}
           {this._renderPopup()}
         </MapGL>
         <div className={mapTimelineContainerClass}>
@@ -1089,7 +1140,7 @@ const enhance = compose(
     theme: state.theme,
     locale: state.locale,
     location: state.location,
-    basemap: state.basemap,
+    mapStyles: state.mapStyles,
     activeArea: state.activeArea,
     activeEpics: state.activeEpics,
     activeMarkers: state.activeMarkers,
@@ -1105,6 +1156,7 @@ const enhance = compose(
     selectAreaItem: selectAreaItemAction,
     selectValue,
     setWikiId,
+    setModToUpdate,
     selectMarkerItem : selectMarkerItemAction,
     setModData: setModDataAction,
     removeModData: removeModDataAction,

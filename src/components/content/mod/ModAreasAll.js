@@ -71,7 +71,7 @@ export const ModAreasAll = (props) => {
     if (!values.start) {
       errors.start = ['Start value is required']
     }
-    if (values.start && values.end && values.start > values.end  ) {
+    if (values.start && values.end && values.start > values.end) {
       errors.end = ['End year must be higher than start year']
     }
     return errors

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import get from 'lodash.get'
 import isEqual from 'lodash.isequal'
 import AutoComplete from 'material-ui/AutoComplete'
-import { FieldTitle, translate} from 'admin-on-rest'
+import { FieldTitle, translate } from 'admin-on-rest'
 
 /**
  * An Input component for an autocomplete field, using an array of objects for the options
@@ -74,69 +74,68 @@ import { FieldTitle, translate} from 'admin-on-rest'
 export class AutocompleteInput extends Component {
   state = {};
 
-  componentWillMount() {
-    this.setSearchText(this.props);
+  componentWillMount () {
+    this.setSearchText(this.props)
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     if (!isEqual(this.props.choices, nextProps.choices)) {
-      return;
+      return
     }
 
     if (this.props.input.value !== nextProps.input.value) {
-      this.setSearchText(nextProps);
+      this.setSearchText(nextProps)
     }
   }
 
-  setSearchText(props) {
-    const { choices, input, optionValue, translate } = props;
+  setSearchText (props) {
+    const { choices, input, optionValue, translate } = props
 
     const selectedSource = choices.find(
       choice => get(choice, optionValue) === input.value
-    );
+    )
     const searchText =
       (selectedSource && this.getSuggestion(selectedSource)) ||
-      translate('aor.input.autocomplete.none');
-    this.setState({ searchText });
+      translate('aor.input.autocomplete.none')
+    this.setState({ searchText })
   }
 
   handleNewRequest = (chosenRequest, index) => {
     const { setLinkedItemData } = this.props
-    console.debug("handleNewRequest", chosenRequest, index)
 
-    setLinkedItemData({ linkedItemKey1: chosenRequest.value })
+    if (setLinkedItemData) setLinkedItemData({ linkedItemKey1: chosenRequest.value })
 
     const { allowEmpty, choices, input, optionValue } = this.props
     let choiceIndex = allowEmpty ? index - 1 : index
 
     // The empty item is always at first position
     if (allowEmpty && index === 0) {
-      return input.onChange('');
+      return input.onChange('')
     }
 
-    input.onChange(choices[choiceIndex][optionValue]);
+    input.onChange(choices[choiceIndex][optionValue])
   };
 
   handleUpdateInput = searchText => {
-    this.setState({ searchText });
-    this.props.onSearchChange(searchText);
-    const { setFilter } = this.props;
-    setFilter && setFilter(searchText);
+    this.setState({ searchText })
+    this.props.onSearchChange(searchText)
+    const { setFilter } = this.props
+    setFilter && setFilter(searchText)
   };
 
-  getSuggestion(choice) {
-    const { optionText, translate, translateChoice } = this.props;
+  getSuggestion (choice) {
+    const { optionText, translate, translateChoice } = this.props
     const choiceName =
       typeof optionText === 'function'
         ? optionText(choice)
-        : get(choice, optionText);
+        : get(choice, optionText)
     return translateChoice
       ? translate(choiceName, { _: choiceName })
-      : choiceName;
+      : choiceName
   }
 
   addAllowEmpty = choices => {
-    const { allowEmpty, translate } = this.props;
+    const { allowEmpty, translate } = this.props
 
     if (allowEmpty) {
       return [
@@ -145,13 +144,13 @@ export class AutocompleteInput extends Component {
           text: translate('aor.input.autocomplete.none'),
         },
         ...choices,
-      ];
+      ]
     }
 
-    return choices;
+    return choices
   };
 
-  render() {
+  render () {
     const {
       choices,
       elStyle,
@@ -163,20 +162,20 @@ export class AutocompleteInput extends Component {
       optionValue,
       resource,
       source,
-    } = this.props;
+    } = this.props
     if (typeof meta === 'undefined') {
       throw new Error(
         "The AutocompleteInput component wasn't called within a redux-form <Field>. Did you decorate it and forget to add the addField prop to your component? See https://marmelab.com/admin-on-rest/Inputs.html#writing-your-own-input-component for details."
-      );
+      )
     }
-    const { touched, error } = meta;
+    const { touched, error } = meta
 
     const dataSource = this.addAllowEmpty(
       choices.map(choice => ({
         value: get(choice, optionValue),
         text: this.getSuggestion(choice),
       }))
-    );
+    )
 
     return (
       <AutoComplete
@@ -198,7 +197,7 @@ export class AutocompleteInput extends Component {
         errorText={touched && error}
         {...options}
       />
-    );
+    )
   }
 }
 
@@ -223,7 +222,7 @@ AutocompleteInput.propTypes = {
   source: PropTypes.string,
   translate: PropTypes.func.isRequired,
   translateChoice: PropTypes.bool.isRequired,
-};
+}
 
 AutocompleteInput.defaultProps = {
   addField: true,
@@ -235,6 +234,6 @@ AutocompleteInput.defaultProps = {
   optionText: 'name',
   optionValue: 'id',
   translateChoice: true,
-};
+}
 
-export default translate(AutocompleteInput);
+export default translate(AutocompleteInput)

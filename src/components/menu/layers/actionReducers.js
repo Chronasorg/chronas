@@ -5,6 +5,7 @@ export const CHANGE_AREA_DATA = 'CHANGE_AREA_DATA'
 export const CHANGE_LABEL = 'CHANGE_LABEL'
 export const CHANGE_COLOR = 'CHANGE_COLOR'
 export const SET_POPOPACITY = 'SET_POPOPACITY'
+export const SET_PROVINCEBORDERS = 'SET_PROVINCEBORDERS'
 
 export const ADD_MARKER = 'ADD_MARKER'
 export const REMOVE_MARKER = 'REMOVE_MARKER'
@@ -23,14 +24,19 @@ export const changeBasemap = basemap => ({
   payload: basemap,
 })
 
-export const setArea = (data, color, label) => ({
-  type: SET_AREA,
-  payload: [data, color, label],
-})
-
 export const setPopOpacity = popopacityActive => ({
   type: SET_POPOPACITY,
   payload: popopacityActive,
+})
+
+export const setProvinceBorders = borderActive => ({
+  type: SET_PROVINCEBORDERS,
+  payload: borderActive,
+})
+
+export const setArea = (data, color, label) => ({
+  type: SET_AREA,
+  payload: [data, color, label],
 })
 
 export const setAreaColorLabel = (color, label) => ({
@@ -95,24 +101,32 @@ export const toggleEpic = epic => ({
 
 /** Reducers **/
 
-export const basemapReducer = (initial = 'watercolor') =>
-  (initialBasemap = initial, { type, payload }) => {
-    switch (type) {
-      case CHANGE_BASEMAP:
-        return payload
-      default:
-        return initialBasemap
-    }
-  }
-
-export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': 'ruler', 'popOpacity': false }) =>
-  (prevArea = initial, { type, payload }) => {
+export const mapStylesReducer = (initial = { basemap: 'watercolor', showProvinceBorders: true, 'popOpacity': false }) =>
+  (prevMapStyle = initial, { type, payload }) => {
     switch (type) {
       case SET_POPOPACITY:
         return {
-          ...prevArea,
+          ...prevMapStyle,
           popOpacity: payload
         }
+      case CHANGE_BASEMAP:
+        return {
+          ...prevMapStyle,
+          basemap: payload
+        }
+      case SET_PROVINCEBORDERS:
+        return {
+          ...prevMapStyle,
+          showProvinceBorders: payload
+        }
+      default:
+        return prevMapStyle
+    }
+  }
+
+export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': 'ruler' }) =>
+  (prevArea = initial, { type, payload }) => {
+    switch (type) {
       case SET_AREA:
         return {
           ...prevArea,

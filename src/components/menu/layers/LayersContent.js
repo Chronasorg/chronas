@@ -11,6 +11,7 @@ import {
   changeBasemap as changeBasemapAction,
   setAreaColorLabel as setAreaColorLabelAction,
   setPopOpacity as setPopOpacityAction,
+  setProvinceBorders as setProvinceBordersAction,
   changeLabel as changeLabelAction,
   changeColor as changeColorAction,
   toggleMarker as toggleMarkerAction,
@@ -36,16 +37,18 @@ const allMarkers = ['Politicians', 'Battles']
 
 const allEpics = ['War', 'Battles']
 
-const LayerContent = ({ activeArea, setPopOpacity, selectedText, selectEpicItem, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, basemap, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker, toggleEpic }) => (
+const LayerContent = ({ activeArea, setPopOpacity, setProvinceBorders, selectedText, selectEpicItem, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker, toggleEpic }) => (
   <div style={styles.main}>
     <h4>Basemap</h4>
-    <RaisedButton style={styles.button} label="None" primary={basemap === ''} onClick={() => changeBasemap('')} />
-    <RaisedButton style={styles.button} label="Watercolor" primary={basemap === 'watercolor'} onClick={() => changeBasemap('watercolor')} />
-    <RaisedButton style={styles.button} label="Topographic" primary={basemap === 'topographic'} onClick={() => changeBasemap('topographic')} />
+    <RaisedButton style={styles.button} label="None" primary={mapStyles.basemap === ''} onClick={() => changeBasemap('')} />
+    <RaisedButton style={styles.button} label="Watercolor" primary={mapStyles.basemap === 'watercolor'} onClick={() => changeBasemap('watercolor')} />
+    <RaisedButton style={styles.button} label="Topographic" primary={mapStyles.basemap === 'topographic'} onClick={() => changeBasemap('topographic')} />
+    <br/>
+    <RaisedButton style={styles.button} label="Show Provinces" primary={mapStyles.showProvinceBorders} onClick={() => setProvinceBorders(!mapStyles.showProvinceBorders)} />
     <br/>
     <h4>Area</h4>
     Population Opacity:
-    <RaisedButton style={styles.button} label="PopOpacity" primary={activeArea.popOpacity} onClick={() => setPopOpacity(!activeArea.popOpacity)} />
+    <RaisedButton style={styles.button} label="PopOpacity" primary={mapStyles.popOpacity} onClick={() => setPopOpacity(!mapStyles.popOpacity)} />
     Both:
     <RaisedButton style={styles.button} label="Ruler" primary={activeArea.label === 'ruler' && activeArea.color === 'ruler'} onClick={() => setAreaColorLabel('ruler','ruler')} />
     <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion' && activeArea.color === 'religion'} onClick={() => setAreaColorLabel('religion','religion')} />
@@ -116,11 +119,12 @@ const enhance = compose(
     selectedYear: state.selectedYear,
     theme: state.theme,
     locale: state.locale,
-    basemap: state.basemap,
+    mapStyles: state.mapStyles,
   }), {
     changeBasemap: changeBasemapAction,
     setAreaColorLabel: setAreaColorLabelAction,
     setPopOpacity: setPopOpacityAction,
+    setProvinceBorders: setProvinceBordersAction,
     changeLabel: changeLabelAction,
     changeColor: changeColorAction,
     toggleMarker: toggleMarkerAction,
