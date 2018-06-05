@@ -10,6 +10,7 @@ export const SET_PROVINCEBORDERS = 'SET_PROVINCEBORDERS'
 export const ADD_MARKER = 'ADD_MARKER'
 export const REMOVE_MARKER = 'REMOVE_MARKER'
 export const SET_MARKER = 'SET_MARKER'
+export const SET_CLUSTER = 'SET_CLUSTER'
 export const TOGGLE_MARKER = 'TOGGLE_MARKER'
 
 export const ADD_EPIC = 'ADD_EPIC'
@@ -32,6 +33,11 @@ export const setPopOpacity = popopacityActive => ({
 export const setProvinceBorders = borderActive => ({
   type: SET_PROVINCEBORDERS,
   payload: borderActive,
+})
+
+export const setClusterMarkers = clusterActive => ({
+  type: SET_CLUSTER,
+  payload: clusterActive,
 })
 
 export const setArea = (data, color, label) => ({
@@ -101,7 +107,7 @@ export const toggleEpic = epic => ({
 
 /** Reducers **/
 
-export const mapStylesReducer = (initial = { basemap: 'watercolor', showProvinceBorders: true, 'popOpacity': false }) =>
+export const mapStylesReducer = (initial = { basemap: 'watercolor', showProvinceBorders: true, 'popOpacity': false, 'clusterMarkers': true }) =>
   (prevMapStyle = initial, { type, payload }) => {
     switch (type) {
       case SET_POPOPACITY:
@@ -118,6 +124,11 @@ export const mapStylesReducer = (initial = { basemap: 'watercolor', showProvince
         return {
           ...prevMapStyle,
           showProvinceBorders: payload
+        }
+      case SET_CLUSTER:
+        return {
+          ...prevMapStyle,
+          clusterMarkers: payload
         }
       default:
         return prevMapStyle

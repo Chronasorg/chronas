@@ -11,6 +11,7 @@ import {
   changeBasemap as changeBasemapAction,
   setAreaColorLabel as setAreaColorLabelAction,
   setPopOpacity as setPopOpacityAction,
+  setClusterMarkers as setClusterMarkersAction,
   setProvinceBorders as setProvinceBordersAction,
   changeLabel as changeLabelAction,
   changeColor as changeColorAction,
@@ -37,7 +38,7 @@ const allMarkers = ['Politicians', 'Battles']
 
 const allEpics = ['War', 'Battles']
 
-const LayerContent = ({ activeArea, setPopOpacity, setProvinceBorders, selectedText, selectEpicItem, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, changeLabel, changeColor, toggleMarker, toggleEpic }) => (
+const LayerContent = ({ activeArea, setPopOpacity, setProvinceBorders, selectedText, selectEpicItem, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic }) => (
   <div style={styles.main}>
     <h4>Basemap</h4>
     <RaisedButton style={styles.button} label="None" primary={mapStyles.basemap === ''} onClick={() => changeBasemap('')} />
@@ -72,6 +73,8 @@ const LayerContent = ({ activeArea, setPopOpacity, setProvinceBorders, selectedT
     {activeArea.color}
     <br/>
     <h4>Marker</h4>
+    <RaisedButton style={styles.button} label="Cluster Markers" primary={mapStyles.clusterMarkers} onClick={() => setClusterMarkers(!mapStyles.clusterMarkers)} />
+    <br/>
     {allMarkers.map(id =>
       <RaisedButton
         style={styles.button}
@@ -125,6 +128,7 @@ const enhance = compose(
     setAreaColorLabel: setAreaColorLabelAction,
     setPopOpacity: setPopOpacityAction,
     setProvinceBorders: setProvinceBordersAction,
+    setClusterMarkers: setClusterMarkersAction,
     changeLabel: changeLabelAction,
     changeColor: changeColorAction,
     toggleMarker: toggleMarkerAction,
