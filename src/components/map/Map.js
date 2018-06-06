@@ -371,7 +371,7 @@ class Map extends Component {
     if (selectedItem.value !== nextProps.selectedItem.value) {
       console.debug('###### Item changed')
       if (nextProps.selectedItem.wiki === 'random') {
-        let dataPool = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
+        let dataPool = this.state.mapStyle
           .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.n !== 'undefined')
 
         console.debug('data pool: ', dataPool)
@@ -379,7 +379,7 @@ class Map extends Component {
         const provinceId = randomItem.properties.name
         if (history.location.pathname.indexOf('article') === -1) history.push('/article')
 
-        this.props.selectAreaItem('', provinceId) // set query url
+        this.props.selectAreaItem(provinceId, provinceId) // set query url
       } else if ((nextProps.selectedItem.type === TYPE_AREA &&
           nextProps.selectedItem.value !== '' &&
           nextProps.activeArea.color !== '' &&

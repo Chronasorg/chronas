@@ -171,8 +171,6 @@ export const LinkedCreate = (props) => {
     return errors
   }
 
-  console.debug(props)
-
   return <Create {...props}>
     <LinkedForm validate={validateWikiProps} redirect='' history={props.history}>
       <LongTextInput validate={required} source='src' type='url' label='resources.linked.fields.src' />

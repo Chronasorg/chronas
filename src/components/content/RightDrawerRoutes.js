@@ -445,7 +445,7 @@ class RightDrawerRoutes extends PureComponent {
     } = this.props
     const {newWidth, rulerEntity, provinceEntity} = this.state
 
-    if (!selectedItem.wiki || selectedItem.wiki === "" || !selectedItem.value || selectedItem.value === "") return null
+    if ((typeof selectedItem.wiki === "undefined")) return null
 
     const currPrivilege = +localStorage.getItem("privilege")
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege)

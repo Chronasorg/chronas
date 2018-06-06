@@ -550,7 +550,7 @@ class Discover extends PureComponent {
           </ToolbarGroup>
           <ToolbarGroup>
             <FloatingActionButton
-              onClick={() => this._handleAdd}
+              onClick={this._handleAdd}
               style={ addButtonDynamicStyle }>
               <ContentAdd />
             </FloatingActionButton>
