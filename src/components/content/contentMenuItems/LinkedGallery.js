@@ -320,6 +320,12 @@ class LinkedGallery extends React.Component {
   }
 
   _handleUpvote = (id, stateDataId) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      this.props.showNotification('pos.pleaseLogin')
+      return
+    }
+
     const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
     const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
     const tileData = this.state.tileData
@@ -327,7 +333,7 @@ class LinkedGallery extends React.Component {
     if (upvotedItems.indexOf(id) > -1) {
       // already upvoted -> downvote
       localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
           this.setState({ tileData: tileData.map((el) => {
               if (encodeURIComponent(el.src) === id) el.score -= 1
@@ -339,9 +345,9 @@ class LinkedGallery extends React.Component {
       // already downvoted -> upvote twice
       localStorage.setItem('upvotedItems', upvotedItems.concat([id]))
       localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
-          axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+          axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
             .then(() => {
               this.setState({ tileData: tileData.map((el) => {
                   if (encodeURIComponent(el.src) === id) el.score += 2
@@ -353,9 +359,9 @@ class LinkedGallery extends React.Component {
     } else {
       // neutral -> just upvote
       localStorage.setItem('upvotedItems', upvotedItems.concat([id]))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
-          this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+          this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
           this.setState({ tileData: tileData.map((el) => {
               if (encodeURIComponent(el.src) === id) el.score += 1
               return el
@@ -366,6 +372,11 @@ class LinkedGallery extends React.Component {
   }
 
   _handleDownvote = (id) => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      this.props.showNotification('pos.pleaseLogin')
+      return
+    }
     const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
     const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
     const tileData = this.state.tileData
@@ -373,7 +384,7 @@ class LinkedGallery extends React.Component {
     if (downvotedItems.indexOf(id) > -1) {
       // already downvoted -> upvote
       localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
           this.setState({ tileData: tileData.map((el) => {
               if (encodeURIComponent(el.src) === id) el.score += 1
@@ -385,9 +396,9 @@ class LinkedGallery extends React.Component {
       // already upvoted -> downvote twice
       localStorage.setItem('downvotedItems', downvotedItems.concat([id]))
       localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
-          axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+          axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
             .then(() => {
               this.setState({ tileData: tileData.map((el) => {
                   if (encodeURIComponent(el.src) === id) el.score -= 2
@@ -399,9 +410,9 @@ class LinkedGallery extends React.Component {
     } else {
       // neutral -> just downvote
       localStorage.setItem('downvotedItems', downvotedItems.concat([id]))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
-          this.props.showNotification((typeof localStorage.getItem('token') !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+          this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
           this.setState({ tileData: tileData.map((el) => {f
               if (encodeURIComponent(el.src) === id) el.score -= 1
               return el
