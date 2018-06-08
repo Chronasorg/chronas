@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types'
+import BoardIcon from 'material-ui/svg-icons/communication/forum'
 import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
@@ -135,6 +136,18 @@ class Menu extends PureComponent {
                 iconStyle={{color: '#fff'}}
               >
                 <StorageIcon
+                  hoverColor={chronasMainColor}/>
+              </IconButton>
+              <IconButton
+                key={'board'}
+                containerElement={<Link to="/board" />}
+                tooltipPosition="bottom-right"
+                tooltip={translate('pos.community')}
+                tooltipStyles={tooltip}
+                onClick={onMenuTap}
+                iconStyle={{color: '#fff'}}
+              >
+                <BoardIcon
                   hoverColor={chronasMainColor}/>
               </IconButton>
               <IconButton

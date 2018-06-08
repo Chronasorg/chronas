@@ -15,9 +15,10 @@ export default {
     sign_up: 'Join'
   },
   pos: {
+    account: 'Manage Account',
+    community: 'Community Board',
     areas: 'Areas',
     edit: 'Edit Data',
-    upvote: 'Interesting and accurate',
     downvote: 'Inappropriate, broken or inaccurate',
     feedbackSuccess: 'Thanks for curating the data!',
     signupToGatherPoints: 'Sign up to get points for your curations',
@@ -37,7 +38,7 @@ export default {
     random: 'Random Article',
     resources: 'Resources',
     users: 'Manage Users',
-    account: 'Manage Account',
+    upvote: 'Interesting and accurate',
     theme: {
       name: 'Theme',
       light: 'Light',

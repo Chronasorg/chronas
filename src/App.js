@@ -34,6 +34,7 @@ import LoadingPage from './components/loadingPage/LoadingPage'
 import messages from './translations'
 import { history } from './store/createStore'
 import Account from './components/menu/account/Account'
+import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
 import RightDrawerRoutes from './components/content/RightDrawerRoutes'
 import Discover from './components/menu/discover/Discover'
@@ -214,6 +215,9 @@ class App extends Component {
                       </Switch>
                       <Switch>
                         <CrudRoute history={history} />
+                      </Switch>
+                      <Switch>
+                        <Board history={history} />
                       </Switch>
                       <Switch>
                         <Account history={history} />
