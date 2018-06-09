@@ -89,7 +89,135 @@ const detailStyle = { display: 'inline-block', verticalAlign: 'top', marginRight
 class Board extends PureComponent {
   constructor (props) {
     super(props)
-    this.state = { hiddenElement: true }
+    this.state = {
+      forums: [
+        {
+          'forum_id': 0,
+          'forum_slug': 'general',
+          'forum_name': 'General',
+        },
+        {
+          'forum_id': 1,
+          'forum_slug': 'react',
+          'forum_name': 'React',
+        },
+        {
+          'forum_id': 2,
+          'forum_slug': 'redux',
+          'forum_name': 'Redux',
+        },
+      ],
+      discussions: [
+        {
+          'forum_id': '58c23d2efce8810b6f20b0b3',
+          'discussion_slug': 'a_pinned_discussion',
+          'user_id': '58c242a96ba2030d170f86f9',
+          'date': 1486450269704,
+          'title': 'A pinned discussion',
+          'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+          'favorites': 2,
+          'tags': ['react', 'redux', 'mongodb'],
+          'pinned': true,
+        },
+        {
+          'forum_id': '58c23d2efce8810b6f20b0b3',
+          'discussion_slug': 'another_pinned_discussion',
+          'user_id': '58c242a96ba2030d170f86f9',
+          'date': 1486450269704,
+          'title': 'Another pinned discussion',
+          'content': 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+          'favorites': 3,
+          'tags': ['react', 'redux'],
+          'pinned': true,
+        },
+        {
+          'forum_id': '58c23d2efce8810b6f20b0b3',
+          'discussion_slug': 'one_another_pinned_discussion',
+          'user_id': '58c242e2fb2e150d2570e02b',
+          'date': 1486450269704,
+          'title': 'One another pinned discussion',
+          'content': 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+          'favorites': 5,
+          'tags': ['express', 'mongodb'],
+          'pinned': true,
+        },
+        {
+          'forum_id': '58c23d2efce8810b6f20b0b3',
+          'discussion_slug': 'a_discussion_from_general_forum',
+          'user_id': '58c242e2fb2e150d2570e02b',
+          'date': 1486450269704,
+          'title': 'A discussion from general forum',
+          'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+          'favorites': 2,
+          'tags': ['react', 'redux', 'mongodb'],
+          'pinned': false,
+        },
+      ],
+      opinions: [
+        {
+          'discussion_id': '58c641904e457708a7147417',
+          'user_id': '58c242e2fb2e150d2570e02b',
+          'date': 1486450269704,
+          'content': 'Awesome stuffs!',
+        },
+        {
+          'discussion_id': '58c641904e457708a7147417',
+          'user_id': '58c242e2fb2e150d2570e02b',
+          'date': 1486450269704,
+          'content': 'Awesome stuffs really!',
+        },
+        {
+          'discussion_id': '58c641cf88336b08c76f3b50',
+          'user_id': '58c242a96ba2030d170f86f9',
+          'date': 1486450269704,
+          'content': 'Great job dude!',
+        },
+        {
+          'discussion_id': '58c641cf88336b08c76f3b50',
+          'user_id': '58c242a96ba2030d170f86f9',
+          'date': 1486450269704,
+          'content': 'These discussions!!!',
+        },
+      ],
+      users: [
+        {
+          'user_id': 0,
+          'username': 'testuser1',
+          'email': 'testuser1@reforum.abc',
+          'avatarUrl': 'https://robohash.org/quisapientelibero.png?size=50x50&set=set1',
+          'name': 'Test User 1',
+        },
+        {
+          'user_id': 1,
+          'username': 'testuser2',
+          'email': 'testuser2@reforum.abc',
+          'avatarUrl': 'https://robohash.org/magnidictadeserunt.png?size=50x50&set=set1',
+          'name': 'Test User 2',
+        },
+        {
+          'user_id': 2,
+          'username': 'testuser3',
+          'email': 'testuser3@reforum.abc',
+          'avatarUrl': 'https://robohash.org/ducimusnostrumillo.jpg?size=50x50&set=set1',
+          'name': 'Test User 3',
+        },
+        {
+          'user_id': 3,
+          'username': 'testuser4',
+          'email': 'testuser4@reforum.abc',
+          'avatarUrl': 'https://robohash.org/autemharumvitae.bmp?size=50x50&set=set1',
+          'name': 'Test User 4',
+        },
+        {
+          'user_id': 4,
+          'username': 'testuser5',
+          'email': 'testuser5@reforum.abc',
+          'avatarUrl': 'https://robohash.org/similiquealiquidmaiores.jpg?size=50x50&set=set1',
+          'name': 'Test User 5',
+        },
+      ],
+      hiddenElement: true
+    }
   }
 
   componentDidMount = () => {
@@ -115,55 +243,17 @@ class Board extends PureComponent {
       hasDelete: true,
       resource: 'users',
     }
-    const username = localStorage.getItem('id')
-    const routeProps = {
-      'match': {
-        'path':'/board',
-        'url':'/resources/users/' + window.encodeURIComponent(username),
-        'isExact': true,
-        'params': {
-          'id': username
-        }
-      },
-      'location': {
-        'pathname':'/board',
-        'search':'',
-        'hash':''
-      },
-      'history': {
-        'length': 50,
-        'action': 'POP',
-        'location': {
-          'pathname':'/board',
-          'search': '',
-          'hash': ''
-        }
-      }
-    }
 
-    const BoardApp = <Switch>
-        <Route path="/board/admin" component={AdminContainer}>
-          <IndexRoute component={Dashboard} />
-        </Route>
-        <Route path="/board/" component={AppContainer}>
-          <IndexRoute component={ForumFeed} />
-          <Route path="/board/:forum" component={ForumFeed} />
-          <Route path="/board/:forum/discussion/:discussion" component={SingleDiscussion} />
-          <Route path="/board/:forum/new_discussion" component={NewDiscussion} />
-          <Route path="/board/user/:username" component={UserProfile} />
-          <Route path="/board/*" component={NotFound} />
-        </Route>
-      </Switch>
-
-    const restrictPage = (component, route, commonProps) => {
+    const restrictPage = (component, commonProps, customProps) => {
       const RestrictedPage = routeProps => (
         <Restricted location={{ pathname: 'board' }} authParams={{ routeProps }} {...routeProps}>
           <Dialog bodyStyle={{ backgroundImage: '#fff' }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
-            contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
+                  contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
             <Card style={styles.card}>
               {createElement(component, {
                 ...commonProps,
                 ...routeProps,
+                ...customProps
               })}
             </Card>
           </Dialog>
@@ -171,6 +261,22 @@ class Board extends PureComponent {
       )
       return RestrictedPage
     }
+
+    const BoardApp = <Switch>
+        <Route path="/board/admin" render={restrictPage(AdminContainer, {
+          ...commonProps, tata: 'tt', forums: this.state.forums })} >
+          <IndexRoute component={Dashboard} />
+        </Route>
+        <Route path="/board/" render={restrictPage(AppContainer, commonProps, {
+          forums: this.state.forums })} >
+          <IndexRoute component={ForumFeed} />
+          <Route exact path="/board/:forum" component={ForumFeed} />
+          <Route exact path="/board/:forum/discussion/:discussion" component={SingleDiscussion} />
+          <Route exact path="/board/:forum/new_discussion" component={NewDiscussion} />
+          <Route exact path="/board/user/:username" component={UserProfile} />
+          <Route path="/board/*" component={NotFound} />
+        </Route>
+      </Switch>
 
     return BoardApp
   }

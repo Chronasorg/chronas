@@ -54,6 +54,7 @@ class AppContainer extends Component {
   }
 
   render() {
+    console.debug('rendering board wrapper with props:', this.props)
     const { forums } = this.props;
 
     // render only if we get the forum lists
@@ -79,7 +80,7 @@ class AppContainer extends Component {
 
 const enhance = compose(
   connect(state => ({
-    forums: state.app.forums,
+    // forums: state.app.forums,
     currentForum: state.app.currentForum,
   }), {
     getForums,

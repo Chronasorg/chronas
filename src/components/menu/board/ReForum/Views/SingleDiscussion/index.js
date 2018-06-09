@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
-import { browserHistory } from 'react-router';
+// import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 
 import {
@@ -45,7 +45,7 @@ class SingleDiscussion extends Component {
 
     // check if the discussion is deleted and redirect the user
     if (deletedDiscussion) {
-      browserHistory.push(`/${forum}`);
+      // browserHistory.push(`/${forum}`);
       setTimeout(() => { deletedDiscussionRedirect(); }, 100);
     }
   }
