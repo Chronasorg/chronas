@@ -28,16 +28,17 @@ class Header extends Component {
   }
 
   render() {
+    const { updateCurrentForum } = this.props
     const {
       authenticated,
       name,
       username,
-      avatarUrl,
+      avatarUrl
     } = this.props.user;
 
     return (
       <div className={classnames(appLayout.constraintWidth)}>
-        <div className={styles.headerTop}>
+        <div className='headerTop'>
           <Logo />
           <UserMenu
             signedIn={authenticated}
@@ -47,6 +48,7 @@ class Header extends Component {
           />
         </div>
         <NavigationBar
+          updateCurrentForum={updateCurrentForum}
           navigationLinks={this.renderNavLinks()}
         />
       </div>
@@ -57,6 +59,5 @@ class Header extends Component {
 export default connect(
   (state) => { return {
     user: state.user,
-    forums: state.app.forums,
   }; }
 )(Header);

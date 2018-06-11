@@ -32,21 +32,21 @@ class UserMenu extends Component {
 
     if (activeSubMenu) {
       return (
-        <div className={styles.subMenu}>
-          <Button className={styles.subMenuClose} onClick={this.toggleSubMenu} alwaysActive>
+        <div className='subMenu'>
+          <Button className='subMenuClose' onClick={this.toggleSubMenu} alwaysActive>
             <i className={classnames('fa fa-close')}></i>
           </Button>
 
-          { !signedIn && <a className={styles.signInLink} href={properties.chronasApiHost + '/board/user/authViaGitHub'}>
-            <Button className={styles.gitLoginBtn} alwaysActive>
+          { !signedIn && <a className='signInLink' href={properties.chronasApiHost + '/board/user/authViaGitHub'}>
+            <Button className='gitLoginBtn' alwaysActive>
               <i className={classnames('fa fa-github-alt', styles.subMenuOcto)}></i>
-              <span className={styles.btnLabel}>With GitHub</span>
+              <span className='btnLabel'>With GitHub</span>
             </Button>
           </a> }
 
-          { signedIn && <span onClick={this.toggleSubMenu}><Link className={styles.subMenuItem} to={`/user/${gitHandler}`}>My Profile</Link></span> }
-          {/* { signedIn && <a className={styles.subMenuItem} href={'#'}>Settings</a> } */}
-          { signedIn && <a className={styles.subMenuItem} href={properties.chronasApiHost + '/board/user/signout'}>Sign Out</a> }
+          { signedIn && <span onClick={this.toggleSubMenu}><Link className='subMenuItem' to={`/user/${gitHandler}`}>My Profile</Link></span> }
+          {/* { signedIn && <a className='subMenuItem' href={'#'}>Settings</a> } */}
+          { signedIn && <a className='subMenuItem' href={properties.chronasApiHost + '/board/user/signout'}>Sign Out</a> }
         </div>
       );
     }
@@ -65,9 +65,9 @@ class UserMenu extends Component {
     if (signedIn) {
       return (
         <div style={{ position: 'relative' }}>
-          <div className={styles.container} onClick={this.toggleSubMenu}>
-            <img className={styles.userAvatar} src={avatar} alt={`${userName} Avatar`} />
-            <span className={styles.title}>{userName}</span>
+          <div className='container' onClick={this.toggleSubMenu}>
+            <img className='userAvatar' src={avatar} alt={`${userName} Avatar`} />
+            <span className='title'>{userName}</span>
           </div>
           {this.renderSubMenu()}
         </div>
@@ -75,7 +75,7 @@ class UserMenu extends Component {
     }
 
     return (
-      <div className={styles.container}>
+      <div className='container'>
         <Button
           alwaysActive
           className={classnames(styles.signInBtn, styles.title)}

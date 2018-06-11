@@ -116,7 +116,7 @@ class RichEditor extends Component {
 
     return (
       <div className={classnames(styles.container, readOnly && styles.readOnlyContainer)}>
-        { !readOnly && <div className={styles.controlsContainer}>
+        { !readOnly && <div className='controlsContainer'>
           <InlineStyleControls
             type={type}
             editorState={this.state.editorState}

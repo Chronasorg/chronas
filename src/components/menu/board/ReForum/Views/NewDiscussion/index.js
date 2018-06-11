@@ -97,7 +97,7 @@ class NewDiscussion extends Component {
         <input
           key={'title'}
           type="text"
-          className={styles.titleInput}
+          className='titleInput'
           placeholder={'Discussion title...'}
           value={title}
           onChange={(event) => { updateDiscussionTitle(event.target.value); }}
@@ -143,13 +143,13 @@ class NewDiscussion extends Component {
 
     return (
       <div className={classnames(appLayout.constraintWidth, styles.content)}>
-        <div className={styles.forumInfo}>
-          You are creating a new discussion on <span className={styles.forumName}>{currentForum}</span> forum.
+        <div className='forumInfo'>
+          You are creating a new discussion on <span className='forumName'>{currentForum}</span> forum.
         </div>
-        <div className={styles.errorMsg}>{errorMsg}</div>
-        { postingSuccess && <div className={styles.successMsg}>Your discussion is created :-)</div> }
+        <div className='errorMsg'>{errorMsg}</div>
+        { postingSuccess && <div className='successMsg'>Your discussion is created :-)</div> }
         { this.renderEditor() }
-        { postingDiscussion && <div className={styles.postingMsg}>Posting discussion...</div> }
+        { postingDiscussion && <div className='postingMsg'>Posting discussion...</div> }
       </div>
     );
   }
@@ -158,8 +158,6 @@ class NewDiscussion extends Component {
 export default connect(
   (state) => { return {
     user: state.user,
-    forums: state.app.forums,
-    currentForum: state.app.currentForum,
     newDiscussion: state.newDiscussion,
   }; },
   (dispatch) => { return {

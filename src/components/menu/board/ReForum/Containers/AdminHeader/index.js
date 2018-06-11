@@ -19,26 +19,29 @@ class AdminHeader extends Component {
   }
 
   render () {
-    const {
-      authenticated,
-      name,
-      username,
-      avatarUrl,
-    } = this.props.user
+    const { updateCurrentForum } = this.props
+    // const {
+    //   authenticated,
+    //   name,
+    //   username,
+    //   forums,
+    //   avatarUrl,
+    // } = this.props.user
 
     return (
       <div className={classnames(appLayout.constraintWidth)}>
-        <div className={styles.headerTop}>
+        <div className='headerTop'>
           <Logo />
           Welcome Admin
-          <UserMenu
-            signedIn={authenticated}
-            userName={name || username}
-            gitHandler={username}
-            avatar={avatarUrl}
-          />
+          {/*<UserMenu*/}
+            {/*signedIn={authenticated}*/}
+            {/*userName={name || username}*/}
+            {/*gitHandler={username}*/}
+            {/*avatar={avatarUrl}*/}
+          {/*/>*/}
         </div>
         <NavigationBar
+          // updateCurrentForum={updateCurrentForum}
           navigationLinks={this.renderNavLinks()}
         />
       </div>
@@ -49,8 +52,8 @@ class AdminHeader extends Component {
 export default connect(
   (state) => {
     return {
-      user: state.user,
-      forums: state.app.forums,
+      // user: state.user,
+      // forums: state.app.forums,
     }
   }
 )(AdminHeader)

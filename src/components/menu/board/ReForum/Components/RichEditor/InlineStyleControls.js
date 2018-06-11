@@ -22,7 +22,7 @@ class InlineStyleControls extends Component {
     const currentStyle = editorState.getCurrentInlineStyle();
 
     return (
-      <div className={styles.controls}>
+      <div className='controls'>
         { inlineStyles.map((eachType) =>
           <StyleButton
             key={eachType.label}

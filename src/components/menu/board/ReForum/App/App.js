@@ -26,46 +26,48 @@ class AppContainer extends Component {
       getUser,
     } = this.props;
 
-    // // get all forum list
-    // getForums();
+    // get all forum list
+    getForums();
     //
     // // check for authenticated user
     // getUser();
     //
-    // // set current forum based on route
-    // const currentForum = params.forum || '';
-    // updateCurrentForum(currentForum);
+    // set current forum based on route
+    const currentForum = (params || {}).forum || '';
+    updateCurrentForum(currentForum);
   }
 
-  componentDidUpdate() {
-    const {
-      forums,
-      params,
-      currentForum,
-      updateCurrentForum,
-    } = this.props;
-
-    let newCurrentForum = '';
-    if (params.forum) newCurrentForum = params.forum;
-    else if (forums) newCurrentForum = forums[0].forum_slug;
-
-    // update current forum if necessery
-    if (newCurrentForum !== currentForum) updateCurrentForum(newCurrentForum);
+  componentWillReceiveProps(nextProps) {
+    console.debug(nextProps)
+    console.debug(this.props)
   }
+
+  // componentDidUpdate() {
+  //   const {
+  //     forums,
+  //     params,
+  //     currentForum,
+  //     updateCurrentForum,
+  //   } = this.props;
+  //
+  //   let newCurrentForum = '';
+  //   if (params.forum) newCurrentForum = params.forum;
+  //   else if (forums) newCurrentForum = forums[0].forum_slug;
+  //
+  //   // update current forum if necessery
+  //   if (newCurrentForum !== currentForum) updateCurrentForum(newCurrentForum);
+  // }
+
 
   render() {
     console.debug('rendering board wrapper with props:', this.props)
-    const { forums } = this.props;
+    const { forums, users, updateCurrentForum } = this.props;
 
     // render only if we get the forum lists
     if (forums) {
       return (
         <div>
-          <div className={styles.gitForkTag}>
-            <a className={styles.gitLink} href="https://github.com/shoumma/ReForum" target="_blank">Fork on Github</a>
-          </div>
-
-          <Header />
+          <Header updateCurrentForum={updateCurrentForum} forums={forums} users={users} />
           {this.props.children}
           <Footer />
         </div>
@@ -73,18 +75,15 @@ class AppContainer extends Component {
     }
 
     return (
-      <div className={styles.loadingWrapper}>Loading...</div>
+      <div className='loadingWrapper'>Loading...</div>
     );
   }
 }
 
 const enhance = compose(
   connect(state => ({
-    // forums: state.app.forums,
-    currentForum: state.app.currentForum,
   }), {
     getForums,
-    updateCurrentForum,
     getUser
   }),
   pure,

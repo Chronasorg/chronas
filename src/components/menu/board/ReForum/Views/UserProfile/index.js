@@ -40,7 +40,7 @@ class UserProfile extends Component {
     } = this.props;
 
     if (error) {
-      return <div className={styles.errorMsg}>{ error }</div>;
+      return <div className='errorMsg'>{ error }</div>;
     }
 
     const {

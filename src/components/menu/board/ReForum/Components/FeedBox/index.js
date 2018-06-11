@@ -14,7 +14,7 @@ class FeedBox extends Component {
 
     if (this.props.type === 'general') {
       return (
-        <div className={styles.sortList}>
+        <div className='sortList'>
           <span
             className={classnames(styles.sort, (activeSortingMethod === 'date') && styles.sortActive)}
             onClick={() => onChangeSortingMethod('date')}
@@ -36,7 +36,7 @@ class FeedBox extends Component {
   renderEmptyDiscussionLine(loading, discussions) {
     if (!loading) {
       if (!discussions || discussions.length === 0) {
-        return <div className={styles.loading}>No discussions...</div>;
+        return <div className='loading'>No discussions...</div>;
       }
     }
   }
@@ -55,27 +55,27 @@ class FeedBox extends Component {
     if (type === 'pinned') discussionBoxTitle = 'Pinned';
 
     return (
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <span className={styles.title}>{discussionBoxTitle}</span>
+      <div className='container'>
+        <div className='header'>
+          <span className='title'>{discussionBoxTitle}</span>
           { !userProfile && this.renderSort() }
         </div>
-        { loading && <div className={styles.loading}>Loading...</div> }
+        { loading && <div className='loading'>Loading...</div> }
         { this.renderEmptyDiscussionLine(loading, discussions) }
         { !loading &&
-          <div className={styles.discussions}>
+          <div className='discussions'>
             { discussions && discussions.map((discussion) =>
               <DiscussionBox
                 userProfile={userProfile}
                 key={discussion._id}
-                userName={discussion.user.name || discussion.user.username}
-                userGitHandler={discussion.user.username}
+                userName={(discussion.user || {}).name || (discussion.user || {}).username || "n/a username"}
+                userGitHandler={(discussion.user || {}).username}
                 discussionTitle={discussion.title}
                 time={discussion.date}
                 tags={discussion.tags}
                 opinionCount={discussion.opinion_count}
-                voteCount={discussion.favorites.length}
-                link={`/${userProfile ? discussion.forum.forum_slug : currentForum}/discussion/${discussion.discussion_slug}`}
+                voteCount={(discussion.favorites || {}).length || discussion.favorites}
+                link={`/${userProfile ? (discussion.forum || {}).forum_slug : currentForum}/discussion/${discussion.discussion_slug}`}
               />
             ) }
           </div>

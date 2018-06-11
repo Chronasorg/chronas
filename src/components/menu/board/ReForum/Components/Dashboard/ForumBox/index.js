@@ -75,46 +75,46 @@ class ForumBox extends Component {
     } = this.state;
 
     return (
-      <div className={styles.container}>
-        <div className={styles.title}>Current Forums</div>
-        <div className={styles.forumsContainer}>
-          { deletingForum && <div className={styles.loadingMsg}>Removing forum, please wait...</div> }
+      <div className='container'>
+        <div className='title'>Current Forums</div>
+        <div className='forumsContainer'>
+          { deletingForum && <div className='loadingMsg'>Removing forum, please wait...</div> }
 
-          { forums.map((forum) => <div key={forum.id} className={styles.forum}>
-            <div className={styles.forumTitle}>{ forum.name }</div>
-            <div className={styles.forumSlug}>({ forum.slug })</div>
-            <div className={styles.removeButton}>
+          { forums.map((forum) => <div key={forum.id} className='forum'>
+            <div className='forumTitle'>{ forum.name }</div>
+            <div className='forumSlug'>({ forum.slug })</div>
+            <div className='removeButton'>
               <Button onClick={() => { deleteAction(forum.id); }}>Remove</Button>
             </div>
           </div>) }
 
         </div>
 
-        <div className={styles.createForumContainer}>
-          { creatingForum && <div className={styles.loadingMsg}>Creating forum, please wait...</div> }
-          <div className={styles.createTitle}>Create New Forum</div>
-          <div className={styles.createForum}>
-            <div className={styles.createInputContainer}>
-              <div className={styles.inputLabel}>Title: </div>
+        <div className='createForumContainer'>
+          { creatingForum && <div className='loadingMsg'>Creating forum, please wait...</div> }
+          <div className='createTitle'>Create New Forum</div>
+          <div className='createForum'>
+            <div className='createInputContainer'>
+              <div className='inputLabel'>Title: </div>
               <input
                 type={'text'}
-                className={styles.createInput}
+                className='createInput'
                 placeholder={'Forum Title'}
                 onChange={(e) => { this.setState({ newForumTitle: e.target.value }); }}
               />
             </div>
-            <div className={styles.createInputContainer}>
-              <div className={styles.inputLabel}>Slug: </div>
+            <div className='createInputContainer'>
+              <div className='inputLabel'>Slug: </div>
               <input
                 type={'text'}
-                className={styles.createInput}
+                className='createInput'
                 placeholder={'forum_slug'}
                 onChange={(e) => { this.setState({ newForumSlug: e.target.value }); }}
               />
             </div>
             <Button onClick={this.handleCreateForum}>Create</Button>
           </div>
-          { errorMsg && <div className={styles.errorMsg}>{errorMsg}</div> }
+          { errorMsg && <div className='errorMsg'>{errorMsg}</div> }
         </div>
       </div>
     );

@@ -1,50 +1,51 @@
-import React, { Component } from 'react';
-import { Link, IndexLink } from 'react-router-dom';
-import classnames from 'classnames';
-import _ from 'lodash';
-import styles from './styles.css';
+import React, { Component } from 'react'
+import { Link, NavLink } from 'react-router-dom'
+import classnames from 'classnames'
+import _ from 'lodash'
+import styles from './styles.css'
 
 class NavigationBar extends Component {
-  render() {
+  render () {
     const {
       navigationLinks,
-    } = this.props;
+      updateCurrentForum
+    } = this.props
 
     if (navigationLinks) {
       return (
-        <ul className={styles.navigationBar}>
+        <ul className='navigationBar'>
           { navigationLinks.map(link => {
             if (link.id === 0) {
               return (
                 <li key={_.uniqueId('navLink_')}>
-                  <IndexLink
-                    className={styles.links}
-                    activeClassName={styles.linkActive}
-                    to='/'
+                  <NavLink
+                    className='links'
+                    to='/board'
+                    onClick={() => updateCurrentForum('general')}
                   >
                     Home
-                  </IndexLink>
+                  </NavLink>
                 </li>
-              );
+              )
             }
 
             return (
               <li key={_.uniqueId('navLink_')}>
                 <Link
-                  className={styles.links}
-                  activeClassName={styles.linkActive}
-                  to={link.link}
+                  className='links'
+                  to={'/board' + link.link}
+                  onClick={() => updateCurrentForum(link.link)}
                 >
                   {link.name}
                 </Link>
               </li>
-            );
+            )
           }) }
         </ul>
-      );
+      )
     }
 
-    return null;
+    return null
   }
 }
 
@@ -56,10 +57,10 @@ NavigationBar.defaultProps = {
       link: '/',
     },
   ],
-};
+}
 
 NavigationBar.propTypes = {
   navigationLinks: React.PropTypes.array,
-};
+}
 
-export default NavigationBar;
+export default NavigationBar

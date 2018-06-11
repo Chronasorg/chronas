@@ -47,7 +47,7 @@ class Dashboard extends Component {
           Loading dashboard info...
         </div> }
 
-        <div className={styles.countsContainer}>
+        <div className='countsContainer'>
           <Counts label={'Users'} count={userCount} />
           <Counts label={'Discussions'} count={discussionCount} />
           <Counts label={'Opinions'} count={opinionCount} />
@@ -62,8 +62,8 @@ class Dashboard extends Component {
           createAction={(forumObj) => { this.props.createForum(forumObj); }}
         />
 
-        { creatingForumError && <div className={styles.errorMsg}>{creatingForumError}</div> }
-        { deletingForumError && <div className={styles.errorMsg}>{deletingForumError}</div> }
+        { creatingForumError && <div className='errorMsg'>{creatingForumError}</div> }
+        { deletingForumError && <div className='errorMsg'>{deletingForumError}</div> }
       </div>
     );
   }

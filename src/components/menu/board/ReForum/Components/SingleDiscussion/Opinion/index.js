@@ -30,32 +30,32 @@ class Opinion extends Component {
     const allowDelete = (userId === currentUserId) || (currentUserRole === 'admin');
 
     return (
-      <div className={styles.container}>
-        <div className={styles.infoContainer}>
-          <img className={styles.avatar} src={userAvatar} />
-          <div className={styles.userInfo}>
-            <Link to={`/user/${userGitHandler}`} className={styles.name}>{userName || userGitHandler}</Link>
-            <a href={`https://www.github.com/${userGitHandler}`} target="_blank" className={styles.gitHandler}>
+      <div className='container'>
+        <div className='infoContainer'>
+          <img className='avatar' src={userAvatar} />
+          <div className='userInfo'>
+            <Link to={`/board/user/${userGitHandler}`} className='name'>{userName || userGitHandler}</Link>
+            <a href={`https://www.github.com/${userGitHandler}`} target="_blank" className='gitHandler'>
               <i className={classnames('fa fa-github-alt', styles.gitIcon)}></i>
               <span>{userGitHandler}</span>
             </a>
           </div>
-          <div className={styles.dateInfo}>{dateDisplay}</div>
-          { allowDelete && <Button className={styles.deleteButton} noUppercase onClick={() => { deleteAction(opinionId); }}>
+          <div className='dateInfo'>{dateDisplay}</div>
+          { allowDelete && <Button className='deleteButton' noUppercase onClick={() => { deleteAction(opinionId); }}>
             <i className={classnames('fa fa-trash', styles.trashIcon)}></i>
             <span>Delete</span>
           </Button> }
           {/* <Button noUppercase>Quote</Button> */}
         </div>
 
-        <div className={styles.opContent}>
+        <div className='opContent'>
           <RichEditor
             readOnly
             value={opContent}
           />
         </div>
 
-        { (deletingOpinion === opinionId) && <div className={styles.deletingOpinion}>Deleting Opinion ...</div> }
+        { (deletingOpinion === opinionId) && <div className='deletingOpinion'>Deleting Opinion ...</div> }
       </div>
     );
   }

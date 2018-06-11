@@ -11,7 +11,7 @@ class ReplyBox extends Component {
       onChange,
     } = this.props;
 
-    if (posting) return <div className={styles.loadingWrapper}>Posting your opinion...</div>;
+    if (posting) return <div className='loadingWrapper'>Posting your opinion...</div>;
 
     return (
       <RichEditor

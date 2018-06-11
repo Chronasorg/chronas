@@ -41,46 +41,46 @@ class Discussion extends Component {
     else favCount = `${favoriteCount} favorites`;
 
     return (
-      <div className={styles.container}>
+      <div className='container'>
 
-        <div className={styles.infoContainer}>
-          <img className={styles.avatar} src={userAvatar} />
-          <div className={styles.columnOnSmallBP}>
-            <div className={styles.userInfo}>
-              <Link to={`/user/${userGitHandler}`} className={styles.name}>{userName || userGitHandler}</Link>
-              <a href={`https://www.github.com/${userGitHandler}`} target="_blank" className={styles.gitHandler}>
+        <div className='infoContainer'>
+          <img className='avatar' src={userAvatar} />
+          <div className='columnOnSmallBP'>
+            <div className='userInfo'>
+              <Link to={`/user/${userGitHandler}`} className='name'>{userName || userGitHandler}</Link>
+              <a href={`https://www.github.com/${userGitHandler}`} target="_blank" className='gitHandler'>
                 <i className={classnames('fa fa-github-alt', styles.gitIcon)}></i>
                 <span>{userGitHandler}</span>
               </a>
             </div>
-            <div className={styles.dateInfo}>{dateDisplay}</div>
+            <div className='dateInfo'>{dateDisplay}</div>
           </div>
         </div>
 
-        <div className={styles.discTitle}>{discTitle}</div>
-        <div className={styles.discContent}>
+        <div className='discTitle'>{discTitle}</div>
+        <div className='discContent'>
           <RichEditor
             readOnly={true}
             value={discContent}
           />
         </div>
 
-        <div className={styles.discFooter}>
-          <div className={styles.tags}>
+        <div className='discFooter'>
+          <div className='tags'>
             { tags.map(tag => <Tag name={tag} key={_.uniqueId('tag_')} />)}
           </div>
-          <Button noUppercase className={styles.favoriteButton} onClick={() => { !toggleingFavorite && favoriteAction(id); }}>
+          <Button noUppercase className='favoriteButton' onClick={() => { !toggleingFavorite && favoriteAction(id); }}>
             <i className={classnames(`fa fa-${userFavorited ? 'heart' : 'heart-o'}`)}></i>
             <span>{favCount}</span>
           </Button>
 
-          { allowDelete && <Button noUppercase className={styles.deleteButton} onClick={() => { deleteAction(); }}>
+          { allowDelete && <Button noUppercase className='deleteButton' onClick={() => { deleteAction(); }}>
             <i className={classnames('fa fa-trash', styles.trashIcon)}></i>
             <span>Delete</span>
           </Button> }
         </div>
 
-        { deletingDiscussion && <div className={styles.deletingDiscussion}>
+        { deletingDiscussion && <div className='deletingDiscussion'>
           Deleting Discussion...
         </div> }
       </div>

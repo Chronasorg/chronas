@@ -18,7 +18,7 @@ class Tag extends Component {
         { withRemove &&
           <Button
             onClick={removeAction}
-            className={styles.removeButton}
+            className='removeButton'
           >
             <i className={'fa fa-close'}></i>
           </Button>

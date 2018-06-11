@@ -24,25 +24,25 @@ class DiscussionBox extends Component {
     const timeDisplay = postTime.from(Moment());
 
     return (
-      <div className={styles.container}>
+      <div className='container'>
         <div className={classnames(styles.title, userProfile && styles.titleBottomMargin)}><Link to={link}>{discussionTitle}</Link></div>
 
-        { !userProfile && <div className={styles.posterInfo}>
-          <Link to={`/user/${userGitHandler}`} className={styles.name}>{userName}</Link>
-          <a target="_blank" href={`https://www.github.com/${userGitHandler}`} className={styles.gitHandler}>
+        { !userProfile && <div className='posterInfo'>
+          <Link to={`/board/user/${userGitHandler}`} className='name'>{userName}</Link>
+          <a target="_blank" href={`https://www.github.com/${userGitHandler}`} className='gitHandler'>
             - <i className={classnames('fa fa-github-alt', styles.gitIcon)}></i> {userGitHandler}
           </a>
         </div> }
 
-        <div className={styles.boxFooter}>
-          <div className={styles.tagsArea}>
+        <div className='boxFooter'>
+          <div className='tagsArea'>
             { tags.map((tag) => <Tag key={tag} name={tag} />) }
           </div>
 
-          <div className={styles.postInfo}>
-            <span className={styles.info}>{timeDisplay}</span>
-            <span className={styles.info}>{voteCount} favorites</span>
-            <span className={styles.info}>{opinionCount} opinions</span>
+          <div className='postInfo'>
+            <span className='info'>{timeDisplay}</span>
+            <span className='info'>{voteCount} favorites</span>
+            <span className='info'>{opinionCount} opinions</span>
           </div>
         </div>
       </div>

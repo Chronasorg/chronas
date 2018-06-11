@@ -115,12 +115,12 @@ class SingleDiscussion extends Component {
     } = this.props;
 
     if (error) {
-      return (<div className={styles.errorMsg}>{error}</div>);
+      return (<div className='errorMsg'>{error}</div>);
     }
 
     // return loading status if discussion is not fetched yet
     if (fetchingDiscussion) {
-      return <div className={styles.loadingWrapper}>Loading discussion ...</div>;
+      return <div className='loadingWrapper'>Loading discussion ...</div>;
     }
 
     const {
@@ -169,9 +169,9 @@ class SingleDiscussion extends Component {
           deleteAction={this.deleteDiscussion.bind(this)}
         />
 
-        { opinionError && <div className={styles.errorMsg}>{opinionError}</div> }
+        { opinionError && <div className='errorMsg'>{opinionError}</div> }
 
-        { !userAuthenticated && <div className={styles.signInMsg}>Please sign in to post a reply.</div> }
+        { !userAuthenticated && <div className='signInMsg'>Please sign in to post a reply.</div> }
         { userAuthenticated && <ReplyBox
           posting={postingOpinion}
           onSubmit={this.handleReplySubmit.bind(this)}
@@ -203,7 +203,6 @@ class SingleDiscussion extends Component {
 
 export default connect(
   (state) => { return {
-    forums: state.app.forums,
     userAuthenticated: state.user.authenticated,
     userId: state.user._id,
     userRole: state.user.role,
@@ -215,7 +214,6 @@ export default connect(
     postingOpinion: state.discussion.postingOpinion,
     opinionError: state.discussion.opinionError,
     deletingOpinion: state.discussion.deletingOpinion,
-    discussion: state.discussion.discussion,
     error: state.discussion.error,
   }; },
   (dispatch) => { return {

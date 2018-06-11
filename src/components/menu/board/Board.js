@@ -1,5 +1,5 @@
 import React, { createElement, PureComponent } from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router,  Route, Switch, NavLink } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
@@ -37,17 +37,14 @@ import { tooltip } from '../../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../../styles/chronasColors'
 
 import ReactDOM from 'react-dom';
-import { Router, browserHistory, IndexRoute } from 'react-router';
 import { Provider } from 'react-redux';
-
-// app store
-import appStore from './ReForum/App/store';
 
 // app views
 import AppContainer from './ReForum/App/App';
 import AdminContainer from './ReForum/App/Admin';
 import Dashboard from './ReForum/Views/AdminDashboard';
 import Header from './ReForum/Containers/Header';
+import Footer from './ReForum/Components/Footer';
 import ForumFeed from './ReForum/Views/ForumFeed';
 import SingleDiscussion from './ReForum/Views/SingleDiscussion';
 import NewDiscussion from './ReForum/Views/NewDiscussion';
@@ -216,6 +213,7 @@ class Board extends PureComponent {
           'name': 'Test User 5',
         },
       ],
+      currentForum: 'general',
       hiddenElement: true
     }
   }
@@ -232,8 +230,14 @@ class Board extends PureComponent {
     this.props.history.push('/')
   }
 
+
+  _updateCurrentForum = (newForm) => {
+    this.setState({ currentForum: newForm })
+  }
+
   render () {
     const { resources, userDetails, list, create, edit, show, remove, options, onMenuTap, translate } = this.props
+    const { forums, users } = this.state
     const commonProps = {
       options,
       hasList: false,
@@ -262,25 +266,45 @@ class Board extends PureComponent {
       return RestrictedPage
     }
 
-    const BoardApp = <Switch>
-        <Route path="/board/admin" render={restrictPage(AdminContainer, {
-          ...commonProps, tata: 'tt', forums: this.state.forums })} >
-          <IndexRoute component={Dashboard} />
-        </Route>
-        <Route path="/board/" render={restrictPage(AppContainer, commonProps, {
-          forums: this.state.forums })} >
-          <IndexRoute component={ForumFeed} />
-          <Route exact path="/board/:forum" component={ForumFeed} />
-          <Route exact path="/board/:forum/discussion/:discussion" component={SingleDiscussion} />
-          <Route exact path="/board/:forum/new_discussion" component={NewDiscussion} />
-          <Route exact path="/board/user/:username" component={UserProfile} />
-          <Route path="/board/*" component={NotFound} />
-        </Route>
-      </Switch>
+    const restrictPageForumWrapper = (component, commonProps, customProps) => {
+      const RestrictedPage = routeProps => (
+        <Restricted location={{ pathname: 'board' }} authParams={{ routeProps }} {...routeProps}>
+          <Dialog bodyStyle={{ backgroundImage: '#fff' }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
+                  contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
+            <Card style={styles.card}>
+              {(forums) ? <div>
+                <Header updateCurrentForum={this._updateCurrentForum} forums={forums} users={users} />
+                {createElement(component, {
+                  ...commonProps,
+                  ...routeProps,
+                  ...customProps
+                })}
+                <Footer />
+              </div> : <div className='loadingWrapper'>Loading...</div> }
+            </Card>
+          </Dialog>
+        </Restricted>
+      )
+      return RestrictedPage
+    }
 
-    return BoardApp
+    return <Switch>
+      <Route exact path="/board/admin" render={restrictPage(AdminContainer, {
+        ...commonProps, forums: this.state.forums, users: this.state.users })} >
+        <NavLink to='/board/admin' component={Dashboard} />
+      </Route>
+      <Route exact path="/board" render={restrictPage(AppContainer, commonProps, {
+        forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum })} />
+      <Route exact path="/board/:forum/discussion/:discussion" render={restrictPageForumWrapper(SingleDiscussion, commonProps, { forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
+      <Route exact path="/board/:forum/new_discussion" render={restrictPageForumWrapper(NewDiscussion, commonProps, { forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
+      <Route exact path="/board/:forum" render={restrictPageForumWrapper(ForumFeed, commonProps, { forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
+      <Route exact path="/board/user/:username" render={restrictPageForumWrapper(UserProfile, commonProps)} />
+      {/*<NavLink exact to='/board' render={restrictPageForumWrapper(ForumFeed, commonProps, { forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />*/}
+    </Switch>
   }
 }
+
+// <Route exact path="/board/*" render={restrictPageForumWrapper(NotFound, commonProps)} />
 
 const enhance = compose(
   connect(state => ({

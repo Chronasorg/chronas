@@ -11,8 +11,8 @@ class SideBar extends Component {
     } = this.props;
 
     return (
-      <div className={styles.sidebarContainer}>
-        <Link to={`/${currentForum}/new_discussion`}>
+      <div className='sidebarContainer'>
+        <Link to={`/board${currentForum}/new_discussion`}>
           <Button type='outline' fullWidth noUppercase>
             New Discussion
           </Button>

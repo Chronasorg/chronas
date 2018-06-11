@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, browserHistory } from 'react-router';
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux';
 
 import { getUser } from './actions';
@@ -11,13 +11,13 @@ import styles from './styles.css';
 class AdminContainer extends Component {
   componentDidMount() {
     // fetch the user
-    this.props.getUser();
+    // this.props.getUser();
   }
 
   render() {
-    const { user } = this.props;
+    const { user, forums } = this.props;
 
-    if (user.fetchingUser) {
+    if (false && user.fetchingUser) {
       return (
         <div style={{ textAlign: 'center', marginTop: 20 }}>
           Loading users profile...
@@ -25,10 +25,10 @@ class AdminContainer extends Component {
       );
     }
 
-    if (user.role === 'admin') {
+    if (true || user.role === 'admin') {
       return (
         <div>
-          <AdminHeader />
+          <AdminHeader forums={forums} />
           {this.props.children}
         </div>
       );
@@ -37,7 +37,7 @@ class AdminContainer extends Component {
       return (
         <div style={{ textAlign: 'center', marginTop: 20 }}>
           We are cordially sorry that you are not allowed to view admin panel!<br />
-          Please go back to <Link to='/'>root</Link> page.
+          Please go back to <Link to='/board/'>root</Link> page.
         </div>
       );
     }
@@ -45,7 +45,7 @@ class AdminContainer extends Component {
     return (
       <div style={{ textAlign: 'center', marginTop: 20 }}>
         Something went wrong.<br />
-        Please go back to <Link to='/'>root</Link> page.
+        Please go back to <Link to='/board/'>root</Link> page.
       </div>
     );
   }
@@ -53,9 +53,9 @@ class AdminContainer extends Component {
 
 export default connect(
   (state) => { return {
-    user: state.user,
+    // user: state.user,
   }; },
   (dispatch) => { return {
-    getUser: () => { dispatch(getUser()); },
+    // getUser: () => { dispatch(getUser()); },
   }; }
 )(AdminContainer);
