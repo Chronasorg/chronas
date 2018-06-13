@@ -7,7 +7,6 @@ import appLayout from '../../SharedStyles/appLayout.css'
 import styles from './styles.css'
 
 // components for AdminHeader
-import UserMenu from '../../Components/Header/UserMenu'
 import Logo from '../../Components/Header/Logo'
 import NavigationBar from '../../Components/Header/NavigationBar'
 
@@ -33,12 +32,6 @@ class AdminHeader extends Component {
         <div className='headerTop'>
           <Logo />
           Welcome Admin
-          {/*<UserMenu*/}
-            {/*signedIn={authenticated}*/}
-            {/*userName={name || username}*/}
-            {/*gitHandler={username}*/}
-            {/*avatar={avatarUrl}*/}
-          {/*/>*/}
         </div>
         <NavigationBar
           // updateCurrentForum={updateCurrentForum}

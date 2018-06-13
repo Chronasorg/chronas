@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { getUser } from './actions';
 
 import AdminHeader from '../Containers/AdminHeader';
+import AdminDashboard from '../Views/AdminDashboard';
 import appLayout from '../SharedStyles/appLayout.css';
 import styles from './styles.css';
 
@@ -29,6 +30,7 @@ class AdminContainer extends Component {
       return (
         <div>
           <AdminHeader forums={forums} />
+          <AdminDashboard forums={forums} />
           {this.props.children}
         </div>
       );

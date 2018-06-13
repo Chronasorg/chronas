@@ -9,23 +9,30 @@ import TagsInput from '../../Components/NewDiscussion/TagsInput';
 
 import {
   postDiscussion,
-  updateDiscussionTitle,
-  updateDiscussionContent,
-  updateDiscussionPinStatus,
-  updateDiscussionTags,
+  // updateDiscussionTitle,
+  // updateDiscussionContent,
+  // updateDiscussionPinStatus,
+  // updateDiscussionTags,
 } from './actions';
 
 import styles from './styles.css';
 import appLayout from '../../SharedStyles/appLayout.css';
 
 class NewDiscussion extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
 
     this.state = {
+      errorMsg: "",
       forumId: null,
       userId: null,
       fatalError: null,
+      currentDiscussion: {
+        title: "",
+        content: "",
+        tags: [],
+        pinned: false,
+      }
     };
   }
 
@@ -46,6 +53,8 @@ class NewDiscussion extends Component {
       forums,
     } = nextProps;
 
+    this.setState({errorMsg: ''})
+
     this.setUserAndForumID(user, forums, currentForum);
   }
 
@@ -55,7 +64,7 @@ class NewDiscussion extends Component {
       const currentForumId = forumId._id;
       this.setState({
         forumId: currentForumId,
-        userId: user._id,
+        userId: user._id || localStorage.getItem('userid'),
       });
     } else {
       this.setState({
@@ -64,18 +73,56 @@ class NewDiscussion extends Component {
     }
   }
 
+  updateDiscussionTitle = (val) => {
+    this.setState((prevState) => {
+      return { currentDiscussion: { ...prevState.currentDiscussion, title: val } }
+    })
+  }
+
+  updateDiscussionContent = (val) => {
+    this.setState((prevState) => {
+      return { currentDiscussion: { ...prevState.currentDiscussion, content: val } }
+    })
+
+  }
+
+  updateDiscussionPinStatus = (val) => {
+    this.setState((prevState) => {
+      return { currentDiscussion: { ...prevState.currentDiscussion, pinned: val } }
+    })
+
+  }
+
+  updateDiscussionTags = (val) => {
+    this.setState((prevState) => {
+      return { currentDiscussion: { ...prevState.currentDiscussion, tags: val } }
+    })
+  }
+
+  _postDiscussion = (userId, forumId, currentForum, currentDiscussion) => {
+    const res = postDiscussion(userId, forumId, currentForum, currentDiscussion)
+    if (res === 'OK') {
+      // Success
+
+    } else {
+      // Error
+      this.setState({
+        errorMsg: res
+      })
+    }
+  }
+
   renderEditor() {
     const {
-      authenticated,
       role,
     } = this.props.user;
 
     const {
-      updateDiscussionTitle,
-      updateDiscussionContent,
-      updateDiscussionPinStatus,
-      updateDiscussionTags,
-      postDiscussion,
+      // updateDiscussionTitle,
+      // updateDiscussionContent,
+      // updateDiscussionPinStatus,
+      // updateDiscussionTags,
+      // postDiscussion,
       currentForum,
     } = this.props;
 
@@ -84,15 +131,14 @@ class NewDiscussion extends Component {
       content,
       tags,
       pinned,
-    } = this.props.newDiscussion;
+    } = this.state.currentDiscussion;
 
     const {
       forumId,
       userId,
+      currentDiscussion
     } = this.state;
 
-    // only show the editor when user is authenticated
-    if (authenticated) {
       return [
         <input
           key={'title'}
@@ -100,43 +146,35 @@ class NewDiscussion extends Component {
           className='titleInput'
           placeholder={'Discussion title...'}
           value={title}
-          onChange={(event) => { updateDiscussionTitle(event.target.value); }}
+          onChange={(event) => { this.updateDiscussionTitle(event.target.value); }}
         />,
         (role === 'admin') && <PinButton
           key={'pinned'}
           value={pinned}
-          onChange={(value) => { updateDiscussionPinStatus(value); }}
+          onChange={(value) => { this.updateDiscussionPinStatus(value); }}
         />,
         <TagsInput
           key={'tags'}
           value={tags}
-          onChange={(tags) => { updateDiscussionTags(tags); }}
+          onChange={(tags) => { this.updateDiscussionTags(tags); }}
         />,
         <RichEditor
           key={'content'}
           type='newDiscussion'
           value={content}
-          onChange={(value) => { updateDiscussionContent(value); }}
-          onSave={() => { postDiscussion(userId, forumId, currentForum); }}
+          onChange={(value) => { this.updateDiscussionContent(value); }}
+          onSave={() => {  this._postDiscussion(userId, forumId, currentForum, currentDiscussion) }}
         />,
       ];
-    }
-
-    return (
-      <div className={classnames(appLayout.constraintWidth, styles.signInMsg)}>
-        Please sign in before posting a new discussion.
-      </div>
-    );
   }
 
   render() {
-    const { fatalError } = this.state;
+    const { fatalError, errorMsg } = this.state;
 
     if (fatalError) { return (<div className={classnames(styles.errorMsg, styles.fatalError)}>{fatalError}</div>); }
 
     const { currentForum } = this.props;
     const {
-      errorMsg,
       postingSuccess,
       postingDiscussion,
     } = this.props.newDiscussion;
@@ -161,10 +199,10 @@ export default connect(
     newDiscussion: state.newDiscussion,
   }; },
   (dispatch) => { return {
-    postDiscussion: (userId, forumId, currentForum) => { dispatch(postDiscussion(userId, forumId, currentForum)); },
-    updateDiscussionTitle: (value) => { dispatch(updateDiscussionTitle(value)); },
-    updateDiscussionContent: (value) => { dispatch(updateDiscussionContent(value)); },
-    updateDiscussionPinStatus: (value) => { dispatch(updateDiscussionPinStatus(value)); },
-    updateDiscussionTags: (value) => { dispatch(updateDiscussionTags(value)); },
+    // postDiscussion: (userId, forumId, currentForum) => { dispatch(postDiscussion(userId, forumId, currentForum)); },
+    // updateDiscussionTitle: (value) => { dispatch(updateDiscussionTitle(value)); },
+    // updateDiscussionContent: (value) => { dispatch(updateDiscussionContent(value)); },
+    // updateDiscussionPinStatus: (value) => { dispatch(updateDiscussionPinStatus(value)); },
+    // updateDiscussionTags: (value) => { dispatch(updateDiscussionTags(value)); },
   }; }
 )(NewDiscussion);

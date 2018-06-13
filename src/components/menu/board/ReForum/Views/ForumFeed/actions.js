@@ -40,7 +40,7 @@ const findForumId = (state, forum) => {
  * @return {thunk}
  */
 export const getDiscussions = (forumId, sortingMethod) => {
-  fetchDiscussions(forumId, sortingMethod).then(
+  return fetchDiscussions(forumId, sortingMethod).then(
         data => data.data,
         error => []
       )
@@ -53,7 +53,7 @@ export const getDiscussions = (forumId, sortingMethod) => {
  * @return {thunk}
  */
 export const getPinnedDiscussions = (forumId, feedChanged) => {
-  fetchPinnedDiscussions(forumId).then(
+  return fetchPinnedDiscussions(forumId).then(
     data => data.data,
     error => []
   )

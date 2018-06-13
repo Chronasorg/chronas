@@ -140,7 +140,7 @@ class Menu extends PureComponent {
               </IconButton>
               <IconButton
                 key={'board'}
-                containerElement={<Link to="/board" />}
+                containerElement={<Link to="/board/general" />}
                 tooltipPosition="bottom-right"
                 tooltip={translate('pos.community')}
                 tooltipStyles={tooltip}

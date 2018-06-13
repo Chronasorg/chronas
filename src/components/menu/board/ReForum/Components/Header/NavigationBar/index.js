@@ -34,7 +34,7 @@ class NavigationBar extends Component {
                 <Link
                   className='links'
                   to={'/board' + link.link}
-                  onClick={() => updateCurrentForum(link.link)}
+                  onClick={() => updateCurrentForum(link.link.substr(1))}
                 >
                   {link.name}
                 </Link>

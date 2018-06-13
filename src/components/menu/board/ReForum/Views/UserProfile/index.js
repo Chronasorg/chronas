@@ -12,17 +12,26 @@ import FeedBox from '../../Components/FeedBox';
 import {
   fetchUserProfile,
 } from './actions';
+import {getDiscussion} from "../SingleDiscussion/actions";
 
 class UserProfile extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fetchingProfile: true,
+      profile: {},
+      error: ''
+    }
+  }
+
   componentDidMount() {
-    const { fetchUserProfile } = this.props;
-    const { username } = this.props.params;
-    fetchUserProfile(username);
+    const { username } = this.props.match.params;
+    fetchUserProfile(username).then( (data) => this.setState({ fetchingProfile: false, profile: data }) )
   }
 
   componentWillReceiveProps(newProps) {
     // fetch profile if different username
-    const { username: oldUsername } = this.props.params;
+    const { username: oldUsername } = this.props.match.params;
     const { username: futureUsername } = newProps.params;
 
     // only update if different usernames
@@ -37,7 +46,7 @@ class UserProfile extends Component {
       fetchingProfile,
       profile,
       error,
-    } = this.props;
+    } = this.state;
 
     if (error) {
       return <div className='errorMsg'>{ error }</div>;
@@ -46,7 +55,7 @@ class UserProfile extends Component {
     const {
       name,
       username,
-      avatarUrl,
+      avatar,
       github,
       discussions,
     } = profile;
@@ -65,10 +74,9 @@ class UserProfile extends Component {
           <Profile
             name={name}
             gitHandler={username}
-            location={github.location}
-            avatarUrl={avatarUrl}
+            avatarUrl={avatar}
           />
-
+          { JSON.stringify(profile)}
           <FeedBox
             userProfile
             type='general'
@@ -82,11 +90,8 @@ class UserProfile extends Component {
 
 export default connect(
   (state) => { return {
-    fetchingProfile: state.userProfile.fetchingProfile,
-    profile: state.userProfile.profile,
-    error: state.userProfile.error,
   }; },
   (dispatch) => { return {
-    fetchUserProfile: (userSlug) => { dispatch(fetchUserProfile(userSlug)); },
+    // fetchUserProfile: (userSlug) => { dispatch(fetchUserProfile(userSlug)); },
   }; }
 )(UserProfile);

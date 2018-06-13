@@ -7,7 +7,7 @@ import Footer from '../Components/Footer';
 import appLayout from '../SharedStyles/appLayout.css';
 import styles from './styles.css';
 
-import { getForums, updateCurrentForum, getUser } from './actions';
+import { updateCurrentForum, getUser } from './actions';
 import {toggleRightDrawer as toggleRightDrawerAction} from "../../../../content/actionReducers";
 import {showNotification, translate, userLogout} from "admin-on-rest";
 import {logout, setToken} from "../../../authentication/actionReducers";
@@ -22,12 +22,12 @@ class AppContainer extends Component {
     const {
       params,
       updateCurrentForum,
-      getForums,
+      setForums,
       getUser,
     } = this.props;
 
     // get all forum list
-    getForums();
+      setForums()
     //
     // // check for authenticated user
     // getUser();
@@ -58,7 +58,6 @@ class AppContainer extends Component {
   //   if (newCurrentForum !== currentForum) updateCurrentForum(newCurrentForum);
   // }
 
-
   render() {
     console.debug('rendering board wrapper with props:', this.props)
     const { forums, users, updateCurrentForum } = this.props;
@@ -83,7 +82,6 @@ class AppContainer extends Component {
 const enhance = compose(
   connect(state => ({
   }), {
-    getForums,
     getUser
   }),
   pure,

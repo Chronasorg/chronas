@@ -20,14 +20,10 @@ import {
  * @return {action}
  */
 export const getForums = () => {
-  return (dispatch, getState) => {
-    dispatch({ type: START_FETCHING_FORUMS });
-
-    fetchForums().then(
-      data => dispatch({ type: FETCHING_FORUMS_SUCCESS, payload: data.data }),
-      error => dispatch({ type: FETCHING_FORUMS_FAILURE })
+  return fetchForums().then(
+      data => data.data,
+      error => []
     );
-  };
 };
 
 /**

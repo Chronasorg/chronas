@@ -84,7 +84,7 @@ class ForumBox extends Component {
             <div className='forumTitle'>{ forum.name }</div>
             <div className='forumSlug'>({ forum.slug })</div>
             <div className='removeButton'>
-              <Button onClick={() => { deleteAction(forum.id); }}>Remove</Button>
+              <Button onClick={() => { deleteAction(forum.id) }}>Remove</Button>
             </div>
           </div>) }
 

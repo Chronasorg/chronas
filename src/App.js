@@ -144,7 +144,9 @@ class App extends Component {
       delete parsedQuery.target
 
       const decodedToken = decodeJwt(token)
-      localStorage.setItem('id', decodedToken.id)
+      console.debug('decodedToken',decodedToken)
+      localStorage.setItem('userid', decodedToken.id)
+      localStorage.setItem('username', decodedToken.username)
       localStorage.setItem('token', token)
       window.history.pushState(null, null, (target ? (target + '/') : '') + queryString.stringify(parsedQuery) || '/')
     } else {
@@ -153,7 +155,8 @@ class App extends Component {
 
     if (token) {
       const decodedToken = decodeJwt(token)
-      localStorage.setItem('id', decodedToken.id)
+      localStorage.setItem('userid', decodedToken.id)
+      localStorage.setItem('username', decodedToken.username)
       localStorage.setItem('token', token)
       setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege)
     }

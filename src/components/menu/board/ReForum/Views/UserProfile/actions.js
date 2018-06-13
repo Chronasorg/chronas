@@ -14,15 +14,7 @@ import {
  * @return {action}
  */
 export const fetchUserProfile = (userSlug) => {
-  return (dispatch, getState) => {
-    dispatch({ type: FETCH_USER_PROFILE_START });
-
-    fetchUserProfileApi(userSlug).then(
-      data => {
-        if (data.data.error) dispatch({ type: FETCH_USER_PROFILE_FAILURE });
-        else dispatch({ type: FETCH_USER_PROFILE_SUCCESS, payload: data.data });
-      },
-      error => dispatch({ type: FETCH_USER_PROFILE_FAILURE })
+  return fetchUserProfileApi(userSlug).then(
+      data => data.data
     );
-  };
 };

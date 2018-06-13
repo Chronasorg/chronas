@@ -16,11 +16,13 @@ import ForumBox from '../../Components/Dashboard/ForumBox';
 
 class Dashboard extends Component {
   componentDidMount() {
+    console.debug("admindashboard")
     // get information needed for dashboard
-    this.props.getAdminDashboardInfo();
+    // this.props.getAdminDashboardInfo();
   }
 
   render() {
+    console.debug("admindashboard")
     const {
       discussionCount,
       opinionCount,
@@ -57,9 +59,9 @@ class Dashboard extends Component {
         <ForumBox
           forums={forumsArray}
           deletingForum={deletingForum}
-          deleteAction={(forumId) => { this.props.deleteForum(forumId); }}
+          deleteAction={(forumId) => { deleteForum(forumId); }}
           creatingForum={creatingForum}
-          createAction={(forumObj) => { this.props.createForum(forumObj); }}
+          createAction={(forumObj) => { createForum(forumObj); }}
         />
 
         { creatingForumError && <div className='errorMsg'>{creatingForumError}</div> }
@@ -79,9 +81,9 @@ export default connect(
     deletingForumError: state.adminInfo.deletingForumError,
   }; },
   (dispatch) => { return {
-    getAdminDashboardInfo: () => { dispatch(getAdminDashboardInfo()); },
-    getForums: () => { dispatch(getForums()); },
-    deleteForum: (forumId) => { dispatch(deleteForum(forumId)); },
-    createForum: (forumObj) => { dispatch(createForum(forumObj)); },
+    // getAdminDashboardInfo: () => { dispatch(getAdminDashboardInfo()); },
+    // getForums: () => { dispatch(getForums()); },
+    // deleteForum: (forumId) => { dispatch(deleteForum(forumId)); },
+    // createForum: (forumObj) => { dispatch(createForum(forumObj)); },
   }; }
 )(Dashboard);

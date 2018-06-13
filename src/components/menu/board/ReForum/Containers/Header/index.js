@@ -6,7 +6,6 @@ import appLayout from '../../SharedStyles/appLayout.css';
 import styles from './styles.css';
 
 // components for Header
-import UserMenu from '../../Components/Header/UserMenu';
 import Logo from '../../Components/Header/Logo';
 import NavigationBar from '../../Components/Header/NavigationBar';
 
@@ -40,12 +39,6 @@ class Header extends Component {
       <div className={classnames(appLayout.constraintWidth)}>
         <div className='headerTop'>
           <Logo />
-          <UserMenu
-            signedIn={authenticated}
-            userName={name || username}
-            gitHandler={username}
-            avatar={avatarUrl}
-          />
         </div>
         <NavigationBar
           updateCurrentForum={updateCurrentForum}

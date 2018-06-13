@@ -15,6 +15,7 @@ import SideBar from '../../Components/SideBar';
 
 import appLayout from '../../SharedStyles/appLayout.css';
 import styles from './styles.css';
+import {getForums} from "../../App/actions";
 
 class ForumFeed extends Component {
   constructor (props) {
@@ -22,6 +23,8 @@ class ForumFeed extends Component {
     this.state = {
       discussions: [],
       pinnedDiscussions: [],
+      fetchingDiscussions: true,
+      fetchingPinnedDiscussions: true,
     }
   }
 
@@ -36,13 +39,13 @@ class ForumFeed extends Component {
 
     // get the discussions and pinned discussions
     console.debug("componentDidMount", this.props)
-    const forumId = ((forums.filter(f => f.forum_slug === currentForum) || {})[0] || {}).forum_id
-    this.setState({ discussions: getDiscussions(forumId) })
-    this.setState({ discussions: getPinnedDiscussions(forumId) })
+    const forumId = ((forums.filter(f => f.forum_slug === currentForum) || {})[0] || {})._id
+
+    getDiscussions(forumId).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
+    getPinnedDiscussions(forumId).then( (data) => this.setState({ fetchingPinnedDiscussions: false, pinnedDiscussions: data }) )
   }
 
   componentDidUpdate(prevProps) {
-    console.debug("tataaa")
     const {
       currentForum,
       currentForumId,
@@ -57,9 +60,13 @@ class ForumFeed extends Component {
       // const feedChanged = true;
       // getDiscussions(currentForumId(), feedChanged);
       // getPinnedDiscussions(currentForumId(), feedChanged);
-      const forumId = ((forums.filter(f => f.forum_slug === currentForum) || {})[0] || {}).forum_id
-      this.setState({ discussions: getDiscussions(forumId) })
-      this.setState({ discussions: getPinnedDiscussions(forumId) })
+      const forumId = ((forums.filter(f => f.forum_slug === currentForum) || {})[0] || {})._id
+      this.setState({
+        fetchingDiscussions: false,
+        fetchingPinnedDiscussions: false,
+      })
+      getDiscussions(forumId).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
+      getPinnedDiscussions(forumId).then( (data) => this.setState({ fetchingPinnedDiscussions: false, pinnedDiscussions: data }) )
     }
   }
 
@@ -73,8 +80,8 @@ class ForumFeed extends Component {
     } = this.props;
 
     if (sortingMethod !== newSortingMethod) {
-      updateSortingMethod(newSortingMethod);
-      getDiscussions(currentForum, false, true);
+      updateSortingMethod(newSortingMethod)
+      getDiscussions(currentForum, false, true)
     }
   }
 
@@ -84,7 +91,7 @@ class ForumFeed extends Component {
 
     return (
       <div className={classnames(appLayout.showOnMediumBP, styles.newDiscussionBtn)}>
-        <Link to={`/board${currentForum}/new_discussion`}>
+        <Link to={`/board/${currentForum}/new_discussion`}>
           <Button type='outline' fullWidth noUppercase>
             New Discussion
           </Button>
@@ -93,11 +100,9 @@ class ForumFeed extends Component {
     );
   }
 
-  render() {
+  render () {
     const {
       currentForum,
-      fetchingDiscussions,
-      fetchingPinnedDiscussions,
       sortingMethod,
       error,
     } = this.props;
@@ -105,6 +110,8 @@ class ForumFeed extends Component {
 
     const {
       discussions,
+      fetchingDiscussions,
+      fetchingPinnedDiscussions,
       pinnedDiscussions,
     } = this.state;
 
@@ -125,7 +132,6 @@ class ForumFeed extends Component {
             discussions={pinnedDiscussions}
             currentForum={currentForum}
           />
-
           <FeedBox
             type='general'
             loading={fetchingDiscussions}

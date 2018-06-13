@@ -1,4 +1,4 @@
-// import { browserHistory } from 'react-router';
+import { history } from '../../../../../../store/createStore'
 import {
   POSTING_DISCUSSION_START,
   POSTING_DISCUSSION_END,
@@ -21,51 +21,34 @@ import { postDiscussionApi } from './api';
  * @param  {String} currentForum
  * @return {action}
  */
-export const postDiscussion = (userId, forumId, currentForum) => {
-  return (dispatch, getState) => {
-    dispatch({ type: POSTING_DISCUSSION_START });
-
-    // validate discussion inputs
-    // discussion values are in redux state
+export const postDiscussion = (userId, forumId, currentForum, currentDiscussion) => {
     const {
       title,
       content,
       tags,
       pinned,
-    } = getState().newDiscussion;
+    } = currentDiscussion;
 
     let validated = true;
 
     if (!userId || !forumId) {
       validated = false;
-      return dispatch({
-        type: POSTING_DISCUSSION_FAILURE,
-        payload: 'Something is wrong with user/forum.',
-      });
+      return 'Something is wrong with user/forum.'
     }
 
     if (title === null || title.length < 15) {
       validated = false;
-      return dispatch({
-        type: POSTING_DISCUSSION_FAILURE,
-        payload: 'Title should be at least 15 characters.',
-      });
+      return 'Title should be at least 15 characters.'
     }
 
     if (content === null || content.length === 0) {
       validated = false;
-      return dispatch({
-        type: POSTING_DISCUSSION_FAILURE,
-        payload: 'Please write some content before posting.',
-      });
+      return 'Please write some content before posting.'
     }
 
     if (tags === null || tags.length === 0) {
       validated = false;
-      return dispatch({
-        type: POSTING_DISCUSSION_FAILURE,
-        payload: 'Please provide some tags.',
-      });
+      return 'Please provide some tags.'
     }
 
     // make api call if post is validated
@@ -80,28 +63,18 @@ export const postDiscussion = (userId, forumId, currentForum) => {
       }).then(
         (data) => {
           if (data.data.postCreated === true) {
-            dispatch({ type: POSTING_DISCUSSION_SUCCESS });
-            setTimeout(() => { dispatch({ type: CLEAR_SUCCESS_MESSAGE }); }, 2000);
-
             // issue a redirect to the newly reacted discussion
-            // browserHistory.push(`/${currentForum}/discussion/${data.data.discussion_slug}`);
+            history.push(`/board/${currentForum}/discussion/${data.data.discussion_slug}`);
           } else {
-            dispatch({
-              type: POSTING_DISCUSSION_FAILURE,
-              payload: 'Something is wrong at our server end. Please try again later',
-            });
+            return 'Something is wrong at our server end. Please try again later'
           }
         },
         (error) => {
-          dispatch({
-            type: POSTING_DISCUSSION_FAILURE,
-            payload: error,
-          });
+          return error
         }
       );
     }
-  };
-};
+}
 
 /**
  * update the discussion title in redux state (controlled input)

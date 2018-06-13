@@ -26,7 +26,7 @@ export default (type, params) => {
           const decodedToken = decodeJwt(token)
           localStorage.setItem('token', token)
           localStorage.setItem('username', decodedToken.username)
-          localStorage.setItem('id', decodedToken.id)
+          localStorage.setItem('userid', decodedToken.id)
           localStorage.setItem('privilege', decodedToken.privilege)
 
           return Promise.resolve(token)
@@ -51,7 +51,7 @@ export default (type, params) => {
           const decodedToken = decodeJwt(token)
           localStorage.setItem('token', token)
           localStorage.setItem('username', decodedToken.username)
-          localStorage.setItem('id', decodedToken.id)
+          localStorage.setItem('userid', decodedToken.id)
           localStorage.setItem('privilege', decodedToken.privilege)
           return Promise.resolve(token)
         })
