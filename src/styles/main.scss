@@ -41,6 +41,16 @@ body {
   opacity: 1 !important;
 }
 
+.boardContentStyle{
+  position: fixed!important;
+  top: 2em !important;
+  bottom: 2em;
+  height: 100% !important;
+  max-height: calc(100% - 4em) !important;
+  overflow: auto;
+}
+
+
 .dialogImageBackgroundHack {
   top: 0;
   position: fixed !important;
