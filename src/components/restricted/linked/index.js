@@ -17,7 +17,7 @@ import {
     LongTextInput,
     Edit,
     UrlField,
-    NullableBooleanInput,
+    BooleanInput,
     NumberField,
     NumberInput,
     ReferenceManyField,
@@ -50,9 +50,10 @@ const linkedTypes = [
   { name: '[Image] City & Building', id: 'cities' },
   { name: '[Image] Person', id: 'people' },
   { name: '[Image] Other', id: 'misc' },
-  { name: '[Video]', id: 'videos' },
   { name: '[Podcast & Audio]', id: 'audios' },
   { name: '[Primary Source]', id: 'ps' },
+  { name: '[HTML or Text]', id: 'html' },
+  { name: '[Video]', id: 'videos' },
 ]
 
 const validateWiki = (values) => {
@@ -131,16 +132,19 @@ export const LinkedEdit = (props) => {
 
   return <Create title={<span>LinkedEdit</span>} {...props}>
     <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
+      <SelectInput source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
-      <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || ''} />
+      <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.data.title || ''} />
+      <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={props.selectedItem.value.data.content || ''} />
       <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
       <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
-      <SelectInput source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <NumberInput validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle} source='year' label='resources.linked.fields.year' type='number' />
       <ModButton modType='marker' />
       <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} source='coo[0]' label='resources.markers.fields.lat' />
       <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} source='coo[1]' label='resources.markers.fields.lng' />
+      <LongTextInput source='geojson' label='resources.linked.fields.geojson' defaultValue={props.selectedItem.value.geojson || ''} />
+      <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
       <DeleteButton id={encodeURIComponent(props.selectedItem.value.src)} {...props} />
     </LinkedForm>
   </Create>
@@ -165,6 +169,10 @@ export const LinkedCreate = (props) => {
       errors.src = ['This URL must lead to an audio']
     }
 
+    if (values.src === '' && values.subtype !== 'html') {
+      errors.src = ['This field is required for all but html entities']
+    }
+
     if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
       errors.wiki = ['This URL must to be a full Wikipedia URL']
     }
@@ -173,16 +181,19 @@ export const LinkedCreate = (props) => {
 
   return <Create {...props}>
     <LinkedForm validate={validateWikiProps} redirect='' history={props.history}>
-      <LongTextInput validate={required} source='src' type='url' label='resources.linked.fields.src' />
+      <SelectInput validate={required} source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' />
+      <LongTextInput source='src' type='url' label='resources.linked.fields.src' />
       <LongTextInput validate={required} source='description' label='resources.linked.fields.description' />
+      <LongTextInput source='content' label='resources.linked.fields.content' />
       <LongTextInput source='source' label='resources.linked.fields.source' type='url' />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' />
       <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
-      <SelectInput validate={required} source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' />
       <NumberInput validate={required} defaultValue={props.selectedYear || ''} source='year' label='resources.linked.fields.year' type='number' />
       <ModButton modType='marker' />
       <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
       <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
+      <LongTextInput source='geojson' label='resources.linked.fields.geojson' />
+      <BooleanInput label="resources.linked.fields.onlyEpicContent" source="onlyEpicContent" defaultValue={false} />
     </LinkedForm>
   </Create>
 }

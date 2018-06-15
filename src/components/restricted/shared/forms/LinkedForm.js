@@ -14,7 +14,7 @@ import properties from '../../../../properties'
 
 const formStyle = { padding: '0 1em 1em 1em' }
 
-export class MarkerForm extends Component {
+export class LinkedForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
       const { setModType, showNotification, initialValues, history } = this.props
@@ -29,6 +29,8 @@ export class MarkerForm extends Component {
       const bodyToSend = {}
       if (redirect === 'edit') {
         // updating linked metadata
+
+        if (values.onlyEpicContent !== initialValues.onlyEpicContent) bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
         if (values.year !== initialValues.year) bodyToSend.year = values.year
         if (values.subtype !== initialValues.subtype) bodyToSend.subtype = values.subtype
         if (!values.coo.every( e => initialValues.coo.includes(e) )) bodyToSend.coo = values.coo
@@ -39,16 +41,22 @@ export class MarkerForm extends Component {
           values.source !== initialValues.source) {
           bodyToSend.data = {
             title: initialValues.description,
-            source: initialValues.source
+            source: initialValues.source,
+            content: initialValues.content,
+            geojson: initialValues.geojson
           }
           if (values.source !== initialValues.source) bodyToSend.data.source = values.source
           if (values.description !== initialValues.description) bodyToSend.data.title = values.description
+          if (values.content !== initialValues.content) bodyToSend.data.content = values.content
+          if (values.geojson && values.geojson !== initialValues.geojson) bodyToSend.data.geojson = JSON.parse(values.geojson)
         }
         // attempt post marker if wiki + lat long + year available and wiki new
       } else {
-        bodyToSend._id = values.src
-        bodyToSend.type = 'i'
+        bodyToSend._id = (values.subtype !== 'html') ? values.src : (values.src + '_' + new Date().getTime().toString())
+        bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
         // adding linked metadata
+        let geojson
+        if (values.geojson) geojson = JSON.parse(values.geojson)
         if (values.year) bodyToSend.year = values.year
         if (values.subtype) bodyToSend.subtype = values.subtype
         if (values.wiki) bodyToSend.wiki = values.wiki
@@ -58,7 +66,9 @@ export class MarkerForm extends Component {
         if (values.description || values.source) {
           bodyToSend.data = {
             title: values.description,
-            source: values.source
+            source: values.source,
+            content: values.content,
+            geojson: geojson
           }
         }
       }
@@ -133,7 +143,7 @@ export class MarkerForm extends Component {
   }
 }
 
-MarkerForm.propTypes = {
+LinkedForm.propTypes = {
   basePath: PropTypes.string,
   children: PropTypes.node,
   defaultValue: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
@@ -150,7 +160,7 @@ MarkerForm.propTypes = {
   version: PropTypes.number,
 }
 
-MarkerForm.defaultProps = {
+LinkedForm.defaultProps = {
   submitOnEnter: true,
   toolbar: <Toolbar />,
 }
@@ -170,4 +180,4 @@ const enhance = compose(
   })
 )
 
-export default enhance(MarkerForm)
+export default enhance(LinkedForm)

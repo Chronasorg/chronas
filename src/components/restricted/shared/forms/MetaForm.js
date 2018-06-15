@@ -99,7 +99,8 @@ export class MetaForm extends Component {
               this.props.showNotification((redirect !== 'create') ? 'Epic not updated' : 'Epic not added', 'warning')
             }
           })
-      } else {
+      }
+      else {
         const wikiURL = values.url
         const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
         let newWikiURL
