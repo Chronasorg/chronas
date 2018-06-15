@@ -2,6 +2,7 @@ import React from 'react'
 import {
     translate,
     BooleanField,
+    BooleanInput,
     Create,
     Datagrid,
     DateField,
@@ -112,7 +113,6 @@ export const MarkerEdit = (props) => {
     return errors
   }
 
-  console.debug(props)
   return <Create title={<span>MarkerEdit</span>} {...props}>
     {(props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit'>
       <TextInput source='name' defaultValue={props.selectedItem.value.n} label='resources.markers.fields.name' />
@@ -122,6 +122,8 @@ export const MarkerEdit = (props) => {
       <TextInput source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={props.selectedItem.value.coo[1]} label='resources.markers.fields.lng' />
       <SelectInput source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={markerTypes} label='resources.markers.fields.type' />
       <NumberInput validate={required} defaultValue={props.selectedItem.value.y} source='year' label='resources.markers.fields.year' type='number' />
+      <LongTextInput source='geojson' label='resources.linked.fields.geojson' defaultValue={props.selectedItem.value.geojson || ''} />
+      <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
       <DeleteButton resource='markers' id={props.selectedItem.value.w} {...props} />
     </MarkerForm> : <MarkerForm hidesavebutton><h4>click on marker on the map which you like to modify</h4></MarkerForm>}
   </Create>
@@ -137,6 +139,8 @@ export const MarkerCreate = (props) => {
       <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
       <SelectInput source='type' validate={required} choices={markerTypes} label='resources.markers.fields.type' />
       <NumberInput source='year' label='resources.markers.fields.year' />
+      <LongTextInput source='geojson' label='resources.linked.fields.geojson' />
+      <BooleanInput label="resources.linked.fields.onlyEpicContent" source="onlyEpicContent" defaultValue={false} />
     </MarkerForm>
   </Create>
 }

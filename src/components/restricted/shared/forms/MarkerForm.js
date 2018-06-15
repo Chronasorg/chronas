@@ -26,7 +26,7 @@ export class MarkerForm extends Component {
 
       const markerItem = decodeURIComponent(values.wiki)
       fetch(properties.chronasApiHost + '/markers/' + ((redirect === 'edit') ? markerItem : ''), {
-        method: (redirect === 'edit') ? 'PUT': 'POST',
+        method: (redirect === 'edit') ? 'PUT' : 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
           'Accept': 'application/json',

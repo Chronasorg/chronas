@@ -71,6 +71,12 @@ export default {
         endYear: 'Until Year'
       }
     },
+    linked: {
+      fields: {
+        src: 'Link to source or ID',
+        description: 'Description or content (if HTML type selected)'
+      }
+    },
     users: {
       name: 'User |||| Users',
       fields: {
