@@ -11,14 +11,14 @@ class Tag extends Component {
       withRemove,
       removeAction,
     } = this.props;
-
+//, withRemove && styles.tagWithRemove)}
     return (
-      <div className={classnames(styles.tag, withRemove && styles.tagWithRemove)}>
+      <div className='Tag_tag'>
         {name}
         { withRemove &&
           <Button
             onClick={removeAction}
-            className='removeButton'
+            className='Tag_removeButton'
           >
             <i className={'fa fa-close'}></i>
           </Button>

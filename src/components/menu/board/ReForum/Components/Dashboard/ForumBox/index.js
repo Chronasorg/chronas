@@ -75,46 +75,46 @@ class ForumBox extends Component {
     } = this.state;
 
     return (
-      <div className='container'>
-        <div className='title'>Current Forums</div>
-        <div className='forumsContainer'>
-          { deletingForum && <div className='loadingMsg'>Removing forum, please wait...</div> }
+      <div className='ForumBox_container'>
+        <div className='ForumBox_title'>Current Forums</div>
+        <div className='ForumBox_forumsContainer'>
+          { deletingForum && <div className='ForumBox_loadingMsg'>Removing forum, please wait...</div> }
 
-          { forums.map((forum) => <div key={forum.id} className='forum'>
-            <div className='forumTitle'>{ forum.name }</div>
-            <div className='forumSlug'>({ forum.slug })</div>
-            <div className='removeButton'>
+          { forums.map((forum) => <div key={forum.id} className='ForumBox_forum'>
+            <div className='ForumBox_forumTitle'>{ forum.name }</div>
+            <div className='ForumBox_forumSlug'>({ forum.slug })</div>
+            <div className='ForumBox_removeButton'>
               <Button onClick={() => { deleteAction(forum.id) }}>Remove</Button>
             </div>
           </div>) }
 
         </div>
 
-        <div className='createForumContainer'>
-          { creatingForum && <div className='loadingMsg'>Creating forum, please wait...</div> }
-          <div className='createTitle'>Create New Forum</div>
-          <div className='createForum'>
-            <div className='createInputContainer'>
-              <div className='inputLabel'>Title: </div>
+        <div className='ForumBox_createForumContainer'>
+          { creatingForum && <div className='ForumBox_loadingMsg'>Creating forum, please wait...</div> }
+          <div className='ForumBox_createTitle'>Create New Forum</div>
+          <div className='ForumBox_createForum'>
+            <div className='ForumBox_createInputContainer'>
+              <div className='ForumBox_inputLabel'>Title: </div>
               <input
                 type={'text'}
-                className='createInput'
+                className='ForumBox_createInput'
                 placeholder={'Forum Title'}
                 onChange={(e) => { this.setState({ newForumTitle: e.target.value }); }}
               />
             </div>
-            <div className='createInputContainer'>
-              <div className='inputLabel'>Slug: </div>
+            <div className='ForumBox_createInputContainer'>
+              <div className='ForumBox_inputLabel'>Slug: </div>
               <input
                 type={'text'}
-                className='createInput'
+                className='ForumBox_createInput'
                 placeholder={'forum_slug'}
                 onChange={(e) => { this.setState({ newForumSlug: e.target.value }); }}
               />
             </div>
             <Button onClick={this.handleCreateForum}>Create</Button>
           </div>
-          { errorMsg && <div className='errorMsg'>{errorMsg}</div> }
+          { errorMsg && <div className='ForumBox_errorMsg'>{errorMsg}</div> }
         </div>
       </div>
     );

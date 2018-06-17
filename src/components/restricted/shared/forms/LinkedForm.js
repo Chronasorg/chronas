@@ -12,7 +12,12 @@ import { TYPE_MARKER } from '../../../map/actionReducers'
 import properties from '../../../../properties'
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
-const formStyle = { padding: '0 1em 1em 1em' }
+const formStyle = {
+  boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
+  padding: '0 1em 1em 1em',
+  maxHeight: 'calc(100% - 180px)',
+  overflow: 'auto',
+  width: '100%' }
 
 export class LinkedForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>

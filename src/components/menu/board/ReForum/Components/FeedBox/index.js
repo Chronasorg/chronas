@@ -14,15 +14,15 @@ class FeedBox extends Component {
 
     if (this.props.type === 'general') {
       return (
-        <div className='sortList'>
+        <div className='FeedBox_sortList'>
           <span
-            className={classnames(styles.sort, (activeSortingMethod === 'date') && styles.sortActive)}
+            className={classnames('FeedBox_sort', (activeSortingMethod === 'date') && 'FeedBox_sortActive')}
             onClick={() => onChangeSortingMethod('date')}
           >
             Latest
           </span>
           <span
-            className={classnames(styles.sort, (activeSortingMethod === 'popularity') && styles.sortActive)}
+            className={classnames('FeedBox_sort', (activeSortingMethod === 'popularity') && 'FeedBox_sortActive')}
             onClick={() => onChangeSortingMethod('popularity')}
           >
             Popular
@@ -36,7 +36,7 @@ class FeedBox extends Component {
   renderEmptyDiscussionLine(loading, discussions) {
     if (!loading) {
       if (!discussions || discussions.length === 0) {
-        return <div className='loading'>No discussions...</div>;
+        return <div className='FeedBox_loading'>No threads authored...</div>;
       }
     }
   }
@@ -51,19 +51,19 @@ class FeedBox extends Component {
     } = this.props;
 
     let discussionBoxTitle = '';
-    if (type === 'general') discussionBoxTitle = 'Discussions';
-    if (type === 'pinned') discussionBoxTitle = 'Pinned';
+    if (type === 'general') discussionBoxTitle = 'Threads'
+    if (type === 'pinned') discussionBoxTitle = 'Pinned'
 
     return (
-      <div className='container'>
-        <div className='header'>
-          <span className='title'>{discussionBoxTitle}</span>
+      <div className='FeedBox_container'>
+        <div className='FeedBox_header'>
+          <span className='FeedBox_title'>{discussionBoxTitle}</span>
           { !userProfile && this.renderSort() }
         </div>
-        { loading && <div className='loading'>Loading...</div> }
+        { loading && <div className='FeedBox_loading'>Loading...</div> }
         { this.renderEmptyDiscussionLine(loading, discussions) }
         { !loading &&
-          <div className='discussions'>
+          <div className='FeedBox_discussions'>
             { discussions && discussions.map((discussion) =>
               <DiscussionBox
                 userProfile={userProfile}

@@ -3,7 +3,7 @@
 /**
  * application layout styles
  */
-.constraintWidth {
+.appLayout_constraintWidth {
   margin: 0px auto;
   min-width: 320px;
   max-width: 1100px;
@@ -12,16 +12,21 @@
   @media mediumBP { padding: 0px 15px; }
 }
 
-.primaryContent { flex: 1; }
+.appLayout_primaryContent {
+  margin: 0 auto;
+  min-width: 320px;
+  max-width: 1100px;
+  flex: 1;
+}
 
-.secondaryContent {
+.appLayout_secondaryContent {
   width: 260px;
 
   @media mediumBP { display: none; }
   @media smallBP { display: none; }
 }
 
-.showOnMediumBP {
+.appLayout_showOnMediumBP {
   display: none;
   @media mediumBP { display: inherit; }
   @media smallBP { display: inherit; }

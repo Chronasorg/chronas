@@ -13,13 +13,13 @@ class NavigationBar extends Component {
 
     if (navigationLinks) {
       return (
-        <ul className='navigationBar'>
+        <ul className='NB_navigationBar'>
           { navigationLinks.map(link => {
             if (link.id === 0) {
               return (
                 <li key={_.uniqueId('navLink_')}>
                   <NavLink
-                    className='links'
+                    className='NB_links'
                     to='/board'
                     onClick={() => updateCurrentForum('general')}
                   >
@@ -32,7 +32,7 @@ class NavigationBar extends Component {
             return (
               <li key={_.uniqueId('navLink_')}>
                 <Link
-                  className='links'
+                  className='NB_links'
                   to={'/board' + link.link}
                   onClick={() => updateCurrentForum(link.link.substr(1))}
                 >

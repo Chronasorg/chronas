@@ -7,7 +7,7 @@ import appLayout from '../../SharedStyles/appLayout.css';
 class Footer extends Component {
   render() {
     return (
-      <div className={classnames(appLayout.constraintWidth, styles.contentArea)}>
+      <div className={classnames('appLayout_constraintWidth', 'Footer_contentArea')}>
         {/* Copyright? Who cares? :-) */}
       </div>
     );

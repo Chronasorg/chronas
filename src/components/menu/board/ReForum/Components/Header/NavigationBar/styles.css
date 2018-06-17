@@ -5,7 +5,7 @@
  * NavigationBar styles
  */
 
-.navigationBar {
+.NB_navigationBar {
   border-top: 1px solid borderColor;
   border-bottom: 1px solid borderColor;
   list-style-type: none;
@@ -16,7 +16,7 @@
   @media smallBP { padding: 0px 10px; }
 }
 
-.links {
+.NB_links {
   display: block;
   padding: 0px 15px;
   height: 38px;
@@ -28,9 +28,9 @@
   transition: color 0.3s;
 }
 
-.links:hover { color: primaryFontColor; }
+.NB_links:hover { color: primaryFontColor; }
 
-.linkActive {
+.NB_linkActive {
   color: primaryFontColor;
   background-color: #f9f9f9;
 }

@@ -134,8 +134,8 @@ export const LinkedEdit = (props) => {
     <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
       <SelectInput source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
-      <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.data.title || ''} />
-      <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={props.selectedItem.value.data.content || ''} />
+      <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || (props.selectedItem.value.data || {}).title || ''} />
+      <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={(props.selectedItem.value.content || props.selectedItem.value.data || {}).content || ''} />
       <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
       <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>

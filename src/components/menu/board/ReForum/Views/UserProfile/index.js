@@ -7,12 +7,15 @@ import styles from './styles.css';
 // components used in this view
 import Profile from '../../Components/UserProfile/Profile';
 import FeedBox from '../../Components/FeedBox';
+import Opinion from '../../Components/SingleDiscussion/Opinion'
 
 // actions
 import {
   fetchUserProfile,
 } from './actions';
 import {getDiscussion} from "../SingleDiscussion/actions";
+
+const opinionBoxTitle = 'Comments'
 
 class UserProfile extends Component {
   constructor(props) {
@@ -25,11 +28,20 @@ class UserProfile extends Component {
   }
 
   componentDidMount() {
+    const {
+      forums,
+      setForums
+    } = this.props;
     const { username } = this.props.match.params;
+
+    if (!forums || forums.length < 1) {
+      setForums()
+    }
     fetchUserProfile(username).then( (data) => this.setState({ fetchingProfile: false, profile: data }) )
   }
 
   componentWillReceiveProps(newProps) {
+    if (!newProps.params || !this.props.match.params) return
     // fetch profile if different username
     const { username: oldUsername } = this.props.match.params;
     const { username: futureUsername } = newProps.params;
@@ -43,13 +55,17 @@ class UserProfile extends Component {
 
   render() {
     const {
+      forums
+    } = this.props;
+
+    const {
       fetchingProfile,
       profile,
       error,
     } = this.state;
 
     if (error) {
-      return <div className='errorMsg'>{ error }</div>;
+      return <div className='UP_errorMsg'>{ error }</div>;
     }
 
     const {
@@ -58,19 +74,20 @@ class UserProfile extends Component {
       avatar,
       github,
       discussions,
+      opinions,
     } = profile;
 
-    if (fetchingProfile) {
+    if (fetchingProfile || !forums || forums.length < 1) {
       return (
-        <div className={classnames(appLayout.constraintWidth, styles.loadingMsg)}>
+        <div className={classnames('appLayout_constraintWidth', 'UP_loadingMsg')}>
           Loading users profile ...
         </div>
       );
     }
 
     return (
-      <div className={classnames(appLayout.constraintWidth, styles.container)}>
-        <div className={appLayout.primaryContent}>
+      <div className={classnames('appLayout_constraintWidth', 'UP_container')}>
+        <div className={'appLayout_primaryContent'}>
           <Profile
             name={name}
             gitHandler={username}
@@ -82,6 +99,36 @@ class UserProfile extends Component {
             type='general'
             discussions={discussions}
           />
+          <div className='FeedBox_container'>
+            <div className='FeedBox_header'>
+              <span className='FeedBox_title'>{opinionBoxTitle}</span>
+            </div>
+            <div className='FeedBox_discussions'>
+              { opinions && opinions.length === 0 && <div className='FeedBox_loading'>No comments...</div> }
+              { opinions && opinions.map((opinion) => {
+                const forum = (forums.filter(f => opinion.forum_id === f._id) || {})[0]
+                return (
+                  <Opinion
+                    userProfile
+                    forum={forum}
+                    opinionTitle={opinion._id}
+                    opinionSlug={opinion._id}
+                    key={opinion._id}
+                    discussion={opinion.discussion}
+                    opinionId={opinion._id}
+                    userAvatar={opinion.user.avatarUrl}
+                    userName={opinion.user.name}
+                    userGitHandler={opinion.user.username}
+                    opDate={opinion.date}
+                    opContent={opinion.content}
+                    userId={opinion.user_id}
+                    currentUserId={localStorage.getItem('userid')}
+                    currentUserRole={this.props.userRole}
+                  />
+                )
+              }) }
+            </div>
+          </div>
         </div>
       </div>
     );

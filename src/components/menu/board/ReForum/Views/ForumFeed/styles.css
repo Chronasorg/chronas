@@ -3,17 +3,17 @@
 /**
  * Forum view styles
  */
-.contentArea {
+.ForumFeed_contentArea {
   display: flex;
   margin-top: 15px;
   @media largeBP { flex-flow: row nowrap; }
 }
 
-.newDiscussionBtn {
+.ForumFeed_newDiscussionBtn {
   margin-top: 20px;
 }
 
-.errorMsg {
+.ForumFeed_errorMsg {
   margin-top: 20px;
   color: rgba(231, 76, 60,1.0);
   text-align: center;

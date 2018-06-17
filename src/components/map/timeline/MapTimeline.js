@@ -10,7 +10,7 @@ import { selectEpicItem } from '../actionReducers'
 import Timeline from 'react-visjs-timeline'
 import './mapTimeline.scss'
 
-const start = '0000-01-01',
+const start = '-000200-01-05',
   min = '-002000-01-01T00:00:00.000Z',
   max = '2017-01-01'
 
@@ -45,13 +45,7 @@ class MapTimeline extends Component {
       year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
       groups: [{
         id: 1,
-        content: 'Group A',
-      }],
-      items: [{
-        start: '0000-01-01',
-        end: '1000-01-01',  // end is optional
-        content: 'War A',
-        group: 1
+        content: 'Epics',
       }]
     }
   }
@@ -64,9 +58,9 @@ class MapTimeline extends Component {
     // http://localhost:4040/v1/metadata?type=e&end=10000&subtype=war add wars
 
     let timelineOptions = this.state.timelineOptions
-    delete timelineOptions.start
-
+    timelineOptions.start = '-000301-01-01'
     this.setState({ timelineOptions })
+
   }
 
   _onClickTimeline = (event) => {
@@ -104,20 +98,16 @@ class MapTimeline extends Component {
       })
     }
   }
-
-  shouldComponentUpdate (nextProps) {
-    return true
-    // if (nextProps.groupItems.length > this.props.groupItems.length) {
-    //   return true
-    // }
-  }
-
-  _onRangeChangeTimeline = event => {
-    console.debug(event)
-  };
+  //
+  // shouldComponentUpdate (nextProps) {
+  //   return true
+  //   // if (nextProps.groupItems.length > this.props.groupItems.length) {
+  //   //   return true
+  //   // }
+  // }
 
   render () {
-    const { timelineOptions, customTimes, items } = this.state
+    const { timelineOptions, customTimes } = this.state
     const { groupItems } = this.props
 
     console.debug("rendering maptimeline")
@@ -132,7 +122,6 @@ class MapTimeline extends Component {
         items={groupItems}
         customTimes={customTimes}
         clickHandler={this._onClickTimeline}
-        rangeChangeHandler={this._onRangeChangeTimeline}
       />
     )
   }

@@ -10,9 +10,9 @@ class Counts extends Component {
     } = this.props;
 
     return (
-      <div className='container'>
-        <div className='count'>{count}</div>
-        <div className='label'>{label}</div>
+      <div className='Count_container'>
+        <div className='Count_count'>{count}</div>
+        <div className='Count_label'>{label}</div>
       </div>
     );
   }

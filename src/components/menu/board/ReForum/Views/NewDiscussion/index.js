@@ -143,7 +143,7 @@ class NewDiscussion extends Component {
         <input
           key={'title'}
           type="text"
-          className='titleInput'
+          className='NewDiscussion_titleInput'
           placeholder={'Discussion title...'}
           value={title}
           onChange={(event) => { this.updateDiscussionTitle(event.target.value); }}
@@ -159,6 +159,7 @@ class NewDiscussion extends Component {
           onChange={(tags) => { this.updateDiscussionTags(tags); }}
         />,
         <RichEditor
+          newDiscussion
           key={'content'}
           type='newDiscussion'
           value={content}
@@ -171,7 +172,7 @@ class NewDiscussion extends Component {
   render() {
     const { fatalError, errorMsg } = this.state;
 
-    if (fatalError) { return (<div className={classnames(styles.errorMsg, styles.fatalError)}>{fatalError}</div>); }
+    if (fatalError) { return (<div className={classnames('NewDiscussion_errorMsg', 'NewDiscussion_fatalError')}>{fatalError}</div>); }
 
     const { currentForum } = this.props;
     const {
@@ -180,14 +181,14 @@ class NewDiscussion extends Component {
     } = this.props.newDiscussion;
 
     return (
-      <div className={classnames(appLayout.constraintWidth, styles.content)}>
-        <div className='forumInfo'>
-          You are creating a new discussion on <span className='forumName'>{currentForum}</span> forum.
+      <div className='appLayout_constraintWidth content'>
+        <div className='NewDiscussion_forumInfo'>
+          You are creating a new discussion on <span className='NewDiscussion_forumName'>{currentForum}</span> forum.
         </div>
-        <div className='errorMsg'>{errorMsg}</div>
-        { postingSuccess && <div className='successMsg'>Your discussion is created :-)</div> }
+        <div className='NewDiscussion_errorMsg'>{errorMsg}</div>
+        { postingSuccess && <div className='NewDiscussion_successMsg'>Your discussion is created :-)</div> }
         { this.renderEditor() }
-        { postingDiscussion && <div className='postingMsg'>Posting discussion...</div> }
+        { postingDiscussion && <div className='NewDiscussion_postingMsg'>Posting discussion...</div> }
       </div>
     );
   }

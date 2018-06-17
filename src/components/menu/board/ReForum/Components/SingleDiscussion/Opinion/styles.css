@@ -5,7 +5,7 @@
  * Opinion styles
  */
 
-.container {
+.Opinion_container {
   position: relative;
   margin-bottom: 10px;
   padding: 0px 10px 0px 10px;
@@ -14,7 +14,7 @@
 
   &:last-child { border-bottom: 1px solid borderColor; }*/
 
-  & .deletingOpinion {
+  & .Opinion_deletingOpinion {
     position: absolute;
     top: 0;
     left: 0;
@@ -27,59 +27,59 @@
   }
 }
 
-.infoContainer {
+.Opinion_infoContainer {
   padding: 5px 0px;
   display: flex;
   align-items: center;
   border-bottom: 1px solid borderColor;
 
-  & .avatar {
+  & .Opinion_avatar {
     width: 32px;
     height: 32px;
     border-radius: 50px;
   }
 
-  & .userInfo {
+  & .Opinion_userInfo {
     margin-left: 10px;
     flex: 1;
     display: flex;
 
-    & .name {
+    & .Opinion_name {
       font-weight: 700;
       color: primaryFontColor;
       text-decoration: none;
     }
 
-    & .gitHandler {
+    & .Opinion_gitHandler {
       margin-left: 15px;
       text-decoration: none;
       color: secondaryFontColor;
       transition: color 0.3s;
       &:hover { color: primaryFontColor; }
 
-      & .gitIcon { margin-right: 5px; }
+      & .Opinion_gitIcon { margin-right: 5px; }
     }
   }
 
-  & .dateInfo {
+  & .Opinion_dateInfo {
     font-size: 13px;
     line-height: 13px;
     color: secondaryFontColor;
     @media smallBP { margin-left: 10px; }
   }
 
-  & .deleteButton {
+  & .Opinion_deleteButton {
     padding: 5px 10px;
     font-weight: normal;
 
-    & .trashIcon {
+    & .Opinion_trashIcon {
       margin-right: 5px;
       font-size: 16px;
     }
   }
 }
 
-.opContent {
+.Opinion_opContent {
   margin-top: 10px;
   margin-bottom: 20px;
   min-height: 60px;
@@ -87,11 +87,11 @@
   line-height: 26px;
 }
 
-.commentFooter {
+.Opinion_commentFooter {
   display: flex;
   align-items: center;
 
-  & .favoriteButton {
+  & .Opinion_favoriteButton {
     padding: 10px 10px;
     display: flex;
     align-items: center;

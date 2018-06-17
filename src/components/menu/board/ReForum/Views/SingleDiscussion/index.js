@@ -32,17 +32,28 @@ class SingleDiscussion extends Component {
 
   componentDidMount() {
     const {
+      forums,
+      setForums
+    } = this.props
+
+    const {
       discussion,
     } = this.props.match.params;
 
+
+    if (forums.length < 1) {
+      setForums()
+    }
     getDiscussion(discussion).then( (data) => this.setState({ fetchingDiscussion: false, discussion: data }) )
   }
 
-  componentDidUpdate() {
+  componentWillReceiveProps(nextProps) {
     const {
       deletedDiscussion,
       deletedDiscussionRedirect,
-    } = this.props;
+      forums,
+      setForums
+    } = nextProps;
 
     const { forum } = this.props.match.params;
 
@@ -89,7 +100,7 @@ class SingleDiscussion extends Component {
         content: opinionContent,
       },
       discussion_slug
-    ).then((data) => this.setState({ discussion: data }))
+    ).then((data) => this.setState({opinionContent: '', discussion: data }))
   }
 
   deleteDiscussion() {
@@ -126,6 +137,7 @@ class SingleDiscussion extends Component {
     const {
       fetchingDiscussion,
       discussion,
+      opinionContent,
       // toggleFavorite,
       // toggleingFavorite,
       // postingOpinion,
@@ -137,12 +149,12 @@ class SingleDiscussion extends Component {
 
 
     if (error) {
-      return (<div className='errorMsg'>{error}</div>);
+      return (<div className='SD_errorMsg'>{error}</div>);
     }
 
     // return loading status if discussion is not fetched yet
     if (fetchingDiscussion) {
-      return <div className='loadingWrapper'>Loading discussion ...</div>;
+      return <div className='SD_loadingWrapper'>Loading discussion ...</div>;
     }
 
     const {
@@ -169,7 +181,7 @@ class SingleDiscussion extends Component {
     const userFavorited = this.userFavoritedDiscussion(localStorage.getItem('userid'), favorites)
 
     return (
-      <div className={appLayout.constraintWidth}>
+      <div className={'appLayout_constraintWidth'}>
         <Discussion
           id={_id}
           userAvatar={avatarUrl}
@@ -188,12 +200,13 @@ class SingleDiscussion extends Component {
           deleteAction={this.deleteDiscussion.bind(this)}
         />
 
-        { opinionError && <div className='errorMsg'>{opinionError}</div> }
+        { opinionError && <div className='SD_errorMsg'>{opinionError}</div> }
 
         <ReplyBox
           posting={postingOpinion}
           onSubmit={this.handleReplySubmit.bind(this)}
-          onChange={(content) => { this.updateOpinionContent(content); }}
+          onChange={(content) => { this.updateOpinionContent(content) }}
+          opinionContent={opinionContent}
         />
 
         { opinions && opinions.map((opinion) => {

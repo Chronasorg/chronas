@@ -5,70 +5,70 @@
  * Discussion styles
  */
 
-.container {
+.Discussion_container {
   padding: 20px 10px 0px 10px;
   position: relative;
 }
 
-.infoContainer {
+.Discussion_infoContainer {
   display: flex;
   align-items: center;
 
-  & .avatar {
+  & .Discussion_avatar {
     width: 42px;
     height: 42px;
     border-radius: 50px;
   }
 
-  & .columnOnSmallBP {
+  & .Discussion_columnOnSmallBP {
     flex: 1;
     display: flex;
     @media smallBP { flex-direction: column; }
   }
 
-  & .userInfo {
+  & .Discussion_userInfo {
     margin-left: 10px;
     flex: 1;
     display: flex;
 
-    & .name {
+    & .Discussion_name {
       font-weight: 700;
       color: primaryFontColor;
       text-decoration: none;
     }
 
-    & .gitHandler {
+    & .Discussion_gitHandler {
       margin-left: 15px;
       text-decoration: none;
       color: secondaryFontColor;
       transition: color 0.3s;
       &:hover { color: primaryFontColor; }
 
-      & .gitIcon { margin-right: 5px; }
+      & .Discussion_gitIcon { margin-right: 5px; }
     }
   }
 
-  & .dateInfo {
+  & .Discussion_dateInfo {
     font-size: 13px;
     color: secondaryFontColor;
     @media smallBP { margin-left: 10px; }
   }
 }
 
-.discTitle {
+.Discussion_discTitle {
   margin-top: 15px;
   font-size: 24px;
   line-height: 32px;
   font-weight: 400;
 }
 
-.discContent {
+.Discussion_discContent {
   margin-top: 10px;
   font-size: 15px;
   line-height: 26px;
 }
 
-.discFooter {
+.Discussion_discFooter {
   margin-top: 10px;
   display: flex;
   align-items: center;
@@ -78,10 +78,10 @@
     align-items: flex-start;
   }
 
-  & .tags { flex: 1; }
+  & .Discussion_tags { flex: 1; }
 
-  & .favoriteButton,
-  & .deleteButton {
+  & .Discussion_favoriteButton,
+  & .Discussion_deleteButton {
     @media smallBP {
       margin-top: 5px;
       padding-left: 0px;
@@ -94,7 +94,7 @@
   }
 }
 
-.deletingDiscussion {
+.Discussion_deletingDiscussion {
   position: absolute;
   top: 0;
   left: 0;

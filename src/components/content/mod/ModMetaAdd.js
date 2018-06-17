@@ -108,7 +108,11 @@ export const ModMetaAdd = (props) => {
     { id: 'war', name: 'War' },
     { id: 'battle', name: 'Battle' },
     { id: 'siege', name: 'Siege' },
-    { id: 'campaign', name: 'Campaign' }
+    { id: 'campaign', name: 'Campaign' },
+    { id: 'exploration', name: 'Exploration' },
+    { id: 'voyage', name: 'Voyage' },
+    { id: 'biography', name: 'Biography' },
+    { id: 'other', name: 'Other Epic' }
   ]
 
   const choicesType = [

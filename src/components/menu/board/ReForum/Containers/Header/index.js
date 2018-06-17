@@ -36,7 +36,7 @@ class Header extends Component {
     } = this.props.user;
 
     return (
-      <div className={classnames(appLayout.constraintWidth)}>
+      <div className={classnames('appLayout_constraintWidth')}>
         <div className='headerTop'>
           <Logo />
         </div>

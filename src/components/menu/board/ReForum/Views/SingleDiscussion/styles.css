@@ -1,6 +1,6 @@
 @value primaryFontColor, secondaryFontColor from '../../SharedStyles/globalStyles.css';
 
-.loadingWrapper {
+.SD_loadingWrapper {
   padding: 20px 0px;
   font-size: 12px;
   font-weight: bold;
@@ -8,7 +8,7 @@
   color: secondaryFontColor;
 }
 
-.errorMsg {
+.SD_errorMsg {
   margin-top: 20px;
   margin-left: 10px;
   font-size: 12px;
@@ -17,7 +17,7 @@
   text-align: center;
 }
 
-.signInMsg {
+.SD_signInMsg {
   color: secondaryFontColor;
   font-size: 12px;
   font-weight: bold;

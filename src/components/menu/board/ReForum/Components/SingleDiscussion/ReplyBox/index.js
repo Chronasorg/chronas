@@ -8,16 +8,18 @@ class ReplyBox extends Component {
     const {
       posting,
       onSubmit,
+      opinionContent,
       onChange,
     } = this.props;
 
-    if (posting) return <div className='loadingWrapper'>Posting your opinion...</div>;
+    if (posting) return <div className='ReplyBox_loadingWrapper'>Posting your opinion...</div>;
 
     return (
       <RichEditor
         type="newOpinion"
         onSave={onSubmit}
         onChange={onChange}
+        value={opinionContent}
       />
     );
   }
@@ -31,6 +33,7 @@ ReplyBox.defaultProps = {
 
 ReplyBox.propTypes = {
   posting: React.PropTypes.bool,
+  opinionContent: React.PropTypes.string,
   onSubmit: React.PropTypes.func,
   onChange: React.PropTypes.func,
 };

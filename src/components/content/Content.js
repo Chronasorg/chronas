@@ -186,7 +186,7 @@ class Content extends Component {
       })
 
       // look for linked linked items based on wiki
-      axios.get(properties.chronasApiHost + '/metadata?type=i&wiki=Battle_of_Clontarf' /*+ selectedWiki*/)
+      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + selectedWiki)
         .then((linkedItemResult) => {
           if (linkedItemResult.status === 200) {
             const linkedItems = []

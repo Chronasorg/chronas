@@ -18,12 +18,12 @@ class Button extends Component {
       <button
         onClick={onClick}
         className={classnames(
-          styles.button,
-          styles.buttonDefaults,
-          styles[type],
-          fullWidth && styles.fullWidth,
-          noUppercase && styles.noUppercase,
-          alwaysActive && styles.alwaysActive,
+         'BoardButton_button',
+          'BoardButton_buttonDefaults',
+          'BoardButton_type',
+          fullWidth && 'BoardButton_fullWidth',
+          noUppercase && 'BoardButton_noUppercase',
+          alwaysActive && 'BoardButton_alwaysActive',
           className
         )}
         style={style}

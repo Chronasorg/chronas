@@ -56,8 +56,8 @@ export class MetaForm extends Component {
             'wiki': newWikiURL,
             'start': +values.start,
             'end':  +values.end,
-            'participants': values.participants.map(el => el.participantTeam.map(el2 => el2.name)),
-            'content': values.content.map((el) => {
+            'participants': (values.participants || []).map(el => el.participantTeam.map(el2 => el2.name)),
+            'content': (values.content || []).map((el) => {
               const contentType = (el.contentType.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
               return contentType + ':' + el.name
             }),

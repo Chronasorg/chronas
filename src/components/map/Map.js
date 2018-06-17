@@ -521,7 +521,7 @@ class Map extends Component {
             const flatternedParticipants = []
 
             if (epicWiki) {
-              rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + epicWiki))
+              rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:e_' + epicWiki))
             }
 
             participants.forEach((team, teamIndex) => {
@@ -826,7 +826,7 @@ class Map extends Component {
       axios.get(properties.chronasApiHost + '/metadata?type=e&end=10000&subtype=' + subtype)
       .then(res => {
         this.setState({
-          epics: this.state.epics.concat(res.data.filter(el => el.data.participants.length > 0 && el.data.content.length > 0).map((el) => {
+          epics: this.state.epics.concat(res.data.map((el) => { // .filter(el => el.data.participants.length > 0 && el.data.content.length > 0)
             const endYear = el.data.end
             return {
               start: new Date(new Date(0, 1, 1).setFullYear(+el.data.start)),

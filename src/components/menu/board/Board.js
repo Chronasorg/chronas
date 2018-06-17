@@ -49,9 +49,11 @@ import ForumFeed from './ReForum/Views/ForumFeed';
 import SingleDiscussion from './ReForum/Views/SingleDiscussion';
 import NewDiscussion from './ReForum/Views/NewDiscussion';
 import UserProfile from './ReForum/Views/UserProfile';
+import Highscore from './ReForum/Views/Highscore';
 import NotFound from './ReForum/Views/NotFound';
 
 import { getForums, updateCurrentForum, getUser } from './ReForum/App/actions'
+import {red400} from "material-ui/styles/colors";
 
 const styles = {
   menuButtons: {
@@ -93,132 +95,6 @@ class Board extends PureComponent {
       discussions: [],
       opinions: [],
       users: [],
-      // forums: [
-      //   {
-      //     'forum_id': 0,
-      //     'forum_slug': 'general',
-      //     'forum_name': 'General',
-      //   },
-      //   {
-      //     'forum_id': 1,
-      //     'forum_slug': 'react',
-      //     'forum_name': 'React',
-      //   },
-      //   {
-      //     'forum_id': 2,
-      //     'forum_slug': 'redux',
-      //     'forum_name': 'Redux',
-      //   },
-      // ],
-      // discussions: [
-      //   {
-      //     'forum_id': '58c23d2efce8810b6f20b0b3',
-      //     'discussion_slug': 'a_pinned_discussion',
-      //     'user_id': '58c242a96ba2030d170f86f9',
-      //     'date': 1486450269704,
-      //     'title': 'A pinned discussion',
-      //     'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      //     'favorites': 2,
-      //     'tags': ['react', 'redux', 'mongodb'],
-      //     'pinned': true,
-      //   },
-      //   {
-      //     'forum_id': '58c23d2efce8810b6f20b0b3',
-      //     'discussion_slug': 'another_pinned_discussion',
-      //     'user_id': '58c242a96ba2030d170f86f9',
-      //     'date': 1486450269704,
-      //     'title': 'Another pinned discussion',
-      //     'content': 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      //     'favorites': 3,
-      //     'tags': ['react', 'redux'],
-      //     'pinned': true,
-      //   },
-      //   {
-      //     'forum_id': '58c23d2efce8810b6f20b0b3',
-      //     'discussion_slug': 'one_another_pinned_discussion',
-      //     'user_id': '58c242e2fb2e150d2570e02b',
-      //     'date': 1486450269704,
-      //     'title': 'One another pinned discussion',
-      //     'content': 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      //     'favorites': 5,
-      //     'tags': ['express', 'mongodb'],
-      //     'pinned': true,
-      //   },
-      //   {
-      //     'forum_id': '58c23d2efce8810b6f20b0b3',
-      //     'discussion_slug': 'a_discussion_from_general_forum',
-      //     'user_id': '58c242e2fb2e150d2570e02b',
-      //     'date': 1486450269704,
-      //     'title': 'A discussion from general forum',
-      //     'content': 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-      //     'favorites': 2,
-      //     'tags': ['react', 'redux', 'mongodb'],
-      //     'pinned': false,
-      //   },
-      // ],
-      // opinions: [
-      //   {
-      //     'discussion_id': '58c641904e457708a7147417',
-      //     'user_id': '58c242e2fb2e150d2570e02b',
-      //     'date': 1486450269704,
-      //     'content': 'Awesome stuffs!',
-      //   },
-      //   {
-      //     'discussion_id': '58c641904e457708a7147417',
-      //     'user_id': '58c242e2fb2e150d2570e02b',
-      //     'date': 1486450269704,
-      //     'content': 'Awesome stuffs really!',
-      //   },
-      //   {
-      //     'discussion_id': '58c641cf88336b08c76f3b50',
-      //     'user_id': '58c242a96ba2030d170f86f9',
-      //     'date': 1486450269704,
-      //     'content': 'Great job dude!',
-      //   },
-      //   {
-      //     'discussion_id': '58c641cf88336b08c76f3b50',
-      //     'user_id': '58c242a96ba2030d170f86f9',
-      //     'date': 1486450269704,
-      //     'content': 'These discussions!!!',
-      //   },
-      // ],
-      // users: [
-      //   {
-      //     'user_id': 0,
-      //     'username': 'testuser1',
-      //     'email': 'testuser1@reforum.abc',
-      //     'avatarUrl': 'https://robohash.org/quisapientelibero.png?size=50x50&set=set1',
-      //     'name': 'Test User 1',
-      //   },
-      //   {
-      //     'user_id': 1,
-      //     'username': 'testuser2',
-      //     'email': 'testuser2@reforum.abc',
-      //     'avatarUrl': 'https://robohash.org/magnidictadeserunt.png?size=50x50&set=set1',
-      //     'name': 'Test User 2',
-      //   },
-      //   {
-      //     'user_id': 2,
-      //     'username': 'testuser3',
-      //     'email': 'testuser3@reforum.abc',
-      //     'avatarUrl': 'https://robohash.org/ducimusnostrumillo.jpg?size=50x50&set=set1',
-      //     'name': 'Test User 3',
-      //   },
-      //   {
-      //     'user_id': 3,
-      //     'username': 'testuser4',
-      //     'email': 'testuser4@reforum.abc',
-      //     'avatarUrl': 'https://robohash.org/autemharumvitae.bmp?size=50x50&set=set1',
-      //     'name': 'Test User 4',
-      //   },
-      //   {
-      //     'user_id': 4,
-      //     'username': 'testuser5',
-      //     'email': 'testuser5@reforum.abc',
-      //     'avatarUrl': 'https://robohash.org/similiquealiquidmaiores.jpg?size=50x50&set=set1',
-      //     'name': 'Test User 5',
-      //   },
-      // ],
       currentForum: 'general',
       hiddenElement: true
     }
@@ -260,8 +136,20 @@ class Board extends PureComponent {
     const restrictPage = (component, commonProps, customProps) => {
       const RestrictedPage = routeProps => (
         <Restricted location={{ pathname: 'board' }} authParams={{ routeProps }} {...routeProps}>
-          <Dialog bodyStyle={{ backgroundImage: '#fff' }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
-                  contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
+          <Dialog
+            autoDetectWindowHeight={false}
+            modal={false}
+            contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogBackgroundHack'}
+            actionsContainerStyle={{ backgroundColor: red400 }}
+            overlayStyle={styles.overlayStyle}
+            style={{ backgroundColor: 'transparent', overflow: 'auto' }}
+            titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
+            autoScrollBodyContent={false}
+
+            bodyStyle={{ backgroundImage: '#fff' }}
+            open
+            // contentStyle={styles.dialogStyle}
+            onRequestClose={this.handleClose}>
             <Card style={styles.card}>
               {createElement(component, {
                 ...commonProps,
@@ -279,7 +167,21 @@ class Board extends PureComponent {
       const { forums } = this.state
       const RestrictedPage = routeProps => (
         <Restricted location={{ pathname: 'board' }} authParams={{ routeProps }} {...routeProps}>
-          <Dialog bodyStyle={{ backgroundImage: '#fff' }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
+          <Dialog open
+                  autoDetectWindowHeight={false}
+                  modal={false}
+                  autoScrollBodyContent={false}
+                  bodyStyle={{
+                    backgroundImage: '#fff',
+                  }}
+                  actionsContainerStyle={{
+                    bottom: '4em',
+                    top: '4em',
+                    width: 'calc(100% - 64px)',
+                    overflow: 'auto',
+                    position: 'fixed !important'
+                  }}
+                  contentClassName={(this.state.hiddenElement) ? '' : 'classReveal boardContentStyle'}
                   contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
             <Card style={styles.card}>
               {(forums) ? <div>
@@ -305,11 +207,11 @@ class Board extends PureComponent {
       </Route>
       <Route exact path="/board" render={restrictPage(AppContainer, commonProps, {
         setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum })} />
-      <Route exact path="/board/:forum/discussion/:discussion" render={restrictPageForumWrapper(SingleDiscussion, commonProps, { forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
-      <Route exact path="/board/:forum/new_discussion" render={restrictPageForumWrapper(NewDiscussion, commonProps, { forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
-      <Route exact path="/board/:forum" render={restrictPageForumWrapper(ForumFeed, commonProps, { forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
-      <Route exact path="/board/user/:username" render={restrictPageForumWrapper(UserProfile, commonProps)} />
-      {/*<NavLink exact to='/board' render={restrictPageForumWrapper(ForumFeed, commonProps, { forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />*/}
+      <Route exact path="/board/highscore" render={restrictPageForumWrapper(Highscore, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
+      <Route exact path="/board/:forum/discussion/:discussion" render={restrictPageForumWrapper(SingleDiscussion, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
+      <Route exact path="/board/:forum/new_discussion" render={restrictPageForumWrapper(NewDiscussion, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
+      <Route exact path="/board/:forum" render={restrictPageForumWrapper(ForumFeed, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
+      <Route exact path="/board/user/:username" render={restrictPageForumWrapper(UserProfile, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
     </Switch>
   }
 }

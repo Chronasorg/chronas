@@ -115,8 +115,8 @@ class RichEditor extends Component {
     if (type === 'newDiscussion') placeholder = 'Discussion summary...';
 
     return (
-      <div className={classnames(styles.container, readOnly && styles.readOnlyContainer)}>
-        { !readOnly && <div className='controlsContainer'>
+      <div className={classnames('RichEditor_container', readOnly && 'RichEditor_readOnlyContainer')}>
+        { !readOnly && <div className='RichEditor_controlsContainer'>
           <InlineStyleControls
             type={type}
             editorState={this.state.editorState}
@@ -131,9 +131,10 @@ class RichEditor extends Component {
 
         <div
           className={classnames(
-            styles.editorContainer,
-            !readOnly && styles[type],
-            readOnly && styles.readOnlyEditorContainer
+            'RichEditor_editorContainer',
+            !readOnly && 'RichEditor_type',
+            (!readOnly && type === 'newDiscussion') && 'RichEditor_newDiscussion',
+            readOnly && 'RichEditor_readOnlyEditorContainer'
           )}
           onClick={this.focus}
         >

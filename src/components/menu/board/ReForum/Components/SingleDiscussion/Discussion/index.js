@@ -1,17 +1,17 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import moment from 'moment';
-import classnames from 'classnames';
-import styles from './styles.css';
+import _ from 'lodash'
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
+import moment from 'moment'
+import classnames from 'classnames'
+import styles from './styles.css'
 
-import PlaceholderImage from '../../../SharedStyles/placeholder.jpg';
-import Button from '../../../Components/Button';
-import Tag from '../../../Components/Tag';
-import RichEditor from '../../../Components/RichEditor';
+import PlaceholderImage from '../../../SharedStyles/placeholder.jpg'
+import Button from '../../../Components/Button'
+import Tag from '../../../Components/Tag'
+import RichEditor from '../../../Components/RichEditor'
 
 class Discussion extends Component {
-  render() {
+  render () {
     const {
       id,
       userAvatar,
@@ -28,63 +28,59 @@ class Discussion extends Component {
       allowDelete,
       deletingDiscussion,
       deleteAction,
-    } = this.props;
+    } = this.props
 
-    let dateDisplay = moment(discDate);
-    dateDisplay = dateDisplay.from(moment());
+    let dateDisplay = moment(discDate)
+    dateDisplay = dateDisplay.from(moment())
 
-    let favCount = '';
-    if (toggleingFavorite) favCount = 'Toggling Favorite...';
-    else if (userFavorited) favCount = `Favorited (${favoriteCount})`;
-    else if (favoriteCount === 0) favCount = 'Make favorite';
-    else if (favoriteCount === 1) favCount = '1 favorite';
-    else favCount = `${favoriteCount} favorites`;
+    let favCount = ''
+    if (toggleingFavorite) favCount = 'Toggling Favorite...'
+    else if (userFavorited) favCount = `Favorited (${favoriteCount})`
+    else if (favoriteCount === 0) favCount = 'Make favorite'
+    else if (favoriteCount === 1) favCount = '1 favorite'
+    else favCount = `${favoriteCount} favorites`
 
     return (
-      <div className='container'>
+      <div className='Discussion_container'>
 
-        <div className='infoContainer'>
-          <img className='avatar' src={userAvatar} />
-          <div className='columnOnSmallBP'>
-            <div className='userInfo'>
-              <Link to={`/user/${userGitHandler}`} className='name'>{userName || userGitHandler}</Link>
-              <a href={`https://www.github.com/${userGitHandler}`} target="_blank" className='gitHandler'>
-                <i className={classnames('fa fa-github-alt', styles.gitIcon)}></i>
-                <span>{userGitHandler}</span>
-              </a>
+        <div className='Discussion_infoContainer'>
+          <img className='Discussion_avatar' src={userAvatar} />
+          <div className='Discussion_columnOnSmallBP'>
+            <div className='Discussion_userInfo'>
+              <Link to={`/board/user/${userGitHandler}`} className='Discussion_name'>{userName || userGitHandler}</Link>
             </div>
-            <div className='dateInfo'>{dateDisplay}</div>
+            <div className='Discussion_dateInfo'>{dateDisplay}</div>
           </div>
         </div>
 
-        <div className='discTitle'>{discTitle}</div>
-        <div className='discContent'>
+        <div className='Discussion_discTitle'>{discTitle}</div>
+        <div className='Discussion_discContent'>
           <RichEditor
-            readOnly={true}
+            readOnly
             value={discContent}
           />
         </div>
 
-        <div className='discFooter'>
-          <div className='tags'>
+        <div className='Discussion_discFooter'>
+          <div className='Discussion_tags'>
             { tags.map(tag => <Tag name={tag} key={_.uniqueId('tag_')} />)}
           </div>
-          <Button noUppercase className='favoriteButton' onClick={() => { !toggleingFavorite && favoriteAction(id); }}>
-            <i className={classnames(`fa fa-${userFavorited ? 'heart' : 'heart-o'}`)}></i>
+          <Button noUppercase className='Discussion_favoriteButton' onClick={() => { !toggleingFavorite && favoriteAction(id) }}>
+            <i className={classnames(`fa fa-${userFavorited ? 'heart' : 'heart-o'}`)} />
             <span>{favCount}</span>
           </Button>
 
-          { allowDelete && <Button noUppercase className='deleteButton' onClick={() => { deleteAction(); }}>
-            <i className={classnames('fa fa-trash', styles.trashIcon)}></i>
+          { allowDelete && <Button noUppercase className='Discussion_deleteButton' onClick={() => { deleteAction() }}>
+            <i className={classnames('fa fa-trash', 'trashIcon')} />
             <span>Delete</span>
           </Button> }
         </div>
 
-        { deletingDiscussion && <div className='deletingDiscussion'>
+        { deletingDiscussion && <div className='Discussion_deletingDiscussion'>
           Deleting Discussion...
         </div> }
       </div>
-    );
+    )
   }
 }
 
@@ -104,7 +100,7 @@ Discussion.defaultProps = {
   allowDelete: false,
   deletingDiscussion: false,
   deleteAction: () => { },
-};
+}
 
 Discussion.propTypes = {
   id: React.PropTypes.any,
@@ -122,6 +118,6 @@ Discussion.propTypes = {
   allowDelete: React.PropTypes.bool,
   deletingDiscussion: React.PropTypes.bool,
   deleteAction: React.PropTypes.func,
-};
+}
 
-export default Discussion;
+export default Discussion

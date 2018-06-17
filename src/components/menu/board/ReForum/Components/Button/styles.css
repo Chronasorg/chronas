@@ -5,7 +5,7 @@
  */
 
 /* resetting all default button styles */
-button {
+BoardButton_button {
   background: none;
   border: 0;
   color: inherit;
@@ -18,7 +18,7 @@ button {
   cursor: pointer;
 }
 
-.buttonDefaults {
+.BoardButton_buttonDefaults {
   padding: 10px 20px;
   text-transform: uppercase;
   font-weight: 700;
@@ -26,13 +26,13 @@ button {
   letter-spacing: 0.5px;
 }
 
-.default {
+.BoardButton_default {
   color: secondaryFontColor;
   transition: color 0.3s;
   &:hover { color: primaryFontColor; }
 }
 
-.outline {
+.BoardButton_outline {
   color: secondaryFontColor;
   border: 1px solid borderColor;
   transition: color 0.3s, border 0.3s;
@@ -42,9 +42,9 @@ button {
   }
 }
 
-.fullWidth { width: 100%; }
-.noUppercase { text-transform: none; }
-.alwaysActive {
+.BoardButton_fullWidth { width: 100%; }
+.BoardButton_noUppercase { text-transform: none; }
+.BoardButton_alwaysActive {
   color: primaryFontColor;
   border-color: primaryFontColor;
 }

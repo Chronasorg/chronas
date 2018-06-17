@@ -5,7 +5,7 @@
  * PostBox styles
  */
 
-.container {
+.DiscussionBox_container {
   display: flex;
   flex-direction: column;
   padding: 10px;
@@ -13,7 +13,7 @@
   &:last-child { border-bottom: none; }
 }
 
-.title {
+.DiscussionBox_title {
   font-size: 18px;
   font-weight: 300;
 
@@ -23,12 +23,12 @@
   }
 }
 
-.titleBottomMargin { margin-bottom: 10px; }
+.DiscussionBox_titleBottomMargin { margin-bottom: 10px; }
 
-.posterInfo {
+.DiscussionBox_posterInfo {
   margin-top: 10px;
   font-size: 13px;
-  & .name {
+  & .DiscussionBox_name {
     font-weight: 700;
     color: secondaryFontColor;
     text-decoration: none;
@@ -36,13 +36,13 @@
 
     &:hover { color: primaryFontColor; }
   }
-  & .gitHandler {
+  & .DiscussionBox_gitHandler {
     margin-left: 5px;
     text-decoration: none;
     color: secondaryFontColor;
     transition: color 0.3s;
 
-    & .gitIcon {
+    & .DiscussionBox_gitIcon {
       font-size: 16px;
       padding: 0 5px;
     }
@@ -51,7 +51,7 @@
   }
 }
 
-.boxFooter {
+.DiscussionBox_boxFooter {
   margin-top: 10px;
   display: flex;
   align-items: center;
@@ -64,15 +64,15 @@
   }
 }
 
-.tagsArea {
+.DiscussionBox_tagsArea {
   display: flex;
   align-items: center;
 
   @media smallBP { margin-top: 5px; }
 }
 
-.postInfo {
-  & .info {
+.DiscussionBox_postInfo {
+  & .DiscussionBox_info {
     margin-left: 20px;
     font-size: 12px;
     font-weight: 700;

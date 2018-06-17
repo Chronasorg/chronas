@@ -12,7 +12,13 @@ import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
 import { showNotification } from 'admin-on-rest';
 import { setModType , setModData } from '../buttons/actionReducers'
 import properties from "../../../../properties";
-const formStyle = { padding: '0 1em 1em 1em' }
+const formStyle = {
+  boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
+  padding: '0 1em 1em 1em',
+  maxHeight: 'calc(100% - 180px)',
+  overflow: 'auto',
+  width: '100%'
+}
 
 export class AreaForm extends Component {
 

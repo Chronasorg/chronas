@@ -32,7 +32,7 @@ class BlockStyleControls extends Component {
       .getType();
 
     return (
-      <div className='controls'>
+      <div className='RichEditor_controls'>
         { blockTypes.map((eachType) =>
           <StyleButton
             key={eachType.label}

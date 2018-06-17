@@ -36,7 +36,7 @@ const styles = {
 
 const allMarkers = ['Politicians', 'Battles']
 
-const allEpics = ['War', 'Battles']
+const allEpics = ['War', 'Battle', 'Campaign', 'Exploration', 'Siege', 'Voyage', 'Other Epic']
 
 const LayerContent = ({ activeArea, setPopOpacity, setProvinceBorders, selectedText, selectEpicItem, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic }) => (
   <div style={styles.main}>

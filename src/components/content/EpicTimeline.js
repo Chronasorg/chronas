@@ -64,7 +64,7 @@ class EpicTimeline extends React.Component {
   state = {
     selectedWiki: false,
     stepIndex: -1,
-    influenceChartData: {},
+    influenceChartData: [],
     epicMeta: false,
     epicLinkedArticles: []
   }
@@ -85,8 +85,14 @@ class EpicTimeline extends React.Component {
   getStepContent (stepIndex) {
     const { epicData } =  this.props
     const { selectedWiki, epicLinkedArticles } = this.state
-    const wikiUrl = (epicLinkedArticles[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || -1
-    return  <ArticleIframe customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
+    const itemTyep = (epicLinkedArticles[stepIndex] || {}).type
+    if (itemTyep === 'html') {
+      const content = (epicLinkedArticles[stepIndex] || {}).content
+      return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
+    } else {
+      const wikiUrl = (epicLinkedArticles[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || -1
+      return  <ArticleIframe customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
+    }
   }
 
   _selectMainArticle = () => {
@@ -139,6 +145,7 @@ class EpicTimeline extends React.Component {
         return {
           "name": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.n || linkedItem.properties.w,
           "wiki": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
+          "content": (!linkedItem.properties) ? linkedItem.content : linkedItem.properties.c,
           "type": (!linkedItem.properties) ? linkedItem.type : linkedItem.properties.t,
           "date": (!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y
         }}).sort((a, b) => +a.date - +b.date)
@@ -177,9 +184,9 @@ class EpicTimeline extends React.Component {
     return (
       <div style={{ height: '100%' }}>
         <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems } selectedYear={selectedYear} />
-        <div style={{ height: '200px', width: '100%' }}>
+        { influenceChartData && influenceChartData.length > 0 && <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart epicMeta={epicMeta} rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
-        </div>
+        </div> }
         { contentDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 184px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden' }}>
           <FlatButton backgroundColor={'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(epicMeta || {}).title || 'Epic Main'} onClick={this._selectMainArticle.bind(this)} />
           <Stepper linear={false}
@@ -199,7 +206,7 @@ class EpicTimeline extends React.Component {
                     top: '16px',
                     fontSize: '15px'
                   }}>
-                    {epicContent.wiki}
+                    {epicContent.name || epicContent.wiki}
                   </div>
                   <div style={{
                     overflow: 'hidden',

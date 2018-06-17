@@ -74,7 +74,7 @@ class AppContainer extends Component {
     }
 
     return (
-      <div className='loadingWrapper'>Loading...</div>
+      <div className='Board_loadingWrapper'>Loading...</div>
     );
   }
 }

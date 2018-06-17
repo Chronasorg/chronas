@@ -2,7 +2,7 @@
  * Application container stylings
  */
 
-.loadingWrapper {
+.Board_loadingWrapper {
   height: 100vh;
   width: 100vw;
   display: flex;

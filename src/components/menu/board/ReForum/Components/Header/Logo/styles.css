@@ -1,16 +1,17 @@
 /* logo */
-.logoContainer {
+.BoardLogo_logoContainer {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
 }
 
-.logo {
+.BoardLogo_logo {
   width: 40px;
   height: 40px;
+  overflow: hidden;
 }
 
-.logoTitle {
+.BoardLogo_logoTitle {
   margin-left: 10px;
   font-size: 20px;
   font-weight: 700;

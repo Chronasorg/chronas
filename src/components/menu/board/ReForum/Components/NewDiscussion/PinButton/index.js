@@ -24,10 +24,10 @@ class PinButton extends Component {
     const { value } = this.state;
 
     return (
-      <div className='container'>
-        <div className='label'>Is it a pinned discussion?</div>
+      <div className='PinButton_container'>
+        <div className='PinButton_label'>Is it a pinned discussion?</div>
 
-        <div className='btnContainer'>
+        <div className='PinButton_btnContainer'>
           <Button
             alwaysActive={value ? true : false}
             onClick={() => { this.updateValue(true); }}

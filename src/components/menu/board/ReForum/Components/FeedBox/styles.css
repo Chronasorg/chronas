@@ -3,14 +3,14 @@
 /**
  * FeedBox styles
  */
-.container {
+.FeedBox_container {
   margin-top: 20px;
   border: 1px solid borderColor;
 
   &:first-child { margin-top: 0px; }
 }
 
-.header {
+.FeedBox_header {
   border-bottom: 1px solid borderColor;
   height: 30px;
   display: flex;
@@ -20,7 +20,7 @@
   background-color: backShade;
 }
 
-.title {
+.FeedBox_title {
   padding-left: 10px;
   font-size: 13px;
   font-weight: 700;
@@ -28,8 +28,8 @@
   text-transform: uppercase;
 }
 
-.sortList {
-  & .sort {
+.FeedBox_sortList {
+  & .FeedBox_sort {
     color: secondaryFontColor;
     display: inline-block;
     height: 30px;
@@ -42,16 +42,16 @@
     cursor: pointer;
     user-select: none;
 
-    &.sortActive { color: primaryFontColor; }
+    &.FeedBox_sortActive { color: primaryFontColor; }
   }
 }
 
-.posts {
+.FeedBox_posts {
   display: flex;
   flex-direction: column;
 }
 
-.loading {
+.FeedBox_loading {
   font-size: 12px;
   letter-spacing: 0.5px;
   color: secondaryFontColor;

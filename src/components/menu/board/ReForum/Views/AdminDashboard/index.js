@@ -44,8 +44,8 @@ class Dashboard extends Component {
     });
 
     return (
-      <div className={classnames(appLayout.constraintWidth, styles.container)}>
-        { loadingInfo && <div className={classnames(styles.loadingMsg)}>
+      <div className={classnames('appLayout_constraintWidth', 'container')}>
+        { loadingInfo && <div className={classnames('loadingMsg')}>
           Loading dashboard info...
         </div> }
 

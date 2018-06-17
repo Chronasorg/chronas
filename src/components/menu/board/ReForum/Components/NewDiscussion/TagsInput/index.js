@@ -91,15 +91,15 @@ class TagsInput extends Component {
 
     if ( tags.length < maxTagCount ) {
       return (
-        <div className='inputContainer'>
+        <div className='TagsInput_inputContainer'>
           <input
-            className='tagInput'
+            className='TagsInput_tagInput'
             placeholder={'tag name...'}
             value={tagName}
             onChange={(e) => { this.setState({ tagName: e.target.value }); }}
           />
           <Button
-            className='addButton'
+            className='TagsInput_addButton'
             onClick={() => { this.addTag(); }}
           >
             <i className={classnames('fa fa-plus-circle')}></i>
@@ -121,13 +121,13 @@ class TagsInput extends Component {
     const { maxTagCount } = this.props;
 
     return (
-      <div className='container'>
-        <div className='tagContainer'>
-          <div className='label'>Tags :</div>
+      <div className='TagsInput_container'>
+        <div className='TagsInput_tagContainer'>
+          <div className='TagsInput_label'>Tags :</div>
           { this.renderTags() }
           { this.renderInput() }
         </div>
-        { errorMsg && <div className='errorMsg'>{errorMsg}</div> }
+        { errorMsg && <div className='TagsInput_errorMsg'>{errorMsg}</div> }
       </div>
     );
   }

@@ -5,7 +5,7 @@
  * RichEditor styles
  */
 
-.container {
+.RichEditor_container {
   margin-top: 10px;
   margin-bottom: 20px;
   display: flex;
@@ -14,39 +14,39 @@
   border: 1px solid borderColor;
 }
 
-.readOnlyContainer {
+.RichEditor_readOnlyContainer {
   border: none;
 }
 
-.editorContainer {
+.RichEditor_editorContainer {
   padding: 10px 10px;
   width: 100%;
-  min-height: 60px;
+  /*min-height: 60px;*/
   border-bottom: 1px solid borderColor;
   cursor: text;
 
-  & :global .public-DraftEditorPlaceholder-root {
+  & :global .RichEditor_public-DraftEditorPlaceholder-root {
     position: absolute;
     color: secondaryFontColor;
   }
 }
 
-.readOnlyEditorContainer {
+.RichEditor_readOnlyEditorContainer {
   padding: 0px;
   border-bottom: none;
 }
 
-.buttonClass {
+.RichEditor_buttonClass {
   margin-top: 20px;
 }
 
-.newDiscussion { min-height: 300px; }
+.RichEditor_newDiscussion { min-height: 300px; }
 
 
 /**
  * Controls
  */
-.controlsContainer {
+.RichEditor_controlsContainer {
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -54,11 +54,11 @@
   @media smallBP { flex-direction: column-reverse; }
 }
 
-.controls {
+.RichEditor_controls {
   display: flex;
 }
 
-.controlButton {
+.RichEditor_controlButton {
   padding: 10px 10px;
   user-select: none;
   cursor: pointer;
@@ -76,7 +76,7 @@
   @media smallBP { padding: 5px 10px; }
 }
 
-.controlButtonActive {
+.RichEditor_controlButtonActive {
   color: primaryFontColor;
 }
 
@@ -84,7 +84,7 @@
  * editor text styles
  */
 
-.editorBlockquoteStyle {
+.RichEditor_editorBlockquoteStyle {
   display: inline-block;
   position: relative;
   margin: 10px 0px 10px 20px;
@@ -93,7 +93,7 @@
   font-style: italic;
 }
 
-.editorBlockquoteStyle::before {
+.RichEditor_editorBlockquoteStyle::before {
   content: '';
   position: absolute;
   height: 100%;
@@ -103,24 +103,24 @@
   background-color: borderColor;
 }
 
-.editorCodeStyle {
+.RichEditor_editorCodeStyle {
   margin: 0px;
   padding: 0px;
   line-height: 18px;
   overflow-x: hidden;
 }
 
-:global .public-DraftStyleDefault-pre {
+:global .RichEditor_public-DraftStyleDefault-pre {
   margin: 10px 0px;
   padding: 5px 5px;
   background-color: backShade;
   border: 1px solid borderColor;
 }
 
-.editorH1Style,
-.editorH2Style,
-.editorH3Style { color: #4c4c4c; }
+.RichEditor_editorH1Style,
+.RichEditor_editorH2Style,
+.RichEditor_editorH3Style { color: #4c4c4c; }
 
-.editorH1Style { font-size: 1.6em; }
-.editorH2Style { font-size: 1.3em; }
-.editorH3Style { font-size: 1.1em; }
+.RichEditor_editorH1Style { font-size: 1.6em; }
+.RichEditor_editorH2Style { font-size: 1.3em; }
+.RichEditor_editorH3Style { font-size: 1.1em; }
