@@ -27,7 +27,7 @@ import BasicInfo from './markers/basic-info'
 import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
 const turf = require('@turf/turf')
-
+const FLYTOANIMATIONDURATION = 2000
 const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A'
 
 // defines fill-opacity when Population Opacity is switched on
@@ -37,6 +37,8 @@ const getRandomInt = (min, max) => {
   max = Math.floor(max)
   return Math.floor(Math.random() * (max - min)) + min // The maximum is exclusive and the minimum is inclusive
 }
+
+let animationInterval = -1
 
 class Map extends Component {
   state = {
@@ -179,7 +181,7 @@ class Map extends Component {
           ...this.state.viewport,
           ...bounds,
           zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)),
-          transitionDuration: 1000,
+          transitionDuration: FLYTOANIMATIONDURATION,
           transitionInterpolator: new FlyToInterpolator(),
           transitionEasing: easeCubic
         }
@@ -222,7 +224,7 @@ class Map extends Component {
           ...this.state.viewport,
           ...bounds,
           zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)),
-          transitionDuration: 1000,
+          transitionDuration: FLYTOANIMATIONDURATION,
           transitionInterpolator: new FlyToInterpolator(),
           transitionEasing: easeCubic
         }
@@ -350,7 +352,7 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { mapStyles, activeArea, selectedYear, metadata, modActive, history, activeEpics, activeMarkers, selectedItem, selectAreaItem } = this.props
+    const { mapStyles, activeArea, contentIndex, selectedYear, metadata, modActive, history, activeEpics, activeMarkers, selectedItem, selectAreaItem } = this.props
     const rightDrawerOpen = nextProps.rightDrawerOpen
 
     let mapStyleDirty = false
@@ -433,8 +435,47 @@ class Map extends Component {
     // selected item is EPIC?
     if (nextProps.selectedItem.type === TYPE_EPIC) {
       // contentIndex changed?
-      if (((nextProps.selectedItem || {}).data || {}).contentIndex && ((selectedItem || {}).data || {}).contentIndex && nextProps.selectedItem.data.contentIndex !== selectedItem.data.contentIndex) {
-        this._updateEpicGeo(nextProps.selectedItem.data.contentIndex)
+      if (typeof nextProps.contentIndex !== "undefined" &&
+        typeof contentIndex !== "undefined" &&
+        nextProps.contentIndex !== contentIndex) {
+        this._updateEpicGeo(nextProps.contentIndex)
+        const selectedFeature = (((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || []).filter(f => f.properties.index === nextProps.contentIndex)[0]
+        const prevFeature = (((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || []).filter(f => f.properties.index === nextProps.contentIndex - 1)[0]
+        if (selectedFeature && selectedFeature.geometry.coordinates && selectedFeature.geometry.coordinates.length > 1) {
+          if (prevFeature && prevFeature.geometry.coordinates && prevFeature.geometry.coordinates.length > 1) {
+
+            const bbox = turf.bbox({
+              'type': 'FeatureCollection',
+              'features': [prevFeature, selectedFeature]
+            })
+
+            const webMercatorViewport = new WebMercatorViewport({
+              width: this.props.width || (window.innerWidth - 56),
+              height: this.props.height || window.innerHeight
+            })
+
+            const bounds = webMercatorViewport.fitBounds(
+              [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
+              { padding: 20, offset: [0, -40] }
+            )
+
+            const viewport = {
+              ...this.state.viewport,
+              ...bounds,
+              zoom: Math.min(+bounds.zoom - 1, Math.max(4.5, +this.state.viewport.zoom)),
+              transitionDuration: FLYTOANIMATIONDURATION,
+              transitionInterpolator: new FlyToInterpolator(),
+              transitionEasing: easeCubic
+            }
+
+            this.setState({ viewport })
+          } else {
+            this._goToViewport({
+              longitude: selectedFeature.geometry.coordinates[0],
+              latitude: selectedFeature.geometry.coordinates[1]
+            })
+          }
+        }
       }
       if (nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id)) {
       // TODO: only go ahead if selectedYear is starting year
@@ -905,24 +946,17 @@ class Map extends Component {
     }, 500)
   }
 
-  _updateEpicGeo = (selectedIndex, animate = true) => {
-    if (animate) {
-      this.setState((prevState) => {
-        return { geoData: prevState.geoData.map((f) => {
-            if (f.properties.index > selectedIndex) {
-              f.properties.hidden = true
-            } else {
-              f.properties.hidden = false
-            }
-            return f
-          }) }
-      })
-    } else {
-
-    }
-    // prune until index and animate (?)
-
-    // animate index
+  _updateEpicGeo = (selectedIndex) => {
+    this.setState((prevState) => {
+      return { geoData: prevState.geoData.map((f) => {
+          if (selectedIndex !== -1 && f.index >= selectedIndex) {
+            f.hidden = true
+          } else {
+            f.hidden = false
+          }
+          return f
+        }) }
+    })
   }
 
   _changeYear = (year) => {
@@ -943,9 +977,9 @@ class Map extends Component {
       ...this.state.viewport,
       longitude,
       latitude,
-      zoom: Math.max(this.state.viewport.zoom + 1, 4.5),
+      zoom: this.state.viewport.zoom, // Math.max(this.state.viewport.zoom + 1, 4.5),
       transitionInterpolator: new FlyToInterpolator(),
-      transitionDuration: 3000
+      transitionDuration: FLYTOANIMATIONDURATION
     })
   };
 
@@ -1121,7 +1155,7 @@ class Map extends Component {
 
   render () {
     const { epics, markerData, geoData, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
-    const { modActive, menuDrawerOpen, rightDrawerOpen, mapStyles } = this.props
+    const { modActive, menuDrawerOpen, rightDrawerOpen, contentIndex, mapStyles } = this.props
 
     let leftOffset = (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.24
@@ -1171,6 +1205,8 @@ class Map extends Component {
             // onHover={this._onHover.bind(this)}
             // onClick={this._onClick.bind(this)}
             strokeWidth={20}
+            animationInterval={animationInterval}
+            contentIndex={contentIndex}
           />
 
           {modMarker}
@@ -1207,6 +1243,7 @@ const enhance = compose(
     activeMarkers: state.activeMarkers,
     selectedYear: state.selectedYear,
     selectedItem: state.selectedItem,
+    contentIndex: ((state.selectedItem || {}).data || {}).contentIndex,
     metadata: state.metadata,
     menuDrawerOpen: state.menuDrawerOpen,
     modActive: state.modActive,

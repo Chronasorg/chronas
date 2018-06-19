@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { scaleQuantile } from 'd3-scale'
-import {rgb} from 'd3-color';
+import { rgb } from 'd3-color'
+import { easeCubic } from 'd3-ease'
 
 import rbush from 'rbush'
 
@@ -148,6 +149,8 @@ const iconMapping = {
     'anchorY': 128
   }
 }
+const fullTime = 4000
+let interval = -1
 export const inFlowColors = [
   [255, 255, 204],
   [199, 233, 180],
@@ -210,6 +213,7 @@ export default class DeckGLOverlay extends Component {
     super(props)
     this._tree = rbush(9, ['.x', '.y', '.x', '.y'])
     this.state = {
+      animatedFeature: [],
       arcs: this._getArcs(props.arcData),
       marker: this._getMarker(props),
       // geo: props.geoData || [],
@@ -220,8 +224,15 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
+  componentWillUnmount () {
+    if (interval !== -1) {
+      clearInterval(interval)
+      interval = -1
+    }
+  }
+
   componentWillReceiveProps (nextProps) {
-    const { markerData, arcData, /*geoData*/ } = this.props
+    const { contentIndex, markerData, arcData, geoData } = this.props
 
     if (
       nextProps.arcData !== arcData || !nextProps.arcData.every((el, i) => el === arcData[i])
@@ -242,14 +253,54 @@ export default class DeckGLOverlay extends Component {
     ) {
       this.setState({ marker: this._getMarker(nextProps) })
     }
-    //
-    // if (
-    //   nextProps.geoData !== geoData || !nextProps.geoData.every((el, i) => el === geoData[i])
-    // ) {
-    //   this.setState({
-    //     geo: nextProps.geoData
-    //   })
-    // }
+
+    if (nextProps.contentIndex !== contentIndex) {
+
+      if (interval !== -1) {
+        clearInterval(interval)
+        interval = -1
+      }
+
+      // animate if currentIndex has feature
+      const selectedFeature = geoData.filter(f => f.index === nextProps.contentIndex)[0]
+      if (selectedFeature) {
+        let step = 0
+        const numSteps = selectedFeature.geometry.coordinates.length // Change this to set animation resolution
+        let prevIndex = -1
+
+        const self = this
+        if (interval !== -1) {
+          clearInterval(interval)
+          interval = -1
+        }
+        interval = setInterval(function () {
+          step += 1
+          if (step > numSteps) {
+            clearInterval(interval)
+            interval = -1
+          } else {
+            let curDistance = step / numSteps
+            let nextIndex = Math.floor(easeCubic(curDistance) * numSteps)
+            if (nextIndex === numSteps) {
+              clearInterval(interval)
+              interval = -1
+              return
+            }
+            if (nextIndex !== prevIndex) {
+              self.setState({ animatedFeature: [{
+                'type': 'Feature',
+                'properties': {},
+                'geometry': {
+                  'coordinates': selectedFeature.geometry.coordinates.slice(0, nextIndex),
+                  'type': 'LineString'
+                }
+              }] })
+            }
+            prevIndex = nextIndex
+          }
+        }, fullTime / numSteps)
+      }
+    }
   }
 
   _getMarker ({ markerData, viewport }) {
@@ -341,7 +392,7 @@ export default class DeckGLOverlay extends Component {
 
   render () {
     const { viewport, strokeWidth, showCluster, geoData } = this.props
-    const { arcs, marker /*geo*/ } = this.state
+    const { animatedFeature, arcs, marker /* geo */ } = this.state
 
     const z = Math.floor(viewport.zoom)
     const size = showCluster ? 1 : Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
@@ -384,7 +435,7 @@ export default class DeckGLOverlay extends Component {
     if (geoData && geoData.length > 0) {
       layers.push(new GeoJsonLayer({
         id: 'geo',
-        data: geoData.filter(f => (f || {}).hidden),
+        data: geoData.filter(f => (f || {}).hidden === false).concat(animatedFeature),
         pickable: true,
         stroked: false,
         filled: true,
@@ -396,8 +447,8 @@ export default class DeckGLOverlay extends Component {
         getRadius: 100,
         getLineWidth: 10,
         getElevation: 30,
-        onHover: this.props.onHover,
-        onClick: this.props.onClick,
+        // onHover: this.props.onHover,
+        // onClick: this.props.onClick,
         // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
       }))
     }
