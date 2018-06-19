@@ -10,7 +10,7 @@ import FlatButton from 'material-ui/FlatButton'
 import compose from 'recompose/compose'
 import LinkedGallery from './contentMenuItems/LinkedGallery'
 import { setYear  as setYearAction} from '../map/timeline/actionReducers'
-import { selectValue } from '../map/actionReducers'
+import { selectValue, setEpicContentIndex } from '../map/actionReducers'
 import InfluenceChart from './Charts/ChartArea'
 import ArticleIframe from './ArticleIframe'
 
@@ -72,6 +72,7 @@ class EpicTimeline extends React.Component {
   handleNext = (newYear) => {
     const { stepIndex } = this.state
     this.setState({ stepIndex: stepIndex + 1, selectedWiki: false})
+    this.props.setEpicContentIndex(stepIndex + 1)
     if (!isNaN(newYear)) this.props.setYear(+newYear)
 
   };
@@ -79,6 +80,7 @@ class EpicTimeline extends React.Component {
   handlePrev = (newYear) => {
     const { stepIndex } = this.state
     this.setState({ stepIndex: stepIndex - 1, selectedWiki: false})
+    this.props.setEpicContentIndex(stepIndex - 1)
     if (!isNaN(newYear)) this.props.setYear(+newYear)
   };
 
@@ -86,6 +88,7 @@ class EpicTimeline extends React.Component {
     const { epicData } =  this.props
     const { selectedWiki, epicLinkedArticles } = this.state
     const itemTyep = (epicLinkedArticles[stepIndex] || {}).type
+    //TODO: fly to if coo, add geojson up to that index and animate current - if main, add all geojson
     if (itemTyep === 'html') {
       const content = (epicLinkedArticles[stepIndex] || {}).content
       return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
@@ -97,10 +100,12 @@ class EpicTimeline extends React.Component {
 
   _selectMainArticle = () => {
     this.setState({ stepIndex: -1 })
+    this.props.setEpicContentIndex(-1)
   }
 
   _selectStepButton = (index, newYear) => {
     this.setState({stepIndex: index, selectedWiki: false})
+    this.props.setEpicContentIndex(index)
     if (!isNaN(newYear)) this.props.setYear(+newYear)
   }
 
@@ -268,7 +273,8 @@ const enhance = compose(
     selectedItem: state.selectedItem,
   }), {
     setYear: setYearAction,
-    selectValue
+    selectValue,
+    setEpicContentIndex
   })
 )
 

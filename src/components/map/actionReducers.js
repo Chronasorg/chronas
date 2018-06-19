@@ -1,6 +1,7 @@
 export const SET_WIKI_ID = 'SET_WIKI_ID'
 export const SET_DATA = 'SET_DATA'
 export const SET_AREA_ITEM = 'SET_AREA_ITEM'
+export const SET_EPIC_INDEX = 'SET_EPIC_INDEX'
 export const SET_MARKER_ITEM = 'SET_MARKER_ITEM'
 export const SET_LINKED_ITEM = 'SET_LINKED_ITEM'
 export const SET_VALUE = 'SET_VALUE'
@@ -32,6 +33,11 @@ export const selectValue = value => ({
 export const setData = data => ({
   type: SET_DATA,
   payload: data,
+})
+
+export const setEpicContentIndex = index => ({
+  type: SET_EPIC_INDEX,
+  payload: index,
 })
 
 export const setFullItem = (wiki, province, type, data) => ({
@@ -83,6 +89,14 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
           ...previousState,
           data: payload,
         }
+      case SET_EPIC_INDEX: {
+        const prevData = previousState.data
+        if (prevData) prevData.contentIndex = payload
+        return {
+          ...previousState,
+          data: prevData,
+        }
+      }
       case SET_FULL_ITEM:
         return {
           wiki: payload[0],

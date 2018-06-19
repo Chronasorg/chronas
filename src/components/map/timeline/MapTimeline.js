@@ -58,7 +58,7 @@ class MapTimeline extends Component {
     // http://localhost:4040/v1/metadata?type=e&end=10000&subtype=war add wars
 
     let timelineOptions = this.state.timelineOptions
-    timelineOptions.start = '-000301-01-01'
+    delete timelineOptions.start
     this.setState({ timelineOptions })
 
   }

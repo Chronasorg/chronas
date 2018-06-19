@@ -28,7 +28,7 @@ import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
 const turf = require('@turf/turf')
 
-const MAPBOX_TOKEN = "pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A"
+const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A'
 
 // defines fill-opacity when Population Opacity is switched on
 const opacityPopBounds = [0.3, 0.8]
@@ -45,6 +45,7 @@ class Map extends Component {
     year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
     data: null,
     markerData: [],
+    geoData: [],
     epics: [],
     arcData: [],
     viewport: {
@@ -142,7 +143,7 @@ class Map extends Component {
           'type': 'categorical',
           'stops': culStops,
           'default': 'rgba(1,1,1,0.3)'
-          }
+        }
       ))
 
     if (shouldReset) setModToUpdate('')
@@ -287,7 +288,7 @@ class Map extends Component {
           .setIn(['layers', areaColorLayerIndex[newColor], 'paint', 'fill-opacity'], fromJS(
             ['interpolate', ['linear'], ['get', 'p'],
               0, opacityPopBounds[0],
-              populationMax/20, opacityPopBounds[1]
+              populationMax / 20, opacityPopBounds[1]
             ]
           ))
         }
@@ -358,16 +359,18 @@ class Map extends Component {
     /** Acting on store changes **/
     if (nextProps.history.location.pathname === '/discover') {
       this.setState({ mapTimelineContainerClass: 'mapTimeline discoverActive' })
-    } else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '') {
+    }
+    else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '') {
       this.setState({ mapTimelineContainerClass: 'mapTimeline' })
     }
 
     // Leaving Epic? -> cleanup
     if (selectedItem.type === TYPE_EPIC && nextProps.selectedItem.type !== TYPE_EPIC) {
       mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, TYPE_EPIC)
-      this.setState({ arcData: [] })
+      this.setState({ arcData: [], geoData: [] })
     }
 
+    // slected item changed?
     if (selectedItem.value !== nextProps.selectedItem.value) {
       console.debug('###### Item changed')
       if (nextProps.selectedItem.wiki === 'random') {
@@ -427,8 +430,13 @@ class Map extends Component {
       }
     }
 
-    if (nextProps.selectedItem.type === TYPE_EPIC && (nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id))) {
-
+    // selected item is EPIC?
+    if (nextProps.selectedItem.type === TYPE_EPIC) {
+      // contentIndex changed?
+      if (((nextProps.selectedItem || {}).data || {}).contentIndex && ((selectedItem || {}).data || {}).contentIndex && nextProps.selectedItem.data.contentIndex !== selectedItem.data.contentIndex) {
+        this._updateEpicGeo(nextProps.selectedItem.data.contentIndex)
+      }
+      if (nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id)) {
       // TODO: only go ahead if selectedYear is starting year
 
       // setup new epic!
@@ -468,9 +476,9 @@ class Map extends Component {
 
                       const provInQuestion = provinceGeojsonArr.find(prov => prov.properties.name === provId)
                       const targetCentroid = turf.centroid(provInQuestion)
-                      const sourceCentroid = turf.nearest(targetCentroid,  turf.featureCollection(centroidsParticipants[newRuler]))
+                      const sourceCentroid = turf.nearest(targetCentroid, turf.featureCollection(centroidsParticipants[newRuler]))
                       const rulerColorPr = metadata.ruler[newRuler][1]
-                      const rulerColor = (rulerColorPr.indexOf("rgb(") > -1) ? rulerColorPr.substring(4, rulerColorPr.length - 1).split(",").map(el => +el) : [100, 100, 100]
+                      const rulerColor = (rulerColorPr.indexOf('rgb(') > -1) ? rulerColorPr.substring(4, rulerColorPr.length - 1).split(',').map(el => +el) : [100, 100, 100]
 
                       arcData.push([sourceCentroid.geometry.coordinates, targetCentroid.geometry.coordinates, rulerColor])
                     }
@@ -535,14 +543,31 @@ class Map extends Component {
             axios.all(rulerPromises)
               .then(axios.spread((...args) => {
                 if (epicWiki && args.length > 0) {
-                  newEpicEntities.data.content = (args[0].data || {}).map //TODO: it should be this way later on with proper linked items
+                  newEpicEntities.data.content = (args[0].data || {}).map // TODO: it should be this way later on with proper linked items
                   this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
+                  const allEpicFeatures = newEpicEntities.data.content
+                    .map((el, index) => {
+                      if (!el.properties) el.properties = {}
+                      el.properties.index = index
+                      return el
+                    })
+                    .filter(el => (el.properties || {}).f)
+                    .map((el) => {
+                      const featureToReturn = el.properties.f
+                      if (!featureToReturn.properties) featureToReturn.properties = {}
+                      featureToReturn.index = el.properties.index
+                      featureToReturn.hidden = false
+                      return featureToReturn
+                    })
+
+                  if (allEpicFeatures && allEpicFeatures.length > 0) this.setState({ geoData: allEpicFeatures })
                   args.shift()
                 }
                 this.props.setData({
                   id: newEpicEntities._id,
                   data: newEpicEntities,
-                  rulerEntities: args.map((res, i) => { return { ...res.data, id: flatternedParticipants[i] } })
+                  rulerEntities: args.map((res, i) => { return { ...res.data, id: flatternedParticipants[i] } }),
+                  contentIndex: -1
                 })
 
                 this.props.history.push('/article')
@@ -551,6 +576,7 @@ class Map extends Component {
               .catch((err) => console.debug('wer got an error', err))
           })
       }
+    }
     }
 
     // Leaving Area Mod?
@@ -663,17 +689,17 @@ class Map extends Component {
       if (nextProps.mapStyles.showProvinceBorders) {
         // display province borders!
         mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
-          .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,.2)"))
-          .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,.2)"))
-          .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,.2)"))
-          .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,.2)"))
+          .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-outline-color'], fromJS('rgba(0,0,0,.2)'))
+          .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-outline-color'], fromJS('rgba(0,0,0,.2)'))
+          .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-outline-color'], fromJS('rgba(0,0,0,.2)'))
+          .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-outline-color'], fromJS('rgba(0,0,0,.2)'))
       } else {
         // hide province borders!
         mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
-          .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,0)"))
-          .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,0)"))
-          .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,0)"))
-          .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-outline-color'], fromJS("rgba(0,0,0,0)"))
+          .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-outline-color'], fromJS('rgba(0,0,0,0)'))
+          .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-outline-color'], fromJS('rgba(0,0,0,0)'))
+          .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-outline-color'], fromJS('rgba(0,0,0,0)'))
+          .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-outline-color'], fromJS('rgba(0,0,0,0)'))
       }
     }
 
@@ -807,7 +833,7 @@ class Map extends Component {
         })))
       this.setState({ mapStyle })
     } else if (entityId.toString() !== '') {
-      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + (newYear ? newYear : this.props.selectedYear))
+      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + (newYear || this.props.selectedYear))
         .then(features => {
           // const mapStyle = this.state.mapStyle
           //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
@@ -815,7 +841,7 @@ class Map extends Component {
           if (newYear) {
             this.setState({ markerData: features.data })
           } else {
-            this.setState({ markerData: this.state.markerData.concat(features.data)})
+            this.setState({ markerData: this.state.markerData.concat(features.data) })
           }
         })
     }
@@ -862,10 +888,9 @@ class Map extends Component {
           'features': [ ]
         }))
     } else {
-
       this.setState({ markerData: this.state.markerData.filter(function (obj) {
         return (obj.properties.t !== entityId)
-      })})
+      }) })
       return prevMapStyle
         // .updateIn(['sources', sourceId, 'data', 'features'], list => list.filter(function (obj) {
         //   return (obj.properties.t !== entityId)
@@ -878,6 +903,26 @@ class Map extends Component {
       this._removeGeoJson(sourceId, entityId)
       this._addGeoJson(sourceId, entityId)
     }, 500)
+  }
+
+  _updateEpicGeo = (selectedIndex, animate = true) => {
+    if (animate) {
+      this.setState((prevState) => {
+        return { geoData: prevState.geoData.map((f) => {
+            if (f.properties.index > selectedIndex) {
+              f.properties.hidden = true
+            } else {
+              f.properties.hidden = false
+            }
+            return f
+          }) }
+      })
+    } else {
+
+    }
+    // prune until index and animate (?)
+
+    // animate index
   }
 
   _changeYear = (year) => {
@@ -966,7 +1011,7 @@ class Map extends Component {
     let itemName = ''
     let wikiId = ''
 
-    if ((modActive.type === TYPE_MARKER || modActive.type === TYPE_METADATA)&& modActive.selectActive) {
+    if ((modActive.type === TYPE_MARKER || modActive.type === TYPE_METADATA) && modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
     } else if (modActive.type === TYPE_AREA) {
@@ -1075,7 +1120,7 @@ class Map extends Component {
   }
 
   render () {
-    const { epics, markerData, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
+    const { epics, markerData, geoData, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
     const { modActive, menuDrawerOpen, rightDrawerOpen, mapStyles } = this.props
 
     let leftOffset = (menuDrawerOpen) ? 156 : 56
@@ -1118,6 +1163,7 @@ class Map extends Component {
         >
           <DeckGLOverlay
             viewport={viewport}
+            geoData={geoData}
             markerData={markerData}
             arcData={arcData}
             showCluster={mapStyles.clusterMarkers}

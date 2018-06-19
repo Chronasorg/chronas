@@ -1,150 +1,151 @@
 import React, { Component } from 'react'
 import { scaleQuantile } from 'd3-scale'
+import {rgb} from 'd3-color';
+
 import rbush from 'rbush'
 
-import DeckGL, {WebMercatorViewport, IconLayer, GeoJsonLayer,  ArcLayer } from 'deck.gl'
-
+import DeckGL, { WebMercatorViewport, IconLayer, GeoJsonLayer, ArcLayer } from 'deck.gl'
 const ICON_SIZE = 100
 const iconMapping = {
-  "marker-1": {
-    "x": 0,
-    "y": 0,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-1': {
+    'x': 0,
+    'y': 0,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-2": {
-    "x": 128,
-    "y": 0,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-2': {
+    'x': 128,
+    'y': 0,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-3": {
-    "x": 256,
-    "y": 0,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-3': {
+    'x': 256,
+    'y': 0,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-4": {
-    "x": 384,
-    "y": 0,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-4': {
+    'x': 384,
+    'y': 0,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-5": {
-    "x": 0,
-    "y": 128,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-5': {
+    'x': 0,
+    'y': 128,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-6": {
-    "x": 128,
-    "y": 128,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-6': {
+    'x': 128,
+    'y': 128,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-7": {
-    "x": 256,
-    "y": 128,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-7': {
+    'x': 256,
+    'y': 128,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-8": {
-    "x": 384,
-    "y": 128,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-8': {
+    'x': 384,
+    'y': 128,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-9": {
-    "x": 0,
-    "y": 256,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-9': {
+    'x': 0,
+    'y': 256,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-10": {
-    "x": 128,
-    "y": 256,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-10': {
+    'x': 128,
+    'y': 256,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-20": {
-    "x": 256,
-    "y": 256,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-20': {
+    'x': 256,
+    'y': 256,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-30": {
-    "x": 384,
-    "y": 256,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-30': {
+    'x': 384,
+    'y': 256,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-40": {
-    "x": 0,
-    "y": 384,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-40': {
+    'x': 0,
+    'y': 384,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-50": {
-    "x": 128,
-    "y": 384,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-50': {
+    'x': 128,
+    'y': 384,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-60": {
-    "x": 256,
-    "y": 384,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-60': {
+    'x': 256,
+    'y': 384,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-70": {
-    "x": 384,
-    "y": 384,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-70': {
+    'x': 384,
+    'y': 384,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-80": {
-    "x": 0,
-    "y": 512,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-80': {
+    'x': 0,
+    'y': 512,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-90": {
-    "x": 128,
-    "y": 512,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-90': {
+    'x': 128,
+    'y': 512,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker-100": {
-    "x": 256,
-    "y": 512,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker-100': {
+    'x': 256,
+    'y': 512,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   },
-  "marker": {
-    "x": 384,
-    "y": 512,
-    "width": 128,
-    "height": 128,
-    "anchorY": 128
+  'marker': {
+    'x': 384,
+    'y': 512,
+    'width': 128,
+    'height': 128,
+    'anchorY': 128
   }
 }
 export const inFlowColors = [
@@ -167,21 +168,30 @@ export const outFlowColors = [
   [177, 0, 38]
 ]
 
-function getIconName(size) {
+function getIconName (size) {
   if (size === 0) {
-    return '';
+    return ''
   }
   if (size < 10) {
-    return `marker-${size}`;
+    return `marker-${size}`
   }
   if (size < 100) {
-    return `marker-${Math.floor(size / 10)}0`;
+    return `marker-${Math.floor(size / 10)}0`
   }
-  return 'marker-100';
+  return 'marker-100'
 }
 
-function getIconSize(size) {
-  return Math.min(100, size) / 100 * 0.5 + 0.5;
+function getIconSize (size) {
+  return Math.min(100, size) / 100 * 0.5 + 0.5
+}
+
+function colorToRGBArray (color) {
+  if (Array.isArray(color)) {
+    return color.slice(0, 4)
+  }
+
+  const c = rgb(color)
+  return [c.r, c.g, c.b, 255]
 }
 
 export default class DeckGLOverlay extends Component {
@@ -201,7 +211,8 @@ export default class DeckGLOverlay extends Component {
     this._tree = rbush(9, ['.x', '.y', '.x', '.y'])
     this.state = {
       arcs: this._getArcs(props.arcData),
-      markerData: this._getMarker(props),
+      marker: this._getMarker(props),
+      // geo: props.geoData || [],
       x: 0,
       y: 0,
       hoveredItems: null,
@@ -210,7 +221,7 @@ export default class DeckGLOverlay extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    const { markerData, arcData } = this.props
+    const { markerData, arcData, /*geoData*/ } = this.props
 
     if (
       nextProps.arcData !== arcData || !nextProps.arcData.every((el, i) => el === arcData[i])
@@ -220,8 +231,8 @@ export default class DeckGLOverlay extends Component {
       })
     }
 
-    const {viewport} = nextProps;
-    const oldViewport = this.props.viewport;
+    const { viewport } = nextProps
+    const oldViewport = this.props.viewport
 
     if (
       (nextProps.showCluster || (this.props.showCluster !== nextProps.showCluster)) &&
@@ -229,39 +240,47 @@ export default class DeckGLOverlay extends Component {
       viewport.width !== oldViewport.width ||
       viewport.height !== oldViewport.height
     ) {
-      this.setState({ marker: this._getMarker(nextProps) });
+      this.setState({ marker: this._getMarker(nextProps) })
     }
+    //
+    // if (
+    //   nextProps.geoData !== geoData || !nextProps.geoData.every((el, i) => el === geoData[i])
+    // ) {
+    //   this.setState({
+    //     geo: nextProps.geoData
+    //   })
+    // }
   }
 
-  _getMarker({markerData, viewport}) {
+  _getMarker ({ markerData, viewport }) {
     if (!markerData) {
-      return false;
+      return false
     }
 
-    const tree = this._tree;
+    const tree = this._tree
 
     const transform = new WebMercatorViewport({
       ...viewport,
       zoom: 0
-    });
+    })
 
     markerData.forEach(p => {
-      const screenCoords = transform.project(p.coo);
-      p.x = screenCoords[0];
-      p.y = screenCoords[1];
-      p.zoomLevels = [];
-    });
+      const screenCoords = transform.project(p.coo)
+      p.x = screenCoords[0]
+      p.y = screenCoords[1]
+      p.zoomLevels = []
+    })
 
-    tree.clear();
-    tree.load(markerData);
+    tree.clear()
+    tree.load(markerData)
 
     for (let z = 0; z <= 20; z++) {
-      const radius = ICON_SIZE / 2 / Math.pow(2, z);
+      const radius = ICON_SIZE / 2 / Math.pow(2, z)
 
       markerData.forEach(p => {
         if (p.zoomLevels[z] === undefined) {
           // this point does not belong to a cluster
-          const {x, y} = p;
+          const { x, y } = p
 
           // find all points within radius that do not belong to a cluster
           const neighbors = tree
@@ -271,7 +290,7 @@ export default class DeckGLOverlay extends Component {
               maxX: x + radius,
               maxY: y + radius
             })
-            .filter(neighbor => neighbor.zoomLevels[z] === undefined);
+            .filter(neighbor => neighbor.zoomLevels[z] === undefined)
 
           // only show the center point at this zoom level
           neighbors.forEach(neighbor => {
@@ -280,11 +299,11 @@ export default class DeckGLOverlay extends Component {
                 icon: getIconName(neighbors.length),
                 size: getIconSize(neighbors.length),
                 points: neighbors
-              };
+              }
             } else {
-              neighbor.zoomLevels[z] = null;
+              neighbor.zoomLevels[z] = null
             }
-          });
+          })
         }
       })
     }
@@ -321,17 +340,17 @@ export default class DeckGLOverlay extends Component {
   }
 
   render () {
-    const { viewport, strokeWidth, showCluster } = this.props
-    const { arcs, marker } = this.state
+    const { viewport, strokeWidth, showCluster, geoData } = this.props
+    const { arcs, marker /*geo*/ } = this.state
 
-    const z = Math.floor(viewport.zoom);
-    const size = showCluster ? 1 : Math.min(Math.pow(1.5, viewport.zoom - 10), 1);
-    const updateTrigger = z * showCluster;
+    const z = Math.floor(viewport.zoom)
+    const size = showCluster ? 1 : Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
+    const updateTrigger = z * showCluster
 
     // console.debug("remder iconlayer with data", iconData)
     const layers = []
 
-    if (marker) {
+    if (marker && marker.length > 0) {
       layers.push(new IconLayer({
         id: 'icon',
         data: marker,
@@ -350,7 +369,7 @@ export default class DeckGLOverlay extends Component {
         }
       }))
     }
-    if (arcs) {
+    if (arcs && arcs.length > 0) {
       layers.push(new ArcLayer({
         id: 'arc',
         data: arcs,
@@ -359,6 +378,27 @@ export default class DeckGLOverlay extends Component {
         getSourceColor: d => d.color,
         getTargetColor: d => d.color,
         strokeWidth
+      }))
+    }
+
+    if (geoData && geoData.length > 0) {
+      layers.push(new GeoJsonLayer({
+        id: 'geo',
+        data: geoData.filter(f => (f || {}).hidden),
+        pickable: true,
+        stroked: false,
+        filled: true,
+        extruded: true,
+        lineWidthScale: 20,
+        lineWidthMinPixels: 4,
+        getFillColor: [255, 160, 180, 200],
+        getLineColor: d => colorToRGBArray(d.properties.color),
+        getRadius: 100,
+        getLineWidth: 10,
+        getElevation: 30,
+        onHover: this.props.onHover,
+        onClick: this.props.onClick,
+        // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
       }))
     }
 
