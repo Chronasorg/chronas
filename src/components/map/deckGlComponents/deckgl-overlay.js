@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import { scaleQuantile } from 'd3-scale'
 import { rgb } from 'd3-color'
 import { easeCubic } from 'd3-ease'
-
 import rbush from 'rbush'
-
 import DeckGL, { WebMercatorViewport, IconLayer, GeoJsonLayer, ArcLayer } from 'deck.gl'
+const Arc = require('arc')
+
 const ICON_SIZE = 100
 const iconMapping = {
   'marker-1': {
@@ -228,6 +228,7 @@ export default class DeckGLOverlay extends Component {
     if (interval !== -1) {
       clearInterval(interval)
       interval = -1
+      this.setState({ animatedFeature: [] })
     }
   }
 
@@ -254,18 +255,37 @@ export default class DeckGLOverlay extends Component {
       this.setState({ marker: this._getMarker(nextProps) })
     }
 
+    if ((nextProps.geoData || []).length === 0) {
+      clearInterval(interval)
+      interval = -1
+      this.setState({ animatedFeature: [] })
+    }
     if (nextProps.contentIndex !== contentIndex) {
 
       if (interval !== -1) {
         clearInterval(interval)
         interval = -1
+        this.setState({ animatedFeature: [] })
       }
 
       // animate if currentIndex has feature
-      const selectedFeature = geoData.filter(f => f.index === nextProps.contentIndex)[0]
+      let selectedFeature = geoData.filter(f => f.index === nextProps.contentIndex)[0]
       if (selectedFeature) {
         let step = 0
-        const numSteps = selectedFeature.geometry.coordinates.length // Change this to set animation resolution
+        let lineToAnimate
+
+        if (/*selectedFeature.connect ===*/ true && (selectedFeature.geometry.coordinates || []).length === 2 ) {
+          const prevFeature = geoData.filter(f => f.index === nextProps.contentIndex - 1)[0]
+          const end = { x: selectedFeature.geometry.coordinates[0], y: selectedFeature.geometry.coordinates[1] }
+          const start = { x: prevFeature.geometry.coordinates[0], y: prevFeature.geometry.coordinates[1] }
+          const generator = new Arc.GreatCircle(start, end, {})
+          lineToAnimate = generator.Arc(100, {offset:10}).geometries[0].coords
+        } else {
+          lineToAnimate = (((selectedFeature.properties || {}).f || {}).geometry || {}).coordinates
+          if (!lineToAnimate) return
+        }
+
+        const numSteps = lineToAnimate.length // Change this to set animation resolution
         let prevIndex = -1
 
         const self = this
@@ -291,7 +311,7 @@ export default class DeckGLOverlay extends Component {
                 'type': 'Feature',
                 'properties': {},
                 'geometry': {
-                  'coordinates': selectedFeature.geometry.coordinates.slice(0, nextIndex),
+                  'coordinates': lineToAnimate.slice(0, nextIndex),
                   'type': 'LineString'
                 }
               }] })
@@ -432,10 +452,10 @@ export default class DeckGLOverlay extends Component {
       }))
     }
 
-    if (geoData && geoData.length > 0) {
+    if (animatedFeature || (geoData && geoData.length > 0)) {
       layers.push(new GeoJsonLayer({
         id: 'geo',
-        data: geoData.filter(f => (f || {}).hidden === false).concat(animatedFeature),
+        data: geoData.filter(f => ((f || {}).hidden === false && ((f || {}).properties || {}).f)).map(f => f.properties.f).concat(animatedFeature),
         pickable: true,
         stroked: false,
         filled: true,

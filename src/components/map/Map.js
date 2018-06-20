@@ -588,18 +588,18 @@ class Map extends Component {
                   this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
                   const allEpicFeatures = newEpicEntities.data.content
                     .map((el, index) => {
-                      if (!el.properties) el.properties = {}
-                      el.properties.index = index
+                      el.index = index
+                      el.hidden = false
                       return el
                     })
-                    .filter(el => (el.properties || {}).f)
-                    .map((el) => {
-                      const featureToReturn = el.properties.f
-                      if (!featureToReturn.properties) featureToReturn.properties = {}
-                      featureToReturn.index = el.properties.index
-                      featureToReturn.hidden = false
-                      return featureToReturn
-                    })
+                    // .filter(el => (el.properties || {}).f)
+                    // .map((el) => {
+                    //   // const featureToReturn = el.properties.f
+                    //   // if (!featureToReturn.properties) featureToReturn.properties = {}
+                    //   // featureToReturn.index = el.properties.index
+                    //   el.hidden = false
+                    //   return el
+                    // })
 
                   if (allEpicFeatures && allEpicFeatures.length > 0) this.setState({ geoData: allEpicFeatures })
                   args.shift()
