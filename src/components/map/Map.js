@@ -439,8 +439,17 @@ class Map extends Component {
         typeof contentIndex !== "undefined" &&
         nextProps.contentIndex !== contentIndex) {
         this._updateEpicGeo(nextProps.contentIndex)
-        const selectedFeature = (((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || []).filter(f => f.properties.index === nextProps.contentIndex)[0]
-        const prevFeature = (((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || []).filter(f => f.properties.index === nextProps.contentIndex - 1)[0]
+        const content = (((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || [])
+        const selectedFeature = content.filter(f => f.index === nextProps.contentIndex)[0]
+        let prevFeature
+        for (let i = +nextProps.contentIndex -1; i > -1; i--) {
+          const currCoords = ((content[i] || {}).geometry || {}).coordinates || []
+          if (currCoords.length === 2) {
+            prevFeature = content[i]
+            break
+          }
+        }
+
         if (selectedFeature && selectedFeature.geometry.coordinates && selectedFeature.geometry.coordinates.length > 1) {
           if (prevFeature && prevFeature.geometry.coordinates && prevFeature.geometry.coordinates.length > 1) {
 

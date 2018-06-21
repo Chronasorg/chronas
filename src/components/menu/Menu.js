@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import BoardIcon from 'material-ui/svg-icons/communication/forum'
 import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
+import ShareIcon from 'material-ui/svg-icons/social/share'
+import HelpIcon from 'material-ui/svg-icons/action/help'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import UsersIcon from 'material-ui/svg-icons/social/people'
@@ -165,6 +167,28 @@ class Menu extends PureComponent {
             </div>
             ) : null
           }
+          <IconButton
+            key={'share'}
+            containerElement={<Link to="/share" />}
+            tooltipPosition="bottom-right"
+            tooltip={translate('pos.share')}
+            tooltipStyles={tooltip}
+            onClick={() => setActiveMenu('share')}
+            iconStyle={{color: '#fff'}}
+          >
+            <ShareIcon hoverColor={chronasMainColor}/>
+          </IconButton>
+          <IconButton
+            key={'help'}
+            containerElement={<Link to="/info" />}
+            tooltipPosition="bottom-right"
+            tooltip={translate('pos.help')}
+            tooltipStyles={tooltip}
+            onClick={() => setActiveMenu('info')}
+            iconStyle={{color: '#fff'}}
+          >
+            <HelpIcon hoverColor={chronasMainColor}/>
+          </IconButton>
           <IconButton
             tooltipPosition="bottom-right"
             tooltip={translate(isLoggedIn ? 'auth.logout' : 'auth.login')}

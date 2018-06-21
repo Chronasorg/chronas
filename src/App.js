@@ -36,6 +36,8 @@ import { history } from './store/createStore'
 import Account from './components/menu/account/Account'
 import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
+import Information from './components/menu/information/Information'
+import Share from './components/menu/configuration/Configuration'
 import RightDrawerRoutes from './components/content/RightDrawerRoutes'
 import Discover from './components/menu/discover/Discover'
 import Login from './components/menu/authentication/Login'
@@ -215,6 +217,8 @@ class App extends Component {
                         <Route exact path='/configuration' component={Configuration} />
                         <Route exact path='/discover' component={Discover} />
                         <Route exact path='/login' component={Login} />
+                        <Route exact path='/share' component={Share} />
+                        <Route exact path='/info' component={Information} />
                       </Switch>
                       <Switch>
                         <CrudRoute history={history} />

@@ -3,7 +3,7 @@ import { scaleQuantile } from 'd3-scale'
 import { rgb } from 'd3-color'
 import { easeCubic } from 'd3-ease'
 import rbush from 'rbush'
-import DeckGL, { WebMercatorViewport, IconLayer, GeoJsonLayer, ArcLayer } from 'deck.gl'
+import DeckGL, { WebMercatorViewport, IconLayer, PathLayer, GeoJsonLayer, ArcLayer } from 'deck.gl'
 const Arc = require('arc')
 
 const ICON_SIZE = 100
@@ -149,8 +149,9 @@ const iconMapping = {
     'anchorY': 128
   }
 }
-const fullTime = 4000
+const fullTime = 6000
 let interval = -1
+
 export const inFlowColors = [
   [255, 255, 204],
   [199, 233, 180],
@@ -274,10 +275,18 @@ export default class DeckGLOverlay extends Component {
         let step = 0
         let lineToAnimate
 
-        if (/*selectedFeature.connect ===*/ true && (selectedFeature.geometry.coordinates || []).length === 2 ) {
-          const prevFeature = geoData.filter(f => f.index === nextProps.contentIndex - 1)[0]
+        if (selectedFeature.connect !== true && (selectedFeature.geometry.coordinates || []).length === 2 ) {
+          let prevCoords
+          for (let i = +nextProps.contentIndex -1; i > -1; i--) {
+            const currCoords = ((geoData[i] || {}).geometry || {}).coordinates || []
+            if (currCoords.length === 2) {
+              prevCoords = currCoords
+              break;
+            }
+          }
+          if (!prevCoords) return
           const end = { x: selectedFeature.geometry.coordinates[0], y: selectedFeature.geometry.coordinates[1] }
-          const start = { x: prevFeature.geometry.coordinates[0], y: prevFeature.geometry.coordinates[1] }
+          const start = { x: prevCoords[0], y: prevCoords[1] }
           const generator = new Arc.GreatCircle(start, end, {})
           lineToAnimate = generator.Arc(100, {offset:10}).geometries[0].coords
         } else {
@@ -452,21 +461,37 @@ export default class DeckGLOverlay extends Component {
       }))
     }
 
-    if (animatedFeature || (geoData && geoData.length > 0)) {
-      layers.push(new GeoJsonLayer({
-        id: 'geo',
-        data: geoData.filter(f => ((f || {}).hidden === false && ((f || {}).properties || {}).f)).map(f => f.properties.f).concat(animatedFeature),
-        pickable: true,
-        stroked: false,
-        filled: true,
-        extruded: true,
-        lineWidthScale: 20,
-        lineWidthMinPixels: 4,
-        getFillColor: [255, 160, 180, 200],
-        getLineColor: d => colorToRGBArray(d.properties.color),
-        getRadius: 100,
-        getLineWidth: 10,
-        getElevation: 30,
+    const currPathArr = ((animatedFeature[0] || {}).geometry || {}).coordinates || []
+    if (currPathArr || (geoData && geoData.length > 0)) {
+      layers.push(new PathLayer({
+        id: 'path-layer',
+        data: [{
+               path: currPathArr,
+               name: 'Route',
+               color: [200, 50, 50]
+             }],
+        pickable: false,
+        getDashArray: () => [10, 100],
+        widthScale: 100,
+        widthMinPixels: 5,
+        getPath: d => d.path,
+        getColor: d => colorToRGBArray(d.color),
+        getWidth: d => 30,
+
+        // id: 'geo',
+        // data: geoData.filter(f => ((f || {}).hidden === false && ((f || {}).properties || {}).f)).map(f => f.properties.f).concat(animatedFeature),
+        // pickable: true,
+        // stroked: false,
+        // filled: true,
+        // extruded: true,
+        // lineWidthScale: 20,
+        // lineWidthMinPixels: 4,
+        // getFillColor: [255, 160, 180, 200],
+        // getLineColor: d => colorToRGBArray(d.properties.color),
+        // getRadius: 100,
+        // getLineWidth: 10,
+        // getElevation: 30,
+
         // onHover: this.props.onHover,
         // onClick: this.props.onClick,
         // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)

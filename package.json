@@ -28,7 +28,7 @@
     "aor-json-rest-client": "2.1.0",
     "aor-language-french": "^1.8.1",
     "aor-rich-text-input": "^1.0.2",
-    "arc": "git@github.com:daumann/arc.js.git",
+    "arc": "^0.1.1",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.0",
     "compression": "^1.7.2",

@@ -36,6 +36,8 @@ export default {
     discover_label: 'Discover the year ',
     language: 'Language',
     random: 'Random Article',
+    help: 'Intro and Information',
+    share: 'Share as link or export image',
     resources: 'Resources',
     users: 'Manage Users',
     upvote: 'Interesting and accurate',
