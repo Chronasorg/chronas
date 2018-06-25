@@ -63,6 +63,13 @@
         "type": "FeatureCollection",
         "features": []
       }
+    },
+    "epicroute": {
+      "type": "geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": []
+      }
     }
   },
   "transition": {
@@ -291,6 +298,16 @@
         "circle-stroke-color": "#fff"
       },
       "interactive": true
+    },
+    {
+      "id": "epicroute",
+      "type": "line",
+      "source": "epicroute",
+      "paint": {
+        "line-color": "rgb(200,22,22)",
+        "line-width": 6,
+        "line-dasharray": [0, 3, 3]
+      }
     }
   ]
 }

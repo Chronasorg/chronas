@@ -11,7 +11,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
 import { setLoadStatus, setMetadata } from './components/map/data/actionReducers'
 import { TYPE_MARKER, TYPE_AREA, selectAreaItem, selectMarkerItem } from './components/map/actionReducers'
-import { setMarker, setAreaColorLabel } from './components/menu/layers/actionReducers'
+import { setMarker, setEpic, setAreaColorLabel } from './components/menu/layers/actionReducers'
 import { setYear } from './components/map/timeline/actionReducers'
 import queryString from 'query-string'
 import {
@@ -37,7 +37,7 @@ import Account from './components/menu/account/Account'
 import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
 import Information from './components/menu/information/Information'
-import Share from './components/menu/configuration/Configuration'
+import Share from './components/menu/share/Share'
 import RightDrawerRoutes from './components/content/RightDrawerRoutes'
 import Discover from './components/menu/discover/Discover'
 import Login from './components/menu/authentication/Login'
@@ -91,7 +91,7 @@ class App extends Component {
   }
 
   componentWillMount () {
-    const { setYear, setMarker, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
+    const { setYear, setMarker, setEpic, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
 
     const selectedYear = (utilsQuery.getURLParameter('year') || 1000)
     const activeArea = {
@@ -105,9 +105,11 @@ class App extends Component {
       value: (utilsQuery.getURLParameter('value') || ''),
     }
     const selectedMarker = (utilsQuery.getURLParameter('markers') || '')
+    const selectedEpics = (utilsQuery.getURLParameter('epics') || '')
 
     setYear(selectedYear)
     if (selectedMarker !== '') setMarker(selectedMarker.split(','))
+    if (selectedEpics !== '') setEpic(selectedEpics.split(','))
     if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
     if (selectedItem.type === TYPE_AREA) {
       selectAreaItem('-1', selectedItem.value)
@@ -118,6 +120,7 @@ class App extends Component {
     // initialize queryparameters
     window.history.pushState('', '',
       '?year=' + selectedYear +
+      '&epics=' + selectedEpics +
       '&markers=' + selectedMarker +
       '&type=' + selectedItem.type +
       '&fill=' + activeArea.color +
@@ -262,6 +265,7 @@ const mapDispatchToProps = {
   setLoadStatus,
   setMetadata,
   setMarker,
+  setEpic,
   setAreaColorLabel,
   selectAreaItem,
   selectMarkerItem,

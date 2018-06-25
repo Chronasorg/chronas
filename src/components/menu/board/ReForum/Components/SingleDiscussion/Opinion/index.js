@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import moment from 'moment'
 import classnames from 'classnames'
 import styles from './styles.css'
@@ -32,13 +33,15 @@ class Opinion extends Component {
 
     const allowDelete = (userId === currentUserId) || (currentUserRole === 'admin')
 
+    const finalAvatarUrl = userAvatar ? <img className='Opinion_avatar' src={userAvatar} alt={`${name} avatar`} /> : <AccountIcon className='Opinion_avatar' />
+
     return (
       <div className='Opinion_container'>
         <div className='Opinion_infoContainer'>
-          { !userProfile && <img className='Opinion_avatar' src={userAvatar} /> }
+          { !userProfile && finalAvatarUrl }
           <div className='Opinion_userInfo'>
-            { !userProfile && <Link to={`/board/user/${userGitHandler}`} className='Opinion_name'>{userName || userGitHandler}</Link> }
-            { userProfile && <Link to={`/board/${forum.forum_slug}/discussion/${discussion.discussion_slug}`} className='Opinion_name'>{forum.forum_name} -> {discussion.title}</Link> }
+            { !userProfile && <Link to={`/community/user/${userGitHandler}`} className='Opinion_name'>{userName || userGitHandler}</Link> }
+            { userProfile && <Link to={`/community/${forum.forum_slug}/discussion/${discussion.discussion_slug}`} className='Opinion_name'>{forum.forum_name} -> {discussion.title}</Link> }
           </div>
           <div className='dateInfo'>{dateDisplay}</div>
           { !userProfile && allowDelete && <Button className='deleteButton' noUppercase onClick={() => { deleteAction(opinionId) }}>
@@ -63,8 +66,7 @@ class Opinion extends Component {
 
 Opinion.defaultProps = {
   opinionId: '12345',
-  userAvatar: PlaceholderImage,
-  userName: 'User name',
+  userName: 'n/a',
   userGitHandler: 'github',
   opDate: 'a day ago',
   opContent: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',

@@ -39,10 +39,16 @@ body {
 
 .classReveal {
   opacity: 1 !important;
+  &.modalMenu > div > div{
+    overflow: auto !important;
+  }
 }
 
 .boardContentStyle{
-  position: fixed!important;
+   > div {
+    background-color: #eee !important;
+  }
+  position: fixed !important;
   top: 2em !important;
   bottom: 2em;
   height: 100% !important;
@@ -261,4 +267,37 @@ button:focus {
   height: 100%;
   width: 100%;
   position: absolute;
+}
+
+.dragHandle.markerHandle {
+  left: 40px!important;
+  box-shadow: -2px 2px 6px 3px rgba(0,0,0,.3)!important;
+  border-top-right-radius: 40px!important;
+  width: 30px!important;
+  height: 30px!important;
+  top: calc(100% - 20px)!important;
+  margin-left: -50px!important;
+
+  div {
+    box-shadow: none !important;
+  }
+  svg {
+    transform: rotate(-45deg)  !important;
+    width: 40px !important;
+    height: 40px !important;
+    margin-left: -10px !important;
+  }
+  button {
+    margin-left: -10px !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    cursor: nesw-resize !important;
+  }
+}
+.dragHandle.markerHandle > button > div > div {
+  border-top-right-radius: 40px !important;
+  width: 30px !important;
+  height: 30px !important;
+  top: calc(100% - 22px) !important;
+  margin-left: 10px !important;
 }

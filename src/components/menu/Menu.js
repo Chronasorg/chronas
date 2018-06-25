@@ -62,6 +62,7 @@ class Menu extends PureComponent {
   render() {
     const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, hasDashboard, onMenuTap, resources, translate } = this.props;
     const isLoggedIn = userDetails.token !== ''
+    const username = localStorage.getItem('username')
 
     return <div style={styles.main}>
       <div className="topMenuItems">
@@ -141,8 +142,8 @@ class Menu extends PureComponent {
                   hoverColor={chronasMainColor}/>
               </IconButton>
               <IconButton
-                key={'board'}
-                containerElement={<Link to="/board/general" />}
+                key={'community'}
+                containerElement={<Link to="/community/general" />}
                 tooltipPosition="bottom-right"
                 tooltip={translate('pos.community')}
                 tooltipStyles={tooltip}
@@ -154,7 +155,7 @@ class Menu extends PureComponent {
               </IconButton>
               <IconButton
               key={'account'}
-              containerElement={<Link to="/account" />}
+              containerElement={<Link to={(username) ? ("/community/user/" + username) : "/account"} />}
               tooltipPosition="bottom-right"
               tooltip={translate('pos.account')}
               tooltipStyles={tooltip}
@@ -167,7 +168,7 @@ class Menu extends PureComponent {
             </div>
             ) : null
           }
-          <IconButton
+          { false && <IconButton
             key={'share'}
             containerElement={<Link to="/share" />}
             tooltipPosition="bottom-right"
@@ -177,7 +178,7 @@ class Menu extends PureComponent {
             iconStyle={{color: '#fff'}}
           >
             <ShareIcon hoverColor={chronasMainColor}/>
-          </IconButton>
+          </IconButton> }
           <IconButton
             key={'help'}
             containerElement={<Link to="/info" />}

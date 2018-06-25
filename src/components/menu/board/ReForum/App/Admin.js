@@ -39,7 +39,7 @@ class AdminContainer extends Component {
       return (
         <div style={{ textAlign: 'center', marginTop: 20 }}>
           We are cordially sorry that you are not allowed to view admin panel!<br />
-          Please go back to <Link to='/board/'>root</Link> page.
+          Please go back to <Link to='/community/'>root</Link> page.
         </div>
       );
     }
@@ -47,7 +47,7 @@ class AdminContainer extends Component {
     return (
       <div style={{ textAlign: 'center', marginTop: 20 }}>
         Something went wrong.<br />
-        Please go back to <Link to='/board/'>root</Link> page.
+        Please go back to <Link to='/community/'>root</Link> page.
       </div>
     );
   }

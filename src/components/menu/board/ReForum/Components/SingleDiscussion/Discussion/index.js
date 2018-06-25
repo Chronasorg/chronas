@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import moment from 'moment'
 import classnames from 'classnames'
 import styles from './styles.css'
+import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 
 import PlaceholderImage from '../../../SharedStyles/placeholder.jpg'
 import Button from '../../../Components/Button'
@@ -40,14 +41,16 @@ class Discussion extends Component {
     else if (favoriteCount === 1) favCount = '1 favorite'
     else favCount = `${favoriteCount} favorites`
 
+    const finalAvatarUrl = userAvatar ? <img className='Discussion_avatar' src={userAvatar} alt={`${name} avatar`} /> : <AccountIcon className='Discussion_avatar' />
+
     return (
       <div className='Discussion_container'>
 
         <div className='Discussion_infoContainer'>
-          <img className='Discussion_avatar' src={userAvatar} />
+          { finalAvatarUrl }
           <div className='Discussion_columnOnSmallBP'>
             <div className='Discussion_userInfo'>
-              <Link to={`/board/user/${userGitHandler}`} className='Discussion_name'>{userName || userGitHandler}</Link>
+              <Link to={`/community/user/${userGitHandler}`} className='Discussion_name'>{userName || userGitHandler}</Link>
             </div>
             <div className='Discussion_dateInfo'>{dateDisplay}</div>
           </div>
@@ -86,8 +89,7 @@ class Discussion extends Component {
 
 Discussion.defaultProps = {
   id: 0,
-  userAvatar: PlaceholderImage,
-  userName: 'User name',
+  userName: 'n/a',
   userGitHandler: 'github',
   discTitle: 'Default Discussion Title',
   discDate: 'a day ago',

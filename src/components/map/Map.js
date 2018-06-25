@@ -41,27 +41,32 @@ const getRandomInt = (min, max) => {
 let animationInterval = -1
 
 class Map extends Component {
-  state = {
-    mapStyle: defaultMapStyle,
-    mapTimelineContainerClass: 'mapTimeline',
-    year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
-    data: null,
-    markerData: [],
-    geoData: [],
-    epics: [],
-    arcData: [],
-    viewport: {
-      latitude: 30.88,
-      longitude: 0,
-      zoom: 2,
-      minZoom: 2,
-      bearing: 0,
-      pitch: 0,
-      width: 500,
-      height: 500
-    },
-    hoverInfo: null,
-    popupInfo: null
+
+  constructor(props) {
+    super(props)
+    this._onMarkerClick = this._onMarkerClick.bind(this)
+    this.state = {
+      mapStyle: defaultMapStyle,
+      mapTimelineContainerClass: 'mapTimeline',
+      year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
+      data: null,
+      markerData: [],
+      geoData: [],
+      epics: [],
+      arcData: [],
+      viewport: {
+        latitude: 30.88,
+        longitude: 0,
+        zoom: 2,
+        minZoom: 2,
+        bearing: 0,
+        pitch: 0,
+        width: 500,
+        height: 500
+      },
+      hoverInfo: null,
+      popupInfo: null
+    }
   }
 
   componentDidMount = () => {
@@ -193,6 +198,8 @@ class Map extends Component {
       const activeColorDim = (nextActiveColorDim === 'population' && prevActiveColorDim) ? prevActiveColorDim : nextActiveColorDim
       const activeColorValue = (nextActiveColorDim === 'population' && prevActiveColorValue) ? prevActiveColorValue : nextActiveColorValue
 
+      if (!activeColorValue && activeColorValue === '') return {}
+
       let geometryToOutline
       if (activeColorValue && typeof activeColorValue !== 'undefined' && activeColorValue !== '' && activeColorValue !== 'undefined' && activeColorValue !== 'null') {
         if (activeColorDim === 'ruler') {
@@ -279,7 +286,8 @@ class Map extends Component {
 
       if (typeof multiPolygonToOutline !== 'undefined') {
         let newMapStyle = mapStyle
-          .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: { color: metadata[newColor][activeprovinceValue][1] } }))
+          .setIn(['sources', 'entity-outlines', 'data'],
+            fromJS({ ...multiPolygonToOutline, properties: { color: (newColor === 'population') ? metadata[prevColor][prevActiveprovinceValue][1] : metadata[newColor][activeprovinceValue][1] } }))
 
         if (newColor === 'population' && prevColor && prevColor !== 'population') {
           const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
@@ -369,6 +377,8 @@ class Map extends Component {
     // Leaving Epic? -> cleanup
     if (selectedItem.type === TYPE_EPIC && nextProps.selectedItem.type !== TYPE_EPIC) {
       mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, TYPE_EPIC)
+        .setIn(['sources', 'epicroute', 'data', 'features'], [])
+
       this.setState({ arcData: [], geoData: [] })
     }
 
@@ -625,8 +635,8 @@ class Map extends Component {
               }))
               .catch((err) => console.debug('wer got an error', err))
           })
+        }
       }
-    }
     }
 
     // Leaving Area Mod?
@@ -866,6 +876,21 @@ class Map extends Component {
     })
   };
 
+  _updateLine = (sourceData) => {
+    // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
+    const prevMapStyle = this.state.mapStyle
+    let mapStyle = prevMapStyle
+      .setIn(['sources', 'epicroute', 'data', 'features'], [{
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "LineString",
+          "coordinates": sourceData
+        }
+      }])
+    this.setState({ mapStyle })
+  };
+
   _loadGeoJson = (sourceId, sourceData) => {
     // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
     const prevMapStyle = this.state.mapStyle
@@ -908,6 +933,7 @@ class Map extends Component {
               start: new Date(new Date(0, 1, 1).setFullYear(+el.data.start)),
               className: 'timelineItem_wars',
               editable: false,
+              subtype: el.subtype,
               end: endYear ? new Date(new Date(0, 1, 1).setFullYear(+endYear)) : undefined,
               content: el.data.title,
               title: el.data.title,
@@ -922,9 +948,10 @@ class Map extends Component {
 
   _removeEpic = (subtype) => {
     this.setState({
-      epics: _.omit(this.state.epics, subtype)
+      epics: this.state.epics.filter(el => el.subtype !== subtype)
     })
   }
+
   _removeGeoJson = (prevMapStyle, sourceId, entityId) => {
     if (entityId === TYPE_EPIC) {
       return prevMapStyle
@@ -1008,7 +1035,9 @@ class Map extends Component {
   };
 
   _onHover = event => {
-    event.stopPropagation()
+    // console.debug('hovering ',event)
+
+    if (event.stopPropagation) event.stopPropagation()
     if (this.props.modActive.type !== '') return
 
     let provinceName = ''
@@ -1048,8 +1077,9 @@ class Map extends Component {
   }
 
   _onClick = event => {
-    event.stopPropagation()
+    if (event.stopPropagation) event.stopPropagation()
 
+    console.debug('click', event)
     const { modActive, selectedItem } = this.props
     let itemName = ''
     let wikiId = ''
@@ -1087,31 +1117,7 @@ class Map extends Component {
 
     if (layerClicked) {
       if (layerClicked.layer.id === TYPE_MARKER) {
-        itemName = layerClicked.properties.n
-        wikiId = layerClicked.properties.w
-
-        const prevMapStyle = this.state.mapStyle
-        let mapStyle = prevMapStyle
-          .setIn(['sources', 'area-hover', 'data'], fromJS({
-            'type': 'FeatureCollection',
-            'features': [ ]
-          }))
-        this.setState({
-          hoverInfo: null,
-          mapStyle
-        })
-        // setWikiId
-
-        if (selectedItem.type === TYPE_EPIC) {
-          utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
-          // utilsQuery.updateQueryStringParameter('wiki', wikiId)
-          this.props.setWikiId(wikiId)
-        } else {
-          utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
-          utilsQuery.updateQueryStringParameter('value', wikiId)
-          this.props.selectMarkerItem(wikiId, { ...layerClicked.properties, 'coo': layerClicked.geometry.coordinates })
-        }
-        if (this.props.modActive.type === TYPE_MARKER) return
+        this._onMarkerClick(layerClicked)
       } else {
         itemName = layerClicked.properties.name
         wikiId = layerClicked.properties.wikiUrl
@@ -1139,6 +1145,35 @@ class Map extends Component {
     }
   }
 
+  _onMarkerClick (layerClicked) {
+    const itemName = (layerClicked.object || {}).name || layerClicked.properties.n
+    const wikiId = (layerClicked.object || {}).wiki || layerClicked.properties.w
+
+    const prevMapStyle = this.state.mapStyle
+    let mapStyle = prevMapStyle
+      .setIn(['sources', 'area-hover', 'data'], fromJS({
+        'type': 'FeatureCollection',
+        'features': [ ]
+      }))
+    this.setState({
+      hoverInfo: null,
+      mapStyle
+    })
+    // setWikiId
+
+    if (this.props.selectedItem.type === TYPE_EPIC) {
+      utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
+      // utilsQuery.updateQueryStringParameter('wiki', wikiId)
+      this.props.setWikiId(wikiId)
+    } else {
+      utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
+      utilsQuery.updateQueryStringParameter('value', wikiId)
+      this.props.selectMarkerItem(wikiId, { ...(layerClicked.object || layerClicked.properties), 'coo': (layerClicked.object || {}).coo || layerClicked.geometry.coordinates })
+    }
+    if (this.props.modActive.type === TYPE_MARKER) return
+    if (layerClicked.object) this.props.history.push('/article')
+  }
+
   _renderPopup () {
     const { hoverInfo, popupInfo } = this.state
     if (hoverInfo) {
@@ -1164,7 +1199,7 @@ class Map extends Component {
 
   render () {
     const { epics, markerData, geoData, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
-    const { modActive, menuDrawerOpen, rightDrawerOpen, contentIndex, mapStyles } = this.props
+    const { modActive, menuDrawerOpen, rightDrawerOpen, history, contentIndex, mapStyles } = this.props
 
     let leftOffset = (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.24
@@ -1192,7 +1227,13 @@ class Map extends Component {
         <MapGL
           style={{
             transition: 'filter 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-            filter: (mapTimelineContainerClass === 'mapTimeline') ? 'inherit' : 'blur(10px)'
+            filter: (history.location.pathname === '/' || (mapTimelineContainerClass === 'mapTimeline' &&
+              history.location.pathname !== '/info' &&
+              history.location.pathname !== '/login' &&
+              history.location.pathname !== '/share' &&
+              history.location.pathname !== '/configuration' &&
+              history.location.pathname !== '/account' &&
+              history.location.pathname.indexOf('/community/') === -1)) ? 'inherit' : 'blur(10px)'
           }}
           ref={(map) => { this.map = map }}
           {...viewport}
@@ -1206,9 +1247,12 @@ class Map extends Component {
         >
           <DeckGLOverlay
             viewport={viewport}
+            updateLine={this._updateLine}
             geoData={geoData}
             markerData={markerData}
             arcData={arcData}
+            onMarkerClick={this._onMarkerClick}
+            setTooltip={this._onHover}
             showCluster={mapStyles.clusterMarkers}
             // selectedFeature={selectedCounty}
             // onHover={this._onHover.bind(this)}
@@ -1228,7 +1272,7 @@ class Map extends Component {
     )
   }
 }
-
+// (geoData.length !== 0 || arcData.length !== 0 || markerData.length !== 0)
 Map.propTypes = {
   hasDashboard: PropTypes.bool,
   logout: PropTypes.element,

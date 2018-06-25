@@ -168,7 +168,7 @@ class SingleDiscussion extends Component {
     } = discussion;
 
     const {
-      avatarUrl,
+      avatar,
       name,
       username,
     } = discussion.user;
@@ -184,7 +184,7 @@ class SingleDiscussion extends Component {
       <div className={'appLayout_constraintWidth'}>
         <Discussion
           id={_id}
-          userAvatar={avatarUrl}
+          userAvatar={avatar}
           userName={name}
           userGitHandler={username}
           discTitle={title}
@@ -214,7 +214,7 @@ class SingleDiscussion extends Component {
             <Opinion
               key={opinion._id}
               opinionId={opinion._id}
-              userAvatar={opinion.user.avatarUrl}
+              userAvatar={opinion.user.avatar}
               userName={opinion.user.name}
               userGitHandler={opinion.user.username}
               opDate={opinion.date}

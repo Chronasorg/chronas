@@ -12,11 +12,15 @@ import compose from 'recompose/compose'
 import { translate, defaultTheme, showNotification } from 'admin-on-rest'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
 import ContentLink from 'material-ui/svg-icons/content/link'
-import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
+import {setRightDrawerVisibility, toggleRightDrawer as toggleRightDrawerAction} from './actionReducers'
 import { setFullModActive, resetModActive } from '../restricted/shared/buttons/actionReducers'
-import { TYPE_AREA, TYPE_MARKER, TYPE_LINKED, TYPE_EPIC, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE } from '../map/actionReducers'
+import {
+  TYPE_AREA, TYPE_MARKER, TYPE_LINKED, TYPE_EPIC, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE,
+  deselectItem as deselectItemAction, selectValue
+} from '../map/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
+import LinkedGallery from './contentMenuItems/LinkedGallery'
 import utils from '../map/utils/general'
 import ArticleIframe from './ArticleIframe'
 import EntityTimeline from './EntityTimeline'
@@ -91,6 +95,14 @@ class Content extends Component {
       linkedItems: []
     })
     this._cleanUp()
+  }
+
+  selectValueWrapper = (value) => {
+    this.props.selectValue(value)
+  }
+
+  setWikiIdWrapper = (wiki) => {
+    this.setState({ selectedWiki: wiki })
   }
 
   _cleanUp = () => {
@@ -192,7 +204,7 @@ class Content extends Component {
             const linkedItems = []
             const res = linkedItemResult.data
             showNotification(linkedItems.length + ' linked item' + (linkedItems.length === 1 ) ? '' : 's' + ' found')
-            res.forEach((imageItem) => {
+            res.media.forEach((imageItem) => {
               linkedItems.push({
                 src: imageItem._id,
                 wiki: imageItem.wiki,
@@ -225,22 +237,22 @@ class Content extends Component {
 
   render () {
     const { activeContentMenuItem, sunburstData, iframeLoading, selectedWiki, itemHasLinkedItems, linkedItems } = this.state
-    const { activeArea, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata, newWidth, history } = this.props
+    const { activeArea, deselectItem, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata, newWidth, history } = this.props
     const shouldLoad = (iframeLoading || selectedWiki === null)
 
     const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
     const entityTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
     const epicTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_EPIC)
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
+    const linkedItemCount = (linkedItems || []).length
+    const isMarker = selectedItem.type === TYPE_MARKER
 
-    const linkedItemCount =  (linkedItems || []).length
-
-    return <div style={styles.main}>
-      { entityTimelineOpen && <div>
+    return <div style={(isMarker) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
+      { (entityTimelineOpen || isMarker) && <div>
         <Paper style={styles.contentLeftMenu}>
           <Menu desktop={true}>
-            <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={ styles.menuIcon } />} />
-            <Divider />
+            { entityTimelineOpen && <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={ styles.menuIcon } />} /> }
+            { entityTimelineOpen && <Divider /> }
             <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
               <Badge
                 badgeStyle={ { ...styles.menuIconBadge, backgroundColor: (linkedItemCount > 0) ? 'rgb(255, 64, 129)' : 'rgb(205, 205, 205)'  } }
@@ -269,7 +281,10 @@ class Content extends Component {
               epicData={selectedItem.data}
               rulerProps={(selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id] )}
               linkedItems={linkedItems} />
-            : <ArticleIframe customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } />
+            : <div style={{ height: '100%' }}>
+              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems } selectedYear={selectedYear} />
+              <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } selectedItem={ selectedItem } />
+            </div>
       }
     </div>
   }
@@ -292,9 +307,12 @@ const enhance = compose(
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
     toggleRightDrawer: toggleRightDrawerAction,
+    deselectItem: deselectItemAction,
     setFullModActive,
     resetModActive,
     showNotification,
+    setRightDrawerVisibility,
+    selectValue
   }),
   pure,
   translate,

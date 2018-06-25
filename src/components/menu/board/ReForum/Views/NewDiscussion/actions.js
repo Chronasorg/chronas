@@ -64,7 +64,7 @@ export const postDiscussion = (userId, forumId, currentForum, currentDiscussion)
         (data) => {
           if (data.data.postCreated === true) {
             // issue a redirect to the newly reacted discussion
-            history.push(`/board/${currentForum}/discussion/${data.data.discussion_slug}`);
+            history.push(`/community/${currentForum}/discussion/${data.data.discussion_slug}`);
           } else {
             return 'Something is wrong at our server end. Please try again later'
           }

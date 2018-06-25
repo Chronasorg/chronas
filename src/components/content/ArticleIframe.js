@@ -1,14 +1,19 @@
 import React from 'react'
 import { translate } from 'admin-on-rest'
-import Dialog from 'material-ui/Dialog';
+import { Link } from 'react-router-dom'
+import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
+import IconEdit from 'material-ui/svg-icons/editor/mode-edit'
+import IconClose from 'material-ui/svg-icons/navigation/close'
+import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import FullscreenEnterIcon from 'material-ui/svg-icons/navigation/fullscreen'
-import IconClose from 'material-ui/svg-icons/navigation/close';
 import { tooltip } from '../../styles/chronasStyleComponents'
-import { chronasMainColor } from '../../styles/chronasColors'
-import {red400} from "material-ui/styles/colors";
+import {chronasMainColor, grey600} from '../../styles/chronasColors'
+import { red400 } from 'material-ui/styles/colors'
+import utilsQuery from "../map/utils/query";
+import {TYPE_MARKER} from "../map/actionReducers";
 
 const styles = {
   closeButton: {
@@ -48,15 +53,17 @@ const styles = {
     width: '100%',
     height:'100%',
     right: '8px',
-    padding: '2px 8px'
+    padding: '38px 8px 0px'
   },
-  fullscreenButton: {
-    backgroundColor: 'rgb(236, 239, 241)',
+  actionButtonContainer: {
     position: 'fixed',
     whiteSpace: 'nowrap',
-    right: '0px',
+    right: '4px',
+    top: '0px',
     height: '56px',
-    color: '#fff'
+  },
+  fullscreenButton: {
+    whiteSpace: 'nowrap',
   },
   fullscreenClose: {
     backgroundColor: '#00000073',
@@ -103,11 +110,21 @@ export default class ArticleIframe extends React.Component {
     } // TODO: do this with ref
   }
 
+  _handleClose = () => {
+    this.props.history.push('/')
+    this.props.deselectItem()
+    this.props.setRightDrawerVisibility(false)
+    utilsQuery.updateQueryStringParameter('type', '')
+    utilsQuery.updateQueryStringParameter('value', '')
+  }
+
   render () {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
-    const { selectedWiki, customStyle } = this.props
+    const { selectedItem, selectedWiki, customStyle } = this.props
 
-    const shouldLoad = (iframeLoading || selectedWiki === null)
+    const shouldLoad = (iframeLoading || selectedWiki === null || +selectedWiki === -1)
+    const modUrl = '/mod/' + selectedItem.type
+    const isMarker = selectedItem.type === TYPE_MARKER
     const iconEnterFullscreen = {
       key: 'random',
       tooltipPosition: 'bottom-right',
@@ -119,19 +136,21 @@ export default class ArticleIframe extends React.Component {
     return (
       <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
         <Dialog
-                open={isFullScreen}
-                autoDetectWindowHeight={false}
-                modal={false}
-                onRequestClose={this._exitFullscreen}
-                contentClassName={(iframeLoadingFull) ? '' : 'classReveal dialogBackgroundHack fullWikiArticle '}
-                contentStyle={styles.discoverDialogStyle}
-                bodyStyle={{ height: '100%', width: '100%', backgroundColor: 'transparent', border: 'none' }}
-                actionsContainerStyle={{ backgroundColor: red400 }}
-                overlayStyle={styles.overlayStyle}
-                style={{ zIndex: 15000, height: '100%', width: '100%', backgroundColor: 'transparent', overflow: 'auto' }}
-                titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
-                autoScrollBodyContent={false}>
-          <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%' style={{ height: '100%', width: '100%' }} src={'http://en.wikipedia.org/wiki/' + selectedWiki } frameBorder='0' />
+          open={isFullScreen}
+          autoDetectWindowHeight={false}
+          modal={false}
+          onRequestClose={this._exitFullscreen}
+          contentClassName={(iframeLoadingFull) ? '' : 'classReveal dialogBackgroundHack fullWikiArticle '}
+          contentStyle={styles.discoverDialogStyle}
+          bodyStyle={{ height: '100%', width: '100%', backgroundColor: 'transparent', border: 'none' }}
+          actionsContainerStyle={{ backgroundColor: red400 }}
+          overlayStyle={styles.overlayStyle}
+          style={{ zIndex: 15000, height: '100%', width: '100%', backgroundColor: 'transparent', overflow: 'auto' }}
+          titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
+          autoScrollBodyContent={false}>
+          { (selectedWiki !== '') && shouldLoad && <span>iframe loading placeholder...</span> }
+          { (selectedWiki === '') && <span>no wiki article found, consider adding one by clicking the edit button...</span> }
+          { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%' style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' /> }
           { isFullScreen &&
           <FloatingActionButton
             backgroundColor={'transparent'}
@@ -139,17 +158,26 @@ export default class ArticleIframe extends React.Component {
             key={'close'}
             onClick={this._exitFullscreen}
           >
-            <CloseIcon color={ 'white' } />
+            <CloseIcon color={'white'} />
           </FloatingActionButton >
           }
         </Dialog>
-        <IconButton { ...iconEnterFullscreen }>
-          <FullscreenEnterIcon
-            hoverColor={chronasMainColor} />
-        </IconButton>
-
+        <div style={styles.actionButtonContainer} >
+          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
+                      containerElement={<Link to={modUrl}/>}>
+            <IconEdit hoverColor={chronasMainColor} />
+          </IconButton>
+          <IconButton {...iconEnterFullscreen}>
+            <FullscreenEnterIcon
+              hoverColor={chronasMainColor} />
+          </IconButton>
+          { isMarker && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
+                                    onClick={() => this._handleClose()}>
+            <IconClose hoverColor={chronasMainColor} />
+          </IconButton> }
+        </div>
         { shouldLoad && <span>iframe loading placeholder...</span> }
-        <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' />
+        { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
       </div>
     )
   }

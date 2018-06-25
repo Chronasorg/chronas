@@ -77,15 +77,13 @@ const styles = {
   card: {
     boxShadow: 'none',
     minWidth: 300,
-    backgroundColor: 'transparent'
+    backgroundColor: 'transparent',
   },
   toolbar: {
     background: 'transparent',
     boxShadow: 'none',
   }
 }
-
-const detailStyle = { display: 'inline-block', verticalAlign: 'top', marginRight: '2em', minWidth: '8em' }
 
 class Board extends PureComponent {
   constructor (props) {
@@ -135,7 +133,7 @@ class Board extends PureComponent {
 
     const restrictPage = (component, commonProps, customProps) => {
       const RestrictedPage = routeProps => (
-        <Restricted location={{ pathname: 'board' }} authParams={{ routeProps }} {...routeProps}>
+        <Restricted location={{ pathname: 'community' }} authParams={{ routeProps }} {...routeProps}>
           <Dialog
             autoDetectWindowHeight={false}
             modal={false}
@@ -166,7 +164,7 @@ class Board extends PureComponent {
     const restrictPageForumWrapper = (component, commonProps, customProps) => {
       const { forums } = this.state
       const RestrictedPage = routeProps => (
-        <Restricted location={{ pathname: 'board' }} authParams={{ routeProps }} {...routeProps}>
+        <Restricted location={{ pathname: 'community' }} authParams={{ routeProps }} {...routeProps}>
           <Dialog open
                   autoDetectWindowHeight={false}
                   modal={false}
@@ -201,22 +199,22 @@ class Board extends PureComponent {
     }
 
     return <Switch>
-      <Route exact path="/board/admin" render={restrictPage(AdminContainer, {
+      <Route exact path="/community/admin" render={restrictPage(AdminContainer, {
         ...commonProps, forums: this.state.forums, users: this.state.users })} >
-        {/*<NavLink to='/board/admin' component={AdminDashboard} />*/}
+        {/*<NavLink to='/community/admin' component={AdminDashboard} />*/}
       </Route>
-      <Route exact path="/board" render={restrictPage(AppContainer, commonProps, {
+      <Route exact path="/community" render={restrictPage(AppContainer, commonProps, {
         setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum })} />
-      <Route exact path="/board/highscore" render={restrictPageForumWrapper(Highscore, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
-      <Route exact path="/board/:forum/discussion/:discussion" render={restrictPageForumWrapper(SingleDiscussion, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
-      <Route exact path="/board/:forum/new_discussion" render={restrictPageForumWrapper(NewDiscussion, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
-      <Route exact path="/board/:forum" render={restrictPageForumWrapper(ForumFeed, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
-      <Route exact path="/board/user/:username" render={restrictPageForumWrapper(UserProfile, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
+      <Route exact path="/community/highscore" render={restrictPageForumWrapper(Highscore, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
+      <Route exact path="/community/:forum/discussion/:discussion" render={restrictPageForumWrapper(SingleDiscussion, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
+      <Route exact path="/community/:forum/new_discussion" render={restrictPageForumWrapper(NewDiscussion, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
+      <Route exact path="/community/:forum" render={restrictPageForumWrapper(ForumFeed, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
+      <Route exact path="/community/user/:username" render={restrictPageForumWrapper(UserProfile, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
     </Switch>
   }
 }
 
-// <Route exact path="/board/*" render={restrictPageForumWrapper(NotFound, commonProps)} />
+// <Route exact path="/community/*" render={restrictPageForumWrapper(NotFound, commonProps)} />
 
 const enhance = compose(
   connect(state => ({

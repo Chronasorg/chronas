@@ -17,8 +17,9 @@ export default {
   pos: {
     account: 'Manage Account',
     community: 'Community Board',
+    information: 'Information',
     areas: 'Areas',
-    edit: 'Edit Data',
+    edit: 'Edit',
     downvote: 'Inappropriate, broken or inaccurate',
     feedbackSuccess: 'Thanks for curating the data!',
     signupToGatherPoints: 'Sign up to get points for your curations',

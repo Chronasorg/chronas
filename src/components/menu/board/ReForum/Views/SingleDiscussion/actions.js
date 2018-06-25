@@ -104,7 +104,7 @@ export const deletePost = (discussionSlug, currentForum) => {
   return deletePostApi(discussionSlug).then(
       data => {
         if (data.data.deleted) {
-          history.push('/board/' + currentForum)
+          history.push('/community/' + currentForum)
         } else { return 'ERR' }
       }
     )

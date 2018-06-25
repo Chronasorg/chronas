@@ -4,8 +4,12 @@
  * Header Styles
  */
 .headerTop {
-  height: 50px;
-  display: flex;
+  padding: 15px 0px;
+  margin: 0;
+  display: block;
+  position: relative;
+  z-index: 4;
+  height: 100px;
   align-items: center;
   justify-content: space-between;
 

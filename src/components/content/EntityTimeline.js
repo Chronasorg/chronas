@@ -83,9 +83,10 @@ class EntityTimeline extends React.Component {
 
   getStepContent (stepIndex, sortedRulerKeys) {
     const { selectedWiki } = this.state
-    const rulerEntityData = ((this.props.rulerEntity || {}).data || {}).ruler || {}
-    const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (this.props.rulerProps || {})[2] || -1
-    return <ArticleIframe customStyle={{ ...styles.iframe, height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
+    const { selectedItem, rulerEntity, rulerProps } = this.props
+    const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
+    const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (rulerProps || {})[2] || -1
+    return <ArticleIframe selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
   }
 
   _selectMainArticle = () => {

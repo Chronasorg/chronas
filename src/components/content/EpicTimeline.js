@@ -85,7 +85,7 @@ class EpicTimeline extends React.Component {
   };
 
   getStepContent (stepIndex) {
-    const { epicData } =  this.props
+    const { epicData, selectedItem } =  this.props
     const { selectedWiki, epicLinkedArticles } = this.state
     const itemTyep = (epicLinkedArticles[stepIndex] || {}).type
     //TODO: fly to if coo, add geojson up to that index and animate current - if main, add all geojson
@@ -94,7 +94,7 @@ class EpicTimeline extends React.Component {
       return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
     } else {
       const wikiUrl = (epicLinkedArticles[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || -1
-      return  <ArticleIframe customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
+      return  <ArticleIframe selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
     }
   }
 

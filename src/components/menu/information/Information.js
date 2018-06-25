@@ -1,13 +1,16 @@
-import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { Card, CardText } from 'material-ui/Card';
-import Dialog from 'material-ui/Dialog';
-import RaisedButton from 'material-ui/RaisedButton';
-import IconButton from 'material-ui/IconButton';
-import CloseIcon from 'material-ui/svg-icons/content/clear';
-import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
-import { chronasGradient } from '../../../styles/chronasColors';
+import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { Card, CardText } from 'material-ui/Card'
+import Dialog from 'material-ui/Dialog'
+import RaisedButton from 'material-ui/RaisedButton'
+import Divider from 'material-ui/Divider'
+import IconButton from 'material-ui/IconButton'
+import YouTube from 'react-youtube'
+import CloseIcon from 'material-ui/svg-icons/content/clear'
+import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
+import { Tabs, Tab } from 'material-ui/Tabs'
+import { chronasGradient } from '../../../styles/chronasColors'
 
 import {
   translate,
@@ -28,9 +31,15 @@ import {
   TabbedForm,
   TextField,
   TextInput,
-} from 'admin-on-rest';
+} from 'admin-on-rest'
 
-import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
+const YOUTUBEOPTS = {
+  height: '100%',
+  width: '100%',
+  playerVars: { // https://developers.google.com/youtube/player_parameters
+    autoplay: 0
+  }
+}
 
 const styles = {
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
@@ -44,68 +53,107 @@ const styles = {
     background: 'transparent',
     boxShadow: 'none',
   }
-};
+}
 
 class Information extends PureComponent {
-  constructor(props) {
+  constructor (props) {
     super(props)
-    this.state = { hiddenElement: true }
+    this.state = {
+      tabForm: 'a',
+      hiddenElement: true
+    }
+  }
+
+  handleChange = (value) => {
+    this.setState({
+      tabForm: value,
+    })
   }
 
   componentDidMount = () => {
-    this.setState({hiddenElement: false})
+    this.setState({ hiddenElement: false })
   }
 
   componentWillUnmount = () => {
-    this.setState({hiddenElement: true})
+    this.setState({ hiddenElement: true })
   }
 
   handleClose = () => {
     this.props.history.push('/')
   }
 
-  render() {
-    const {theme, locale, changeTheme, changeLocale, menuItemActive, translate} = this.props;
-    //  https://github.com/marmelab/admin-on-rest-demo/blob/0e2c183b30413bee71ef73e7c36b426da5c58d9a/src/visitors/index.js
+  render () {
+    const { translate } = this.props
     return (
-      <Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'Information' }}>
-        <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-                contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} onRequestClose={this.handleClose}>
-          <Card style={styles.card}>
-            <div>
-              <Toolbar style={styles.toolbar}>
-                <ToolbarGroup>
-                  <ToolbarTitle text={translate('pos.information')}/>
-                </ToolbarGroup>
-                <ToolbarGroup>
-                  <IconButton touch={true} key={'close'} containerElement={<Link to="/"/>}>
-                    <CloseIcon />
-                  </IconButton>
-                </ToolbarGroup>
-              </Toolbar>
-            </div>
-            <TabbedForm>
-              <FormTab label="information.help">
-                Intro videos and maybe walkthrough tutorial
-              </FormTab>
-              <FormTab label="information.about">
-                In development by Dietmar & Joachim Aumann
-              </FormTab>
-            </TabbedForm>
-          </Card>
-        </Dialog>
-      </Restricted>
-    );
+      <Dialog bodyStyle={{ backgroundImage: '#fff' }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal modalMenu'}  titleStyle={{ overflow: 'auto'}} overlayStyle={{ overflow: 'auto'}} style={{ overflow: 'auto'}}
+        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, height: '940px' }} onRequestClose={this.handleClose}>
+        <Card style={styles.card}>
+          <div>
+            <Toolbar style={styles.toolbar}>
+              <ToolbarGroup>
+                <ToolbarTitle text={translate('pos.information')} />
+              </ToolbarGroup>
+              <ToolbarGroup>
+                <IconButton touch key={'close'} containerElement={<Link to='/' />}>
+                  <CloseIcon />
+                </IconButton>
+              </ToolbarGroup>
+            </Toolbar>
+          </div>
+          <Tabs
+            value={this.state.tabForm}
+            onChange={this.handleChange}
+            >
+            <Tab label='How To' value='a'>
+              <br />
+              <div>
+                <h4>Watch 30 sec intro video</h4>
+                <p>
+                  <YouTube
+                    className='introVideo'
+                    height={600}
+                    videoId='5mJliez-Jlw'
+                    opts={YOUTUBEOPTS}
+                    />
+                </p>
+                <br />
+                <h4>Watch 3 min in depth video</h4>
+                <p>
+                  <YouTube
+                    className='introVideo'
+                    height='600px'
+                    videoId='5mJliez-Jlw'
+                    opts={YOUTUBEOPTS}
+                    />
+                </p>
+              </div>
+            </Tab>
+            <Tab label='About' value='b'>
+              <br />
+              <div>
+                <p>Chronas is an initiative to collect all military history contributed and edited by volunteers - amateur and professional historians from all corners of the world. We return the entered facts
+                  to all Internet users in visualizations, i.e. on digital maps of witch the world map you see is an example, as an on-line encyclopedia for history enthusiasts and - in time - as an analysis tool and discussion forum for history experts.</p>
+                <p>We aim to support the largest and most active community of history enthusiasts in the world. Register as a volunteer and add your military history to our knowledge base as an editor, validate and correct the
+                  registered facts and moderate on-line discussions as an expert. Help us perfect our concepts, our data and our website. If your want to join our community, <a href="/login">sign up!</a></p>
+              </div>
+              <br />
+              <Divider />
+              <br />
+              <div>
+                <p>
+                    In development by Dietmar & Joachim Aumann
+                </p>
+              </div>
+            </Tab>
+          </Tabs>
+        </Card>
+      </Dialog>
+    )
   }
 }
 
 const mapStateToProps = state => ({
-  theme: state.theme,
-  locale: state.locale,
-  menuItemActive: state.menuItemActive,
-});
+})
 
 export default connect(mapStateToProps, {
-  changeLocale: changeLocaleAction,
-  changeTheme: changeThemeAction,
-})(translate(Information));
+})(translate(Information))

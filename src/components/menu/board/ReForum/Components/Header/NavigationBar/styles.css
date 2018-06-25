@@ -18,14 +18,17 @@
 
 .NB_links {
   display: block;
-  padding: 0px 15px;
-  height: 38px;
-  line-height: 38px;
-  text-decoration: none;
-  font-size: 14px;
-  color: secondaryFontColor;
   user-select: none;
   transition: color 0.3s;
+
+  position: relative;
+  color: inherit;
+  height: 50px;
+  font-size: 1.125rem;
+  line-height: 30px;
+  padding: .625rem 0;
+  font-weight: 300;
+  margin-left: 1rem;
 }
 
 .NB_links:hover { color: primaryFontColor; }

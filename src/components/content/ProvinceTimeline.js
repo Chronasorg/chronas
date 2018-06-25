@@ -90,10 +90,23 @@ class ProvinceTimeline extends React.Component {
     })
   };
 
+  componentWillReceiveProps (nextProps) {
+    const { provinceEntity, metadata } = this.props
+
+    const toSelect = metadata.province[nextProps.provinceEntity.id]
+    const newWiki = (typeof toSelect === "object") ? toSelect[0] : toSelect
+
+    if (this.state.selectedWiki !== newWiki) {
+      this.setState({
+        selectedWiki: (typeof toSelect === "object") ? toSelect[0] : toSelect
+      })
+    }
+  }
+
   render () {
     const { timelineOptions } = this.state
     const { selectedWiki } = this.state
-    const { activeArea, selectedYear, provinceEntity, metadata } = this.props
+    const { activeArea, selectedItem, selectedYear, provinceEntity, metadata } = this.props
     const contentStyle = {
       padding: '8px 0px 0px 8px',
       height: '100%',
@@ -155,7 +168,7 @@ class ProvinceTimeline extends React.Component {
           clickHandler={this._onClickTimeline.bind(this)}
         />
         <div style={contentStyle}>
-          <ArticleIframe customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } />
+          <ArticleIframe customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } selectedItem={ selectedItem } />
         </div>
       </div>
     )

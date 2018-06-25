@@ -68,6 +68,17 @@ class UserProfile extends Component {
       return <div className='UP_errorMsg'>{ error }</div>;
     }
 
+    const statItem = (title, value) => {
+      return <div className='FeedBox_container'>
+        <div className='FeedBox_header'>
+          <span className='FeedBox_title'>{title}</span>
+        </div>
+        <div className='FeedBox_discussions'>
+          <h3>{ value }</h3>
+        </div>
+      </div>
+    }
+
     const {
       name,
       username,
@@ -92,8 +103,19 @@ class UserProfile extends Component {
             name={name}
             gitHandler={username}
             avatarUrl={avatar}
+            profile={profile}
           />
-          { JSON.stringify(profile)}
+          <div className='user_stats'>
+            { profile.karma && statItem('Total Points', profile.karma) }
+            { profile.karma && statItem('Login Count', profile.loginCount) }
+            { profile.karma && statItem('Vote Count', profile.count_voted) }
+            { profile.karma && statItem('Create Count', profile.count_created) }
+            { profile.karma && statItem('Edit Count', profile.count_updated) }
+            { profile.karma && statItem('Delete Count', profile.count_deleted) }
+            { profile.karma && statItem('Mistakes Count', profile.count_mistakes) }
+            { profile.karma && statItem('Reverted Count', profile.count_reverted) }
+            { profile.karma && statItem('Vote Count', profile.count_voted) }
+          </div>
           <FeedBox
             userProfile
             type='general'

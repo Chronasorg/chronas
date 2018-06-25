@@ -28,7 +28,7 @@ class DiscussionBox extends Component {
         <div className={classnames('DiscussionBox_title', userProfile && 'DiscussionBox_titleBottomMargin')}><Link to={link}>{discussionTitle}</Link></div>
 
         { !userProfile && <div className='DiscussionBox_posterInfo'>
-          <Link to={`/board/user/${userGitHandler}`} className='DiscussionBox_name'>{userName}</Link>
+          <Link to={`/community/user/${userGitHandler}`} className='DiscussionBox_name'>{userName}</Link>
         </div> }
 
         <div className='DiscussionBox_boxFooter'>

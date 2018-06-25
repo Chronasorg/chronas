@@ -12,6 +12,7 @@
   flex-direction: column;
   align-items: flex-start;
   border: 1px solid borderColor;
+  background: #fff;
 }
 
 .RichEditor_readOnlyContainer {

@@ -6,7 +6,7 @@ import rbush from 'rbush'
 import DeckGL, { WebMercatorViewport, IconLayer, PathLayer, GeoJsonLayer, ArcLayer } from 'deck.gl'
 const Arc = require('arc')
 
-const ICON_SIZE = 100
+const ICON_SIZE = 300
 const iconMapping = {
   'marker-1': {
     'x': 0,
@@ -149,7 +149,7 @@ const iconMapping = {
     'anchorY': 128
   }
 }
-const fullTime = 6000
+const fullTime = 4000
 let interval = -1
 
 export const inFlowColors = [
@@ -229,12 +229,13 @@ export default class DeckGLOverlay extends Component {
     if (interval !== -1) {
       clearInterval(interval)
       interval = -1
-      this.setState({ animatedFeature: [] })
+      this.props.updateLine([])
+      // this.setState({ animatedFeature: [] })
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const { contentIndex, markerData, arcData, geoData } = this.props
+    const { contentIndex, markerData, arcData, geoData, updateLine } = this.props
 
     if (
       nextProps.arcData !== arcData || !nextProps.arcData.every((el, i) => el === arcData[i])
@@ -256,17 +257,18 @@ export default class DeckGLOverlay extends Component {
       this.setState({ marker: this._getMarker(nextProps) })
     }
 
-    if ((nextProps.geoData || []).length === 0) {
+    if (interval !== -1 && (nextProps.geoData || []).length === 0) {
       clearInterval(interval)
       interval = -1
-      this.setState({ animatedFeature: [] })
+      // this.setState({ animatedFeature: [] })
+      this.props.updateLine([])
     }
     if (nextProps.contentIndex !== contentIndex) {
-
       if (interval !== -1) {
         clearInterval(interval)
         interval = -1
-        this.setState({ animatedFeature: [] })
+        // this.setState({ animatedFeature: [] })
+        this.props.updateLine([])
       }
 
       // animate if currentIndex has feature
@@ -275,20 +277,20 @@ export default class DeckGLOverlay extends Component {
         let step = 0
         let lineToAnimate
 
-        if (selectedFeature.connect !== true && (selectedFeature.geometry.coordinates || []).length === 2 ) {
+        if (selectedFeature.connect !== true && (selectedFeature.geometry.coordinates || []).length === 2) {
           let prevCoords
-          for (let i = +nextProps.contentIndex -1; i > -1; i--) {
+          for (let i = +nextProps.contentIndex - 1; i > -1; i--) {
             const currCoords = ((geoData[i] || {}).geometry || {}).coordinates || []
             if (currCoords.length === 2) {
               prevCoords = currCoords
-              break;
+              break
             }
           }
           if (!prevCoords) return
           const end = { x: selectedFeature.geometry.coordinates[0], y: selectedFeature.geometry.coordinates[1] }
           const start = { x: prevCoords[0], y: prevCoords[1] }
           const generator = new Arc.GreatCircle(start, end, {})
-          lineToAnimate = generator.Arc(100, {offset:10}).geometries[0].coords
+          lineToAnimate = generator.Arc(100, { offset:10 }).geometries[0].coords
         } else {
           lineToAnimate = (((selectedFeature.properties || {}).f || {}).geometry || {}).coordinates
           if (!lineToAnimate) return
@@ -316,14 +318,7 @@ export default class DeckGLOverlay extends Component {
               return
             }
             if (nextIndex !== prevIndex) {
-              self.setState({ animatedFeature: [{
-                'type': 'Feature',
-                'properties': {},
-                'geometry': {
-                  'coordinates': lineToAnimate.slice(0, nextIndex),
-                  'type': 'LineString'
-                }
-              }] })
+              updateLine(lineToAnimate.slice(0, nextIndex))
             }
             prevIndex = nextIndex
           }
@@ -419,8 +414,12 @@ export default class DeckGLOverlay extends Component {
     return arcs
   }
 
+  _onClickMarkers (event, s) {
+    console.debug('onclick marker', event, s)
+  }
+
   render () {
-    const { viewport, strokeWidth, showCluster, geoData } = this.props
+    const { viewport, strokeWidth, showCluster, geoData, setTooltip, onMarkerClick } = this.props
     const { animatedFeature, arcs, marker /* geo */ } = this.state
 
     const z = Math.floor(viewport.zoom)
@@ -434,15 +433,15 @@ export default class DeckGLOverlay extends Component {
       layers.push(new IconLayer({
         id: 'icon',
         data: marker,
-        pickable: this.props.onHover || this.props.onClick,
+        pickable: true,
         iconAtlas: 'http://uber.github.io/deck.gl/images/location-icon-atlas.png',
         iconMapping,
         sizeScale: ICON_SIZE * size * window.devicePixelRatio,
         getPosition: d => d.coo,
         getIcon: d => (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'),
         getSize: d => (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 1),
-        onHover: this.props.onHover,
-        onClick: this.props.onClick,
+        onHover: setTooltip,
+        onClick: onMarkerClick,
         updateTriggers: {
           getIcon: updateTrigger,
           getSize: updateTrigger
@@ -461,22 +460,22 @@ export default class DeckGLOverlay extends Component {
       }))
     }
 
-    const currPathArr = ((animatedFeature[0] || {}).geometry || {}).coordinates || []
+    /*const currPathArr = ((animatedFeature[0] || {}).geometry || {}).coordinates || []
     if (currPathArr || (geoData && geoData.length > 0)) {
       layers.push(new PathLayer({
         id: 'path-layer',
         data: [{
-               path: currPathArr,
-               name: 'Route',
-               color: [200, 50, 50]
-             }],
+          path: currPathArr,
+          name: 'Route',
+          color: [200, 50, 50]
+        }],
         pickable: false,
-        getDashArray: () => [10, 100],
+        dashJustified: true,
+        getDashArray: [2, 2],
         widthScale: 100,
         widthMinPixels: 5,
         getPath: d => d.path,
         getColor: d => colorToRGBArray(d.color),
-        getWidth: d => 30,
 
         // id: 'geo',
         // data: geoData.filter(f => ((f || {}).hidden === false && ((f || {}).properties || {}).f)).map(f => f.properties.f).concat(animatedFeature),
@@ -496,7 +495,7 @@ export default class DeckGLOverlay extends Component {
         // onClick: this.props.onClick,
         // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
       }))
-    }
+    }*/
 
     return <DeckGL {...viewport} layers={layers} />
   }

@@ -20,7 +20,7 @@ class NavigationBar extends Component {
                 <li key={_.uniqueId('navLink_')}>
                   <NavLink
                     className='NB_links'
-                    to='/board'
+                    to='/community'
                     onClick={() => updateCurrentForum('general')}
                   >
                     Home
@@ -33,7 +33,7 @@ class NavigationBar extends Component {
               <li key={_.uniqueId('navLink_')}>
                 <Link
                   className='NB_links'
-                  to={'/board' + link.link}
+                  to={'/community' + link.link}
                   onClick={() => updateCurrentForum(link.link.substr(1))}
                 >
                   {link.name}

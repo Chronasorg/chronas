@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
+import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import appLayout from '../../SharedStyles/appLayout.css';
 import styles from './styles.css';
 
@@ -47,13 +48,17 @@ class Highscore extends Component {
             </div>
             <div className='FeedBox_discussions'>
               { highscoreData && highscoreData.map((user, index) => {
+
+
+                const finalAvatarUrl = user.avatar ? <img className='Opinion_avatar' src={user.avatar} alt={`${name} avatar`} /> : <AccountIcon className='Opinion_avatar' />
+
                 return (
                   <div className='Opinion_container'>
                     <div className='Opinion_infoContainer'>
-                      { index + 1 }
-                      <img className='Opinion_avatar' src={user.avatar} />
+                      <div className='Opinion_avatar'><h3>{ index + 1 }</h3></div>
+                      { finalAvatarUrl }
                       <div className='Opinion_userInfo'>
-                        { <Link to={`/board/user/${user.username || user.name}`} className='Opinion_name'>{user.username || user.name}</Link> }
+                        { <Link to={`/community/user/${user.username || user.name}`} className='Opinion_name'>{user.username || user.name}</Link> }
                       </div>
                       <div className='Opinion_userInfo'>
                         { `Karma Total: ${user.karma}` }

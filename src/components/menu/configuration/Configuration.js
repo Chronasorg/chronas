@@ -6,7 +6,7 @@ import Dialog from 'material-ui/Dialog';
 import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui/svg-icons/content/clear';
-import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
+import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar'
 import { translate, Restricted } from 'admin-on-rest';
 import { chronasGradient } from '../../../styles/chronasColors';
 
@@ -48,7 +48,6 @@ class Configuration extends PureComponent {
     const {theme, locale, changeTheme, changeLocale, menuItemActive, translate} = this.props;
 
     return (
-      <Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'configuration' }}>
         <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
                 contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} onRequestClose={this.handleClose}>
           <Card style={styles.card}>
@@ -80,7 +79,6 @@ class Configuration extends PureComponent {
             </CardText>
           </Card>
         </Dialog>
-      </Restricted>
     );
   }
 }

@@ -113,7 +113,7 @@ class ForumFeed extends Component {
 
     return (
       <div className={classnames('ForumFeed_showOnMediumBP', 'ForumFeed_newDiscussionBtn')}>
-        <Link to={`/board/${currentForum}/new_discussion`}>
+        <Link to={`/community/${currentForum}/new_discussion`}>
           <Button type='outline' fullWidth noUppercase>
             New Discussion
           </Button>

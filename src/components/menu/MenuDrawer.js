@@ -19,6 +19,10 @@ class MenuDrawer extends PureComponent {
     this.props.toggleMenuDrawer()
   }
 
+  componentWillUnmount = () => {
+    console.debug('we are going down')
+  }
+
   render() {
     const { menuDrawerOpen, setMenuDrawerVisibility, children, muiTheme } = this.props;
 
