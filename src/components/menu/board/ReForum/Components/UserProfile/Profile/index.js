@@ -39,6 +39,8 @@ class Profile extends Component {
 
     const localStorageUsername = localStorage.getItem('username')
 
+    const authTypeIcon = (profile.authType) === 'github' ? <i className={classnames('fa fa-github-alt', 'UserProfile_gitIcon')}></i> : (profile.authType) === 'facebook' ? <i className={classnames('fa fa-facebook', 'UserProfile_gitIcon')}></i> : (profile.authType) === 'google' ? <i className={classnames('fa fa-google', 'UserProfile_gitIcon')}></i> : (profile.authType) === 'twitter' ? <i className={classnames('fa fa-twitter', 'UserProfile_gitIcon')}></i> : <i className={classnames('fa fa-chronas-alt', 'UserProfile_gitIcon')}></i>
+
     return (
       <div className='UserProfile_container'>
         <div className='UserProfile_avatarContainer'>
@@ -46,7 +48,7 @@ class Profile extends Component {
         </div>
         <div className='UserProfile_infoContainer'>
           <div className='UserProfile_name'>{ name }</div>
-          <div className='UserProfile_gitHandler'><i className={classnames('fa fa-github-alt', 'UserProfile_gitIcon')}></i> { gitHandler }</div>
+          <div className='UserProfile_gitHandler'> { authTypeIcon } { gitHandler }</div>
           <div className='UserProfile_location'>member since { Moment(profile.createdAt).from(Moment()) }</div>
         </div>
         <div className='UserProfile_infoContainer'>

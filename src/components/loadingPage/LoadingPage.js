@@ -14,14 +14,17 @@ const styles = {
     left: '10%',
     top: ' calc(80% - 380px)',
     opacity: 0.7
-  }
+  },
+
 }
 
 const LoadingPage = () => (
-  <div style={styles.parent}>
+  <div className="loadingPage" style={styles.parent}>
     some random quote of history -> slack, business insider, wikiquote
 
     <img src={mainLogo} style={styles.mainLogo} alt='chronas' />
+
+    <div className="splash_description">This is the image description</div>
   </div>
 )
 

@@ -220,8 +220,7 @@ export default class DeckGLOverlay extends Component {
       // geo: props.geoData || [],
       x: 0,
       y: 0,
-      hoveredItems: null,
-      expanded: false
+      hoveredItems: null
     }
   }
 
@@ -385,6 +384,7 @@ export default class DeckGLOverlay extends Component {
     return markerData
   }
 
+
   _getArcs (data) {
     if (!data) {
       return null
@@ -414,12 +414,13 @@ export default class DeckGLOverlay extends Component {
     return arcs
   }
 
-  _onClickMarkers (event, s) {
-    console.debug('onclick marker', event, s)
-  }
+  // _onClick (event, s) {
+  //   console.debug('onclick marker', event, s)
+  //   return true
+  // }
 
   render () {
-    const { viewport, strokeWidth, showCluster, geoData, setTooltip, onMarkerClick } = this.props
+    const { viewport, strokeWidth, showCluster, geoData, setTooltip, onHover, onMarkerClick } = this.props
     const { animatedFeature, arcs, marker /* geo */ } = this.state
 
     const z = Math.floor(viewport.zoom)
@@ -439,8 +440,8 @@ export default class DeckGLOverlay extends Component {
         sizeScale: ICON_SIZE * size * window.devicePixelRatio,
         getPosition: d => d.coo,
         getIcon: d => (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'),
-        getSize: d => (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 1),
-        onHover: setTooltip,
+        getSize: d => (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 10),
+        onHover: onHover,
         onClick: onMarkerClick,
         updateTriggers: {
           getIcon: updateTrigger,

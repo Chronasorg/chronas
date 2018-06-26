@@ -45,6 +45,7 @@ class Map extends Component {
   constructor(props) {
     super(props)
     this._onMarkerClick = this._onMarkerClick.bind(this)
+    this._onDeckHover = this._onDeckHover.bind(this)
     this.state = {
       mapStyle: defaultMapStyle,
       mapTimelineContainerClass: 'mapTimeline',
@@ -64,6 +65,7 @@ class Map extends Component {
         width: 500,
         height: 500
       },
+      hoveredItems: [],
       hoverInfo: null,
       popupInfo: null
     }
@@ -1035,9 +1037,11 @@ class Map extends Component {
   };
 
   _onHover = event => {
-    // console.debug('hovering ',event)
-
     if (event.stopPropagation) event.stopPropagation()
+
+    const { hoveredItems } = this.state
+
+    if (hoveredItems.length > 0) return
     if (this.props.modActive.type !== '') return
 
     let provinceName = ''
@@ -1079,8 +1083,13 @@ class Map extends Component {
   _onClick = event => {
     if (event.stopPropagation) event.stopPropagation()
 
-    console.debug('click', event)
     const { modActive, selectedItem } = this.props
+    const { hoveredItems } = this.state
+
+    console.debug('click', event)
+    // we want to click on marker and ignore mapgl layer
+    if (hoveredItems.length > 0) return
+
     let itemName = ''
     let wikiId = ''
 
@@ -1143,6 +1152,34 @@ class Map extends Component {
       }
       this.props.history.push('/article')
     }
+  }
+
+  _onDeckHover({x, y, object}) {
+    // const {viewState, params} = this.props;
+    // const z = Math.floor(viewState.zoom);
+    // const showCluster = params.cluster.value;
+
+    // const { viewport } = this.state;
+
+    let hoveredItems = null;
+
+    if (object) {
+      if (false /*showCluster*/) {
+        // hoveredItems = object.zoomLevels[z].points.sort((m1, m2) => m1.year - m2.year);
+      } else {
+        delete object.zoomLevels
+        hoveredItems = [object]
+      }
+    }
+
+    const hoverInfo = {
+      lngLat: [object.coo[0],object.coo[1]],
+      feature: hoveredItems
+    }
+
+    console.debug('hoveredItems are ', hoveredItems)
+    // x, y,
+    this.setState({ hoveredItems, hoverInfo });
   }
 
   _onMarkerClick (layerClicked) {
@@ -1252,10 +1289,10 @@ class Map extends Component {
             markerData={markerData}
             arcData={arcData}
             onMarkerClick={this._onMarkerClick}
-            setTooltip={this._onHover}
+            // setTooltip={this._onHover}
             showCluster={mapStyles.clusterMarkers}
             // selectedFeature={selectedCounty}
-            // onHover={this._onHover.bind(this)}
+            onHover={this._onDeckHover}
             // onClick={this._onClick.bind(this)}
             strokeWidth={20}
             animationInterval={animationInterval}

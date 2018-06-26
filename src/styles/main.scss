@@ -301,3 +301,33 @@ button:focus {
   top: calc(100% - 22px) !important;
   margin-left: 10px !important;
 }
+
+
+
+@keyframes rightFadeIn {
+  0% {
+    position: absolute;
+    right: 20%;
+    opacity: 0.4;
+  }
+
+  100% {
+    position: absolute;
+    right: 40%;
+    opacity: 1;
+  }
+}
+
+.loadingPage {
+  .splash_description {
+    font-size: 3.4rem;
+    position: absolute;
+    bottom: 20%;
+    right: 40%;
+    opacity: 1;
+    transition-timing-function: ease;
+    animation-name: rightFadeIn;
+    animation-duration: 10s;
+    color: #ccc;
+  }
+}
