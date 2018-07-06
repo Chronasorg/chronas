@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: chronas-map
-        image: aumanjoa/chronas-map:216
+        image: aumanjoa/chronas-map:389
         ports:
         - containerPort: 80
 ---
@@ -20,8 +20,47 @@ kind: Service
 metadata:
   name: chronas-map
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
   - port: 80
   selector:
-    app: chronas-map      
+    app: chronas-map
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: chronas-map-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod  
+spec:  
+  tls:
+  - hosts:
+    - map-dev.chronas.org
+    secretName: https-map-crt
+  rules:
+  - host: map-dev.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80    
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: https-map-crt
+spec:
+  secretName: https-map-crt
+  dnsNames:
+  - map-dev.chronas.org
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - map-dev.chronas.org
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer          
