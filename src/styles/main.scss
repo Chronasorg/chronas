@@ -328,6 +328,7 @@ button:focus {
     transition-timing-function: ease;
     animation-name: rightFadeIn;
     animation-duration: 10s;
-    color: #ccc;
+    color: #ffffff;
+    text-shadow: 2px 2px rgba(0, 0, 0, 0.8);
   }
 }

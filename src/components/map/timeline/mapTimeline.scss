@@ -1,5 +1,7 @@
 /** Timeline Overwrites **/
 .vis-timeline.vis-bottom {
+  transition: all .5s;
+  transition-timing-function: ease-in-out;
   .vis-panel.vis-bottom {
     top: 24px!important;
     pointer-events: none;
@@ -28,13 +30,18 @@
   position: absolute;
 }
 
-.mapTimeline > div > .vis-timeline {
+.mapTimeline { .vis-timeline {
   border: none;
   position: fixed;
   bottom: -46px !important;
-  height: 120px !important;
+  //height: 120px !important;
+  width: 100%;
+  max-height: 90% !important;
+}}
 
-}
+.mapTimeline:hover {.vis-timeline {
+  //height: 500px !important; // !important;
+}}
 
 .vis-custom-time {
   &.selectedYear {

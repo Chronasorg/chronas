@@ -92,7 +92,11 @@ export class LinkedForm extends Component {
           if (res.status === 200) {
             setModType('', [], values.type)
             showNotification((redirect === 'edit') ? 'Item successfully updated' : 'Item successfully added')
-            history.goBack()
+            if (values.onlyEpicContent) {
+              history.push('/mod/links')
+            } else {
+              history.goBack()
+            }
           } else {
             showNotification((redirect === 'edit') ? 'Item not updated' : 'Item not added', 'warning')
           }

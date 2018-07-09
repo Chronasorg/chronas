@@ -118,13 +118,17 @@ export default class ArticleIframe extends React.Component {
     utilsQuery.updateQueryStringParameter('value', '')
   }
 
+  componentWillReceiveProps (nextProps) {
+    if (this.props.selectedWiki !== nextProps.selectedWiki) this.forceUpdate()
+  }
+
   render () {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
     const { selectedItem, selectedWiki, customStyle } = this.props
 
     const shouldLoad = (iframeLoading || selectedWiki === null || +selectedWiki === -1)
-    const modUrl = '/mod/' + selectedItem.type
     const isMarker = selectedItem.type === TYPE_MARKER
+    const modUrl = isMarker ?  '/mod/markers' : '/mod/metadata'//selectedItem.type
     const iconEnterFullscreen = {
       key: 'random',
       tooltipPosition: 'bottom-right',
@@ -162,17 +166,15 @@ export default class ArticleIframe extends React.Component {
           </FloatingActionButton >
           }
         </Dialog>
-        <div style={styles.actionButtonContainer} >
-          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
-                      containerElement={<Link to={modUrl}/>}>
+        <div style={ (selectedItem.type !== TYPE_MARKER) ? { ...styles.actionButtonContainer, top: 254 } : styles.actionButtonContainer } >
+          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} containerElement={<Link to={modUrl}/>}>
             <IconEdit hoverColor={chronasMainColor} />
           </IconButton>
           <IconButton {...iconEnterFullscreen}>
             <FullscreenEnterIcon
               hoverColor={chronasMainColor} />
           </IconButton>
-          { isMarker && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}}
-                                    onClick={() => this._handleClose()}>
+          { isMarker && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
             <IconClose hoverColor={chronasMainColor} />
           </IconButton> }
         </div>

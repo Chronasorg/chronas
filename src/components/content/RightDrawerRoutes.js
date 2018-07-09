@@ -59,7 +59,7 @@ import { chronasMainColor } from '../../styles/chronasColors'
 import utils from '../map/utils/general'
 import properties from '../../properties'
 
-const nearbyIcon = <IconLocationOn />
+const nearbyIcon = <EditIcon />
 
 const defaultIcons = {
   ruler: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png',
@@ -73,7 +73,8 @@ const defaultIcons = {
 const styles = {
   articleHeader: {
     backgroundColor: '#eceff1',
-    height: '56px'
+    height: '56px',
+    width: 'calc(100% - 95px)'
   },
   cardArticle: {
     paddingBottom: '0px',
@@ -169,10 +170,13 @@ const resources = {
 
 const menuIndexByLocation = {
   '/mod/markers/create': 0,
-  '/mod/metadata/create': 1,
-  '/mod/areas': 2,
-  '/mod/markers': 3,
-  '/mod/metadata': 4,
+  '/mod/linked/create': 0,
+  '/mod/markers': 1,
+  '/mod/linked': 1,
+  '/mod/metadata/create': 2,
+  '/mod/metadata': 3,
+  '/mod/areas': 4,
+  '/mod/links': 5,
 }
 
 class RightDrawerRoutes extends PureComponent {
@@ -190,10 +194,21 @@ class RightDrawerRoutes extends PureComponent {
     this.setState({ metadataType, metadataEntity: '' })
   }
 
+  actOnRootTypeChange = (contentTypeRaw) => {
+    const { location, history } = this.props
+    const contentType = (contentTypeRaw.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
+    if (contentType === 'markers' && location.pathname.indexOf(contentType) === -1 && location.pathname.indexOf('/mod') !== -1) {
+      history.push(location.pathname.replace('linked', 'markers'))
+    } else if (contentType === 'metadata' && location.pathname.indexOf('linked') === -1 && location.pathname.indexOf('/mod') !== -1) {
+      history.push(location.pathname.replace('markers', 'linked'))
+    }
+  }
+
   setContentType = (contentTypeRaw) => {
     const contentType = (contentTypeRaw.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
     this.setState({ contentType, contentChoice: [] })
   }
+
   setSearchEpic = (searchText) => {
     // contentChoice
     if (searchText.length > 3) {
@@ -252,6 +267,20 @@ class RightDrawerRoutes extends PureComponent {
       this.setState({ searchText })
     }
   }
+
+  routeNotYetSetup = () => {
+    const { activeArea, location, selectedItem } = this.props
+    const oldrouteKey = this.state.routeKey
+    const newrouteKey = location.pathname + activeArea.color + selectedItem.value
+
+    if (oldrouteKey === newrouteKey) {
+      return false
+    } else {
+      this.setState({ routeKey: newrouteKey })
+      return true
+    }
+  }
+
   setMetadataEntity = (metadataEntity) => {
     if (this.state.metadataType === 'e' && metadataEntity !== this.state.metadataEntity) {
       axios.get(properties.chronasApiHost + '/metadata/' + metadataEntity)
@@ -411,6 +440,7 @@ class RightDrawerRoutes extends PureComponent {
       hiddenElement: true,
       metadataType: '',
       metadataEntity: '',
+      routeKey: '',
       selectedIndex: -1,
       rulerEntity: {
         'id': null,
@@ -432,7 +462,7 @@ class RightDrawerRoutes extends PureComponent {
     }
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.setState({
-        selectedIndex: menuIndexByLocation[nextProps.location.pathname] || -1
+        selectedIndex: menuIndexByLocation[nextProps.location.pathname]
       })
     }
 
@@ -440,7 +470,7 @@ class RightDrawerRoutes extends PureComponent {
     console.debug('### MAP rightDrawerOpen', this.props, nextProps)
 
     /** Acting on store changes **/
-    if (rightDrawerOpen != nextProps.rightDrawerOpen) {
+    if (rightDrawerOpen !== nextProps.rightDrawerOpen) {
       if (rightDrawerOpen) {
         console.debug('rightDrawer Closed')
         this.setState({ hiddenElement: true })
@@ -504,50 +534,30 @@ class RightDrawerRoutes extends PureComponent {
           <BottomNavigationItem
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/markers/create' />}
-            label='Add Marker'
+            label='Articles'
             icon={nearbyIcon}
-            onClick={() => this.select(0)}
-          />
-          <BottomNavigationItem
-            className='bottomNavigationItem'
-            containerElement={<Link to='/mod/markers' />}
-            label='Edit Marker'
-            icon={nearbyIcon}
-            onClick={() => this.select(1)}
+            // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/metadata/create' />}
-            label='Add Entity'
+            label='Area Entity'
             icon={nearbyIcon}
-            onClick={() => {
-              this.select(2)
-            }}
-          />
-          <BottomNavigationItem
-            className='bottomNavigationItem'
-            containerElement={<Link to='/mod/metadata' />}
-            label='Edit Entity'
-            icon={nearbyIcon}
-            onClick={() => this.select(3)}
+            // onClick={() => { this.select(2) }}
           />
           <BottomNavigationItem
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/areas' />}
-            label='Edit Area'
+            label='Assign Area'
             icon={nearbyIcon}
-            onClick={() => {
-              this.select(4)
-            }}
+            // onClick={() => { this.select(4) }}
           />
           <BottomNavigationItem
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/links' />}
-            label='Edit Links'
+            label='Link Articles'
             icon={nearbyIcon}
-            onClick={() => {
-              this.select(5)
-            }}
+            // onClick={() => { this.select(5) }}
           />
         </BottomNavigation>
       }
@@ -944,6 +954,7 @@ class RightDrawerRoutes extends PureComponent {
               defaultEpicValues: this.state.defaultEpicValues,
               metadataEntity: this.state.metadataEntity,
               setMetadataEntity: this.setMetadataEntity,
+              routeNotYetSetup: this.routeNotYetSetup,
               setMetadataType: this.setMetadataType,
               setSearchEpic: this.setSearchEpic,
               setContentType: this.setContentType,
@@ -951,7 +962,12 @@ class RightDrawerRoutes extends PureComponent {
               epicsChoice: this.state.epicsChoice
             }
           } else if (resourceKey === TYPE_MARKER) {
-            finalProps = { ...commonProps, selectedItem, selectedYear, setModDataLng, setModDataLat }
+            finalProps = { ...commonProps,
+              selectedItem,
+              selectedYear,
+              setModDataLng,
+              setModDataLat,
+              actOnRootTypeChange: this.actOnRootTypeChange}
           } else if (resourceKey === TYPE_LINKED) {
             finalProps = {
               ...commonProps,
@@ -959,7 +975,9 @@ class RightDrawerRoutes extends PureComponent {
               selectedYear,
               setModDataLng,
               setModDataLat,
-              resource: 'metadata'
+              actOnRootTypeChange: this.actOnRootTypeChange,
+              resource: 'metadata',
+              history
             }
           } else {
             finalProps = commonProps

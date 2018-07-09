@@ -30,6 +30,12 @@ import {
     required,
     minLength
 } from 'admin-on-rest'
+import IconLocationOn from 'material-ui/svg-icons/communication/location-on'
+import AddIcon from 'material-ui/svg-icons/content/add'
+import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
+import { Link } from 'react-router-dom'
+import { BottomNavigation } from 'material-ui/BottomNavigation'
+import BottomNavigationItem from '../../overwrites/BottomNavigationItem'
 import Icon from 'material-ui/svg-icons/social/person'
 import EditButton from '../shared/buttons/EditButton'
 import DeleteButton from '../shared/buttons/DeleteButton'
@@ -44,7 +50,10 @@ import { TYPE_LINKED } from '../../map/actionReducers'
 export const LinkedIcon = Icon
 
 const linkedTypes = [
-  { name: '[Article]', id: 'articles' },
+  { name: '[Audio]', id: 'meta_audio' },
+  { name: '[Epic]', id: 'meta_epic' },
+  { name: '[External Article or Primary Source]', id: 'meta_text' },
+  { name: '[HTML or Text]', id: 'html' },
   { name: '[Image] Artefact', id: 'artefacts' },
   { name: '[Image] Battle', id: 'battles' },
   { name: '[Image] City & Building', id: 'cities' },
@@ -52,8 +61,24 @@ const linkedTypes = [
   { name: '[Image] Other', id: 'misc' },
   { name: '[Podcast & Audio]', id: 'audios' },
   { name: '[Primary Source]', id: 'ps' },
-  { name: '[HTML or Text]', id: 'html' },
-  { name: '[Video]', id: 'videos' },
+  { name: '[Story]', id: 'meta_story' },
+  { name: '[Video]', id: 'meta_video' },
+  { name: '[Wiki Article] Artifacts', id: 'm_artifacts' },
+  { name: '[Wiki Article] Battles -> Battles', id: 'm_battles' },
+  { name: '[Wiki Article] Battles -> Sieges', id: 'm_sieges' },
+  { name: '[Wiki Article] Cities -> Cities', id: 'm_cities' },
+  { name: '[Wiki Article] Cities -> Castles', id: 'm_castles' },
+  { name: '[Wiki Article] People -> Military', id: 'm_military' },
+  { name: '[Wiki Article] People -> Politicians', id: 'politicians' },
+  { name: '[Wiki Article] People -> Explorers', id: 'm_explorers' },
+  { name: '[Wiki Article] People -> Scientists', id: 'm_scientists' },
+  { name: '[Wiki Article] People -> Artists', id: 'm_artists' },
+  { name: '[Wiki Article] People -> Religious', id: 'm_religious' },
+  { name: '[Wiki Article] People -> Athletes', id: 'm_athletes' },
+  { name: '[Wiki Article] People -> Unclassified', id: 'm_unclassified' },
+  { name: '[Wiki Article] Other -> Area Info', id: 'm_areainfo' },
+  { name: '[Wiki Article] Other -> Unknown', id: 'm_unknown' },
+  { name: 'Other', id: 'meta_other' }
 ]
 
 const validateWiki = (values) => {
@@ -123,16 +148,37 @@ export const isNotAnAudio = (urlPre) => {
 export const LinkedEdit = (props) => {
   const validateWikiProps = (values) => {
     const errors = {}
-    if ((values.wiki && values.wiki !== (props.selectedItem.value.wiki || '') && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
+    if ((values.wiki && values.wiki !== (props.selectedItem.value.wiki || '') && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).wiki !== values.wiki)) {
       errors.wiki = ['The URL needs to be a full Wikipedia URL']
     }
 
     return errors
   }
 
-  return <Create title={<span>LinkedEdit</span>} {...props}>
+
+  return <div>
+    <BottomNavigation
+      // style={styles.articleHeader}
+      // onChange={this.handleChange}
+      selectedIndex={props.location.pathname === '/mod/areas' ? 0 : 1}>
+      <BottomNavigationItem
+        className='bottomNavigationItem'
+        containerElement={<Link to='/mod/linked/create' />}
+        label='Add'
+        icon={<AddIcon />}
+        // onClick={() => { this.select(4) }}
+      />
+      <BottomNavigationItem
+        className='bottomNavigationItem'
+        containerElement={<Link to='/mod/linked' />}
+        label='Edit'
+        icon={<EditIcon />}
+        // onClick={() => { this.select(5) }}
+      />
+    </BottomNavigation>
+    <Create title={'Edit Article'} {...props}>
     <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
-      <SelectInput source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
+      <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
       <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || (props.selectedItem.value.data || {}).title || ''} />
       <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={(props.selectedItem.value.content || props.selectedItem.value.data || {}).content || ''} />
@@ -147,7 +193,8 @@ export const LinkedEdit = (props) => {
       <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
       <DeleteButton id={encodeURIComponent(props.selectedItem.value.src)} {...props} />
     </LinkedForm>
-  </Create>
+    </Create>
+  </div>
 }
 
 export const LinkedCreate = (props) => {
@@ -179,9 +226,29 @@ export const LinkedCreate = (props) => {
     return errors
   }
 
-  return <Create {...props}>
+  return <div>
+    <BottomNavigation
+      // style={styles.articleHeader}
+      // onChange={this.handleChange}
+      selectedIndex={props.location.pathname === '/mod/linked/create' ? 0 : 1}>
+      <BottomNavigationItem
+        className='bottomNavigationItem'
+        containerElement={<Link to='/mod/linked/create' />}
+        label='Add'
+        icon={<AddIcon />}
+        // onClick={() => { this.select(4) }}
+      />
+      <BottomNavigationItem
+        className='bottomNavigationItem'
+        containerElement={<Link to='/mod/linked' />}
+        label='Edit'
+        icon={<EditIcon />}
+        // onClick={() => { this.select(5) }}
+      />
+    </BottomNavigation>
+    <Create title={'Add Article'} {...props}>
     <LinkedForm validate={validateWikiProps} redirect='' history={props.history}>
-      <SelectInput validate={required} source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' />
+      <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} validate={required} source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' />
       <LongTextInput source='src' type='url' label='resources.linked.fields.src' />
       <LongTextInput validate={required} source='description' label='resources.linked.fields.description' />
       <LongTextInput source='content' label='resources.linked.fields.content' />
@@ -195,7 +262,8 @@ export const LinkedCreate = (props) => {
       <LongTextInput source='geojson' label='resources.linked.fields.geojson' />
       <BooleanInput label="resources.linked.fields.onlyEpicContent" source="onlyEpicContent" defaultValue={false} />
     </LinkedForm>
-  </Create>
+    </Create>
+  </div>
 }
 
 const LinkedDeleteTitle = translate(({ record, translate }) => <span>

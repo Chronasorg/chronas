@@ -101,6 +101,13 @@ export default class LoadingBar extends React.Component {
     isLoadingInterval = setInterval(() => this._load(), 500)
   }
 
+  componentWillUnmount() {
+    console.debug('### LoadingBar: WillUnmount')
+    if (typeof isLoadingInterval !== "undefined") {
+      clearInterval(isLoadingInterval);
+    }
+  }
+
   componentDidMount() {
     console.debug('### LoadingBar: axios intercepted')
     this._setupStartProgress()

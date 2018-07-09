@@ -1086,7 +1086,6 @@ class Map extends Component {
     const { modActive, selectedItem } = this.props
     const { hoveredItems } = this.state
 
-    console.debug('click', event)
     // we want to click on marker and ignore mapgl layer
     if (hoveredItems.length > 0) return
 

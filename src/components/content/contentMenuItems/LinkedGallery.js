@@ -52,7 +52,8 @@ const MODE = [
 const imgButton = { width: 20, height: 20}
 const styles = {
   container: {
-    padding: '16px'
+    padding: '16px',
+    // backgroundColor: 'rgba(0,0,0,0.7)'
   },
   addButton: {
     zIndex: 15000,

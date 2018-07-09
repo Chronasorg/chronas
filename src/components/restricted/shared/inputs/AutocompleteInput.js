@@ -183,6 +183,7 @@ export class AutocompleteInput extends Component {
         dataSource={dataSource}
         floatingLabelText={
           <FieldTitle
+            defaultValue={'tata'}
             label={label}
             source={source}
             resource={resource}

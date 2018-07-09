@@ -24,7 +24,8 @@ const MODE = [
 
 const styles = {
   chartContainer: {
-    padding: '16px'
+    padding: '16px',
+    // backgroundColor: 'rgba(255,255,255,0.7)'
   }
 }
 /**
@@ -212,9 +213,10 @@ export default class ChartSunburst extends React.Component {
       <Paper zDepth={3} style={{
         position: 'fixed',
         left:  (isMinimized ? '-52px' : '-574px'),
-        top: '64px',
+        top: '4px',
         padding: '0em',
         transition: 'all .3s ease-in-out',
+        backgroundColor: 'rgba(255, 255, 255, 0.67)',
         width: (isMinimized ? '30px' : '500px'),
         height: (isMinimized ? '30px' : '524px'),
         pointerEvents: (isMinimized ? 'none' : 'inherit'),

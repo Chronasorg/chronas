@@ -4,15 +4,22 @@ import { connect } from 'react-redux'
 import { render } from 'react-dom'
 import compose from 'recompose/compose'
 import update from 'react/lib/update'
+import FlatButton from 'material-ui/FlatButton'
+import IconArrowUp from 'material-ui/svg-icons/navigation/expand-less'
+import IconArrowDown from 'material-ui/svg-icons/navigation/expand-more'
 import { setYear as setYearAction } from './actionReducers'
 import { selectEpicItem } from '../actionReducers'
 
 import Timeline from 'react-visjs-timeline'
 import './mapTimeline.scss'
+import {chronasMainColor} from "../../../styles/chronasColors";
 
 const start = '-000200-01-05',
   min = '-002000-01-01T00:00:00.000Z',
   max = '2017-01-01'
+
+const SMALLTIMELINEHEIGHT = 120
+const BIGTIMELINEHEIGHT = 400
 
 const timelineGroups = [{
   id: 1,
@@ -22,20 +29,32 @@ const timelineGroups = [{
   subgroupStack: false
 }]
 
+const styles = {
+  buttonExpand: {
+    color: chronasMainColor,
+    width: '60px',
+    position: 'fixed',
+    bottom: 0,
+    left: 'calc(50% - 30px)',
+    zIndex: 10,
+  }
+}
+
 class MapTimeline extends Component {
   constructor (props) {
     super(props)
     this._onClickTimeline = this._onClickTimeline.bind(this)
 
     this.state = {
+      timelineHeight: 120,
       timelineOptions: {
         width: '100%',
-        height: '100px',
         zoomMin: 315360000000,
         min: min,
         max: max,
         start: start,
-        stack: false,
+        stack: false, // true
+        // stackSubgroups: true,
         showCurrentTime: false
           // showMajorLabels: false
       },
@@ -52,8 +71,8 @@ class MapTimeline extends Component {
 
   componentDidMount () {
     // Hack for issue https://github.com/Lighthouse-io/react-visjs-timeline/issues/40
-    ReactDOM.findDOMNode(this).children[0].style.visibility = 'visible'
-    ReactDOM.findDOMNode(this).children[0].style.width = '100%'
+    ReactDOM.findDOMNode(this).children[1].style.visibility = 'visible'
+    ReactDOM.findDOMNode(this).children[1].style.width = '100%'
 
     // http://localhost:4040/v1/metadata?type=e&end=10000&subtype=war add wars
 
@@ -61,6 +80,9 @@ class MapTimeline extends Component {
     delete timelineOptions.start
     this.setState({ timelineOptions })
 
+    setTimeout(() => {
+      this.setState({ timelineHeight: SMALLTIMELINEHEIGHT })
+    }, 1000)
   }
 
   _onClickTimeline = (event) => {
@@ -106,8 +128,25 @@ class MapTimeline extends Component {
   //   // }
   // }
 
+  _toggleTimelineHeight = () => {
+    const { timelineHeight, timelineOptions } = this.state
+    if (timelineHeight !== SMALLTIMELINEHEIGHT) {
+      timelineOptions.stack = false
+      this.setState({
+        timelineHeight: SMALLTIMELINEHEIGHT,
+        timelineOptions
+      })
+    } else {
+      timelineOptions.stack = true
+      this.setState({
+        timelineHeight: BIGTIMELINEHEIGHT,
+        timelineOptions
+      })
+    }
+  }
+
   render () {
-    const { timelineOptions, customTimes } = this.state
+    const { timelineOptions, timelineHeight, customTimes } = this.state
     const { groupItems } = this.props
 
     console.debug("rendering maptimeline")
@@ -116,13 +155,19 @@ class MapTimeline extends Component {
     if (this.props.rightDrawerOpen) leftOffset -= 228
 
     return (
-      <Timeline
-        options={timelineOptions}
-        groups={timelineGroups}
-        items={groupItems}
-        customTimes={customTimes}
-        clickHandler={this._onClickTimeline}
-      />
+      <div>
+        <FlatButton
+          onClick={() => this._toggleTimelineHeight()} style={styles.buttonExpand}
+          icon={(timelineHeight === SMALLTIMELINEHEIGHT) ? <IconArrowUp /> : <IconArrowDown />}
+        />
+        <Timeline
+          options={{ ...timelineOptions, height: timelineHeight }}
+          groups={timelineGroups}
+          items={groupItems}
+          customTimes={customTimes}
+          clickHandler={this._onClickTimeline}
+        />
+      </div>
     )
   }
 }

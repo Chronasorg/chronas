@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import Badge from 'material-ui/Badge';
+import Badge from 'material-ui/Badge'
 import PropTypes from 'prop-types'
 import Paper from 'material-ui/Paper'
 import Menu from 'material-ui/Menu'
@@ -8,11 +8,15 @@ import MenuItem from 'material-ui/MenuItem'
 import Divider from 'material-ui/Divider'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
+import IconButton from 'material-ui/IconButton'
 import compose from 'recompose/compose'
 import { translate, defaultTheme, showNotification } from 'admin-on-rest'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
+import ContentMovie from 'material-ui/svg-icons/maps/local-movies'
+import ContentImage from 'material-ui/svg-icons/image/image'
+import ContentAudio from 'material-ui/svg-icons/image/audiotrack'
 import ContentLink from 'material-ui/svg-icons/content/link'
-import {setRightDrawerVisibility, toggleRightDrawer as toggleRightDrawerAction} from './actionReducers'
+import { setRightDrawerVisibility, toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { setFullModActive, resetModActive } from '../restricted/shared/buttons/actionReducers'
 import {
   TYPE_AREA, TYPE_MARKER, TYPE_LINKED, TYPE_EPIC, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE,
@@ -56,10 +60,37 @@ const styles = {
     width: '20px',
     height: '20px'
   },
-  menuIconBadgeContainer: {
-    left: '-16px',
-    position: 'relative',
-    top: '-16px',
+  menuIconBadgeContainer1: {
+    fill: 'rgb(117, 117, 117)',
+    left: '-8px',
+    position: 'absolute',
+    top: '0px',
+    width: '18px',
+    height: '18px'
+  },
+  menuIconBadgeContainer2: {
+    fill: 'rgb(117, 117, 117)',
+    left: '6px',
+    position: 'absolute',
+    top: '0px',
+    width: '18px',
+    height: '18px'
+  },
+  menuIconBadgeContainer3: {
+    fill: 'rgb(117, 117, 117)',
+    left: '-8px',
+    position: 'absolute',
+    top: '16px',
+    width: '18px',
+    height: '18px'
+  },
+  menuIconBadgeContainer4: {
+    fill: 'rgb(117, 117, 117)',
+    left: '6px',
+    position: 'absolute',
+    top: '16px',
+    width: '18px',
+    height: '18px'
   },
   menuItem: {
     width: '64px'
@@ -174,8 +205,7 @@ class Content extends Component {
         : (activeAreaDim === 'province' || activeAreaDim === 'capital')
           ? (metadata[activeAreaDim][activeprovinceValue] || {})
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
-    }
-    else if (selectedItem.type === TYPE_MARKER) {
+    } else if (selectedItem.type === TYPE_MARKER) {
       selectedWiki = selectedItem.wiki
     } else if (selectedItem.type === TYPE_LINKED) {
       selectedWiki = selectedItem.wiki
@@ -203,7 +233,7 @@ class Content extends Component {
           if (linkedItemResult.status === 200) {
             const linkedItems = []
             const res = linkedItemResult.data
-            showNotification(linkedItems.length + ' linked item' + (linkedItems.length === 1 ) ? '' : 's' + ' found')
+            showNotification(linkedItems.length + ' linked item' + (linkedItems.length === 1) ? '' : 's' + ' found')
             res.media.forEach((imageItem) => {
               linkedItems.push({
                 src: imageItem._id,
@@ -247,21 +277,26 @@ class Content extends Component {
     const linkedItemCount = (linkedItems || []).length
     const isMarker = selectedItem.type === TYPE_MARKER
 
+    // {/*<Badge*/}
+    // {/*badgeStyle={ { ...styles.menuIconBadge, backgroundColor: (linkedItemCount > 0) ? 'rgb(255, 64, 129)' : 'rgb(205, 205, 205)'  } }*/}
+    // {/*badgeContent={ linkedItemCount }*/}
+    // {/*primary={true}*/}
+    // {/*>*/}
     return <div style={(isMarker) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
       { (entityTimelineOpen || isMarker) && <div>
         <Paper style={styles.contentLeftMenu}>
-          <Menu desktop={true}>
-            { entityTimelineOpen && <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={ styles.menuIcon } />} /> }
+          <Menu desktop>
+            { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={styles.menuIcon} />} /> }
             { entityTimelineOpen && <Divider /> }
-            <MenuItem style={ { ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit'} } onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
-              <Badge
-                badgeStyle={ { ...styles.menuIconBadge, backgroundColor: (linkedItemCount > 0) ? 'rgb(255, 64, 129)' : 'rgb(205, 205, 205)'  } }
-                badgeContent={ linkedItemCount }
-                primary={true}
-              >
-                <ContentLink
-                  style={ styles.menuIconBadgeContainer } />
-              </Badge>
+            <MenuItem style={{ ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
+              <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} >
+                <div>
+                  <ContentImage style={styles.menuIconBadgeContainer1} />
+                  <ContentMovie style={styles.menuIconBadgeContainer2} />
+                  <ContentAudio style={styles.menuIconBadgeContainer3} />
+                  <ContentLink style={styles.menuIconBadgeContainer4} />
+                </div>
+              </IconButton>
             } disabled={itemHasLinkedItems} />
           </Menu>
         </Paper>
@@ -279,11 +314,11 @@ class Content extends Component {
               activeAreaDim={activeAreaDim}
               selectedYear={selectedYear}
               epicData={selectedItem.data}
-              rulerProps={(selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id] )}
+              rulerProps={(selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id])}
               linkedItems={linkedItems} />
             : <div style={{ height: '100%' }}>
-              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems } selectedYear={selectedYear} />
-              <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } selectedItem={ selectedItem } />
+              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems} selectedYear={selectedYear} />
+              <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki} selectedItem={selectedItem} />
             </div>
       }
     </div>

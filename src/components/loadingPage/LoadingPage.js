@@ -20,8 +20,6 @@ const styles = {
 
 const LoadingPage = () => (
   <div className="loadingPage" style={styles.parent}>
-    some random quote of history -> slack, business insider, wikiquote
-
     <img src={mainLogo} style={styles.mainLogo} alt='chronas' />
 
     <div className="splash_description">This is the image description</div>

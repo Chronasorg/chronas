@@ -36,7 +36,18 @@ import utils from '../../map/utils/general'
 import ColorInput from 'aor-color-input'
 
 export const ModMetaEdit = (props) => {
-  const { metadata } = props
+  const { metadata, routeNotYetSetup } = props
+
+  if (routeNotYetSetup() && props.activeArea.color && (!props.metadataType || props.metadataType !== props.activeArea.color)) {
+    props.setMetadataType( props.activeArea.color)
+  }
+
+  const newEntity = ((props.activeArea.data || {})[props.selectedItem.value] || [])[utils.activeAreaDataAccessor(props.activeArea.color)]
+
+  if (routeNotYetSetup() && newEntity && props.selectedItem.value && (!props.metadataEntity || props.metadataEntity !== newEntity)) {
+    props.setMetadataEntity(newEntity)
+  }
+
   const defaultValues = {
       dataName: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[0] || '',
       dataColor: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[1] || '',
@@ -147,9 +158,9 @@ export const ModMetaEdit = (props) => {
 
   const typeInputs = {
     'e':
-  <MetaForm validate={validateValueInput} {...props} redirect='edit' defaultValue={props.defaultEpicValues}>
+  <MetaForm  validate={validateValueInput} {...props} redirect='edit' defaultValue={props.defaultEpicValues}>
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-    <AutocompleteInput source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.display_name" />
+    <AutocompleteInput source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity('!manualchange!'+v) }} label="resources.areas.fields.display_name" />
     {(props.metadataEntity !== '') ? <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' /> : null}
     {(props.metadataEntity !== '') ? <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' /> : null}
     {(props.metadataEntity !== '') ? <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' /> : null}
@@ -170,7 +181,7 @@ export const ModMetaEdit = (props) => {
     {(props.metadataEntity !== '') ? <TextInput type='text' source='partOf' label='resources.areas.fields.partOf' /> : null}
   </MetaForm>,
     'ruler':
-      <MetaForm validate={validateValueInput} {...props} >
+      <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <h4 className='modal-title' style={{ margin: '0 auto' }}>Which entity do you like to modify?</h4>
         <AutocompleteInput  source="select" choices={choicesRuler} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.display_name" />
@@ -181,7 +192,7 @@ export const ModMetaEdit = (props) => {
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'religion':
-      <MetaForm validate={validateValueInput} {...props} >
+      <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesReligion} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
         {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
@@ -191,7 +202,7 @@ export const ModMetaEdit = (props) => {
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'religionGeneral':
-      <MetaForm validate={validateValueInput} {...props} >
+      <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesReligionGeneral} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
 
@@ -201,7 +212,7 @@ export const ModMetaEdit = (props) => {
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'culture':
-      <MetaForm validate={validateValueInput} {...props} >
+      <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesCulture} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
 
@@ -211,7 +222,7 @@ export const ModMetaEdit = (props) => {
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'capital':
-      <MetaForm validate={validateValueInput} {...props} >
+      <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesCapital} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
 
@@ -219,7 +230,7 @@ export const ModMetaEdit = (props) => {
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'province':
-      <MetaForm validate={validateValueInput} {...props} >
+      <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesProvince} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
 
@@ -227,7 +238,7 @@ export const ModMetaEdit = (props) => {
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'default':
-      <MetaForm validate={validateValueInput} {...props} >
+      <MetaForm  validate={validateValueInput} {...props} >
         <h4 className='modal-title' style={{ margin: '0 auto' }}>Which type of metadata do you like to modify?</h4>
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
       </MetaForm>

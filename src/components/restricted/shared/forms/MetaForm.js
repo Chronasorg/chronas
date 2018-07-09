@@ -37,7 +37,7 @@ export class MetaForm extends Component {
 
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const { initialValues, history } = this.props
+      const { initialValues, history, metadataEntity } = this.props
 
       const wikiURL = values.url
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
@@ -144,7 +144,7 @@ export class MetaForm extends Component {
           const nextBodyByType = {
             ruler: [values.name, values.color, newWikiURL, iconUrl],
             culture: [values.name, values.color, newWikiURL, iconUrl],
-            religion:        [values.name, values.color, newWikiURL, values.parentname, iconUrl],
+            religion: [values.name, values.color, newWikiURL, values.parentname, iconUrl],
             religionGeneral: [values.name, values.color, newWikiURL, iconUrl],
             capital: [values.url, iconUrl],
             province: [values.url, iconUrl]
@@ -152,7 +152,7 @@ export class MetaForm extends Component {
 
           const bodyToSend = {}
           const metadataItem = values.type
-          bodyToSend['subEntityId'] = values.select || '_' + values.name.replace(/ /g, '_')
+          bodyToSend['subEntityId'] = (redirect === 'edit') ? values.select || metadataEntity : '_' + values.name.replace(/ /g, '_')
           bodyToSend['nextBody'] = nextBodyByType[metadataItem]
 
           const token = localStorage.getItem('token')
@@ -210,6 +210,7 @@ export class MetaForm extends Component {
   componentWillReceiveProps (nextProps) {
     if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) { this.props.change('coo[0]', nextProps.modActive.data[0]) }
     if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) { this.props.change('coo[1]', nextProps.modActive.data[1]) }
+    // if (this.props.metadataEntity !== nextProps.metadataEntity) { this.props.change('select', nextProps.metadataEntity) }
   }
 
   render () {

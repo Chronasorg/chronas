@@ -39,14 +39,14 @@ export const ModHome = () => {
       <Subheader>Area</Subheader>
       <ListItem
         containerElement={<Link to="/mod/areas/" />}
-        primaryText="Edit Area" />
+        primaryText="Assign Area" />
     </List>
     <Divider />
     <List>
       <Subheader>Marker</Subheader>
       <ListItem
         containerElement={<Link to="/mod/markers/create" />}
-        primaryText="Add Marker">
+        primaryText="Add Item">
       </ListItem>
       {/*<ListItem*/}
         {/*containerElement={<Link to="/mod/markers/edit" />}*/}
@@ -57,7 +57,7 @@ export const ModHome = () => {
       <Subheader>Meta</Subheader>
       <ListItem
         containerElement={<Link to="/mod/metadata/create" />}
-        primaryText="Add Entity" />
+        primaryText="Add Area Entity" />
       <ListItem
         containerElement={<Link to="/mod/metadata" />}
         primaryText="Edit Entity" />
