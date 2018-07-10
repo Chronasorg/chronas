@@ -30,6 +30,11 @@ import {
     required,
     minLength
 } from 'admin-on-rest'
+import AddIcon from 'material-ui/svg-icons/content/add'
+import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
+import { Link } from 'react-router-dom'
+import { BottomNavigation } from 'material-ui/BottomNavigation'
+import BottomNavigationItem from '../../overwrites/BottomNavigationItem'
 import Icon from 'material-ui/svg-icons/social/person'
 import EditButton from '../shared/buttons/EditButton'
 import DeleteButton from '../shared/buttons/DeleteButton'
@@ -127,7 +132,26 @@ export const MarkerEdit = (props) => {
     return errors
   }
 
-  return <Create title={'Edit Article'}  {...props}>
+  return <div>
+    <BottomNavigation
+      // style={styles.articleHeader}
+      // onChange={this.handleChange}
+      selectedIndex={props.location.pathname === '/mod/markers/create' ? 0 : 1}>
+      <BottomNavigationItem
+        className='bottomNavigationItem'
+        containerElement={<Link to='/mod/markers/create' />}
+        label='Add'
+        icon={<AddIcon />}
+        // onClick={() => { this.select(4) }}
+      />
+      <BottomNavigationItem
+        className='bottomNavigationItem'
+        containerElement={<Link to='/mod/markers' />}
+        label='Edit'
+        icon={<EditIcon />}
+        // onClick={() => { this.select(5) }}
+      />
+    </BottomNavigation><Create title={'Edit Article'}  {...props}>
     {(props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit'>
       <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={markerTypes} label='resources.markers.fields.type' />
       <TextInput source='name' defaultValue={props.selectedItem.value.name} label='resources.markers.fields.name' />
@@ -142,11 +166,30 @@ export const MarkerEdit = (props) => {
     </MarkerForm> : <MarkerForm hidesavebutton>
       <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={markerTypes} label='resources.markers.fields.type' />
       <h4>click on marker on the map which you like to modify</h4></MarkerForm>}
-  </Create>
+  </Create></div>
 }
 
 export const MarkerCreate = (props) => {
-  return <Create title={'Create Article'} {...props}>
+  return <div>
+    <BottomNavigation
+      // style={styles.articleHeader}
+      // onChange={this.handleChange}
+      selectedIndex={props.location.pathname === '/mod/markers/create' ? 0 : 1}>
+      <BottomNavigationItem
+        className='bottomNavigationItem'
+        containerElement={<Link to='/mod/markers/create' />}
+        label='Add'
+        icon={<AddIcon />}
+        // onClick={() => { this.select(4) }}
+      />
+      <BottomNavigationItem
+        className='bottomNavigationItem'
+        containerElement={<Link to='/mod/markers' />}
+        label='Edit'
+        icon={<EditIcon />}
+        // onClick={() => { this.select(5) }}
+      />
+    </BottomNavigation><Create title={'Create Article'} {...props}>
     <MarkerForm validate={validateWiki} redirect='' history={props.history}>
       <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} choices={markerTypes} label='resources.markers.fields.type' />
       <TextInput validate={required} source='name' label='resources.markers.fields.name' />
@@ -158,7 +201,7 @@ export const MarkerCreate = (props) => {
       <LongTextInput source='geojson' label='resources.linked.fields.geojson' />
       <BooleanInput label="resources.linked.fields.onlyEpicContent" source="onlyEpicContent" defaultValue={false} />
     </MarkerForm>
-  </Create>
+  </Create></div>
 }
 
 const MarkerDeleteTitle = translate(({ record, translate }) => <span>

@@ -76,9 +76,10 @@ export default {
     },
     linked: {
       fields: {
-        src: 'Link to source or ID',
         description: 'Description or content (if HTML type selected)',
-        onlyEpicContent: 'Only used as linked part of another article (you will be forwarded to the link form upon saving)'
+        poster: 'Link to poster image',
+        onlyEpicContent: 'Only used as linked part of another article (you will be forwarded to the link form upon saving)',
+        src: 'Link to source/ ID'
       }
     },
     users: {

@@ -449,6 +449,7 @@ export default class DeckGLOverlay extends Component {
         }
       }))
     }
+
     if (arcs && arcs.length > 0) {
       layers.push(new ArcLayer({
         id: 'arc',
@@ -460,43 +461,6 @@ export default class DeckGLOverlay extends Component {
         strokeWidth
       }))
     }
-
-    /*const currPathArr = ((animatedFeature[0] || {}).geometry || {}).coordinates || []
-    if (currPathArr || (geoData && geoData.length > 0)) {
-      layers.push(new PathLayer({
-        id: 'path-layer',
-        data: [{
-          path: currPathArr,
-          name: 'Route',
-          color: [200, 50, 50]
-        }],
-        pickable: false,
-        dashJustified: true,
-        getDashArray: [2, 2],
-        widthScale: 100,
-        widthMinPixels: 5,
-        getPath: d => d.path,
-        getColor: d => colorToRGBArray(d.color),
-
-        // id: 'geo',
-        // data: geoData.filter(f => ((f || {}).hidden === false && ((f || {}).properties || {}).f)).map(f => f.properties.f).concat(animatedFeature),
-        // pickable: true,
-        // stroked: false,
-        // filled: true,
-        // extruded: true,
-        // lineWidthScale: 20,
-        // lineWidthMinPixels: 4,
-        // getFillColor: [255, 160, 180, 200],
-        // getLineColor: d => colorToRGBArray(d.properties.color),
-        // getRadius: 100,
-        // getLineWidth: 10,
-        // getElevation: 30,
-
-        // onHover: this.props.onHover,
-        // onClick: this.props.onClick,
-        // onHover: ({object}) => setTooltip(object.properties.name || object.properties.station)
-      }))
-    }*/
 
     return <DeckGL {...viewport} layers={layers} />
   }

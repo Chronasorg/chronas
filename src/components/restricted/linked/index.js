@@ -160,7 +160,7 @@ export const LinkedEdit = (props) => {
     <BottomNavigation
       // style={styles.articleHeader}
       // onChange={this.handleChange}
-      selectedIndex={props.location.pathname === '/mod/areas' ? 0 : 1}>
+      selectedIndex={props.location.pathname === '/mod/linked/create' ? 0 : 1}>
       <BottomNavigationItem
         className='bottomNavigationItem'
         containerElement={<Link to='/mod/linked/create' />}
@@ -181,8 +181,9 @@ export const LinkedEdit = (props) => {
       <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
       <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || (props.selectedItem.value.data || {}).title || ''} />
-      <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={(props.selectedItem.value.content || props.selectedItem.value.data || {}).content || ''} />
+      <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={props.selectedItem.value.content || (props.selectedItem.value.data || {}).content || ''} />
       <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />
+      <LongTextInput source='poster' label='resources.linked.fields.poster' type='url' defaultValue={(props.selectedItem.value.data || {}).poster || ''} />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
       <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
       <NumberInput validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle} source='year' label='resources.linked.fields.year' type='number' />
@@ -253,6 +254,7 @@ export const LinkedCreate = (props) => {
       <LongTextInput validate={required} source='description' label='resources.linked.fields.description' />
       <LongTextInput source='content' label='resources.linked.fields.content' />
       <LongTextInput source='source' label='resources.linked.fields.source' type='url' />
+      <LongTextInput source='poster' label='resources.linked.fields.poster' type='url' />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' />
       <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
       <NumberInput validate={required} defaultValue={props.selectedYear || ''} source='year' label='resources.linked.fields.year' type='number' />

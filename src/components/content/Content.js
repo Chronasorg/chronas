@@ -32,6 +32,13 @@ import EpicTimeline from './EpicTimeline'
 import ProvinceTimeline from './ProvinceTimeline'
 import properties from '../../properties'
 
+const MOVIETYPES = ['videos']
+const IMAGETYPES = ['people', 'battle', 'artefacts', 'cities', 'misc']
+const AUDIOTYPES = ['audios']
+
+const ACTIVEMEDIATYPE = 'rgb(0, 188, 212)'
+const INACTIVEMEDIATYPE = 'rgba(55, 57, 49, 0.19)'
+
 const styles = {
   contentLeftMenu: {
     display: 'inline-block',
@@ -153,6 +160,8 @@ class Content extends Component {
 
   _handleNewData = (selectedItem, metadata, activeArea, doCleanup = false) => {
     const { showNotification, setFullModActive, resetModActive } = this.props
+
+    const isMarker = selectedItem.type === TYPE_MARKER
     let selectedWiki = null
 
     if (doCleanup) this._cleanUp()
@@ -228,7 +237,7 @@ class Content extends Component {
       })
 
       // look for linked linked items based on wiki
-      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + selectedWiki)
+      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + (isMarker ? '0:' : '1:') + selectedWiki)
         .then((linkedItemResult) => {
           if (linkedItemResult.status === 200) {
             const linkedItems = []
@@ -277,6 +286,12 @@ class Content extends Component {
     const linkedItemCount = (linkedItems || []).length
     const isMarker = selectedItem.type === TYPE_MARKER
 
+    const hasLinkedImage = linkedItems.some(lI => IMAGETYPES.includes(lI.subtype))
+    const hasLinkedMovie = linkedItems.some(lI => MOVIETYPES.includes(lI.subtype))
+    const hasLinkedAudio = linkedItems.some(lI => AUDIOTYPES.includes(lI.subtype))
+    const hasLinkedOther = linkedItems.length > 0
+
+
     // {/*<Badge*/}
     // {/*badgeStyle={ { ...styles.menuIconBadge, backgroundColor: (linkedItemCount > 0) ? 'rgb(255, 64, 129)' : 'rgb(205, 205, 205)'  } }*/}
     // {/*badgeContent={ linkedItemCount }*/}
@@ -288,13 +303,13 @@ class Content extends Component {
           <Menu desktop>
             { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={styles.menuIcon} />} /> }
             { entityTimelineOpen && <Divider /> }
-            <MenuItem style={{ ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
-              <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} >
+            <MenuItem style={{ ...styles.menuItem, top: 0, backgroundColor: (activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
+              <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0 }} >
                 <div>
-                  <ContentImage style={styles.menuIconBadgeContainer1} />
-                  <ContentMovie style={styles.menuIconBadgeContainer2} />
-                  <ContentAudio style={styles.menuIconBadgeContainer3} />
-                  <ContentLink style={styles.menuIconBadgeContainer4} />
+                  <ContentImage style={{...styles.menuIconBadgeContainer1, fill: (hasLinkedImage ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} />
+                  <ContentMovie style={{...styles.menuIconBadgeContainer2, fill: (hasLinkedMovie ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} />
+                  <ContentAudio style={{...styles.menuIconBadgeContainer3, fill: (hasLinkedAudio ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} />
+                  <ContentLink style={{...styles.menuIconBadgeContainer4, fill: (hasLinkedOther ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} />
                 </div>
               </IconButton>
             } disabled={itemHasLinkedItems} />

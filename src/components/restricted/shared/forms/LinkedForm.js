@@ -47,10 +47,12 @@ export class LinkedForm extends Component {
           bodyToSend.data = {
             title: initialValues.description,
             source: initialValues.source,
+            poster: initialValues.poster,
             content: initialValues.content,
             geojson: initialValues.geojson
           }
           if (values.source !== initialValues.source) bodyToSend.data.source = values.source
+          if (values.poster !== initialValues.poster) bodyToSend.data.poster = values.poster
           if (values.description !== initialValues.description) bodyToSend.data.title = values.description
           if (values.content !== initialValues.content) bodyToSend.data.content = values.content
           if (values.geojson && values.geojson !== initialValues.geojson) bodyToSend.data.geojson = JSON.parse(values.geojson)
@@ -68,10 +70,11 @@ export class LinkedForm extends Component {
         if (values.coo) bodyToSend.coo = values.coo
 
         // any data changed?
-        if (values.description || values.source) {
+        if (values.description || values.source || values.poster) {
           bodyToSend.data = {
             title: values.description,
             source: values.source,
+            poster: values.poster,
             content: values.content,
             geojson: geojson
           }

@@ -54,10 +54,10 @@ class Configuration extends PureComponent {
             <div>
               <Toolbar style={styles.toolbar}>
                 <ToolbarGroup>
-                  <ToolbarTitle text={translate('pos.configuration')}/>
+                  <ToolbarTitle text={translate('pos.configuration')} />
                 </ToolbarGroup>
                 <ToolbarGroup>
-                  <IconButton touch={true} key={'close'} containerElement={<Link to="/"/>}>
+                  <IconButton touch={true} key={'close'} containerElement={<Link to="/" />}>
                     <CloseIcon />
                   </IconButton>
                 </ToolbarGroup>
@@ -66,17 +66,19 @@ class Configuration extends PureComponent {
             <CardText>
               <div style={styles.label}>{translate('pos.theme.name')}</div>
               <RaisedButton style={styles.button} label={translate('pos.theme.modern')} primary
-                            onClick={() => changeTheme('modern')}/>
+                            onClick={() => changeTheme('modern')} />
               <RaisedButton style={styles.button} label={translate('pos.theme.historic')} secondary
-                            onClick={() => changeTheme('historic')}/>
+                            onClick={() => changeTheme('historic')} />
             </CardText>
             <CardText>
               <div style={styles.label}>{translate('pos.language')}</div>
               <RaisedButton style={styles.button} label="en" primary={locale === 'en'}
-                            onClick={() => changeLocale('en')}/>
+                            onClick={() => changeLocale('en')} />
               <RaisedButton style={styles.button} label="fr" primary={locale === 'fr'}
-                            onClick={() => changeLocale('fr')}/>
+                            onClick={() => changeLocale('fr')} />
             </CardText>
+
+            * add locked feature toggle (automatically detect timestamped waypoints to wiki article)
           </Card>
         </Dialog>
     );
