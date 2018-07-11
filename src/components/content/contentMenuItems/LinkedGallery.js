@@ -57,8 +57,8 @@ const styles = {
   },
   addButton: {
     zIndex: 15000,
-    marginTop: '3em',
-    marginRight: '3em'
+    // marginTop: '3em',
+    // marginRight: '3em'
   },
   buttonContainer: {
     width: 70,
@@ -139,6 +139,12 @@ const styles = {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
+  },
+  rootMenu: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    width: '100%',
+    justifyContent: 'flex-end',
   },
   gridList: {
     width: '100%',
@@ -467,7 +473,7 @@ class LinkedGallery extends React.Component {
     const { isMinimized, linkedItems, selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
     const { selectedImage, filtered, slideIndex, tileData, categories } = this.state
 
-    if (typeof linkedItems === 'undefined' || (tileData && tileData.length === 0)) return null
+    const noTiles = (typeof linkedItems === 'undefined' || (tileData && tileData.length === 0))
 
     const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
     const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
@@ -528,11 +534,11 @@ class LinkedGallery extends React.Component {
       <Paper zDepth={3} style={{
         position: 'fixed',
         left:  (isMinimized ? '-52px' : '-574px'),
-        top: '64px',
+        top: '4px',
         padding: '0em',
         transition: 'all .3s ease-in-out',
         width: (isMinimized ? '30px' : '500px'),
-        height: (isMinimized ? '30px' : 'calc(100% - 200px)'),
+        maxHeight: (isMinimized ? '30px' : 'calc(100% - 200px)'),
         pointerEvents: (isMinimized ? 'none' : 'inherit'),
         opacity: (isMinimized ? '0' : 'inherit'),
         overflow: 'auto',
@@ -540,7 +546,7 @@ class LinkedGallery extends React.Component {
         <AppBar
           style={
             {
-              marginBottom: 20,
+              marginBottom: 0,
               transition: 'all .5s ease-in-out',
               background: (isMinimized ? 'white' : 'rgba(55, 57, 49, 0.19)')
             }
@@ -553,19 +559,21 @@ class LinkedGallery extends React.Component {
         />
         <div style={styles.container}>
           <div style={styles.root}>
-            <FloatingActionButton
-              onClick={this._handleAdd}
-              style={ addButtonDynamicStyle }>
-              <ContentAdd />
-            </FloatingActionButton>
-            FILTER <IconMenu
-              iconButtonElement={<IconButton><ContentFilter /></IconButton>}
-              onChange={this.handleChangeFilter}
-              value={filtered}
-              multiple={true}
-            >
-              {categories.map((category) => <MenuItem value={category} primaryText={category} disabled={!tileData.some(linkedItem => linkedItem.subtype === category)} />)}
-            </IconMenu>
+            <div style={styles.rootMenu}>
+               <IconMenu
+                iconButtonElement={<IconButton tooltip='Filter Media'><ContentFilter /></IconButton>}
+                onChange={this.handleChangeFilter}
+                value={filtered}
+                multiple={true}
+              >
+                {categories.map((category) => <MenuItem value={category} primaryText={category} disabled={!tileData.some(linkedItem => linkedItem.subtype === category)} />)}
+              </IconMenu>
+              <IconMenu
+                iconButtonElement={<IconButton tooltip='Add Media'><ContentAdd /></IconButton>}
+                onClick={this._handleAdd}
+                style={ addButtonDynamicStyle }>
+              </IconMenu>
+            </div>
             <GridList
               className='linkedGalleryGridList'
               cellHeight={180}
@@ -650,7 +658,7 @@ class LinkedGallery extends React.Component {
                         </Player>
                       }
                     </GridTile>
-              )) : <span> - nothing here - </span>}
+              )) : <span> {translate('pos.noLinkedContents')} </span>}
             </GridList>
           </div>
           <Dialog

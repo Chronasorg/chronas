@@ -188,7 +188,7 @@ class EpicTimeline extends React.Component {
 
     return (
       <div style={{ height: '100%' }}>
-        <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems } selectedYear={selectedYear} />
+        <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems.media } selectedYear={selectedYear} />
         { influenceChartData && influenceChartData.length > 0 && <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart epicMeta={epicMeta} rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div> }

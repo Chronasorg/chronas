@@ -1169,14 +1169,19 @@ class Map extends Component {
         delete object.zoomLevels
         hoveredItems = [object]
       }
+    } else {
+      this.setState({
+        hoveredItems: [],
+        hoverInfo: null
+      })
+      return
     }
 
     const hoverInfo = {
-      lngLat: [object.coo[0],object.coo[1]],
+      lngLat: [object.coo[0], object.coo[1]],
       feature: hoveredItems
     }
 
-    console.debug('hoveredItems are ', hoveredItems)
     // x, y,
     this.setState({ hoveredItems, hoverInfo });
   }

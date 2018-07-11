@@ -1,5 +1,8 @@
 import React from 'react'
-import { translate } from 'admin-on-rest'
+import pure from 'recompose/pure'
+import { connect } from 'react-redux'
+import compose from 'recompose/compose'
+import {showNotification, translate} from 'admin-on-rest'
 import { Link } from 'react-router-dom'
 import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
@@ -13,7 +16,9 @@ import { tooltip } from '../../styles/chronasStyleComponents'
 import {chronasMainColor, grey600} from '../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
 import utilsQuery from "../map/utils/query";
-import {TYPE_MARKER} from "../map/actionReducers";
+import {selectLinkedItem, TYPE_MARKER} from "../map/actionReducers";
+import {toggleRightDrawer as toggleRightDrawerAction} from "./actionReducers";
+import {resetModActive, setFullModActive} from "../restricted/shared/buttons/actionReducers";
 
 const styles = {
   closeButton: {
@@ -75,7 +80,7 @@ const styles = {
   }
 }
 
-export default class ArticleIframe extends React.Component {
+class ArticleIframe extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -184,3 +189,13 @@ export default class ArticleIframe extends React.Component {
     )
   }
 }
+
+const enhance = compose(
+  connect(state => ({
+  }), {
+  }),
+  pure,
+  translate,
+)
+
+export default enhance(ArticleIframe)

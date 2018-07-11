@@ -117,6 +117,14 @@ const styles = {
     opacity: 0,
     paddingTop: 0
   },
+  partOfDiv: {
+    position: 'fixed',
+    right: '60px',
+    background: 'white',
+    boxShadow: '0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)',
+    zIndex: '1',
+    borderRadius: '4px'
+  },
   cardHeader: {
     titleStyle: {
       whiteSpace: 'nowrap',
@@ -128,7 +136,7 @@ const styles = {
     textStyle: {
       whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
-      overflow: 'hidden',
+      overflow: 'hidden'
     },
     style: {
       whiteSpace: 'nowrap',
@@ -180,6 +188,43 @@ const menuIndexByLocation = {
 }
 
 class RightDrawerRoutes extends PureComponent {
+
+  constructor (props) {
+    super(props)
+    this._setPartOfItems = this._setPartOfItems.bind(this)
+    this.state = {
+      contentType: '',
+      searchText: '',
+      partOfEntities: [1,2,3],
+      linkedItemData: {
+        linkedItemType1: '', linkedItemType2: '', linkedItemKey1: '', linkedItemKey1choice: [], linkedItemKey2choice: []
+      },
+      isFetchingSearch: false,
+      contentChoice: [],
+      defaultEpicValues: {},
+      isResizing: false,
+      lastDownX: 0,
+      newWidth: '50%',
+      newMarkerWidth: '30%',
+      newMarkerPartOfWidth: 'calc(30% - 80px)',
+      newMarkerHeight: 'calc(80% - 40px)',
+      newMarkerPartOfHeight: 'calc(80% - 20px)',
+      hiddenElement: true,
+      metadataType: '',
+      metadataEntity: '',
+      routeKey: '',
+      selectedIndex: -1,
+      rulerEntity: {
+        'id': null,
+        'data': null
+      },
+      provinceEntity: {
+        'id': null,
+        'data': null
+      },
+    }
+  }
+
   setLinkedItemData = ({ linkedItemType1 = false, linkedItemType2 = false, linkedItemKey1 = false } = {}) => {
     const prevLinkedItemData = this.state.linkedItemData
 
@@ -234,7 +279,7 @@ class RightDrawerRoutes extends PureComponent {
 
   setSearchSnippet = (searchText, contentTypeRaw = false, stateItem = false) => {
     // contentChoice
-    if (searchText.length > 3) {
+    if (searchText.length > 2) {
       if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
         this.setState({ isFetchingSearch: new Date().getTime() })
         const contentTypeTmp = contentTypeRaw ? ((contentTypeRaw.substr(0, 2) === 'm_') ? 'markers' : 'metadata') : this.state.contentType
@@ -375,10 +420,11 @@ class RightDrawerRoutes extends PureComponent {
         const offsetTop = e.clientY
         const minHeight = +document.body.offsetHeight * 0.24
         const maxHeight = +document.body.offsetHeight - 160
-        const stateToUpdate = { newWidth: offsetRight }
+        const stateToUpdate = { newMarkerWidth: offsetRight, newMarkerPartOfWidth: offsetRight-80 }
 
         if (offsetTop > minHeight && offsetTop < maxHeight) {
-          stateToUpdate.newHeight = offsetTop
+          stateToUpdate.newMarkerHeight = offsetTop
+          stateToUpdate.newMarkerPartOfHeight = offsetTop+20
         }
         this.setState(stateToUpdate)
       }
@@ -418,38 +464,6 @@ class RightDrawerRoutes extends PureComponent {
             })
           })
       }
-    }
-  }
-
-  constructor (props) {
-    super(props)
-    this.state = {
-      contentType: '',
-      searchText: '',
-      partOfEntities: [1,2,3],
-      linkedItemData: {
-        linkedItemType1: '', linkedItemType2: '', linkedItemKey1: '', linkedItemKey1choice: [], linkedItemKey2choice: []
-      },
-      isFetchingSearch: false,
-      contentChoice: [],
-      defaultEpicValues: {},
-      isResizing: false,
-      lastDownX: 0,
-      newWidth: '50%',
-      newHeight: 'calc(40% - 40px)',
-      hiddenElement: true,
-      metadataType: '',
-      metadataEntity: '',
-      routeKey: '',
-      selectedIndex: -1,
-      rulerEntity: {
-        'id': null,
-        'data': null
-      },
-      provinceEntity: {
-        'id': null,
-        'data': null
-      },
     }
   }
 
@@ -510,13 +524,17 @@ class RightDrawerRoutes extends PureComponent {
     return 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + iconPath + '/100px-' + iconPath.substr(iconPath.lastIndexOf('/') + 1) + ((iconPath.toLowerCase().indexOf('svg') > -1) ? '.PNG' : '')
   }
 
+  _setPartOfItems (items) {
+    this.setState({ partOfEntities: items})
+  }
+
   render () {
     const {
       options, setWikiId, setRightDrawerVisibility,
       selectedYear, selectedItem, activeArea, setAreaColorLabel, location,
       setModData, setModDataLng, setModDataLat, history, metadata, changeColor
     } = this.props
-    const { newWidth, rulerEntity, provinceEntity, partOfEntities } = this.state
+    const { newWidth, newMarkerWidth, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, provinceEntity, partOfEntities } = this.state
 
     if ((typeof selectedItem.wiki === 'undefined')) return null
 
@@ -788,8 +806,8 @@ class RightDrawerRoutes extends PureComponent {
           </Drawer>
         }
         medium={
-          isMarker ? <Card
-            style={{ ...styles.cardArticle, width: this.state.newWidth, height: this.state.newHeight }}
+          isMarker ? <div><Card
+            style={{ ...styles.cardArticle, width: this.state.newMarkerWidth, height: this.state.newMarkerHeight }}
             containerStyle={{ height: '100%' }}
           >
             <RaisedButton
@@ -809,14 +827,16 @@ class RightDrawerRoutes extends PureComponent {
                 ...routeProps
               })}
             </div>
-            <CardActions style={{ textAlign: 'center' }}>
-              { partOfEntities.map( el => <FlatButton
+          </Card>
+            { partOfEntities && partOfEntities.length !== 0 && <div style={{ ...styles.partOfDiv, width: this.state.newMarkerPartOfWidth, top: this.state.newMarkerPartOfHeight }}>
+              <CardActions style={{ textAlign: 'center' }}>
+            { partOfEntities.map( el => <FlatButton
               style={{ color: '#fff' }}
               backgroundColor='rgb(255, 64, 129)'
               hoverColor='#8AA62F' label={'Part of ' + el.toString().toUpperCase()} /> )}
-
-            </CardActions>
-          </Card> : <Drawer
+              </CardActions>
+            </div>}
+          </div> : <Drawer
             openSecondary
             open
             containerStyle={{ overflow: 'none'/*, zIndex: 10002 */ }}
@@ -882,6 +902,7 @@ class RightDrawerRoutes extends PureComponent {
               provinceEntity,
               selectedYear,
               newWidth,
+              setPartOfItems: this._setPartOfItems,
               history
             })}
           />

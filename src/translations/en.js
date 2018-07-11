@@ -20,6 +20,8 @@ export default {
     information: 'Information',
     areas: 'Areas',
     edit: 'Edit',
+    goFullScreen: 'Toggle Fullscreen Mode',
+    noLinkedContents: 'There are no linked articles yet, consider adding and linking articles.',
     downvote: 'Inappropriate, broken or inaccurate',
     feedbackSuccess: 'Thanks for curating the data!',
     signupToGatherPoints: 'Sign up to get points for your curations',

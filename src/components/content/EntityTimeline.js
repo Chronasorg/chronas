@@ -163,7 +163,7 @@ class EntityTimeline extends React.Component {
     return (
       <div style={{ height: '100%' }}>
         <ChartSunburst activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'sunburst' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} preData={ sunburstData } selectedYear={selectedYear} />
-        <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems } selectedYear={selectedYear} />
+        <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedItems.media } selectedYear={selectedYear} />
         <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div>

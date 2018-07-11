@@ -53,7 +53,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    height: 'calc(100% - 64px)',
+    height: '100%',
     padding: '8px 0px',
     boxShadow: 'inset 0 5px 6px -3px rgba(0,0,0,.4)'
   },
@@ -71,33 +71,33 @@ const styles = {
     fill: 'rgb(117, 117, 117)',
     left: '-8px',
     position: 'absolute',
-    top: '0px',
-    width: '18px',
-    height: '18px'
+    top: '-4px',
+    width: '16px',
+    height: '16px'
   },
   menuIconBadgeContainer2: {
     fill: 'rgb(117, 117, 117)',
     left: '6px',
     position: 'absolute',
-    top: '0px',
-    width: '18px',
-    height: '18px'
+    top: '-4px',
+    width: '16px',
+    height: '16px'
   },
   menuIconBadgeContainer3: {
     fill: 'rgb(117, 117, 117)',
     left: '-8px',
     position: 'absolute',
-    top: '16px',
-    width: '18px',
-    height: '18px'
+    top: '13px',
+    width: '16px',
+    height: '16px'
   },
   menuIconBadgeContainer4: {
     fill: 'rgb(117, 117, 117)',
     left: '6px',
     position: 'absolute',
-    top: '16px',
-    width: '18px',
-    height: '18px'
+    top: '13px',
+    width: '16px',
+    height: '16px'
   },
   menuItem: {
     width: '64px'
@@ -116,7 +116,7 @@ class Content extends Component {
     iframeSource: '',
     selectedWiki: null,
     sunburstData: [],
-    linkedItems: [],
+    linkedItems: { media: [], content: [] },
     activeContentMenuItem: (localStorage.getItem('activeContentMenuItem') !== null) ? localStorage.getItem('activeContentMenuItem') : 'sunburst'
   }
 
@@ -130,7 +130,7 @@ class Content extends Component {
     this.setState({
       iframeLoading: true,
       selectedWiki: null,
-      linkedItems: []
+      linkedItems: { media: [], content: [] },
     })
     this._cleanUp()
   }
@@ -240,11 +240,14 @@ class Content extends Component {
       axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + (isMarker ? '0:' : '1:') + selectedWiki)
         .then((linkedItemResult) => {
           if (linkedItemResult.status === 200) {
-            const linkedItems = []
+            const linkedItems = {
+              media: [],
+              content: []
+            }
+
             const res = linkedItemResult.data
-            showNotification(linkedItems.length + ' linked item' + (linkedItems.length === 1) ? '' : 's' + ' found')
             res.media.forEach((imageItem) => {
-              linkedItems.push({
+              linkedItems.media.push({
                 src: imageItem._id,
                 wiki: imageItem.wiki,
                 title: imageItem.data.title,
@@ -254,6 +257,15 @@ class Content extends Component {
                 score: imageItem.score,
               })
             })
+            showNotification(linkedItems.media.length + ' linked item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
+            if (res.map) {
+              if (isMarker) {
+                this.props.setPartOfItems(res.map)
+              }
+              else {
+                // add to entityList
+              }
+            }
             this.setState({ linkedItems })
           } else {
             showNotification('No linked items found, consider adding one') // TODO: notifications don't seem to work on this page
@@ -283,13 +295,12 @@ class Content extends Component {
     const entityTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
     const epicTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_EPIC)
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
-    const linkedItemCount = (linkedItems || []).length
     const isMarker = selectedItem.type === TYPE_MARKER
 
-    const hasLinkedImage = linkedItems.some(lI => IMAGETYPES.includes(lI.subtype))
-    const hasLinkedMovie = linkedItems.some(lI => MOVIETYPES.includes(lI.subtype))
-    const hasLinkedAudio = linkedItems.some(lI => AUDIOTYPES.includes(lI.subtype))
-    const hasLinkedOther = linkedItems.length > 0
+    const hasLinkedImage = linkedItems.media.some(lI => IMAGETYPES.includes(lI.subtype))
+    const hasLinkedMovie = linkedItems.media.some(lI => MOVIETYPES.includes(lI.subtype))
+    const hasLinkedAudio = linkedItems.media.some(lI => AUDIOTYPES.includes(lI.subtype))
+    const hasLinkedOther = linkedItems.media.length > 0
 
 
     // {/*<Badge*/}
@@ -332,7 +343,7 @@ class Content extends Component {
               rulerProps={(selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id])}
               linkedItems={linkedItems} />
             : <div style={{ height: '100%' }}>
-              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems} selectedYear={selectedYear} />
+              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems.media} selectedYear={selectedYear} />
               <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki} selectedItem={selectedItem} />
             </div>
       }

@@ -3,6 +3,7 @@ import {
   translate,
   BooleanField,
   Create,
+  CheckboxGroupInput,
   Datagrid,
   DateField,
   DateInput,
@@ -37,6 +38,13 @@ import LinksForm from '../../restricted/shared/forms/LinksForm'
 import ModButton from '../../restricted/shared/buttons/ModButton'
 import utils from '../../map/utils/general'
 import ColorInput from 'aor-color-input'
+
+import FlatButton from 'material-ui/FlatButton';
+import ActionDeleteIcon from 'material-ui/svg-icons/action/delete';
+import RaisedButton from 'material-ui/RaisedButton'
+import axios from "axios/index";
+import properties from "../../../properties";
+
 
 export const ModLinksEdit = (props) => {
   const { metadata } = props
@@ -73,20 +81,82 @@ export const ModLinksEdit = (props) => {
     { name: 'Other', id: 'meta_other' }
   ]
 
+  const CustomDeleteButton = ({items, index}) => (
+    <FlatButton
+      key={index}
+      secondary
+      label="Delete"
+      icon={<ActionDeleteIcon />}
+      onClick={() => {
+        // Take custom action
+        console.log(items, index);
+        items.remove(index);
+      }}
+    />
+  )
+
+  const CustomSubmitButton = ({items, index, other}) => (
+    <FlatButton
+      key={index}
+      secondary
+      icon={<RaisedButton label="Submit" primary={true} />}
+      onClick={() => {
+        const linkObjectToAdd = items.get(index)
+
+        console.debug('this',this.props,props)
+        if (linkObjectToAdd && linkObjectToAdd.linkedItemType2 && linkObjectToAdd.linkedItemKey2) {
+          const linkedBody = {
+            linkedItemType1: (this.props.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
+            linkedItemType2: (linkObjectToAdd.linkedItemType2.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
+            linkedItemKey1: this.props.linkedItemData.linkedItemKey1,
+            linkedItemKey2: linkObjectToAdd.linkedItemKey2,
+            type1: linkObjectToAdd.type1,
+            type2: linkObjectToAdd.type2,
+
+          }
+
+          axios.put(properties.chronasApiHost + '/metadata/links/addLink', JSON.stringify(linkedBody), {
+              'headers': {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(() => {
+              console.debug("linked added")
+            })
+
+        } else {
+          alert('Both item type and key are required.')
+        }
+      }}
+    />
+  )
+
   return <Create {...props}>
     <LinksForm {...props} redirect='create'>
       <Subheader>Item to link</Subheader>
       <SelectInput validate={required} source='linkedItemType1' choices={contentType} onChange={(val, v) => { props.setLinkedItemData({ linkedItemType1: v }) }} defaultValue={props.linkedItemData.linkedItemType1} />
-      <AutocompleteInput setLinkedItemData={props.setLinkedItemData} validate={required} source='linkedItemKey1' choices={props.linkedItemData.linkedItemKey1choice} label='resources.areas.fields.participant' onSearchChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType1, "linkedItemKey1choice" ) }} onChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemKey1 ) }}
+      <AutocompleteInput setLinkedItemData={props.setLinkedItemData} validate={required} source='linkedItemKey1' choices={props.linkedItemData.linkedItemKey1choice} label='resources.areas.fields.destinationItem' onSearchChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType1, "linkedItemKey1choice" ) }} onChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemKey1 ) }}
       />
       <Subheader>Items to link</Subheader>
-      <SelectInput validate={required} source='linkedItemType2' choices={contentType} onChange={(val, v) => { props.setLinkedItemData({ linkedItemType2: v }) }} defaultValue={props.linkedItemData.linkedItemType2} />
-      <SelectArrayInput
-        linkedItemData={props.linkedItemData}
-        choices={props.linkedItemData.linkedItemKey2choice}
-        onSearchChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, "linkedItemKey2choice") }}
-        onChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}} source="linkedItemKey2" label="resources.areas.fields.province_list" />
       <Divider />
+      <EmbeddedArrayInput allowRemove={false} customButtons={[<CustomDeleteButton />, <CustomSubmitButton />]} source='links'>
+        <SelectInput validate={required} source='linkedItemType2' choices={contentType} onChange={(val, v) => { props.setLinkedItemData({ linkedItemType2: v }) }} defaultValue={props.linkedItemData.linkedItemType2} />
+        <AutocompleteInput
+          linkedItemData={props.linkedItemData}
+          choices={props.linkedItemData.linkedItemKey2choice}
+          onSearchChange={(val) => { console.debug('!!onSearchChange'); return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, "linkedItemKey2choice") }}
+          onChange={(val) => { console.debug('!!onchange'); return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}} source="linkedItemKey2" label="resources.areas.fields.linkedElement" />
+        <CheckboxGroupInput label={'On destination item side:'} source="type1" choices={[
+          { id: 'm', name: 'Show up in linked media gallery' },
+          { id: 'c', name: 'Show up in content list' },
+        ]} />
+        <CheckboxGroupInput label={'On linked item side:'} source="type2" choices={[
+          { id: 'm', name: 'Show up in linked media gallery' },
+          { id: 'c', name: 'Show up in content list' },
+        ]} />
+      </EmbeddedArrayInput>
     </LinksForm>
   </Create>
 }

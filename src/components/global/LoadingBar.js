@@ -94,7 +94,7 @@ export default class LoadingBar extends React.Component {
   }
   _startSimulation() {
     if (typeof isLoadingInterval !== "undefined") {
-      clearInterval(isLoadingInterval);
+      clearInterval(isLoadingInterval)
     }
 
     loaded = 0
@@ -104,7 +104,7 @@ export default class LoadingBar extends React.Component {
   componentWillUnmount() {
     console.debug('### LoadingBar: WillUnmount')
     if (typeof isLoadingInterval !== "undefined") {
-      clearInterval(isLoadingInterval);
+      clearInterval(isLoadingInterval)
     }
   }
 
