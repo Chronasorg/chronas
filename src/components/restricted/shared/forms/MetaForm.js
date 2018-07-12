@@ -51,8 +51,8 @@ export class MetaForm extends Component {
       if (values.type === 'e') {
         const nextBodyByType = {
           '_id': 'e_' + newWikiURL,
+          'name': values.title,
           'data': {
-            'title': values.title,
             'wiki': newWikiURL,
             'start': +values.start,
             'end':  +values.end,

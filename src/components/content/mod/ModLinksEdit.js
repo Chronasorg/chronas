@@ -90,6 +90,27 @@ export const ModLinksEdit = (props) => {
       onClick={() => {
         // Take custom action
         console.log(items, index);
+        // DELETE
+
+        const linkObjectToAdd = items.get(index)
+        const linkedBody = {
+          linkedItemType1: (this.props.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
+          linkedItemType2: (linkObjectToAdd.linkedItemType2.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
+          linkedItemKey1: this.props.linkedItemData.linkedItemKey1,
+          linkedItemKey2: linkObjectToAdd.linkedItemKey2,
+        }
+
+        axios.put(properties.chronasApiHost + '/metadata/links/removeLink', JSON.stringify(linkedBody), {
+          'headers': {
+            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(() => {
+            console.debug("linked added")
+          })
+
         items.remove(index);
       }}
     />
@@ -102,17 +123,18 @@ export const ModLinksEdit = (props) => {
       icon={<RaisedButton label="Submit" primary={true} />}
       onClick={() => {
         const linkObjectToAdd = items.get(index)
+        if (linkObjectToAdd && linkObjectToAdd.linkedItemType2 && linkObjectToAdd.linkedItemKey2 && linkObjectToAdd.type1.length !== 0 && linkObjectToAdd.type2.length !== 0) {
 
-        console.debug('this',this.props,props)
-        if (linkObjectToAdd && linkObjectToAdd.linkedItemType2 && linkObjectToAdd.linkedItemKey2) {
+          const type1 = (linkObjectToAdd.type1.length > 1) ? 'b' : linkObjectToAdd.type1[0]
+          const type2 = (linkObjectToAdd.type2.length > 1) ? 'b' : linkObjectToAdd.type2[0]
+
           const linkedBody = {
-            linkedItemType1: (this.props.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
+            linkedItemType1: (props.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
             linkedItemType2: (linkObjectToAdd.linkedItemType2.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
-            linkedItemKey1: this.props.linkedItemData.linkedItemKey1,
+            linkedItemKey1: props.linkedItemData.linkedItemKey1,
             linkedItemKey2: linkObjectToAdd.linkedItemKey2,
-            type1: linkObjectToAdd.type1,
-            type2: linkObjectToAdd.type2,
-
+            type1: type1,
+            type2: type2,
           }
 
           axios.put(properties.chronasApiHost + '/metadata/links/addLink', JSON.stringify(linkedBody), {
@@ -127,7 +149,7 @@ export const ModLinksEdit = (props) => {
             })
 
         } else {
-          alert('Both item type and key are required.')
+          alert('Both item type and key are required, also select at least one of media or content checkbox.')
         }
       }}
     />
@@ -149,12 +171,12 @@ export const ModLinksEdit = (props) => {
           onSearchChange={(val) => { console.debug('!!onSearchChange'); return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, "linkedItemKey2choice") }}
           onChange={(val) => { console.debug('!!onchange'); return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}} source="linkedItemKey2" label="resources.areas.fields.linkedElement" />
         <CheckboxGroupInput label={'On destination item side:'} source="type1" choices={[
-          { id: 'm', name: 'Show up in linked media gallery' },
-          { id: 'c', name: 'Show up in content list' },
+          { id: 'e', name: 'Show up in linked media gallery' },
+          { id: 'a', name: 'Show up in content list' }
         ]} />
         <CheckboxGroupInput label={'On linked item side:'} source="type2" choices={[
-          { id: 'm', name: 'Show up in linked media gallery' },
-          { id: 'c', name: 'Show up in content list' },
+          { id: 'e', name: 'Show up in linked media gallery' },
+          { id: 'a', name: 'Show up in content list' }
         ]} />
       </EmbeddedArrayInput>
     </LinksForm>

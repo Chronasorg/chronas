@@ -248,15 +248,16 @@ class Content extends Component {
             const res = linkedItemResult.data
             res.media.forEach((imageItem) => {
               linkedItems.media.push({
-                src: imageItem._id,
-                wiki: imageItem.wiki,
-                title: imageItem.data.title,
-                subtype: imageItem.subtype,
-                source: imageItem.data.source,
-                subtitle: imageItem.year,
-                score: imageItem.score,
+                src: imageItem._id || imageItem.properties.w,
+                wiki: imageItem.wiki || imageItem.properties.w,
+                title: imageItem.name || (imageItem.data || {}).title || imageItem.properties.n,
+                subtype: imageItem.subtype || imageItem.properties.t,
+                source: (imageItem.data || {}).source || imageItem.properties.s,
+                subtitle: imageItem.year || imageItem.properties.n,
+                score: imageItem.score || imageItem.properties.s,
               })
             })
+
             showNotification(linkedItems.media.length + ' linked item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
             if (res.map) {
               if (isMarker) {
@@ -302,12 +303,6 @@ class Content extends Component {
     const hasLinkedAudio = linkedItems.media.some(lI => AUDIOTYPES.includes(lI.subtype))
     const hasLinkedOther = linkedItems.media.length > 0
 
-
-    // {/*<Badge*/}
-    // {/*badgeStyle={ { ...styles.menuIconBadge, backgroundColor: (linkedItemCount > 0) ? 'rgb(255, 64, 129)' : 'rgb(205, 205, 205)'  } }*/}
-    // {/*badgeContent={ linkedItemCount }*/}
-    // {/*primary={true}*/}
-    // {/*>*/}
     return <div style={(isMarker) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
       { (entityTimelineOpen || isMarker) && <div>
         <Paper style={styles.contentLeftMenu}>

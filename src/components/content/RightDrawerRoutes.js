@@ -195,7 +195,7 @@ class RightDrawerRoutes extends PureComponent {
     this.state = {
       contentType: '',
       searchText: '',
-      partOfEntities: [1,2,3],
+      partOfEntities: [],
       linkedItemData: {
         linkedItemType1: '', linkedItemType2: '', linkedItemKey1: '', linkedItemKey1choice: [], linkedItemKey2choice: []
       },

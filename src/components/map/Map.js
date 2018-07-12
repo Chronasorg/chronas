@@ -937,8 +937,8 @@ class Map extends Component {
               editable: false,
               subtype: el.subtype,
               end: endYear ? new Date(new Date(0, 1, 1).setFullYear(+endYear)) : undefined,
-              content: el.data.title,
-              title: el.data.title,
+              content: el.name || el.data.title,
+              title: el.name || el.data.title,
               wiki: el.data.wiki,
               group: 1
             }
@@ -968,12 +968,10 @@ class Map extends Component {
         }))
     } else {
       this.setState({ markerData: this.state.markerData.filter(function (obj) {
-        return (obj.properties.t !== entityId)
-      }) })
+          return ((obj.properties || {}).t !== entityId)
+        })
+      })
       return prevMapStyle
-        // .updateIn(['sources', sourceId, 'data', 'features'], list => list.filter(function (obj) {
-        //   return (obj.properties.t !== entityId)
-        // }))
     }
   }
 

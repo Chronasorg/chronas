@@ -15,6 +15,7 @@ import FullscreenEnterIcon from 'material-ui/svg-icons/navigation/fullscreen'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import {chronasMainColor, grey600} from '../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
+import { setRightDrawerVisibility } from '../content/actionReducers'
 import utilsQuery from "../map/utils/query";
 import {selectLinkedItem, TYPE_MARKER} from "../map/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "./actionReducers";
@@ -193,6 +194,7 @@ class ArticleIframe extends React.Component {
 const enhance = compose(
   connect(state => ({
   }), {
+    setRightDrawerVisibility,
   }),
   pure,
   translate,
