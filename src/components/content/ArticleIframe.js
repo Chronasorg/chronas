@@ -17,7 +17,7 @@ import {chronasMainColor, grey600} from '../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import utilsQuery from "../map/utils/query";
-import {selectLinkedItem, TYPE_MARKER} from "../map/actionReducers";
+import { selectLinkedItem, TYPE_AREA, TYPE_MARKER, TYPE_LINKED } from "../map/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "./actionReducers";
 import {resetModActive, setFullModActive} from "../restricted/shared/buttons/actionReducers";
 
@@ -130,11 +130,14 @@ class ArticleIframe extends React.Component {
 
   render () {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
-    const { selectedItem, selectedWiki, customStyle } = this.props
+    const { hasChart, selectedItem, selectedWiki, customStyle } = this.props
 
     const shouldLoad = (iframeLoading || selectedWiki === null || +selectedWiki === -1)
     const isMarker = selectedItem.type === TYPE_MARKER
-    const modUrl = isMarker ?  '/mod/markers' : '/mod/metadata'//selectedItem.type
+    const isMedia = selectedItem.type === TYPE_LINKED
+    const isArea = selectedItem.type === TYPE_AREA
+
+    const modUrl = isMarker ?  '/mod/markers' : '/mod/metadata'
     const iconEnterFullscreen = {
       key: 'random',
       tooltipPosition: 'bottom-right',
@@ -172,7 +175,7 @@ class ArticleIframe extends React.Component {
           </FloatingActionButton >
           }
         </Dialog>
-        <div style={ (selectedItem.type !== TYPE_MARKER) ? { ...styles.actionButtonContainer, top: 254 } : styles.actionButtonContainer } >
+        <div style={ !(isMarker || isMedia) ? { ...styles.actionButtonContainer, top: 254 } : styles.actionButtonContainer } >
           <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} containerElement={<Link to={modUrl}/>}>
             <IconEdit hoverColor={chronasMainColor} />
           </IconButton>
@@ -180,7 +183,7 @@ class ArticleIframe extends React.Component {
             <FullscreenEnterIcon
               hoverColor={chronasMainColor} />
           </IconButton>
-          { isMarker && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
+          { (isMarker || isMedia) && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
             <IconClose hoverColor={chronasMainColor} />
           </IconButton> }
         </div>

@@ -15,7 +15,7 @@ import properties from '../../../../properties'
 const formStyle = {
   boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
   padding: '0 1em 1em 1em',
-  maxHeight: 'calc(100% - 180px)',
+  maxHeight: 'calc(100% - 236px)',
   overflow: 'auto',
   width: '100%' }
 
@@ -34,11 +34,10 @@ export class LinkedForm extends Component {
       const bodyToSend = {}
       if (redirect === 'edit') {
         // updating linked metadata
-
         if (values.onlyEpicContent !== initialValues.onlyEpicContent) bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
         if (values.year !== initialValues.year) bodyToSend.year = values.year
         if (values.subtype !== initialValues.subtype) bodyToSend.subtype = values.subtype
-        if (!values.coo.every( e => initialValues.coo.includes(e) )) bodyToSend.coo = values.coo
+        if (values.coo && !values.coo.every( e => initialValues.coo.includes(e) )) bodyToSend.coo = values.coo
         if (values.wiki !== initialValues.wiki) bodyToSend.wiki = values.wiki
 
         // any data changed?

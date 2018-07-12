@@ -94,9 +94,9 @@ export const ModLinksEdit = (props) => {
 
         const linkObjectToAdd = items.get(index)
         const linkedBody = {
-          linkedItemType1: (this.props.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
+          linkedItemType1: (props.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
           linkedItemType2: (linkObjectToAdd.linkedItemType2.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
-          linkedItemKey1: this.props.linkedItemData.linkedItemKey1,
+          linkedItemKey1: props.linkedItemData.linkedItemKey1,
           linkedItemKey2: linkObjectToAdd.linkedItemKey2,
         }
 

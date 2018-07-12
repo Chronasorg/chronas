@@ -44,7 +44,7 @@ import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIco
 import { setRightDrawerVisibility } from './actionReducers'
 import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
-  selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC
+  selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, selectMarkerItem
 } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import {
@@ -192,6 +192,7 @@ class RightDrawerRoutes extends PureComponent {
   constructor (props) {
     super(props)
     this._setPartOfItems = this._setPartOfItems.bind(this)
+    this._openPartOf = this._openPartOf.bind(this)
     this.state = {
       contentType: '',
       searchText: '',
@@ -406,16 +407,16 @@ class RightDrawerRoutes extends PureComponent {
     window.removeEventListener('mouseup', e => this.handleMouseup(e), false)
   }
   handleMousemove = e => {
+    const { selectedItem } = this.props
     // this shouldnt be called anyway if not resizing (eventlistener unregister!)
     if (!this.state.isResizing) {
       return
     }
-
     const offsetRight = +document.body.offsetWidth - (e.clientX - document.body.offsetLeft)
     const minWidth = +document.body.offsetWidth * 0.24
     const maxWidth = +document.body.offsetWidth - 160
 
-    if (this.props.selectedItem.type === TYPE_MARKER) {
+    if (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_LINKED) {
       if (offsetRight > minWidth && offsetRight < maxWidth) {
         const offsetTop = e.clientY
         const minHeight = +document.body.offsetHeight * 0.24
@@ -496,14 +497,14 @@ class RightDrawerRoutes extends PureComponent {
 
     if (nextProps.location.pathname.indexOf('/mod') > -1 ||
       nextProps.location.pathname.indexOf('/article') > -1) {
-      if (!nextProps.rightDrawerOpen && (nextProps.selectedItem.type !== TYPE_MARKER || nextProps.location.pathname.indexOf('/article') === -1)) {
+      if (!nextProps.rightDrawerOpen && ((nextProps.selectedItem.type !== TYPE_MARKER && nextProps.selectedItem.type !== TYPE_LINKED) || nextProps.location.pathname.indexOf('/article') === -1)) {
         setRightDrawerVisibility(true)
       }
     } else if (nextProps.rightDrawerOpen) {
       setRightDrawerVisibility(false)
     }
 
-    if (nextProps.selectedItem.type === TYPE_MARKER && rightDrawerOpen &&  nextProps.location.pathname.indexOf('/article') > -1) {
+    if ((nextProps.selectedItem.type === TYPE_MARKER || nextProps.selectedItem.type === TYPE_LINKED) && rightDrawerOpen &&  nextProps.location.pathname.indexOf('/article') > -1) {
       setRightDrawerVisibility(false)
     }
   }
@@ -528,6 +529,12 @@ class RightDrawerRoutes extends PureComponent {
     this.setState({ partOfEntities: items})
   }
 
+  _openPartOf (el) {
+    console.debug(el)
+    this.props.selectLinkedItem(el.properties.w)
+    this.props.history.push('/article')
+  }
+
   render () {
     const {
       options, setWikiId, setRightDrawerVisibility,
@@ -538,7 +545,7 @@ class RightDrawerRoutes extends PureComponent {
 
     if ((typeof selectedItem.wiki === 'undefined')) return null
 
-    const isMarker = (selectedItem.type === TYPE_MARKER) && location.pathname.indexOf('/article') > -1
+    const isMarker = (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_LINKED) && location.pathname.indexOf('/article') > -1
     const currPrivilege = +localStorage.getItem('privilege')
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege)
     const modHeader = <AppBar
@@ -830,10 +837,13 @@ class RightDrawerRoutes extends PureComponent {
           </Card>
             { partOfEntities && partOfEntities.length !== 0 && <div style={{ ...styles.partOfDiv, width: this.state.newMarkerPartOfWidth, top: this.state.newMarkerPartOfHeight }}>
               <CardActions style={{ textAlign: 'center' }}>
-            { partOfEntities.map( el => <FlatButton
+            { partOfEntities.map( (el) => { console.debug(el);
+            return <FlatButton
               style={{ color: '#fff' }}
               backgroundColor='rgb(255, 64, 129)'
-              hoverColor='#8AA62F' label={'Part of ' + el.toString().toUpperCase()} /> )}
+              hoverColor='#8AA62F'
+              onClick={() => this._openPartOf(el)}
+              label={'Part of ' + ((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} /> })}
               </CardActions>
             </div>}
           </div> : <Drawer
@@ -1066,6 +1076,8 @@ const enhance = compose(
       setModData: setModDataAction,
       setModDataLng: setModDataLngAction,
       setModDataLat: setModDataLatAction,
+      selectLinkedItem,
+      selectMarkerItem,
       setRightDrawerVisibility
     }),
   pure,

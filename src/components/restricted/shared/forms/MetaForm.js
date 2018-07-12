@@ -23,7 +23,7 @@ const styles = {
   formStyle: {
     boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
     padding: '0 1em 1em 1em',
-    maxHeight: 'calc(100% - 180px)',
+    maxHeight: 'calc(100% - 236px)',
     overflow: 'auto',
     width: '100%'
   }

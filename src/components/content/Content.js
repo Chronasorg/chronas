@@ -162,6 +162,8 @@ class Content extends Component {
     const { showNotification, setFullModActive, resetModActive } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
+    const isMedia = selectedItem.type === TYPE_LINKED
+
     let selectedWiki = null
 
     if (doCleanup) this._cleanUp()
@@ -260,7 +262,7 @@ class Content extends Component {
 
             showNotification(linkedItems.media.length + ' linked item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
             if (res.map) {
-              if (isMarker) {
+              if (isMarker || isMedia) {
                 this.props.setPartOfItems(res.map)
               }
               else {
@@ -297,14 +299,14 @@ class Content extends Component {
     const epicTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_EPIC)
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
     const isMarker = selectedItem.type === TYPE_MARKER
-
+    const isMedia = selectedItem.type === TYPE_LINKED
     const hasLinkedImage = linkedItems.media.some(lI => IMAGETYPES.includes(lI.subtype))
     const hasLinkedMovie = linkedItems.media.some(lI => MOVIETYPES.includes(lI.subtype))
     const hasLinkedAudio = linkedItems.media.some(lI => AUDIOTYPES.includes(lI.subtype))
     const hasLinkedOther = linkedItems.media.length > 0
 
-    return <div style={(isMarker) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
-      { (entityTimelineOpen || isMarker) && <div>
+    return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
+      { (entityTimelineOpen || isMarker || isMedia) && <div>
         <Paper style={styles.contentLeftMenu}>
           <Menu desktop>
             { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={styles.menuIcon} />} /> }

@@ -1093,7 +1093,8 @@ class Map extends Component {
     if ((modActive.type === TYPE_MARKER || modActive.type === TYPE_METADATA) && modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    } else if (modActive.type === TYPE_AREA) {
+    }
+    else if (modActive.type === TYPE_AREA) {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = modActive.data
