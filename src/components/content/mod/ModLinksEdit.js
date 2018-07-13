@@ -154,12 +154,12 @@ export const ModLinksEdit = (props) => {
       }}
     />
   )
-
+// {/*props.setLinkedItemData({ linkedItemType1: v })*/}
   return <Create {...props}>
-    <LinksForm {...props} redirect='create'>
+    <LinksForm {...props} redirect='create' defaultValue={props.linkedItemData}>
       <Subheader>Item to link</Subheader>
       <SelectInput validate={required} source='linkedItemType1' choices={contentType} onChange={(val, v) => { props.setLinkedItemData({ linkedItemType1: v }) }} defaultValue={props.linkedItemData.linkedItemType1} />
-      <AutocompleteInput setLinkedItemData={props.setLinkedItemData} validate={required} source='linkedItemKey1' choices={props.linkedItemData.linkedItemKey1choice} label='resources.areas.fields.destinationItem' onSearchChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType1, "linkedItemKey1choice" ) }} onChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemKey1 ) }}
+      <AutocompleteInput setLinkedItemData={props.setLinkedItemData} validate={required} source='linkedItemKey1' choices={props.linkedItemData.linkedItemKey1choice} label='resources.areas.fields.destinationItem' onSearchChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType1, "linkedItemKey1choice" ) }}  onChange={(val, v) => { props.ensureLoadLinkedItem(v) }}
       />
       <Subheader>Items to link</Subheader>
       <Divider />

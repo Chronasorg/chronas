@@ -82,7 +82,7 @@ class EntityTimeline extends React.Component {
   };
 
   getStepContent (stepIndex, sortedRulerKeys) {
-    const { selectedWiki } = this.state
+    const { selectedWiki, influenceChartData } = this.state
     const { selectedItem, rulerEntity, rulerProps } = this.props
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
     const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (rulerProps || {})[2] || -1

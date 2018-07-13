@@ -197,9 +197,7 @@ class RightDrawerRoutes extends PureComponent {
       contentType: '',
       searchText: '',
       partOfEntities: [],
-      linkedItemData: {
-        linkedItemType1: '', linkedItemType2: '', linkedItemKey1: '', linkedItemKey1choice: [], linkedItemKey2choice: []
-      },
+      linkedItemData: {},
       isFetchingSearch: false,
       contentChoice: [],
       defaultEpicValues: {},
@@ -214,6 +212,8 @@ class RightDrawerRoutes extends PureComponent {
       metadataType: '',
       metadataEntity: '',
       routeKey: '',
+      linkSetup: '',
+      prefilledLinked: false,
       selectedIndex: -1,
       rulerEntity: {
         'id': null,
@@ -327,6 +327,61 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
 
+  ensureLoadLinkedItem = (newLinkKey, forced = false) => {
+    // const { activeArea, location, selectedItem } = this.props
+    const oldLinkKey = this.state.linkSetup
+
+    // if (this.state.metadataType === 'e' && metadataEntity !== this.state.metadataEntity) {
+    if (oldLinkKey === newLinkKey && !forced) {
+      return false
+    } else {
+      this.setState({ linkSetup: newLinkKey })
+
+      if (newLinkKey) {
+        axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + ((this.state.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? '0:' : '1:') + newLinkKey)
+          .then((res) => {
+            if (res.status === 200) {
+
+              const linkedItemResult = res.data
+              const linkedItemData = this.state.linkedItemData
+
+              linkedItemData.links = []
+
+              // const defaultLinkedItemData = {
+              //   linkedItemType1: 'm_battles',
+              //   linkedItemKey1: 'my_m_battles',
+              //   links: [
+              //     { linkedItemType2: 'm_military', linkedItemKey2: 'my_m_military', type1: ['e', 'a'], type2: ['e', 'a']},
+              //     { linkedItemType2: 'm_explorers', linkedItemKey2: 'my_m_explorers', type1: [], type2: ['e']},
+              //   ]
+              // }
+
+              linkedItemResult['map'].forEach((el) => {
+                if (linkedItemResult['media'].filter(ol => ol.properties.w === el.properties.w).length === 0)
+                  linkedItemData.links.push({ linkedItemType2: 'm_military', linkedItemKey2: el.properties.w, type1: [], type2: ['a'] })
+                else {
+                  linkedItemData.links.push({ linkedItemType2: 'm_military', linkedItemKey2: el.properties.w, type1: [], type2: ['a', 'e'] })
+                }
+              })
+
+              linkedItemResult.media.forEach((el) => {
+                if (linkedItemResult['map'].filter(ol => ol.properties.w === el.properties.w).length === 0)
+                  linkedItemData.links.push({ linkedItemType2: 'm_military', linkedItemKey2: el.properties.w, type2: ['e'] })
+              })
+
+              this.setState({ linkedItemData })
+            } else {
+              showNotification('No linked items found yet')
+            }
+          })
+      } else {
+        this.setState({ linkedItemData: {} })
+      }
+// el.properties.t
+      return true
+    }
+  }
+
   setMetadataEntity = (metadataEntity) => {
     if (this.state.metadataType === 'e' && metadataEntity !== this.state.metadataEntity) {
       axios.get(properties.chronasApiHost + '/metadata/' + metadataEntity)
@@ -340,16 +395,22 @@ class RightDrawerRoutes extends PureComponent {
             'start': rawDefault.data.start,
             'end': rawDefault.data.end,
             'participants': [{ 'participantTeam': [{ 'name': '_kingdom_of_nri' }, { 'name': '_Zhili_clique' }] }, { 'participantTeam': [{ 'name': '_kingdom_of_nri' }] }],
-            'content': rawDefault.data.content.map((el) => {
-              const contentType = el.split(':')[0]
-              const name = el.split(':')[1]
-
-              contentChoice.push({ id: name, name: name })
-              return { 'contentType': contentType, 'name': name }
-            }),
+            // 'content': rawDefault.data.content.map((el) => {
+            //   const contentType = el.split(':')[0]
+            //   const name = el.split(':')[1]
+            //
+            //   contentChoice.push({ id: name, name: name })
+            //   return { 'contentType': contentType, 'name': name }
+            // }),
             'coo': rawDefault.coo,
             'partOf': rawDefault.partOf
           }
+
+          this.setState({
+            contentChoice: contentChoice,
+            metadataEntity,
+            defaultEpicValues: modifiedDefaultValues
+          })
 
           // {
           //   "_id":"e_Great_Turkish_War",
@@ -370,11 +431,6 @@ class RightDrawerRoutes extends PureComponent {
           //   "coo":[]}
 
           // {"type":"e","url":"https://en.wikipedia.org/wiki/Byzyyantine_Empire","subtype":"war","start":"100","end":"350","participants":[{"participantTeam":[{"name":"_kingdom_of_nri"},{"name":"_Zhili_clique"}]},{"participantTeam":[{"name":"_kingdom_of_nri"}]}],"content":[{"contentType":"m_religious","name":"Albert_Einstein"},{"contentType":"meta_image","name":"http://deremilitari.org/wp-content/uploads/2014/07/mounted-medieval-knights-in-battle-in-ken-welsh.jpg"}],"coo":[51.028,69.867],"partOf":"Roman_Empire"}
-          this.setState({
-            contentChoice: contentChoice,
-            metadataEntity,
-            defaultEpicValues: modifiedDefaultValues
-          })
         })
         .catch(() => {
           this.setState({ metadataEntity })
@@ -936,12 +992,16 @@ class RightDrawerRoutes extends PureComponent {
               selectedItem,
               setModData,
               newWidth,
+              // linkSetup: '',
+              // prefilledLinked: false,
+              // ensureLoadLinkedItem
               linkedItemData: this.state.linkedItemData,
               contentChoice: this.state.contentChoice,
               metadataEntity: this.state.metadataEntity,
               metadataType: this.state.metadataType,
               setLinkedItemData: this.setLinkedItemData,
               setSearchSnippet: this.setSearchSnippet,
+              ensureLoadLinkedItem: this.ensureLoadLinkedItem,
               setContentType: this.setContentType,
               redirect: 'create',
               history
