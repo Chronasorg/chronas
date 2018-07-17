@@ -440,7 +440,7 @@ class LinkedGallery extends React.Component {
   }
 
   _handleAdd = () => {
-    this.props.history.push('/mod/linked/create')
+    this.props.history.push('/mod/links')
   }
 
   _handleOpenSource = (source) => {

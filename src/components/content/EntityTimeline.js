@@ -86,7 +86,7 @@ class EntityTimeline extends React.Component {
     const { selectedItem, rulerEntity, rulerProps } = this.props
     const rulerEntityData = ((rulerEntity || {}).data || {}).ruler || {}
     const wikiUrl = (rulerEntityData[sortedRulerKeys[stepIndex]] || {})[2] || (rulerProps || {})[2] || -1
-    return <ArticleIframe  hasChart={ influenceChartData && influenceChartData.length > 0 } selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
+    return <ArticleIframe  hasChart={ influenceChartData && influenceChartData.length > 0 } selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (sortedRulerKeys.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 294px)') }} selectedWiki={ selectedWiki || wikiUrl} />
   }
 
   _selectMainArticle = () => {
@@ -167,7 +167,7 @@ class EntityTimeline extends React.Component {
         <div style={{ height: '200px', width: '100%' }}>
           <InfluenceChart rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div>
-        { rulerDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 184px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden' }}>
+        { rulerDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 248px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden' }}>
           <FlatButton backgroundColor={(rulerProps || {})[1] || 'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(rulerProps || {})[0]} onClick={this._selectMainArticle.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}

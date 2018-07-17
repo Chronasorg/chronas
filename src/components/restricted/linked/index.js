@@ -46,40 +46,9 @@ import { chronasMainColor } from '../../../styles/chronasColors'
 import ArrayField from './ArrayField'
 import LinkedForm from '../shared/forms/LinkedForm'
 import { TYPE_LINKED } from '../../map/actionReducers'
+import properties from "../../../properties";
 
 export const LinkedIcon = Icon
-
-const linkedTypes = [
-  { name: '[Audio]', id: 'meta_audio' },
-  { name: '[Epic]', id: 'meta_epic' },
-  { name: '[External Article or Primary Source]', id: 'meta_text' },
-  { name: '[HTML or Text]', id: 'html' },
-  { name: '[Image] Artefact', id: 'artefacts' },
-  { name: '[Image] Battle', id: 'battles' },
-  { name: '[Image] City & Building', id: 'cities' },
-  { name: '[Image] Person', id: 'people' },
-  { name: '[Image] Other', id: 'misc' },
-  { name: '[Podcast & Audio]', id: 'audios' },
-  { name: '[Primary Source]', id: 'ps' },
-  { name: '[Story]', id: 'meta_story' },
-  { name: '[Video]', id: 'meta_video' },
-  { name: '[Wiki Article] Artifacts', id: 'm_artifacts' },
-  { name: '[Wiki Article] Battles -> Battles', id: 'm_battles' },
-  { name: '[Wiki Article] Battles -> Sieges', id: 'm_sieges' },
-  { name: '[Wiki Article] Cities -> Cities', id: 'm_cities' },
-  { name: '[Wiki Article] Cities -> Castles', id: 'm_castles' },
-  { name: '[Wiki Article] People -> Military', id: 'm_military' },
-  { name: '[Wiki Article] People -> Politicians', id: 'politicians' },
-  { name: '[Wiki Article] People -> Explorers', id: 'm_explorers' },
-  { name: '[Wiki Article] People -> Scientists', id: 'm_scientists' },
-  { name: '[Wiki Article] People -> Artists', id: 'm_artists' },
-  { name: '[Wiki Article] People -> Religious', id: 'm_religious' },
-  { name: '[Wiki Article] People -> Athletes', id: 'm_athletes' },
-  { name: '[Wiki Article] People -> Unclassified', id: 'm_unclassified' },
-  { name: '[Wiki Article] Other -> Area Info', id: 'm_areainfo' },
-  { name: '[Wiki Article] Other -> Unknown', id: 'm_unknown' },
-  { name: 'Other', id: 'meta_other' }
-]
 
 const validateWiki = (values) => {
   const errors = {}
@@ -178,7 +147,7 @@ export const LinkedEdit = (props) => {
     </BottomNavigation>
     <Create title={'Edit Article'} {...props}>
     <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
-      <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
+      <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
       <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || (props.selectedItem.value.data || {}).title || ''} />
       <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={props.selectedItem.value.content || (props.selectedItem.value.data || {}).content || ''} />
@@ -249,7 +218,7 @@ export const LinkedCreate = (props) => {
     </BottomNavigation>
     <Create title={'Add Article'} {...props}>
     <LinkedForm validate={validateWikiProps} redirect='' history={props.history}>
-      <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} validate={required} source='subtype' choices={linkedTypes} label='resources.linked.fields.subtype' />
+      <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} validate={required} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.subtype' />
       <LongTextInput source='src' type='url' label='resources.linked.fields.src' />
       <LongTextInput validate={required} source='description' label='resources.linked.fields.description' />
       <LongTextInput source='content' label='resources.linked.fields.content' />

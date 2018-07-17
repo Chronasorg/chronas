@@ -196,6 +196,7 @@ class RightDrawerRoutes extends PureComponent {
     this.state = {
       contentType: '',
       searchText: '',
+      updateID: 0,
       partOfEntities: [],
       linkedItemData: {},
       isFetchingSearch: false,
@@ -226,12 +227,14 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
 
-  setLinkedItemData = ({ linkedItemType1 = false, linkedItemType2 = false, linkedItemKey1 = false } = {}) => {
+  setLinkedItemData = ({ linkedItemType1 = false, linkedItemType2 = false, linkedItemKey1 = false, linkedContent = false, linkedMedia = false } = {}) => {
     const prevLinkedItemData = this.state.linkedItemData
 
-    if (linkedItemType1) prevLinkedItemData.linkedItemType1 = linkedItemType1
+    if (linkedItemType1) prevLinkedItemData.linkedItemType1 = linkedItemType1 // "Albert_Einstein|politicians"
     if (linkedItemType2) prevLinkedItemData.linkedItemType2 = linkedItemType2
     if (linkedItemKey1) prevLinkedItemData.linkedItemKey1 = linkedItemKey1
+    if (linkedContent) prevLinkedItemData.linkedContent = linkedContent
+    if (linkedMedia) prevLinkedItemData.linkedMedia = linkedMedia
 
     this.setState({ linkedItemData: prevLinkedItemData })
   }
@@ -242,7 +245,7 @@ class RightDrawerRoutes extends PureComponent {
 
   actOnRootTypeChange = (contentTypeRaw) => {
     const { location, history } = this.props
-    const contentType = (contentTypeRaw.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
+    const contentType = (contentTypeRaw.substr(0, 2) === 'w|') ? 'markers' : 'metadata'
     if (contentType === 'markers' && location.pathname.indexOf(contentType) === -1 && location.pathname.indexOf('/mod') !== -1) {
       history.push(location.pathname.replace('linked', 'markers'))
     } else if (contentType === 'metadata' && location.pathname.indexOf('linked') === -1 && location.pathname.indexOf('/mod') !== -1) {
@@ -251,7 +254,7 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   setContentType = (contentTypeRaw) => {
-    const contentType = (contentTypeRaw.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
+    const contentType = (contentTypeRaw.substr(0, 2) === 'w|') ? 'markers' : 'metadata'
     this.setState({ contentType, contentChoice: [] })
   }
 
@@ -283,13 +286,12 @@ class RightDrawerRoutes extends PureComponent {
     if (searchText.length > 2) {
       if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
         this.setState({ isFetchingSearch: new Date().getTime() })
-        const contentTypeTmp = contentTypeRaw ? ((contentTypeRaw.substr(0, 2) === 'm_') ? 'markers' : 'metadata') : this.state.contentType
-        axios.get(properties.chronasApiHost + '/' + contentTypeTmp + '?search=' + searchText)
+        axios.get(properties.chronasApiHost + '/markers?both=true&search=' + searchText)
           .then(response => {
             if (stateItem) {
               const newlinkedItemData = this.state.linkedItemData
               newlinkedItemData[stateItem] = response.data.map((el) => {
-                return { id: el, name: el }
+                return { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
               })
 
               this.setState({
@@ -300,7 +302,7 @@ class RightDrawerRoutes extends PureComponent {
               this.setState({
                 isFetchingSearch: false,
                 contentChoice: response.data.map((el) => {
-                  return { id: el, name: el }
+                  return { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
                 })
               })
             }
@@ -338,38 +340,37 @@ class RightDrawerRoutes extends PureComponent {
       this.setState({ linkSetup: newLinkKey })
 
       if (newLinkKey) {
-        axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + ((this.state.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? '0:' : '1:') + newLinkKey)
+        const newArr1 = newLinkKey.split("||")
+
+        axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0])
           .then((res) => {
             if (res.status === 200) {
 
               const linkedItemResult = res.data
               const linkedItemData = this.state.linkedItemData
 
-              linkedItemData.links = []
-
-              // const defaultLinkedItemData = {
-              //   linkedItemType1: 'm_battles',
-              //   linkedItemKey1: 'my_m_battles',
-              //   links: [
-              //     { linkedItemType2: 'm_military', linkedItemKey2: 'my_m_military', type1: ['e', 'a'], type2: ['e', 'a']},
-              //     { linkedItemType2: 'm_explorers', linkedItemKey2: 'my_m_explorers', type1: [], type2: ['e']},
-              //   ]
-              // }
+              linkedItemData.linkedMedia = []
+              linkedItemData.linkedContent = []
 
               linkedItemResult['map'].forEach((el) => {
-                if (linkedItemResult['media'].filter(ol => ol.properties.w === el.properties.w).length === 0)
-                  linkedItemData.links.push({ linkedItemType2: 'm_military', linkedItemKey2: el.properties.w, type1: [], type2: ['a'] })
-                else {
-                  linkedItemData.links.push({ linkedItemType2: 'm_military', linkedItemKey2: el.properties.w, type1: [], type2: ['a', 'e'] })
-                }
+                linkedItemData.linkedContent.push(el.properties.w + '||' + el.properties.t)
+                  // linkedItemData.linkedMedia.push({ name: (el.properties.w  + '(' + el.properties.t + ')'), id: el.properties.w })
               })
 
               linkedItemResult.media.forEach((el) => {
-                if (linkedItemResult['map'].filter(ol => ol.properties.w === el.properties.w).length === 0)
-                  linkedItemData.links.push({ linkedItemType2: 'm_military', linkedItemKey2: el.properties.w, type2: ['e'] })
+                linkedItemData.linkedMedia.push(el.properties.w + '||' + el.properties.t)
+                  // linkedItemData.linkedContent.push({ name: (el.properties.w  + '(' + el.properties.t + ')'), id: el.properties.w })
               })
+//linkedItemKey1
+              linkedItemData.linkedItemKey1 = newLinkKey
+              linkedItemData.linkedItemKey1choice = [{ id: newLinkKey, name: newLinkKey }]
 
-              this.setState({ linkedItemData })
+              this.setState({
+                linkSetup: newLinkKey,
+                isFetchingSearch: false,
+                updateID: this.state.updateID++,
+                linkedItemData
+              })
             } else {
               showNotification('No linked items found yet')
             }
@@ -497,8 +498,7 @@ class RightDrawerRoutes extends PureComponent {
       const selectedProvince = selectedItem.value
       // is rulerEntity loaded?
       const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
-      const activeRulDim = (activeAreaDim === 'religionGeneral') ? this.props.metadata['religion'][((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]][3]
-        : ((activeArea.data || {})[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
+      const activeRulDim = utils.getAreaDimKey(this.props.metadata, activeArea, selectedItem)
 
       if (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && this.state.rulerEntity.id !== activeRulDim) {
         axios.get(properties.chronasApiHost + '/metadata/a_' + activeAreaDim + '_' + activeRulDim)
@@ -526,12 +526,29 @@ class RightDrawerRoutes extends PureComponent {
 
   componentWillReceiveProps (nextProps) {
     // TODO: this gets called too much!
+    const { location, metadata } = this.props
     if (
       !(nextProps.selectedItem.type === TYPE_EPIC && this.props.selectedItem.type === TYPE_EPIC) // don't load twice with type_epic
     ) {
       this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
     }
-    if (this.props.location.pathname !== nextProps.location.pathname) {
+    if (location.pathname !== nextProps.location.pathname) {
+
+      if (nextProps.location.pathname === "/mod/links" && nextProps.selectedItem) {
+        let prefilledId = ''
+        if (nextProps.selectedItem.type === TYPE_AREA) {
+          const activeAreaDim = (nextProps.activeArea.color === 'population') ? 'capital' : nextProps.activeArea.color
+          const activeprovinceValue = utils.getAreaDimKey(metadata, nextProps.activeArea, nextProps.selectedItem)
+          prefilledId = activeprovinceValue + '||ae|' + activeAreaDim
+        } else {
+          prefilledId = ((nextProps.selectedItem.type === TYPE_EPIC) ? 'e_' : '') + nextProps.selectedItem.wiki + "||" + (nextProps.selectedItem.value.type ||  nextProps.selectedItem.type)
+        }
+        this.ensureLoadLinkedItem(prefilledId, true) // adopt to new standard
+      } else if (location.pathname === "/mod/links")  {
+
+        this.setState({ linkedItemData: {} })
+      }
+
       this.setState({
         selectedIndex: menuIndexByLocation[nextProps.location.pathname]
       })
@@ -996,6 +1013,7 @@ class RightDrawerRoutes extends PureComponent {
               // prefilledLinked: false,
               // ensureLoadLinkedItem
               linkedItemData: this.state.linkedItemData,
+              updateID: this.state.updateID,
               contentChoice: this.state.contentChoice,
               metadataEntity: this.state.metadataEntity,
               metadataType: this.state.metadataType,

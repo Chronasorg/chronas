@@ -47,15 +47,25 @@ export class SelectArrayInput extends Component {
   };
 
   handleAdd = newValue => {
-    console.debug("add chip", newValue.value)
+    const { linkedItemData, setLinkedItemData, source } = this.props
     const values = [...this.state.values, newValue];
-    this.setState({ values }, () => this.handleChange(this.state.values));
+    this.setState({ values }, () => this.handleChange(this.state.values))
+
+    const newArr1 = linkedItemData.linkedItemKey1.split("||")
+    const toAddString = newValue.value || newValue
+    const newArr2 = toAddString.split("||")
+
+    const type = (source === 'linkedMedia') ? 'e' : 'a'
+
+    setLinkedItemData({ [source]: linkedItemData[source].filter( el => el !== toAddString) })
 
     const linkedBody = {
-      linkedItemType1: (this.props.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
-      linkedItemType2: (this.props.linkedItemData.linkedItemType2.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
-      linkedItemKey1: this.props.linkedItemData.linkedItemKey1,
-      linkedItemKey2: newValue.value
+      linkedItemType1: (properties.markersTypes.includes(newArr1[1])) ? 'markers' : 'metadata',
+      linkedItemType2: (properties.markersTypes.includes(newArr2[1])) ? 'markers' : 'metadata',
+      linkedItemKey1: ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0],
+      linkedItemKey2: ((newArr2[1].indexOf('ae|') > -1) ? (newArr2[1] + '|') : '') + newArr2[0],
+      type1: type,
+      type2: type,
     }
 
     axios.put(properties.chronasApiHost + '/metadata/links/addLink', JSON.stringify(linkedBody), {
@@ -72,14 +82,21 @@ export class SelectArrayInput extends Component {
 
   handleDelete = newValue => {
     console.debug("remove chip", newValue)
+    const { linkedItemData, setLinkedItemData, source } = this.props
     const values = this.state.values.filter(v => v.value !== newValue);
     this.setState({ values }, () => this.handleChange(this.state.values));
 
+    const newArr1 = linkedItemData.linkedItemKey1.split("||")
+    const toDeleteString = newValue.value || newValue
+    const newArr2 = toDeleteString.split("||")
+
+    setLinkedItemData({ linkedMedia: linkedItemData[source].filter( el => el !== toDeleteString) })
+
     const linkedBody = {
-      linkedItemType1: (this.props.linkedItemData.linkedItemType1.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
-      linkedItemType2: (this.props.linkedItemData.linkedItemType2.substr(0, 2) === 'm_') ? 'markers' : 'metadata',
-      linkedItemKey1: this.props.linkedItemData.linkedItemKey1,
-      linkedItemKey2: newValue
+      linkedItemType1: (properties.markersTypes.includes(newArr1[1])) ? 'markers' : 'metadata',
+      linkedItemType2: (properties.markersTypes.includes(newArr2[1])) ? 'markers' : 'metadata',
+      linkedItemKey1: ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0],
+      linkedItemKey2: ((newArr2[1].indexOf('ae|') > -1) ? (newArr2[1] + '|') : '') + newArr2[0],
     }
 
     axios.put(properties.chronasApiHost + '/metadata/links/removeLink', JSON.stringify(linkedBody), {
@@ -90,7 +107,7 @@ export class SelectArrayInput extends Component {
       }
     })
       .then(() => {
-        console.debug("linked added")
+        console.debug("linked deleted")
       })
   };
 
@@ -182,6 +199,8 @@ export class SelectArrayInput extends Component {
         value={this.state.values}
         // Override onBlur so that redux-form does not try to handle it and miss
         // updates from onRequestAdd
+        fullWidth
+        fullWidthInput
         onBlur={this.handleBlur}
         onFocus={this.handleFocus}
         onClick={this.handleFocus}
@@ -238,6 +257,7 @@ SelectArrayInput.defaultProps = {
   onChange: () => true,
   onFocus: () => true,
   options: {},
+  setLinkedItemData: () => {},
   onSearchChange: () => {},
   optionText: 'name',
   optionValue: 'id',

@@ -97,7 +97,7 @@ export class AutocompleteInput extends Component {
     const searchText =
       (selectedSource && this.getSuggestion(selectedSource)) ||
       translate('aor.input.autocomplete.none')
-    this.setState({ searchText })
+    this.setState({ searchText: searchText || input.value })
   }
 
   handleNewRequest = (chosenRequest, index) => {
@@ -113,7 +113,7 @@ export class AutocompleteInput extends Component {
       return input.onChange('')
     }
 
-    input.onChange(choices[choiceIndex][optionValue])
+    input.onChange(chosenRequest.value)
   };
 
   handleUpdateInput = searchText => {
@@ -179,7 +179,7 @@ export class AutocompleteInput extends Component {
 
     return (
       <AutoComplete
-        searchText={this.state.searchText || ''}
+        searchText={this.state.searchText || ((this.props  || {}).input || {}).value || ''}
         dataSource={dataSource}
         floatingLabelText={
           <FieldTitle
@@ -190,7 +190,9 @@ export class AutocompleteInput extends Component {
             isRequired={isRequired}
           />
         }
+        fullWidth
         filter={filter}
+        hintText={"Start typing"}
         onNewRequest={this.handleNewRequest}
         onUpdateInput={this.handleUpdateInput}
         openOnFocus

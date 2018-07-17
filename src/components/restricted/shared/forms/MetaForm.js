@@ -58,8 +58,8 @@ export class MetaForm extends Component {
             'end':  +values.end,
             'participants': (values.participants || []).map(el => el.participantTeam.map(el2 => el2.name)),
             'content': (values.content || []).map((el) => {
-              const contentType = (el.contentType.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
-              return contentType + ':' + el.name
+              const contentType = (el.contentType.substr(0, 2) === 'w|') ? 'markers' : 'metadata'
+              return contentType + '||' + el.name
             }),
             'partOf': values.partOf,
           },

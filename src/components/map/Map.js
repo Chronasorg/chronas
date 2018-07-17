@@ -605,7 +605,9 @@ class Map extends Component {
             axios.all(rulerPromises)
               .then(axios.spread((...args) => {
                 if (epicWiki && args.length > 0) {
-                  newEpicEntities.data.content = (args[0].data || {}).map // TODO: it should be this way later on with proper linked items
+                  newEpicEntities.data.content = (args[0].data || {}).map
+                  newEpicEntities.data.media = (args[0].data || {}).media
+
                   this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
                   const allEpicFeatures = newEpicEntities.data.content
                     .map((el, index) => {

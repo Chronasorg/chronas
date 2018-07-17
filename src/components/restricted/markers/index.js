@@ -45,47 +45,9 @@ import { chronasMainColor } from '../../../styles/chronasColors'
 import ArrayField from './ArrayField'
 import MarkerForm from '../shared/forms/MarkerForm'
 import { TYPE_MARKER } from '../../map/actionReducers'
+import properties from '../../../properties'
 
 export const MarkerIcon = Icon
-
-const markerTypes = [
-  { name: '[Audio]', id: 'meta_audio' },
-  { name: '[Epic]', id: 'meta_epic' },
-  { name: '[External Article or Primary Source]', id: 'meta_text' },
-  { name: '[HTML or Text]', id: 'html' },
-  { name: '[Image] Artefact', id: 'artefacts' },
-  { name: '[Image] Battle', id: 'battles' },
-  { name: '[Image] City & Building', id: 'cities' },
-  { name: '[Image] Person', id: 'people' },
-  { name: '[Image] Other', id: 'misc' },
-  { name: '[Podcast & Audio]', id: 'audios' },
-  { name: '[Primary Source]', id: 'ps' },
-  { name: '[Story]', id: 'meta_story' },
-  { name: '[Video]', id: 'meta_video' },
-  { name: '[Wiki Article] Artifacts', id: 'm_artifacts' },
-  { name: '[Wiki Article] Battles -> Battles', id: 'm_battles' },
-  { name: '[Wiki Article] Battles -> Sieges', id: 'm_sieges' },
-  { name: '[Wiki Article] Cities -> Cities', id: 'm_cities' },
-  { name: '[Wiki Article] Cities -> Castles', id: 'm_castles' },
-  { name: '[Wiki Article] People -> Military', id: 'm_military' },
-  { name: '[Wiki Article] People -> Politicians', id: 'politicians' },
-  { name: '[Wiki Article] People -> Explorers', id: 'm_explorers' },
-  { name: '[Wiki Article] People -> Scientists', id: 'm_scientists' },
-  { name: '[Wiki Article] People -> Artists', id: 'm_artists' },
-  { name: '[Wiki Article] People -> Religious', id: 'm_religious' },
-  { name: '[Wiki Article] People -> Athletes', id: 'm_athletes' },
-  { name: '[Wiki Article] People -> Unclassified', id: 'm_unclassified' },
-  { name: '[Wiki Article] Other -> Area Info', id: 'm_areainfo' },
-  { name: '[Wiki Article] Other -> Unknown', id: 'm_unknown' },
-  { name: 'Other', id: 'meta_other' }
-]
-//
-// const validateWiki = (value) => {
-//   if (value && value.indexOf('.wikipedia.org/wiki/') === -1) {
-//     return "The URL needs to be a full Wikipedia URL"
-//   }
-//   return [];
-// }
 
 const validateWiki = (values) => {
   const errors = {}
@@ -153,7 +115,7 @@ export const MarkerEdit = (props) => {
       />
     </BottomNavigation><Create title={'Edit Article'}  {...props}>
     {(props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit'>
-      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={markerTypes} label='resources.markers.fields.type' />
+      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={properties.linkedTypes} label='resources.markers.fields.type' />
       <TextInput source='name' defaultValue={props.selectedItem.value.name} label='resources.markers.fields.name' />
       <DisabledInput source='wiki' defaultValue={props.selectedItem.value.wiki} label='resources.markers.fields.url' />
       <ModButton modType='marker' />
@@ -164,7 +126,7 @@ export const MarkerEdit = (props) => {
       <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
       <DeleteButton resource='markers' id={props.selectedItem.value.wiki} {...props} />
     </MarkerForm> : <MarkerForm hidesavebutton>
-      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={markerTypes} label='resources.markers.fields.type' />
+      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={properties.linkedTypes} label='resources.markers.fields.type' />
       <h4>click on marker on the map which you like to modify</h4></MarkerForm>}
   </Create></div>
 }
@@ -191,7 +153,7 @@ export const MarkerCreate = (props) => {
       />
     </BottomNavigation><Create title={'Create Article'} {...props}>
     <MarkerForm validate={validateWiki} redirect='' history={props.history}>
-      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} choices={markerTypes} label='resources.markers.fields.type' />
+      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} choices={properties.linkedTypes} label='resources.markers.fields.type' />
       <TextInput validate={required} source='name' label='resources.markers.fields.name' />
       <TextInput validate={required} source='wiki' label='resources.markers.fields.url' type='url' />
       <ModButton modType='marker' />

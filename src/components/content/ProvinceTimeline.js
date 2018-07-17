@@ -84,7 +84,7 @@ class ProvinceTimeline extends React.Component {
   }
 
   _onClickTimeline = (props, event) => {
-    const wikiId = (props.group === 'capital') ? this.props.metadata[props.group][props.item.split(":")[2]] : this.props.metadata[props.group][props.item.split(":")[2]][2]
+    const wikiId = (props.group === 'capital') ? this.props.metadata[props.group][props.item.split("||")[2]] : this.props.metadata[props.group][props.item.split("||")[2]][2]
     this.setState({
       selectedWiki: wikiId
     })

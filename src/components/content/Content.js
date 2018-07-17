@@ -163,12 +163,13 @@ class Content extends Component {
 
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED
+    const isArea = selectedItem.type === TYPE_AREA
 
     let selectedWiki = null
 
     if (doCleanup) this._cleanUp()
 
-    if (selectedItem.type === TYPE_AREA) {
+    if (isArea) {
       const selectedProvince = selectedItem.value
       const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
       const activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
@@ -238,8 +239,13 @@ class Content extends Component {
         selectedWiki: selectedWiki
       })
 
+      const selectedProvince = selectedItem.value
+      const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
+      let activeprovinceValue = utils.getAreaDimKey(metadata, activeArea, selectedItem)
+
       // look for linked linked items based on wiki
-      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + (isMarker ? '0:' : '1:') + selectedWiki)
+      // ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0])
+      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + (isMarker ? '0:' : '1:') + (isArea ? ('ae|' + activeAreaDim + '|' + activeprovinceValue) : selectedWiki))
         .then((linkedItemResult) => {
           if (linkedItemResult.status === 200) {
             const linkedItems = {
@@ -260,7 +266,8 @@ class Content extends Component {
               })
             })
 
-            showNotification(linkedItems.media.length + ' linked item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
+            showNotification(linkedItems.media.length + ' linked media item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found. ')
+
             if (res.map) {
               if (isMarker || isMedia) {
                 this.props.setPartOfItems(res.map)

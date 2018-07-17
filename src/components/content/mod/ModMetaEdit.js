@@ -39,7 +39,7 @@ export const ModMetaEdit = (props) => {
   const { metadata, routeNotYetSetup } = props
 
   if (routeNotYetSetup() && props.activeArea.color && (!props.metadataType || props.metadataType !== props.activeArea.color)) {
-    props.setMetadataType( props.activeArea.color)
+    props.setMetadataType(props.activeArea.color)
   }
 
   const newEntity = ((props.activeArea.data || {})[props.selectedItem.value] || [])[utils.activeAreaDataAccessor(props.activeArea.color)]

@@ -29,160 +29,17 @@ const styles = {
   }
 }
 
-export class MetaForm extends Component {
+export class LinksForm extends Component {
   state = {
     metaToUpdate: '',
     successFullyUpdated: false
   }
 
-  handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
-    this.props.handleSubmit(values => {
-      const { initialValues, history } = this.props
-
-      const wikiURL = values.url
-      const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
-      let newWikiURL
-      if (wikiIndex > -1) {
-        newWikiURL = wikiURL.substr(wikiIndex + 20)
-      } else {
-        return 'Not a full Wikipedia URL'
-      }
-
-      if (values.type === 'e') {
-        const nextBodyByType = {
-          '_id': 'e_' + newWikiURL,
-          'data': {
-            'title': values.title,
-            'wiki': newWikiURL,
-            'start': +values.start,
-            'end':  +values.end,
-            'participants': values.participants.map(el => el.participantTeam.map(el2 => el2.name)),
-            'content': values.content.map((el) => {
-              const contentType = (el.contentType.substr(0, 2) === 'm_') ? 'markers' : 'metadata'
-              return contentType + ':' + el.name
-            }),
-            'partOf': values.partOf,
-          },
-          'wiki': newWikiURL,
-          'subtype': values.subtype,
-          'year': +values.start,
-          'score': 0,
-          'coo':  values.coo,
-          'type': values.type
-        }
-
-        const bodyToSend = { ...nextBodyByType }
-        const metadataItem = values.type
-        const token = localStorage.getItem('token')
-        fetch((redirect === 'create') ? properties.chronasApiHost + '/metadata/' : properties.chronasApiHost + '/metadata/e_' + newWikiURL, {
-          method: (redirect === 'create') ? 'POST' : 'PUT',
-          headers: {
-            'Authorization': 'Bearer ' + token,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(bodyToSend)
-        })
-          .then((res) => {
-            if (res.status === 200) {
-              this.setState({
-                metaToUpdate: metadataItem,
-                successFullyUpdated: true
-              })
-              this.props.showNotification((redirect !== 'create') ? 'Epic successfully updated' : 'Epic successfully added')
-              history.goBack()
-            } else {
-              this.setState({
-                metaToUpdate: '',
-                successFullyUpdated: false
-              })
-              this.props.showNotification((redirect !== 'create') ? 'Epic not updated' : 'Epic not added', 'warning')
-            }
-          })
-      } else {
-        const wikiURL = values.url
-        const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
-        let newWikiURL
-        if (wikiIndex > -1) {
-          newWikiURL = wikiURL.substr(wikiIndex + 20)
-        } else {
-          return 'Not a full Wikipedia URL'
-        }
-
-        const iconURL = values.icon
-        const fileIndex = iconURL.indexOf('media/File:') + 6
-        const iconUrlPromise = new Promise((resolve, reject) => {
-          if (values.icon === initialValues.icon) {
-            resolve(iconURL)
-          } else if (fileIndex !== 5) {
-            const filePath = iconURL.substr(fileIndex)
-            jsonp('https://commons.wikimedia.org/w/api.php?action=query&titles=' + filePath + '&prop=imageinfo&&iiprop=url&iiurlwidth=100&format=json', null, (err, rulerMetadata) => {
-              if (err) {
-                resolve('')
-              } else {
-                let thumbUrl = Object.values(rulerMetadata.query.pages)[0].imageinfo[0].thumburl
-                const startUrl = thumbUrl.indexOf('commons/thumb/') + 'commons/thumb/'.length
-                const endUrl = thumbUrl.substr(52).lastIndexOf('/') + startUrl - 1
-                thumbUrl = thumbUrl.substring(startUrl, endUrl)
-
-                resolve(thumbUrl)
-              }
-            })
-          } else if ((iconURL.indexOf('/thumb/') > -1) && (iconURL.indexOf('/100px-') === -1)) {
-            // wikicommons thumb, but not in right resolution!
-            const afterRes = iconURL.indexOf('px-')
-            const beforeRes = iconURL.substring(0, afterRes).lastIndexOf('/')
-
-            resolve(iconURL.substring(0, beforeRes) + '/100' + iconURL.substr(afterRes))
-          } else {
-            resolve(iconURL)
-          }
-        })
-
-        iconUrlPromise.then((iconUrl) => {
-          const nextBodyByType = {
-            ruler: [values.name, values.color, newWikiURL, iconUrl],
-            culture: [values.name, values.color, newWikiURL, iconUrl],
-            religion:        [values.name, values.color, newWikiURL, values.parentname, iconUrl],
-            religionGeneral: [values.name, values.color, newWikiURL, iconUrl],
-            capital: [values.url, iconUrl],
-            province: [values.url, iconUrl]
-          }
-
-          const bodyToSend = {}
-          const metadataItem = values.type
-          bodyToSend['subEntityId'] = values.select || '_' + values.name.replace(/ /g, '_')
-          bodyToSend['nextBody'] = nextBodyByType[metadataItem]
-
-          const token = localStorage.getItem('token')
-          fetch(properties.chronasApiHost + '/metadata/' + metadataItem + '/single', {
-            method: 'PUT',
-            headers: {
-              'Authorization': 'Bearer ' + token,
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(bodyToSend)
-          })
-          .then((res) => {
-            if (res.status === 200) {
-              this.setState({
-                metaToUpdate: metadataItem,
-                successFullyUpdated: true
-              })
-              this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
-              history.goBack()
-            } else {
-              this.setState({
-                metaToUpdate: '',
-                successFullyUpdated: false
-              })
-              this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
-            }
-          })
-        })
-      }
-    })
+  handleSubmitWithRedirect = () => {
+    console.debug('history')
+    this.props.history.goBack()
+    return this.props.handleSubmit(values => { })
+  }
 
   componentWillUnmount () {
     const { metaToUpdate } = this.state
@@ -198,6 +55,7 @@ export class MetaForm extends Component {
       })
       .catch((err) => setModType(''))
   }
+
 
   componentDidMount () {
     const { setModType, selectedItem, setModData } = this.props
@@ -224,7 +82,7 @@ export class MetaForm extends Component {
     } = this.props
 
     return (
-      <form className='simple-form' style={styles.drawerForm}>
+      <form className='simple-form' style={styles.drawerForm} >
         <div style={styles.formStyle} key={version}>
           {Children.map(children, input => (
             <FormInput
@@ -235,12 +93,18 @@ export class MetaForm extends Component {
             />
           ))}
         </div>
+        { toolbar &&
+        React.cloneElement(toolbar, {
+          handleSubmitWithRedirect: this.handleSubmitWithRedirect,
+          invalid,
+          submitOnEnter,
+        })}
       </form>
     )
   }
 }
 
-MetaForm.propTypes = {
+LinksForm.propTypes = {
   basePath: PropTypes.string,
   children: PropTypes.node,
   defaultValue: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
@@ -257,7 +121,7 @@ MetaForm.propTypes = {
   version: PropTypes.number,
 }
 
-MetaForm.defaultProps = {
+LinksForm.defaultProps = {
   submitOnEnter: true,
   toolbar: <Toolbar />,
 }
@@ -281,4 +145,4 @@ const enhance = compose(
     enableReinitialize: true,
   }),
 )
-export default enhance(MetaForm)
+export default enhance(LinksForm)
