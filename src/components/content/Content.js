@@ -265,6 +265,7 @@ class Content extends Component {
                 score: imageItem.score || imageItem.properties.s,
               })
             })
+            linkedItems.content = res.map
 
             showNotification(linkedItems.media.length + ' linked media item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found. ')
 
@@ -313,7 +314,7 @@ class Content extends Component {
     const hasLinkedOther = linkedItems.media.length > 0
 
     return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
-      { (entityTimelineOpen || isMarker || isMedia) && <div>
+      { (entityTimelineOpen || epicTimelineOpen || isMarker || isMedia) && <div>
         <Paper style={styles.contentLeftMenu}>
           <Menu desktop>
             { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={styles.menuIcon} />} /> }
@@ -331,33 +332,23 @@ class Content extends Component {
           </Menu>
         </Paper>
       </div>}
-      {entityTimelineOpen
-        ? <EntityTimeline
+      {(entityTimelineOpen || epicTimelineOpen)
+        ? <EpicTimeline
           history={history}
           newWidth={newWidth}
           setContentMenuItem={this._setContentMenuItem}
           activeContentMenuItem={activeContentMenuItem}
           activeAreaDim={activeAreaDim}
-          rulerProps={metadata[activeAreaDim][rulerEntity.id]}
+          rulerProps={entityTimelineOpen ? metadata[activeAreaDim][rulerEntity.id] : (selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id])}
           selectedYear={selectedYear}
           selectedItem={selectedItem}
-          rulerEntity={rulerEntity}
+          epicData={entityTimelineOpen ? rulerEntity : selectedItem.data}
+          isEntity={entityTimelineOpen}
           sunburstData={sunburstData}
           linkedItems={linkedItems} />
         : provinceTimelineOpen
           ? <ProvinceTimeline metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
-          : epicTimelineOpen
-            ? <EpicTimeline
-              history={history}
-              newWidth={newWidth}
-              setContentMenuItem={this._setContentMenuItem}
-              activeContentMenuItem={activeContentMenuItem}
-              activeAreaDim={activeAreaDim}
-              selectedYear={selectedYear}
-              epicData={selectedItem.data}
-              rulerProps={(selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id])}
-              linkedItems={linkedItems} />
-            : <div style={{ height: '100%' }}>
+          : <div style={{ height: '100%' }}>
               <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems.media} selectedYear={selectedYear} />
               <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki} selectedItem={selectedItem} />
             </div>

@@ -615,14 +615,6 @@ class Map extends Component {
                       el.hidden = false
                       return el
                     })
-                    // .filter(el => (el.properties || {}).f)
-                    // .map((el) => {
-                    //   // const featureToReturn = el.properties.f
-                    //   // if (!featureToReturn.properties) featureToReturn.properties = {}
-                    //   // featureToReturn.index = el.properties.index
-                    //   el.hidden = false
-                    //   return el
-                    // })
 
                   if (allEpicFeatures && allEpicFeatures.length > 0) this.setState({ geoData: allEpicFeatures })
                   args.shift()
