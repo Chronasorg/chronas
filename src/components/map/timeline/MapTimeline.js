@@ -12,7 +12,7 @@ import { selectEpicItem } from '../actionReducers'
 
 import Timeline from 'react-visjs-timeline'
 import './mapTimeline.scss'
-import {chronasMainColor} from "../../../styles/chronasColors";
+import { chronasMainColor } from '../../../styles/chronasColors'
 
 const start = '-000200-01-05',
   min = '-002000-01-01T00:00:00.000Z',

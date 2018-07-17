@@ -77,6 +77,9 @@ class Highscore extends Component {
                         { `Mistakes: ${user.count_mistakes}` }
                       </div>
                       <div className='Opinion_userInfo'>
+                        { `Linked: ${user.count_linked}` }
+                      </div>
+                      <div className='Opinion_userInfo'>
                         { `Votes: ${user.count_voted}` }
                       </div>
                       <div className='Opinion_userInfo'>
