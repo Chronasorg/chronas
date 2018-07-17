@@ -63,8 +63,8 @@ class Share extends PureComponent {
           </div>
           <CardText>
             <div style={styles.label}>{translate('pos.theme.name')}</div>
-            <RaisedButton style={styles.button} label={translate('pos.theme.modern')} primary
-                          onClick={() => changeTheme('modern')}/>
+            <RaisedButton style={styles.button} label={translate('pos.theme.default')} primary
+                          onClick={() => changeTheme('default')}/>
             <RaisedButton style={styles.button} label={translate('pos.theme.historic')} secondary
                           onClick={() => changeTheme('historic')}/>
           </CardText>

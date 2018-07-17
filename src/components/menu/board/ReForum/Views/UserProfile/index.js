@@ -114,6 +114,7 @@ class UserProfile extends Component {
             { profile.karma && statItem('Delete Count', profile.count_deleted) }
             { profile.karma && statItem('Mistakes Count', profile.count_mistakes) }
             { profile.karma && statItem('Reverted Count', profile.count_reverted) }
+            { profile.karma && statItem('Linked Count', profile.count_linked) }
             { profile.karma && statItem('Vote Count', profile.count_voted) }
           </div>
           <FeedBox

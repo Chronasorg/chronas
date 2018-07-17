@@ -65,8 +65,8 @@ class Configuration extends PureComponent {
             </div>
             <CardText>
               <div style={styles.label}>{translate('pos.theme.name')}</div>
-              <RaisedButton style={styles.button} label={translate('pos.theme.modern')} primary
-                            onClick={() => changeTheme('modern')} />
+              <RaisedButton style={styles.button} label={translate('pos.theme.default')} primary
+                            onClick={() => changeTheme('default')} />
               <RaisedButton style={styles.button} label={translate('pos.theme.historic')} secondary
                             onClick={() => changeTheme('historic')} />
             </CardText>
@@ -79,6 +79,14 @@ class Configuration extends PureComponent {
             </CardText>
 
             * add locked feature toggle (automatically detect timestamped waypoints to wiki article)
+
+            default markers/ area/ year (will be overwritten by url)
+            cluster
+            show population/ desnsity
+            image marker size
+            marker size
+
+            LOCKED SECTION
           </Card>
         </Dialog>
     );
