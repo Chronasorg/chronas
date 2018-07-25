@@ -34,3 +34,18 @@
   text-align: center;
   display: block;
 }
+
+.BoardLogo_logoTitle_back{
+  margin-left: 24px;
+  text-transform: uppercase;
+  padding: 5px 0;
+  font-size: 18px;
+  color: #3c4858;
+  white-space: nowrap;
+  font-weight: 400;
+  line-height: 30px;
+  overflow: hidden;
+  text-align: center;
+  display: block;
+
+}

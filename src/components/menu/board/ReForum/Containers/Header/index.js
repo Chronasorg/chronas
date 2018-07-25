@@ -27,7 +27,8 @@ class Header extends Component {
   }
 
   render() {
-    const { updateCurrentForum } = this.props
+    const { updateCurrentForum,
+      history, translate } = this.props
     const {
       authenticated,
       name,
@@ -38,7 +39,7 @@ class Header extends Component {
     return (
       <div className={classnames('appLayout_constraintWidth')}>
         <div className='headerTop'>
-          <Logo />
+          <Logo translate={translate} history={history} />
         </div>
         <NavigationBar
           updateCurrentForum={updateCurrentForum}

@@ -1,9 +1,13 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import RaisedButton from 'material-ui/RaisedButton'
+import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
+import { translate, defaultTheme } from 'admin-on-rest'
 import styles from './styles.css';
 
-const Logo = () => {
+const Logo = (props) => {
   const username = localStorage.getItem('username')
+  console.debug("Logo", props)
   return (
     <div className='BoardLogo_logoContainer'>
       <div className='BoardLogo_logoTitle'>Chronas Community</div>
@@ -23,6 +27,14 @@ const Logo = () => {
           >
             My Profile
           </Link>
+        </div>
+        <div className='BoardLogo_logoTitle_back'>
+          <RaisedButton
+            icon={<IconBack />}
+            primary={true}
+            label={'Back'}
+            onClick={() => { props.history.goBack() } }
+          />
         </div>
       </div>
     </div>

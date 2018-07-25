@@ -38,6 +38,22 @@ class RichEditor extends Component {
     }
   }
 
+
+  componentWillReceiveProps (nextProps) {
+    const { value } = this.props;
+    if (value !== nextProps.value) {
+      let nextVal = JSON.parse(JSON.stringify(nextProps.value))
+
+      if (typeof nextVal === "string") nextVal = JSON.parse(nextVal)
+      console.debug(nextVal)
+      if (nextVal.blocks && !((nextVal.blocks || [])[0] || {}).text) {
+        this.setState({
+          editorState: EditorState.createEmpty(),
+        })
+      }
+    }
+  }
+
   onEditorStateChange(editorState) {
     const { onChange } = this.props;
     this.setState({ editorState });
@@ -48,6 +64,7 @@ class RichEditor extends Component {
 
   handleKeyCommand(command) {
     const newState = RichUtils.handleKeyCommand(this.state.editorState, command);
+    console.debug('CCCCCCCCCCC', this)
     if (newState) {
       this.onEditorStateChange(newState);
       return true;

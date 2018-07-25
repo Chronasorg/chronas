@@ -4,10 +4,10 @@ import properties from "../../../../../../properties";
 /**
  * feed apis
  */
-export const fetchDiscussions = (forum_id, sortingMethod) => {
-  return axios.get(properties.chronasApiHost + `/board/forum/${forum_id}/discussions?sorting_method=${sortingMethod}`, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}});
+export const fetchDiscussions = (forum_slug, sortingMethod, qEntity = '') => { // ${qEntity}
+  return axios.get(properties.chronasApiHost + '/board/forum/' + forum_slug + '/discussions?sorting_method=' + sortingMethod + (qEntity ? ('&q=' + qEntity) : ''), { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}});
 };
 
-export const fetchPinnedDiscussions = (forum_id) => {
-  return axios.get(properties.chronasApiHost + `/board/forum/${forum_id}/pinned_discussions`, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}});
+export const fetchPinnedDiscussions = (forum_slug) => {
+  return axios.get(properties.chronasApiHost + `/board/forum/${forum_slug}/pinned_discussions`, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}});
 };

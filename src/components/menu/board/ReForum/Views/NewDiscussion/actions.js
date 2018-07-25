@@ -21,7 +21,7 @@ import { postDiscussionApi } from './api';
  * @param  {String} currentForum
  * @return {action}
  */
-export const postDiscussion = (userId, forumId, currentForum, currentDiscussion) => {
+export const postDiscussion = (userId, forumId, currentForum, currentDiscussion, qId) => {
     const {
       title,
       content,
@@ -57,12 +57,15 @@ export const postDiscussion = (userId, forumId, currentForum, currentDiscussion)
         userId,
         forumId,
         title,
+        qa_id: qId,
         content,
         tags,
         pinned,
       }).then(
         (data) => {
-          if (data.data.postCreated === true) {
+          if (qId) {
+            history.goBack()
+          } else if (data.data.postCreated === true) {
             // issue a redirect to the newly reacted discussion
             history.push(`/community/${currentForum}/discussion/${data.data.discussion_slug}`);
           } else {

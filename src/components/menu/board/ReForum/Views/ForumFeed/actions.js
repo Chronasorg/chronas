@@ -39,8 +39,8 @@ const findForumId = (state, forum) => {
  * @param  {Boolean} sortingChanged      if user chagned the sorting method
  * @return {thunk}
  */
-export const getDiscussions = (forumId, sortingMethod) => {
-  return fetchDiscussions(forumId, sortingMethod).then(
+export const getDiscussions = (forumId, sortingMethod, qEntity = '') => {
+  return fetchDiscussions(forumId, sortingMethod, qEntity).then(
         data => data.data,
         error => []
       )

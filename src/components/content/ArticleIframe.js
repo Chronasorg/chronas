@@ -81,6 +81,8 @@ const styles = {
   }
 }
 
+const LoadingCompass = <span>iframe loading placeholder...</span>
+
 class ArticleIframe extends React.Component {
   constructor (props) {
     super(props)
@@ -132,6 +134,7 @@ class ArticleIframe extends React.Component {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
     const { hasChart, selectedItem, selectedWiki, customStyle } = this.props
 
+    if (!selectedItem) return LoadingCompass
     const shouldLoad = (iframeLoading || selectedWiki === null || +selectedWiki === -1)
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED
@@ -161,7 +164,7 @@ class ArticleIframe extends React.Component {
           style={{ zIndex: 15000, height: '100%', width: '100%', backgroundColor: 'transparent', overflow: 'auto' }}
           titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
           autoScrollBodyContent={false}>
-          { (selectedWiki !== '') && shouldLoad && <span>iframe loading placeholder...</span> }
+          { (selectedWiki !== '') && shouldLoad && LoadingCompass }
           { (selectedWiki === '') && <span>no wiki article found, consider adding one by clicking the edit button...</span> }
           { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%' style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' /> }
           { isFullScreen &&
@@ -187,7 +190,7 @@ class ArticleIframe extends React.Component {
             <IconClose hoverColor={chronasMainColor} />
           </IconButton> }
         </div>
-        { shouldLoad && <span>iframe loading placeholder...</span> }
+        { shouldLoad && LoadingCompass }
         { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
       </div>
     )

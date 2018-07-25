@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import Moment from 'moment';
 import styles from './styles.css';
-
+import properties from '../../../../../../../properties'
 import Tag from '../../../Components/Tag';
 
 class DiscussionBox extends Component {
@@ -23,6 +23,8 @@ class DiscussionBox extends Component {
     const postTime = Moment(time);
     const timeDisplay = postTime.from(Moment());
 
+    const isQuestion = link.indexOf('/' + properties.QAID + '/') > -1
+
     return (
       <div className='DiscussionBox_container'>
         <div className={classnames('DiscussionBox_title', userProfile && 'DiscussionBox_titleBottomMargin')}><Link to={link}>{discussionTitle}</Link></div>
@@ -32,14 +34,14 @@ class DiscussionBox extends Component {
         </div> }
 
         <div className='DiscussionBox_boxFooter'>
-          <div className='DiscussionBox_tagsArea'>
+          { !isQuestion && <div className='DiscussionBox_tagsArea'>
             { tags.map((tag) => <Tag key={tag} name={tag} />) }
-          </div>
+          </div> }
 
           <div className='DiscussionBox_postInfo'>
             <span className='DiscussionBox_info'>{timeDisplay}</span>
-            <span className='DiscussionBox_info'>{voteCount} favorites</span>
-            <span className='DiscussionBox_info'>{opinionCount} opinions</span>
+            <span className='DiscussionBox_info'>{voteCount || '1'} {isQuestion ? 'points' : 'favorites'}</span>
+            <span className='DiscussionBox_info'>{opinionCount} {isQuestion ? 'answers' : 'opinions'}</span>
           </div>
         </div>
       </div>

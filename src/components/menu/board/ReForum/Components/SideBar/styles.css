@@ -7,3 +7,8 @@
   width: 250px;
   margin-left: 10px;
 }
+
+.addContainer {
+  margin: 0 auto;
+  width: 60%
+}

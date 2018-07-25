@@ -16,7 +16,7 @@ class AdminContainer extends Component {
   }
 
   render() {
-    const { user, forums } = this.props;
+    const { user, forums, translate, history } = this.props;
 
     if (false && user.fetchingUser) {
       return (
@@ -29,7 +29,7 @@ class AdminContainer extends Component {
     if (true || user.role === 'admin') {
       return (
         <div>
-          <AdminHeader forums={forums} />
+          <AdminHeader translate={translate} history={translate} forums={forums} />
           <AdminDashboard forums={forums} />
           {this.props.children}
         </div>

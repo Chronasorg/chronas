@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
 // import { browserHistory } from 'react-router';
+import compose from 'recompose/compose'
 import { connect } from 'react-redux';
 
 import {
@@ -12,12 +13,20 @@ import {
   deleteOpinion,
 } from './actions';
 
+import { translate, defaultTheme, userLogout, showNotification } from 'admin-on-rest'
 import Discussion from '../../Components/SingleDiscussion/Discussion';
 import ReplyBox from '../../Components/SingleDiscussion/ReplyBox';
 import Opinion from '../../Components/SingleDiscussion/Opinion';
 
 import styles from './styles.css';
 import appLayout from '../../SharedStyles/appLayout.css';
+import {toggleRightDrawer as toggleRightDrawerAction} from "../../../../../content/actionReducers";
+import {
+  setActiveMenu as setActiveMenuAction,
+  toggleMenuDrawer as toggleMenuDrawerAction
+} from "../../../../actionReducers";
+import {logout, setToken} from "../../../../authentication/actionReducers";
+import {selectAreaItem as selectAreaItemAction} from "../../../../../map/actionReducers";
 
 class SingleDiscussion extends Component {
   constructor(props) {
@@ -61,7 +70,10 @@ class SingleDiscussion extends Component {
   }
 
   updateOpinionContent(val) {
-    this.setState({ opinionContent: val})
+    if (val !== this.state.opinionContent){
+      this.setState({ opinionContent: val})
+      this.forceUpdate()
+    }
   }
 
   componentWillUnmount() {
@@ -80,7 +92,8 @@ class SingleDiscussion extends Component {
   handleReplySubmit() {
     const {
       forums,
-      currentForum
+      currentForum,
+      showNotification
     } = this.props;
 
     const {
@@ -89,8 +102,7 @@ class SingleDiscussion extends Component {
     } = this.state
 
     const forumId = forums.filter(f => f.forum_slug === currentForum)[0]._id
-
-    const discussion_slug = this.props.match.params.discussion;
+    const discussion_slug = this.props.match.params.discussion
 
     postOpinion(
       {
@@ -100,7 +112,14 @@ class SingleDiscussion extends Component {
         content: opinionContent,
       },
       discussion_slug
-    ).then((data) => this.setState({opinionContent: '', discussion: data }))
+    ).then((data) => {
+      showNotification("Replied")
+      // this.updateOpinionContent('{"blocks":[{"key":"8mpkt","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}')
+      this.setState({
+        opinionContent: '{"blocks":[{"text":"","type":"header-three","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
+        discussion: data
+      })
+    })
   }
 
   deleteDiscussion() {
@@ -232,26 +251,25 @@ class SingleDiscussion extends Component {
   }
 }
 
-export default connect(
-  (state) => { return {
+
+const enhance = compose(
+  connect(state => ({
     userRole: state.user.role,
     fetchingDiscussion: state.discussion.fetchingDiscussion,
     toggleingFavorite: state.discussion.toggleingFavorite,
     deletingDiscussion: state.discussion.deletingDiscussion,
     deletedDiscussion: state.discussion.deletedDiscussion,
-    // opinionContent: state.discussion.opinionContent,
+    opinionContent: state.discussion.opinionContent,
     postingOpinion: state.discussion.postingOpinion,
     opinionError: state.discussion.opinionError,
     deletingOpinion: state.discussion.deletingOpinion,
     error: state.discussion.error,
-  }; },
-  (dispatch) => { return {
-    // getDiscussion: (discussionSlug) => { dispatch(getDiscussion(discussionSlug)); },
-    // toggleFavorite: (discussionId) => { dispatch(toggleFavorite(discussionId)); },
-    // updateOpinionContent: (content) => { dispatch(updateOpinionContent(content)); },
-    // postOpinion: (opinion, discussionSlug) => { dispatch(postOpinion(opinion, discussionSlug)); },
-    // deletePost: (discussionSlug) => { dispatch(deletePost(discussionSlug)); },
-    // deletedDiscussionRedirect: () => { dispatch(deletedDiscussionRedirect()); },
-    // deleteOpinion: (opinionId, discussionSlug) => { dispatch(deleteOpinion(opinionId, discussionSlug)); },
-  }; }
-)(SingleDiscussion);
+  }), {
+    postOpinion: (opinion, discussionSlug) => { dispatch(postOpinion(opinion, discussionSlug)); },
+    showNotification,
+  }),
+  // pure,
+  // translate,
+);
+
+export default enhance(SingleDiscussion);

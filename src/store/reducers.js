@@ -11,8 +11,8 @@ import { rightDrawerReducer } from '../components/content/actionReducers'
 import { selectedItemReducer } from '../components/map/actionReducers'
 import { yearReducer } from '../components/map/timeline/actionReducers'
 import { menuDrawerReducer, menuIdReducer } from '../components/menu/actionReducers'
-import { appReducer, boardUserReducer } from '../components/menu/board/ReForum/App/reducers';
-import { feedReducer } from '../components/menu/board/ReForum/Views/ForumFeed/reducers';
+import { appReducer, boardUserReducer } from '../components/menu/board/ReForum/App/reducers'
+import { feedReducer } from '../components/menu/board/ReForum/Views/ForumFeed/reducers'
 import { singleDiscussionReducer } from '../components/menu/board/ReForum/Views/SingleDiscussion/reducers'
 import { newDiscussionReducer } from '../components/menu/board/ReForum/Views/NewDiscussion/reducers'
 import { adminInfoReducer } from '../components/menu/board/ReForum/Views/AdminDashboard/reducers'

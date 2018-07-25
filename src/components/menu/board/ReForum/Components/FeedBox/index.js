@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import Moment from 'moment';
 import styles from './styles.css';
+import properties from '../../../../../../properties'
 
 import DiscussionBox from './DiscussionBox';
 
@@ -36,7 +37,7 @@ class FeedBox extends Component {
   renderEmptyDiscussionLine(loading, discussions) {
     if (!loading) {
       if (!discussions || discussions.length === 0) {
-        return <div className='FeedBox_loading'>No threads authored...</div>;
+        return (this.props.currentForum === properties.QAID) ? <div className='FeedBox_loading'>No questions yet...</div> : <div className='FeedBox_loading'>No threads yet...</div>
       }
     }
   }
@@ -50,9 +51,7 @@ class FeedBox extends Component {
       userProfile,
     } = this.props;
 
-    let discussionBoxTitle = '';
-    if (type === 'general') discussionBoxTitle = 'Threads'
-    if (type === 'pinned') discussionBoxTitle = 'Pinned'
+    const discussionBoxTitle = (currentForum === properties.QAID) ? 'Questions' : (type === 'pinned') ? 'Pinned' : 'Threads'
 
     return (
       <div className='FeedBox_container'>

@@ -48,8 +48,8 @@ class ForumFeed extends Component {
     if (!forumId) {
       setForums()
     } else {
-      getDiscussions(forumId, sortingMethod).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
-      getPinnedDiscussions(forumId).then( (data) => this.setState({ fetchingPinnedDiscussions: false, pinnedDiscussions: data }) )
+      getDiscussions(currentForum, sortingMethod).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
+      getPinnedDiscussions(currentForum).then( (data) => this.setState({ fetchingPinnedDiscussions: false, pinnedDiscussions: data }) )
     }
   }
 
@@ -78,8 +78,8 @@ class ForumFeed extends Component {
         fetchingDiscussions: false,
         fetchingPinnedDiscussions: false,
       })
-      getDiscussions(forumId, sortingMethod).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
-      getPinnedDiscussions(forumId).then( (data) => this.setState({ fetchingPinnedDiscussions: false, pinnedDiscussions: data }) )
+      getDiscussions(currentForum, sortingMethod).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
+      getPinnedDiscussions(currentForum).then( (data) => this.setState({ fetchingPinnedDiscussions: false, pinnedDiscussions: data }) )
     }
   }
 
@@ -108,7 +108,6 @@ class ForumFeed extends Component {
   }
 
   renderNewDiscussionButtion() {
-    console.debug("tata")
     const { currentForum } = this.props;
 
     return (

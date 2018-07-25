@@ -16,6 +16,7 @@ export default {
   },
   pos: {
     account: 'Manage Account',
+    back: 'Back',
     community: 'Community Board',
     information: 'Information',
     areas: 'Areas',

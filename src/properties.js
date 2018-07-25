@@ -35,6 +35,7 @@ const properties = {
     { name: '[Wiki Article] Other -> Unknown', id: 'w|unknown' },
     { name: 'Other', id: 'meta_other' }
   ],
+  QAID: 'questions',
   typeToDescriptedType: {
     'ae|ruler': '[Area Entity] Ruler',
     'ae|capital': '[Area Entity] Capital',

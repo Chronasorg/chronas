@@ -16,6 +16,7 @@ import ContentMovie from 'material-ui/svg-icons/maps/local-movies'
 import ContentImage from 'material-ui/svg-icons/image/image'
 import ContentAudio from 'material-ui/svg-icons/image/audiotrack'
 import ContentLink from 'material-ui/svg-icons/content/link'
+import QAAIcon from 'material-ui/svg-icons/action/question-answer'
 import { setRightDrawerVisibility, toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { setFullModActive, resetModActive } from '../restricted/shared/buttons/actionReducers'
 import {
@@ -25,6 +26,7 @@ import {
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import LinkedGallery from './contentMenuItems/LinkedGallery'
+import LinkedQAA from './contentMenuItems/LinkedQAA'
 import utils from '../map/utils/general'
 import ArticleIframe from './ArticleIframe'
 import EntityTimeline from './EntityTimeline'
@@ -59,6 +61,10 @@ const styles = {
   },
   menuIcon: {
     left: 20
+  },
+  qaaIcon: {
+    left: 20,
+    fill: 'rgb(117, 117, 117)'
   },
   menuIconBadge: {
     top: '-4px',
@@ -116,7 +122,7 @@ class Content extends Component {
     iframeSource: '',
     selectedWiki: null,
     sunburstData: [],
-    linkedItems: { media: [], content: [] },
+    linkedItems: { media: [], content: [], qaa: [], id: '' },
     activeContentMenuItem: (localStorage.getItem('activeContentMenuItem') !== null) ? localStorage.getItem('activeContentMenuItem') : 'sunburst'
   }
 
@@ -130,7 +136,7 @@ class Content extends Component {
     this.setState({
       iframeLoading: true,
       selectedWiki: null,
-      linkedItems: { media: [], content: [] },
+      linkedItems: { media: [], content: [], id: '' },
     })
     this._cleanUp()
   }
@@ -239,18 +245,20 @@ class Content extends Component {
         selectedWiki: selectedWiki
       })
 
-      const selectedProvince = selectedItem.value
+      // const selectedProvince = selectedItem.value
       const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
       let activeprovinceValue = utils.getAreaDimKey(metadata, activeArea, selectedItem)
+      const linkId = (isMarker ? '0:' : '1:') + (isArea ? ('ae|' + activeAreaDim + '|' + activeprovinceValue) : selectedWiki)
 
       // look for linked linked items based on wiki
       // ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0])
-      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + (isMarker ? '0:' : '1:') + (isArea ? ('ae|' + activeAreaDim + '|' + activeprovinceValue) : selectedWiki))
+      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + linkId)
         .then((linkedItemResult) => {
           if (linkedItemResult.status === 200) {
             const linkedItems = {
               media: [],
-              content: []
+              content: [],
+              id: linkId
             }
 
             const res = linkedItemResult.data
@@ -328,7 +336,9 @@ class Content extends Component {
                   <ContentLink style={{...styles.menuIconBadgeContainer4, fill: (hasLinkedOther ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} />
                 </div>
               </IconButton>
-            } disabled={itemHasLinkedItems} />
+            } disabled={hasLinkedImage} />
+            { entityTimelineOpen && <Divider /> }
+            <MenuItem style={{ ...styles.menuItem, top: 0, backgroundColor: (activeContentMenuItem === 'qaa') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('qaa')} leftIcon={<QAAIcon style={{...styles.qaaIcon, fill: (hasLinkedImage ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} /> } disabled={hasLinkedImage} />
           </Menu>
         </Paper>
       </div>}
@@ -349,6 +359,7 @@ class Content extends Component {
         : provinceTimelineOpen
           ? <ProvinceTimeline metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
           : <div style={{ height: '100%' }}>
+              <LinkedQAA history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } />
               <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems.media} selectedYear={selectedYear} />
               <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki} selectedItem={selectedItem} />
             </div>

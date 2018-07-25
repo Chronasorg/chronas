@@ -15,6 +15,7 @@ export default class InfluenceChart extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      idSetup: '',
       crosshairValues: [],
       currentYearMarkerValues: [],
       crosshairStartValues: [],
@@ -105,9 +106,12 @@ export default class InfluenceChart extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    const newId = (nextProps.newData[0] || {}).id
     if (((nextProps.newData || [])[0] || {}).data &&
-      ((nextProps.newData[0] || {}).id !== ((this.props.newData || [])[0] || {}).id ||
+      (newId !== ((this.props.newData || [])[0] || {}).id ||
+        (newId !== this.state.idSetup) ||
       nextProps.selectedYear !== this.props.selectedYear)) {
+      this.setState({ idSetup: newId })
       const { selectedYear } = nextProps
       const nextSeries = nextProps.newData.map((seriesEl) => seriesEl.data)
 

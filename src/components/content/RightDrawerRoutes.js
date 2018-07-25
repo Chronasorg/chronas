@@ -577,7 +577,7 @@ class RightDrawerRoutes extends PureComponent {
       setRightDrawerVisibility(false)
     }
 
-    if ((nextProps.selectedItem.type === TYPE_MARKER || nextProps.selectedItem.type === TYPE_LINKED) && rightDrawerOpen &&  nextProps.location.pathname.indexOf('/article') > -1) {
+    if ((nextProps.selectedItem.type === TYPE_MARKER || nextProps.selectedItem.type === TYPE_LINKED) && rightDrawerOpen && nextProps.location.pathname.indexOf('/article') > -1) {
       setRightDrawerVisibility(false)
     }
   }
@@ -619,6 +619,7 @@ class RightDrawerRoutes extends PureComponent {
     if ((typeof selectedItem.wiki === 'undefined')) return null
 
     const isMarker = (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_LINKED) && location.pathname.indexOf('/article') > -1
+    const isEpic = (selectedItem.type === TYPE_EPIC) && location.pathname.indexOf('/article') > -1
     const currPrivilege = +localStorage.getItem('privilege')
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege)
     const modHeader = <AppBar
@@ -943,7 +944,7 @@ class RightDrawerRoutes extends PureComponent {
               // onClick={(event) => console.debug('onClick', event)}
             />
             <div style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
-              {headerComponent}
+              { !isEpic && headerComponent}
               {component && createElement(component, {
                 ...commonProps,
                 ...routeProps

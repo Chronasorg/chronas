@@ -87,6 +87,8 @@ class Configuration extends PureComponent {
             marker size
 
             LOCKED SECTION
+
+            theme google earth + artsandculture.google.com + material ui 1.0
           </Card>
         </Dialog>
     );

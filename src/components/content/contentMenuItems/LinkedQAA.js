@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {createElement} from 'react'
 import { Sunburst, LabelSeries, Treemap, } from 'react-vis'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
@@ -22,6 +22,7 @@ import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { Player } from 'video-react'
 import Dialog from 'material-ui/Dialog'
+import { Card } from 'material-ui/Card'
 import { GridList, GridTile } from 'material-ui/GridList'
 import RaisedButton from 'material-ui/RaisedButton'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
@@ -35,12 +36,45 @@ import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import IconMenu from 'material-ui/IconMenu'
 import { Tabs, Tab } from 'material-ui/Tabs'
 import SwipeableViews from 'react-swipeable-views'
-import { translate, ViewTitle, showNotification } from 'admin-on-rest'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
-import properties from "../../../properties"
+import properties from "../../../properties";
 import {resetModActive, setFullModActive} from "../../restricted/shared/buttons/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "../actionReducers";
+import NewDiscussion from "../../menu/board/ReForum/Views/NewDiscussion";
+import AppContainer from "../../menu/board/ReForum/App/App";
+import QAAForum from "../../menu/board/ReForum/Views/ForumFeed/QAAForum";
+import Highscore from "../../menu/board/ReForum/Views/Highscore";
+import UserProfile from "../../menu/board/ReForum/Views/UserProfile";
+import SingleDiscussion from "../../menu/board/ReForum/Views/SingleDiscussion";
+import AdminContainer from "../../menu/board/ReForum/App/Admin";
+import {
+  translate,
+  AutocompleteInput,
+  BooleanField,
+  BooleanInput,
+  Datagrid,
+  DateField,
+  DateInput,
+  DisabledInput,
+  Edit,
+  EditButton,
+  Filter,
+  List,
+  LongTextInput,
+  NullableBooleanInput,
+  NumberField,
+  NumberInput,
+  Restricted,
+  ReferenceInput,
+  ReferenceField,
+  SelectInput,
+  SimpleForm,
+  showNotification,
+  TextField,
+  TextInput,
+  ViewTitle
+} from 'admin-on-rest'
 
 const fullRadian = Math.PI * 2
 
@@ -231,86 +265,25 @@ const styles = {
   }
 }
 
-const YOUTUBEOPTS = {
-  height: '100%',
-  width: '100%',
-  playerVars: { // https://developers.google.com/youtube/player_parameters
-    autoplay: 0
-  }
-}
-
-class LinkedGallery extends React.Component {
+class LinkedQAA extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      filtered:[
-        'artefacts',
-        'articles',
-        'stories',
-        'people',
-        'cities',
-        'battles',
-        'misc',
-        'videos',
-        'audios',
-        'ps'
-      ],
-      data: {},
-      selectedImage: { src: '', year: '', title: '', wiki: '', source: '' },
-      slideIndex: 0,
-      currentYearLoaded: 3000,
-      hiddenElement: true,
-      tileData: [],
-      categories: [
-       'artefacts',
-       'articles',
-       'stories',
-       'people',
-       'cities',
-       'battles',
-       'misc',
-       'videos',
-       'audios',
-        'ps'
-      ]
+      forums: [],
+      discussions: [], // [{"_id":"5b2033277360754cc222298f","forum_id":"5b1ebb597399ff48be74ec55","forum":{"_id":"5b1ebb597399ff48be74ec55","forum_slug":"ggeneral","forum_name":"General","__v":0},"user_id":"user@keystonejs.com","user":{"_id":"user@keystonejs.com","username":"prickly-reading","name":"prickly-reading","password":"$2a$10$s51BoOAkr6RBS68KyK32M.fFepqBZCHcjvE833yxswPHmSQI.TnKG","email":"user@keystonejs.com","karma":45,"lastUpdated":"2018-03-30T16:37:10.745Z","createdAt":"2018-03-30T16:37:10.745Z","privilege":1,"authType":"chronas","loginCount":1,"count_deleted":8,"count_created":17,"count_reverted":7,"count_mistakes":5,"count_voted":84,"count_updated":45,"count_linked":18},"discussion_slug":"hhhhhhhhhhhhhhhhhhhhhhhhhh_5b2033277360754cc222298e","date":"2018-06-12T20:55:03.628Z","title":"hhhhhhhhhhhhhhhhhhhhhhhhhh","content":"{\"blocks\":[{\"key\":\"7rg4b\",\"text\":\"hgfffffffffffffffff\",\"type\":\"blockquote\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}","pinned":false,"tags":["hhhhhhhhhhhh"],"favorites":[],"__v":0,"opinion_count":0},{"_id":"5b202743d5e65f532049678c","forum_id":"5b1ebb597399ff48be74ec55","forum":{"_id":"5b1ebb597399ff48be74ec55","forum_slug":"ggeneral","forum_name":"General","__v":0},"user_id":"user@keystonejs.com","user":{"_id":"user@keystonejs.com","username":"prickly-reading","name":"prickly-reading","password":"$2a$10$s51BoOAkr6RBS68KyK32M.fFepqBZCHcjvE833yxswPHmSQI.TnKG","email":"user@keystonejs.com","karma":45,"lastUpdated":"2018-03-30T16:37:10.745Z","createdAt":"2018-03-30T16:37:10.745Z","privilege":1,"authType":"chronas","loginCount":1,"count_deleted":8,"count_created":17,"count_reverted":7,"count_mistakes":5,"count_voted":84,"count_updated":45,"count_linked":18},"discussion_slug":"wtestsgdfggggggggggdfg_5b202743d5e65f532049678b","date":"2018-06-12T20:04:19.105Z","title":"wtestsgdfggggggggggdfg","content":"{\"blocks\":[{\"key\":\"6cqm\",\"text\":\"gfdgdfgdggggggggggggdd\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}","pinned":false,"tags":["dsfsdf"],"favorites":[],"__v":6,"opinion_count":1}],
+      opinions: [],
+      users: [],
+      currentForum: 'general',
+      hiddenElement: true
     }
-  }
-
-  loadLinkedItemsToTileData = (nextLinkedItems) => {
-    this.setState({
-      tileData: nextLinkedItems,
-    },
-      this.forceUpdate);
-  }
-
-  handleChangeFilter = (event, value) => {
-    this.setState({
-      filtered: value,
-    });
-  };
-
-  handleChange = (value) => {
-    this.setState({ slideIndex: value })
   }
 
   handleClose = () => {
-    if (this.state.selectedImage.src !== '') {
-      this.handleImageClose()
-      return
-    }
-    this.props.history.push('/')
-  }
-
-  handleImageClose = () => {
-    this.setState({ selectedImage: { src: '', year: '', title: '', wiki: '', source: '' } })
+    this.props.history.goBack()
   }
 
   componentDidMount = () => {
     this.setState({ hiddenElement: false })
-  }
-
-  componentWillMount = () => {
-    this.loadLinkedItemsToTileData(this.props.linkedItems)
   }
 
   componentWillUnmount = () => {
@@ -318,13 +291,7 @@ class LinkedGallery extends React.Component {
   }
 
   componentWillReceiveProps = (nextProps) => {
-    const { linkedItems } = this.props
-    console.debug('### LinkedGallery componentWillReceiveProps', this.props)
-
-    if (linkedItems && nextProps.linkedItems && linkedItems.toString() !== nextProps.linkedItems.toString()) {
-      this.loadLinkedItemsToTileData(nextProps.linkedItems)
-    }
-
+    console.debug('### LinkedQAA componentWillReceiveProps', this.props, nextProps)
   }
 
   _handleUpvote = (id, stateDataId) => {
@@ -471,65 +438,17 @@ class LinkedGallery extends React.Component {
   }
 
   render () {
-    const { isMinimized, linkedItems, selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
-    const { selectedImage, filtered, slideIndex, tileData, categories } = this.state
+    const { isMinimized, options, qId } = this.props
 
-    const noTiles = (typeof linkedItems === 'undefined' || (tileData && tileData.length === 0))
-
-    const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
-    const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
-
-    const slideButtons = (score, id, source, stateData) => {
-      console.debug(id, source, source || id)
-
-      const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
-      const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
-      const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'white' : 'green'
-      const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'white' : 'red'
-
-      const sourceSelected = decodeURIComponent(source !== "undefined" ? source : id)
-
-      return <div className="slideButtons" style={(stateData[2] !== 'audios') ? styles.buttonContainer : { ...styles.buttonContainer, bottom: 100} }>
-        <IconButton
-          onClick={() => this._handleUpvote(id)}
-          color='red'
-          style={ styles.upArrow }
-          tooltipPosition="center-left"
-          tooltip={translate('pos.upvote')}
-          iconStyle={ styles.iconButton }
-        ><IconThumbUp color={upvoteColor} />
-        </IconButton>
-        <IconButton
-          onClick={() => this._handleDownvote(id)}
-          style={ styles.downArrow }
-          iconStyle={ styles.iconButton }
-          tooltipPosition="center-left"
-          tooltip={translate('pos.downvote')}
-        ><IconThumbDown color={downvoteColor} /></IconButton>
-        <div style={ styles.scoreLabel }>{ score} </div>
-        {(stateData[2] === 'audios' || stateData[2] === 'articles' || stateData[2] === 'ps' || stateData[2] === 'videos') ? <IconButton
-          style={styles.sourceButton}
-          tooltipPosition="bottom-center"
-          tooltip={sourceSelected}
-          onClick={() => this._handleOpenSource(sourceSelected)} >
-          tooltip={hasWiki ? translate('pos.linkedGallery.hasNoSource') : translate('pos.linkedGallery.openSource')}>
-          <FloatingActionButton
-            mini={true}
-            backgroundColor='#aaaaaaba'
-          ><IconOutbound color="white" style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
-          </FloatingActionButton >
-        </IconButton> : null }
-        <FloatingActionButton
-          mini={true}
-          onClick={() => this._handleEdit(id)}
-          backgroundColor='#aaaaaaba'
-          style={ styles.editButton }
-        ><IconEdit color='white' />
-        </FloatingActionButton >
-      </div>
+    const commonProps = {
+      options,
+      hasList: false,
+      hasEdit: true,
+      hasShow: false,
+      hasCreate: false,
+      hasDelete: true,
+      resource: 'users',
     }
-
-    const addButtonDynamicStyle = {...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit'}
 
     return (
       <Paper zDepth={3} style={{
@@ -552,158 +471,14 @@ class LinkedGallery extends React.Component {
               background: (isMinimized ? 'white' : 'rgba(55, 57, 49, 0.19)')
             }
           }
-          title={<span>Linked Items</span>}
+          title={<span>Questions and Answers</span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
             ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
             : <IconButton onClick={() => this._minimize()}><ChevronRight /></IconButton>}
         />
         <div style={styles.container}>
-          <div style={styles.root}>
-            <div style={styles.rootMenu}>
-               <IconMenu
-                iconButtonElement={<IconButton tooltip='Filter Media'><ContentFilter /></IconButton>}
-                onChange={this.handleChangeFilter}
-                value={filtered}
-                multiple={true}
-              >
-                {categories.map((category) => <MenuItem value={category} primaryText={category} disabled={!tileData.some(linkedItem => linkedItem.subtype === category)} />)}
-              </IconMenu>
-              <IconMenu
-                iconButtonElement={<IconButton tooltip='Add Media'><ContentAdd /></IconButton>}
-                onClick={this._handleAdd}
-                style={ addButtonDynamicStyle }>
-              </IconMenu>
-            </div>
-            <GridList
-              className='linkedGalleryGridList'
-              cellHeight={180}
-              padding={1}
-              cols={1}
-              style={styles.gridList}
-            >
-              {tileData.length > 0 ? tileData.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1 )).map((tile, j) => (
-                  (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
-                  ? <GridTile
-                    key={tile.src}
-                    style={{border: '1px solid black', cursor: 'pointer' }}
-                    titleStyle={styles.title}
-                    subtitleStyle={styles.subtitle}
-                    title={tile.subtitle}
-                    subtitle={tile.title}
-                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0])}
-                    actionPosition='right'
-                    titlePosition='bottom'
-                    titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                    cols={1}
-                    rows={2}
-                  >
-                    <img src={tile.src}
-                         onError={() => this._removeTile(tile.src)}
-                         onClick={() => { this.setState({ selectedImage: {
-                             src: tile.src,
-                             year: tile.subtitle,
-                             title: tile.title,
-                             wiki: tile.wiki,
-                             source: tile.source
-                           } })}}
-                    />
-                  </GridTile>
-                  : (tile.subtype === 'articles' || tile.subtype === 'ps')
-                    ? <GridTile
-                      key={tile.src}
-                      style={{border: '1px solid black', cursor: 'pointer'}}
-                      titleStyle={styles.title}
-                      subtitleStyle={styles.subtitle}
-                      title={tile.subtitle}
-                      subtitle={tile.title}
-                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
-                      actionPosition='right'
-                      titlePosition='bottom'
-                      titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                      cols={1}
-                      rows={2}
-                    ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
-                          onError={() => this._removeTile(tile.src)}
-                          onClick={() => { this.setState({ selectedImage: {
-                              src: tile.src,
-                              year: tile.subtitle,
-                              title: tile.title,
-                              wiki: tile.wiki,
-                              source: tile.source
-                            } })}}
-                    />
-                    </GridTile>
-                    : <GridTile
-                      key={tile.src}
-                      style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
-                      titleStyle={styles.title}
-                      subtitleStyle={styles.subtitle}
-                      title={tile.subtitle}
-                      subtitle={tile.title}
-                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
-                      actionPosition='right'
-                      titlePosition='bottom'
-                      titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                      rows={2}
-                    >
-                      {this._getYoutubeId(tile.src)
-                        ? <YouTube
-                          className='videoContent'
-                          videoId={this._getYoutubeId(tile.src)}
-                          opts={YOUTUBEOPTS}
-                          onError={() => this._removeTile(tile.src)}
-                        />
-                        : <Player className='videoContent' fluid={false} ref="player">
-                          <source src={tile.src} />
-                        </Player>
-                      }
-                    </GridTile>
-              )) : <span> {translate('pos.noLinkedContents')} </span>}
-            </GridList>
-          </div>
-          <Dialog
-            autoDetectWindowHeight={false}
-            modal={false}
-            contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogImageBackgroundHack'}
-            contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', maxWidth: 'calc(100% - 64px)'}}
-            bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
-            actionsContainerStyle={{ backgroundColor: red400 }}
-            style={{ backgroundColor: 'transparent', overflow: 'auto' }}
-            titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
-            autoScrollBodyContent={false}
-            open={(selectedImage.src !== '')}
-            onRequestClose={this.handleImageClose}
-          >
-            <img src={selectedImage.src} style={styles.selectedIMG} />
-            <div style={styles.selectedImageContent}>
-              <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
-              <p style={styles.selectedImageDescription}>{selectedImage.title}</p>
-              <div style={styles.selectedImageButtonContainer}>
-                <IconButton
-                  style={styles.buttonOpenArticle}
-                  tooltipPosition="bottom-center"
-                  tooltip={hasWiki ? translate('pos.discover.hasNoSource') : translate('pos.discover.openSource')}>
-                  <RaisedButton
-                    disabled={hasSource}
-                    label="Open Source"
-                    primary={true}
-                    onClick={() => this._handleOpenSource(selectedImage.source)} >
-                    <IconOutbound color="white" style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
-                  </RaisedButton>
-                </IconButton>
-                <IconButton
-                  style={styles.buttonOpenArticle}
-                  tooltipPosition="bottom-center"
-                  tooltip={translate('pos.discover.edit')}>
-                  <RaisedButton
-                    label="Edit"
-                    primary={true}
-                    onClick={() => this._handleEdit(selectedImage.source)} />
-                </IconButton>
-              </div>
-            </div>
-          </Dialog>
+          <QAAForum forums={[]} qaaEntity={qId} users={this.state.users} discussions={this.state.discussions} />
         </div>
       </Paper>
     )
@@ -728,4 +503,4 @@ const enhance = compose(
   translate,
 )
 
-export default enhance(LinkedGallery)
+export default enhance(LinkedQAA)
