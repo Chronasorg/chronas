@@ -2,7 +2,7 @@
  * Created by aumann on 06.07.17.
  */
 import React from 'react';
-import PropTypes from 'prop-types';
+;
 import withWidth from 'material-ui/utils/withWidth';
 
 export const Responsive = ({ small, medium, large, width, ...rest }) => {
@@ -23,11 +23,5 @@ export const Responsive = ({ small, medium, large, width, ...rest }) => {
   return React.cloneElement(component, rest);
 };
 
-Responsive.propTypes = {
-  small: PropTypes.element,
-  medium: PropTypes.element,
-  large: PropTypes.element,
-  width: PropTypes.number,
-};
 
 export default withWidth()(Responsive);

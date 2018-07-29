@@ -134,6 +134,7 @@ class UserProfile extends Component {
                   <Opinion
                     userProfile
                     forum={forum}
+                    isQA={false}
                     opinionTitle={opinion._id}
                     opinionSlug={opinion._id}
                     key={opinion._id}

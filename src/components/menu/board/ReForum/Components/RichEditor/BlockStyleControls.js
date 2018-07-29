@@ -4,6 +4,7 @@ import styles from './styles.css';
 
 import StyleButton from './StyleButton';
 
+
 class BlockStyleControls extends Component {
   render() {
     const {
@@ -46,11 +47,5 @@ class BlockStyleControls extends Component {
     );
   }
 }
-
-BlockStyleControls.propTypes = {
-  onToggle: React.PropTypes.func.isRequired,
-  editorState: React.PropTypes.any.isRequired,
-  type: React.PropTypes.oneOf(['newDiscussion', 'newOpinion']),
-};
 
 export default BlockStyleControls;

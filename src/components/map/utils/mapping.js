@@ -351,7 +351,7 @@ const utils = {
         }
 
         try {
-          var multiLine = turf.lineString(lineCoordinates)  // EXTREMACENTROIDLINE    200MS
+          var multiLine = turf.bezier(turf.lineString(lineCoordinates, { sharpness: 1, resolution: 1000 } ))  // EXTREMACENTROIDLINE    200MS
 
           // turfUnion.apply( this, polyGroups[key][i] );
           // console.debug(JSON.stringify(polyGroups[key][i]),"->", JSON.stringify(multiLine))
@@ -360,7 +360,9 @@ const utils = {
         }
 
         multiLine.properties.n = tmpName
-        multiLine.properties.d = this._scaleLogText(turf.lineDistance(multiLine)) //
+        multiLine.properties.d = (this._scaleLogText(turf.lineDistance(multiLine)) / Math.pow(tmpName.length, .2))
+        // console.debug('tmpName', tmpName, (this._scaleLogText(turf.lineDistance(multiLine)) / Math.pow(tmpName.length, .2)), this._scaleLogText(turf.lineDistance(multiLine)),Math.pow(tmpName.length, .2))
+        // console.debug('----spaceforletter----', turf.lineDistance(multiLine)/ tmpName.length)
         myLineColl.features.push(multiLine)
 
         // var angleDeg = Math.atan2(lineCoordinates[2][1] - lineCoordinates[0][1], lineCoordinates[2][0] - lineCoordinates[0][0]) * 180 / Math.PI

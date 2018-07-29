@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import Moment from 'moment';
 import styles from './styles.css';
-import properties from '../../../../../../../properties'
+import { properties } from '../../../../../../../properties'
 import Tag from '../../../Components/Tag';
+
 
 class DiscussionBox extends Component {
   render() {
@@ -60,19 +61,6 @@ DiscussionBox.defaultProps = {
   tags: ['react', 'redux', 'nodejs'],
   link: '',
   userProfile: false,
-};
-
-DiscussionBox.propTypes = {
-  discussionId: React.PropTypes.number,
-  voteCount: React.PropTypes.number,
-  userName: React.PropTypes.string,
-  userGitHandler: React.PropTypes.string,
-  discussionTitle: React.PropTypes.string,
-  time: React.PropTypes.any,
-  opinionCount: React.PropTypes.number,
-  tags: React.PropTypes.array,
-  link: React.PropTypes.string,
-  userProfile: React.PropTypes.bool,
 };
 
 export default DiscussionBox;

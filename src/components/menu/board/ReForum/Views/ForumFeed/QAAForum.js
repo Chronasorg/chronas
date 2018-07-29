@@ -15,7 +15,7 @@ import appLayout from '../../SharedStyles/appLayout.css'
 import styles from './styles.css'
 import {getForums} from '../../App/actions'
 
-import properties from '../../../../../../properties'
+import { properties } from '../../../../../../properties'
 
 const inlineStyles = {
   addButton: {
@@ -52,7 +52,10 @@ class QAAForum extends Component {
     // if (!forumId) {
     //   // setForums()
     // } else {
-      getDiscussions(properties.QAID, sortingMethod, qaaEntity).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
+      getDiscussions(properties.QAID, sortingMethod, qaaEntity).then( (data) => {
+        this.setState({ fetchingDiscussions: false, discussions: data })
+        this.props.setHasQuestions((data || []).length > 0)
+      })
     // }
   }
 
@@ -73,7 +76,10 @@ class QAAForum extends Component {
       this.setState({
         fetchingDiscussions: false,
       })
-      getDiscussions(properties.QAID, sortingMethod, nextProps.qaaEntity).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
+      getDiscussions(properties.QAID, sortingMethod, nextProps.qaaEntity).then( (data) => {
+        this.setState({ fetchingDiscussions: false, discussions: data })
+        this.props.setHasQuestions((data || []).length > 0)
+      } )
     }
   }
 

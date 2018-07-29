@@ -1,5 +1,5 @@
 import React, { createElement, PureComponent } from 'react'
-import PropTypes from 'prop-types'
+
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import Avatar from 'material-ui/Avatar'
@@ -57,7 +57,7 @@ import { changeColor, setAreaColorLabel } from '../menu/layers/actionReducers'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../styles/chronasColors'
 import utils from '../map/utils/general'
-import properties from '../../properties'
+import { properties, themes } from '../../properties'
 
 const nearbyIcon = <EditIcon />
 
@@ -72,7 +72,6 @@ const defaultIcons = {
 
 const styles = {
   articleHeader: {
-    backgroundColor: '#eceff1',
     height: '56px',
     width: 'calc(100% - 95px)'
   },
@@ -610,7 +609,7 @@ class RightDrawerRoutes extends PureComponent {
 
   render () {
     const {
-      options, setWikiId, setRightDrawerVisibility,
+      options, setWikiId, setRightDrawerVisibility, theme,
       selectedYear, selectedItem, activeArea, setAreaColorLabel, location,
       setModData, setModDataLng, setModDataLat, history, metadata, changeColor
     } = this.props
@@ -624,10 +623,10 @@ class RightDrawerRoutes extends PureComponent {
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege)
     const modHeader = <AppBar
       className='articleHeader'
-      style={styles.articleHeader}
+      style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }} // '#eceff1'}
       iconElementLeft={
         <BottomNavigation
-          style={styles.articleHeader}
+          style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
           onChange={this.handleChange}
           selectedIndex={this.state.selectedIndex}>
           <BottomNavigationItem
@@ -748,10 +747,10 @@ class RightDrawerRoutes extends PureComponent {
 
     const articleHeader = <AppBar
       className='articleHeader'
-      style={styles.articleHeader}
+      style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
       iconElementLeft={
         (selectedItem.type === TYPE_AREA) ? <BottomNavigation
-          style={styles.articleHeader}
+          style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
           onChange={this.handleChange}
           selectedIndex={(selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
             ? 0
@@ -1140,7 +1139,7 @@ const mapStateToProps = (state, props) => ({
   selectedYear: state.selectedYear,
   metadata: state.metadata,
   locale: state.locale, // force redraw on locale change
-  theme: props.theme, // force redraw on theme changes
+  theme: state.theme, // force redraw on theme changes
 })
 
 const enhance = compose(

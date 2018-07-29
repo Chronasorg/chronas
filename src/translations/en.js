@@ -15,6 +15,7 @@ export default {
     sign_up: 'Join'
   },
   pos: {
+    about: 'About Chronas',
     account: 'Manage Account',
     back: 'Back',
     community: 'Community Board',

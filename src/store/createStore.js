@@ -9,7 +9,7 @@ import authClient from '../components/menu/authentication/authClient'
 import { crudSaga, declareResources, fetchUtils } from 'admin-on-rest'
 import { routerMiddleware } from 'react-router-redux'
 import { fork } from 'redux-saga/effects'
-import properties from '../properties'
+import { properties } from '../properties'
 
 export const history = createHistory()
 

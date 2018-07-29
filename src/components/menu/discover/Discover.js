@@ -24,8 +24,7 @@ import { green400, green600, blue400, blue600, red400, red600 } from 'material-u
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
 import {selectLinkedItem, selectMarkerItem} from '../../map/actionReducers'
-import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
-import properties from "../../../properties";
+import { properties } from "../../../properties";
 
 const imgButton = { width: 20, height: 20}
 const styles = {
@@ -792,8 +791,6 @@ const mapStateToProps = state => ({
 })
 
 export default connect(mapStateToProps, {
-  changeLocale: changeLocaleAction,
-  changeTheme: changeThemeAction,
   setRightDrawerVisibility,
   selectLinkedItem,
   selectMarkerItem,

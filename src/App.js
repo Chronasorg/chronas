@@ -1,7 +1,7 @@
 import React, { Component, createElement } from 'react'
 import { Provider, connect } from 'react-redux'
 import axios from 'axios'
-import PropTypes from 'prop-types'
+
 import decodeJwt from 'jwt-decode'
 import 'font-awesome/css/font-awesome.css'
 import { Switch, Route } from 'react-router-dom'
@@ -44,7 +44,7 @@ import Login from './components/menu/authentication/Login'
 import CustomTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
 import utilsQuery from './components/map/utils/query'
-import properties from './properties'
+import { properties } from './properties'
 
 const styles = {
   wrapper: {
@@ -85,10 +85,6 @@ const styles = {
 const prefixedStyles = {}
 
 class App extends Component {
-  static propTypes = {
-    store: PropTypes.object.isRequired,
-    // routes: PropTypes.object.isRequired,
-  }
 
   componentWillMount () {
     const { setYear, setMarker, setEpic, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props

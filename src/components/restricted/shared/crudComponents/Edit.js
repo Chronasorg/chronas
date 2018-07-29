@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+;
 import { connect } from 'react-redux';
 import { Card, CardText } from 'material-ui/Card';
 import compose from 'recompose/compose';
@@ -140,23 +140,6 @@ export class Edit extends Component {
   }
 }
 
-Edit.propTypes = {
-  actions: PropTypes.element,
-  children: PropTypes.node,
-  // crudGetOne: PropTypes.func.isRequired,
-  // crudUpdate: PropTypes.func.isRequired,
-  data: PropTypes.object,
-  hasDelete: PropTypes.bool,
-  hasShow: PropTypes.bool,
-  id: PropTypes.string.isRequired,
-  isLoading: PropTypes.bool.isRequired,
-  location: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
-  resource: PropTypes.string.isRequired,
-  title: PropTypes.any,
-  translate: PropTypes.func,
-  version: PropTypes.number.isRequired,
-};
 
 function mapStateToProps(state, props) {
   console.debug(state.admin.resources[props.resource]

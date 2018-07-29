@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+;
 import { connect } from 'react-redux';
 import compose from 'recompose/compose';
 import AppBar from 'material-ui/AppBar'
@@ -60,17 +60,10 @@ class MenuDrawer extends PureComponent {
   }
 }
 
-MenuDrawer.propTypes = {
-  children: PropTypes.node.isRequired,
-  muiTheme: PropTypes.object.isRequired,
-  menuDrawerOpen: PropTypes.bool,
-  setMenuDrawerVisibility: PropTypes.func,
-};
-
 const mapStateToProps = (state, props) => ({
   menuDrawerOpen: state.menuDrawerOpen,
   locale: state.locale, // force redraw on locale change
-  theme: props.theme, // force redraw on theme changes
+  theme: state.theme, // force redraw on theme changes
 });
 
 export default compose(

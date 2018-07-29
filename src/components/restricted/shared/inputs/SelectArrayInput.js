@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+
 import get from 'lodash.get'
 import isEqual from 'lodash.isequal'
 import AutoComplete from 'material-ui/AutoComplete'
 import ChipInput from 'material-ui-chip-input'
 import { FieldTitle, translate } from 'admin-on-rest'
-import properties from "../../../../properties";
+import { properties } from "../../../../properties";
 import axios from "axios/index";
 
 const dataSourceConfig = { text: 'text', value: 'value' }
@@ -225,30 +225,6 @@ export class SelectArrayInput extends Component {
     );
   }
 }
-
-SelectArrayInput.propTypes = {
-  addField: PropTypes.bool.isRequired,
-  elStyle: PropTypes.object,
-  choices: PropTypes.arrayOf(PropTypes.object),
-  input: PropTypes.object,
-  isRequired: PropTypes.bool,
-  label: PropTypes.string,
-  meta: PropTypes.object,
-  name: PropTypes.string,
-  onBlur: PropTypes.func,
-  onChange: PropTypes.func,
-  onFocus: PropTypes.func,
-  onSearchChange: PropTypes.func,
-  setFilter: PropTypes.func,
-  options: PropTypes.object,
-  optionText: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
-    .isRequired,
-  optionValue: PropTypes.string.isRequired,
-  resource: PropTypes.string,
-  source: PropTypes.string,
-  translate: PropTypes.func.isRequired,
-  translateChoice: PropTypes.bool.isRequired,
-};
 
 SelectArrayInput.defaultProps = {
   addField: true,

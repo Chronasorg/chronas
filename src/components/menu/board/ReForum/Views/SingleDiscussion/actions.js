@@ -80,7 +80,7 @@ export const updateOpinionContent = (value) => {
 export const postOpinion = (opinion, discussionSlug) => {
     // validate the opinion
   if (!opinion.content || opinion.content.length < 20) {
-    return 'Please provide a bit more info in your opinion....at least 20 characters.'
+    return 'Please provide a bit more text....at least 20 characters.'
   } else {
       // call the api to post the opinion
     return postOpinionApi(opinion).then(

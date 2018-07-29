@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+
 import get from 'lodash.get'
 import isEqual from 'lodash.isequal'
 import AutoComplete from 'material-ui/AutoComplete'
@@ -226,28 +226,6 @@ export class AutocompleteDisallowInput extends Component {
     );
   }
 }
-
-AutocompleteDisallowInput.propTypes = {
-  addField: PropTypes.bool.isRequired,
-  allowEmpty: PropTypes.bool.isRequired,
-  choices: PropTypes.arrayOf(PropTypes.object),
-  elStyle: PropTypes.object,
-  filter: PropTypes.func.isRequired,
-  input: PropTypes.object,
-  isRequired: PropTypes.bool,
-  label: PropTypes.string,
-  meta: PropTypes.object,
-  options: PropTypes.object,
-  optionElement: PropTypes.element,
-  optionText: PropTypes.oneOfType([PropTypes.string, PropTypes.func])
-    .isRequired,
-  optionValue: PropTypes.string.isRequired,
-  resource: PropTypes.string,
-  setFilter: PropTypes.func,
-  source: PropTypes.string,
-  translate: PropTypes.func.isRequired,
-  translateChoice: PropTypes.bool.isRequired,
-};
 
 AutocompleteDisallowInput.defaultProps = {
   addField: true,

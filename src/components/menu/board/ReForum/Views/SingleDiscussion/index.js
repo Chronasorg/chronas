@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 // import { browserHistory } from 'react-router';
 import compose from 'recompose/compose'
 import { connect } from 'react-redux';
+import { properties } from "../../../../../../properties";
 
 import {
   getDiscussion,
@@ -147,6 +148,7 @@ class SingleDiscussion extends Component {
     const {
       toggleingFavorite,
       postingOpinion,
+      match,
       opinionError,
       deletingOpinion,
       deletingDiscussion,
@@ -199,6 +201,9 @@ class SingleDiscussion extends Component {
     // check if user favorated the discussion
     const userFavorited = this.userFavoritedDiscussion(localStorage.getItem('userid'), favorites)
 
+
+    const { forum } = this.props.match.params;
+    const isQA = forum === properties.QAID
     return (
       <div className={'appLayout_constraintWidth'}>
         <Discussion
@@ -222,6 +227,7 @@ class SingleDiscussion extends Component {
         { opinionError && <div className='SD_errorMsg'>{opinionError}</div> }
 
         <ReplyBox
+          isQA={isQA}
           posting={postingOpinion}
           onSubmit={this.handleReplySubmit.bind(this)}
           onChange={(content) => { this.updateOpinionContent(content) }}
@@ -231,6 +237,7 @@ class SingleDiscussion extends Component {
         { opinions && opinions.map((opinion) => {
           return (
             <Opinion
+              isQA={isQA}
               key={opinion._id}
               opinionId={opinion._id}
               userAvatar={opinion.user.avatar}

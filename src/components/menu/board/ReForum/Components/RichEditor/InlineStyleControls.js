@@ -5,6 +5,7 @@ import styles from './styles.css';
 import Button from '../../Components/Button';
 import StyleButton from './StyleButton';
 
+
 class InlineStyleControls extends Component {
   render() {
     const {
@@ -36,11 +37,5 @@ class InlineStyleControls extends Component {
     );
   }
 }
-
-InlineStyleControls.propTypes = {
-  onToggle: React.PropTypes.func.isRequired,
-  editorState: React.PropTypes.any.isRequired,
-  type: React.PropTypes.oneOf(['newDiscussion', 'newOpinion']),
-};
 
 export default InlineStyleControls;

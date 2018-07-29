@@ -1,4 +1,4 @@
-const properties = {
+export const properties = {
   // defines the zoom level to toggle provinces
   areaColorLayers: ['ruler', 'religion', 'religionGeneral', 'culture', 'population'],
   areaLabelLayers: ['ruler', 'religion', 'religionGeneral', 'culture'],
@@ -72,4 +72,29 @@ const properties = {
   }
 }
 
-export default properties
+export const themes = {
+  default: {
+    foreColors: ["#fff", "#F2F2F2"],
+    backColors: ["#383B32","#110617"],
+    highlightColors: ["#ffcc00"],
+    gradientColors: ["linear-gradient(180deg,#383B32 0,#110617)"]
+  },
+  light: {
+    foreColors: ["#333","#000"],
+    backColors: ["#fff", "#F2F2F2"],
+    highlightColors: ["#ffcc00"],
+    gradientColors: ["linear-gradient(180deg,#fff 0,#F2F2F2)"]
+  },
+  dark: {
+    foreColors: ["#fff", "#F2F2F2"],
+    backColors: ["#333","#000"],
+    highlightColors: ["#ffcc00"],
+    gradientColors: ["linear-gradient(180deg,#333 0,#000)"]
+  },
+  luther: {
+    foreColors: ["#fff3d3","#e9caab"],
+    backColors: ["#011c31", "#451c2e"],
+    highlightColors: ["#451c2e"],
+    gradientColors: ["linear-gradient(180deg,#011c31 0,#451c2e)"]
+  }
+}

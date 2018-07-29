@@ -11,6 +11,7 @@ import Button from '../../../Components/Button'
 import Tag from '../../../Components/Tag'
 import RichEditor from '../../../Components/RichEditor'
 
+
 class Discussion extends Component {
   render () {
     const {
@@ -102,24 +103,6 @@ Discussion.defaultProps = {
   allowDelete: false,
   deletingDiscussion: false,
   deleteAction: () => { },
-}
-
-Discussion.propTypes = {
-  id: React.PropTypes.any,
-  userAvatar: React.PropTypes.string,
-  userName: React.PropTypes.string,
-  userGitHandler: React.PropTypes.string,
-  discTitle: React.PropTypes.string,
-  discDate: React.PropTypes.any,
-  discContent: React.PropTypes.any,
-  tags: React.PropTypes.array,
-  favoriteCount: React.PropTypes.number,
-  favoriteAction: React.PropTypes.func,
-  userFavorited: React.PropTypes.bool,
-  toggleingFavorite: React.PropTypes.bool,
-  allowDelete: React.PropTypes.bool,
-  deletingDiscussion: React.PropTypes.bool,
-  deleteAction: React.PropTypes.func,
 }
 
 export default Discussion

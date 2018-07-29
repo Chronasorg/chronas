@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import styles from './styles.css';
 
+
 class Button extends Component {
   render() {
     const {
@@ -42,16 +43,6 @@ Button.defaultProps = {
   className: '',
   style: {},
   onClick: () => { },
-};
-
-Button.propTypes = {
-  type: React.PropTypes.oneOf(['default', 'outline']),
-  fullWidth: React.PropTypes.bool,
-  noUppercase: React.PropTypes.bool,
-  alwaysActive: React.PropTypes.bool,
-  className: React.PropTypes.string,
-  style: React.PropTypes.object,
-  onClick: React.PropTypes.func,
 };
 
 export default Button;

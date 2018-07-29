@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import styles from './styles.css';
 
+
 class Profile extends Component {
   render() {
     const {
@@ -31,13 +32,6 @@ Profile.defaultProps = {
   gitHandler: 'helloWorld',
   location: 'Somewhere in the world',
   avatarUrl: 'https://google.com',
-};
-
-Profile.propTypes = {
-  name: React.PropTypes.string,
-  gitHandler: React.PropTypes.string,
-  location: React.PropTypes.string,
-  avatarUrl: React.PropTypes.string,
 };
 
 export default Profile;

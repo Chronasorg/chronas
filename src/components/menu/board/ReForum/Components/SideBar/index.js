@@ -4,6 +4,7 @@ import styles from './styles.css';
 
 import Button from '../../Components/Button';
 
+
 class SideBar extends Component {
   render() {
     const {
@@ -25,10 +26,6 @@ class SideBar extends Component {
 
 SideBar.defaultProps = {
   currentForum: 'general',
-};
-
-SideBar.propTypes = {
-  currentForum: React.PropTypes.string,
 };
 
 export default SideBar;

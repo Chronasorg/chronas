@@ -24,8 +24,10 @@ export default class LoadingBar extends React.Component {
 
   _load = () => {
     loaded += incrementLoaded;
-    if (!stoppedFlag)
+    if (!stoppedFlag){
+      console.debug('_load')
       this.setState({ completedPercent: (Math.sqrt(Math.sqrt(loaded)) * 15) })
+    }
 
     if ((Math.sqrt(Math.sqrt(loaded)) * 15) > 100) {
       clearInterval(isLoadingInterval)
@@ -38,12 +40,14 @@ export default class LoadingBar extends React.Component {
     console.debug("### LoadingBar: resetingLoadBar, this should be done with isVisible false")
     stoppedFlag = true
     clearInterval(isLoadingInterval)
+    console.debug('_resetLoadingBar')
     this.setState({
       isVisible: false,
       completedPercent: 0,
       activeColor: COLOR_SUCCESS
     },() => {
       stoppedFlag = false
+      console.debug('_resetLoadingBar2')
       this.setState({
         isVisible: true
       })
@@ -52,6 +56,7 @@ export default class LoadingBar extends React.Component {
 
   _startLoadingBar = () => {
     if (!stoppedFlag && typeof isLoadingInterval === "undefined")
+      console.debug('_startLoadingBar')
     this.setState({
       isVisible: true,
       completedPercent: 0
@@ -88,6 +93,7 @@ export default class LoadingBar extends React.Component {
   }
 
   _errorOut() {
+    console.debug('_errorOut')
     this.setState({ completedPercent: 100,
       activeColor: COLOR_ERROR })
     setTimeout(() => this._resetLoadingBar(), 500)

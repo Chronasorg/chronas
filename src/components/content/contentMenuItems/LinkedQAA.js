@@ -14,7 +14,7 @@ import ImageGallery from 'react-image-gallery'
 import YouTube from 'react-youtube'
 import axios from 'axios'
 import Badge from 'material-ui/Badge';
-import PropTypes from 'prop-types'
+
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
 import pure from 'recompose/pure'
@@ -38,7 +38,7 @@ import { Tabs, Tab } from 'material-ui/Tabs'
 import SwipeableViews from 'react-swipeable-views'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
-import properties from "../../../properties";
+import { properties } from "../../../properties";
 import {resetModActive, setFullModActive} from "../../restricted/shared/buttons/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "../actionReducers";
 import NewDiscussion from "../../menu/board/ReForum/Views/NewDiscussion";
@@ -438,7 +438,7 @@ class LinkedQAA extends React.Component {
   }
 
   render () {
-    const { isMinimized, options, qId } = this.props
+    const { isMinimized, options, qId, setHasQuestions } = this.props
 
     const commonProps = {
       options,
@@ -478,7 +478,7 @@ class LinkedQAA extends React.Component {
             : <IconButton onClick={() => this._minimize()}><ChevronRight /></IconButton>}
         />
         <div style={styles.container}>
-          <QAAForum forums={[]} qaaEntity={qId} users={this.state.users} discussions={this.state.discussions} />
+          <QAAForum setHasQuestions={setHasQuestions} forums={[]} qaaEntity={qId} users={this.state.users} discussions={this.state.discussions} />
         </div>
       </Paper>
     )

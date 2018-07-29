@@ -3,6 +3,7 @@ import styles from './styles.css';
 
 import RichEditor from '../../../Components/RichEditor';
 
+
 class ReplyBox extends Component {
   render() {
     const {
@@ -10,12 +11,14 @@ class ReplyBox extends Component {
       onSubmit,
       opinionContent,
       onChange,
+      isQA
     } = this.props;
 
     if (posting) return <div className='ReplyBox_loadingWrapper'>Posting your opinion...</div>;
 
     return (
       <RichEditor
+        isQA={isQA}
         type="newOpinion"
         onSave={onSubmit}
         onChange={onChange}
@@ -29,13 +32,6 @@ ReplyBox.defaultProps = {
   posting: false,
   onSubmit: () => { },
   onChange: (value) => { },
-};
-
-ReplyBox.propTypes = {
-  posting: React.PropTypes.bool,
-  opinionContent: React.PropTypes.string,
-  onSubmit: React.PropTypes.func,
-  onChange: React.PropTypes.func,
 };
 
 export default ReplyBox;

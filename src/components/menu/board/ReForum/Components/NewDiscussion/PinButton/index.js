@@ -4,6 +4,7 @@ import styles from './styles.css';
 
 import Button from '../../../Components/Button';
 
+
 class PinButton extends Component {
   constructor(props) {
     super(props);
@@ -51,11 +52,6 @@ class PinButton extends Component {
 PinButton.defaultProps = {
   onChange: (val) => {},
   value: false,
-};
-
-PinButton.propTypes = {
-  onChange: React.PropTypes.func,
-  value: React.PropTypes.bool,
 };
 
 export default PinButton;

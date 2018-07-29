@@ -176,12 +176,9 @@
       "type": "line",
       "source": "area-outlines",
       "layout": {
-        "line-join": "round",
-        "line-cap": "round"
       },
       "paint": {
-        "line-color": "#999",
-        "line-width": 1
+        "line-width": 0
       }
     },
     {
@@ -224,23 +221,21 @@
       "type": "symbol",
       "source": "area-outlines",
       "layout": {
-        "symbol-spacing": 1000,
-        "icon-allow-overlap": false,
-        "symbol-placement": "line",
+        "text-allow-overlap": false,
+        "symbol-placement": "line-center",
         "text-field": "{n}",
         "text-font": ["Cinzel Regular"],
         "text-transform": "uppercase",
-        "text-size":
-        {
+        "text-size": {
           "type": "exponential",
           "stops": [
-            [{"zoom": 0, "value": 100}, 20],
-            [{"zoom": 0, "value": 800}, 40],
-            [{"zoom": 10, "value": 100}, 40],
-            [{"zoom": 10, "value": 800}, 60]
+            [{"zoom": 2, "value": 500}, 1],
+            [{"zoom": 2, "value": 5000}, 30],
+            [{"zoom": 10, "value": 500}, 10],
+            [{"zoom": 10, "value": 5000}, 300]
 
           ], "property": "d",
-          "default": 50
+          "default": 20
         }
       },
       "paint": {

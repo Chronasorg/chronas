@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import _ from 'lodash'
 import styles from './styles.css'
 
+
 class NavigationBar extends Component {
   render () {
     const {
@@ -59,8 +60,5 @@ NavigationBar.defaultProps = {
   ],
 }
 
-NavigationBar.propTypes = {
-  navigationLinks: React.PropTypes.array,
-}
 
 export default NavigationBar

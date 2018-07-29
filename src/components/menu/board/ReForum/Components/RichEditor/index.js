@@ -14,6 +14,7 @@ import Button from '../../Components/Button';
 import BlockStyleControls from './BlockStyleControls';
 import InlineStyleControls from './InlineStyleControls';
 
+
 class RichEditor extends Component {
   constructor(props) {
     super(props);
@@ -109,6 +110,7 @@ class RichEditor extends Component {
       type,
       onSave,
       readOnly,
+      isQA
     } = this.props;
 
     // styling for inline styles
@@ -125,11 +127,14 @@ class RichEditor extends Component {
 
     let saveButtonLabel = '';
     if (type === 'newOpinion') saveButtonLabel = 'Reply';
-    if (type === 'newDiscussion') saveButtonLabel = 'Post Discussion';
+    if (type === 'newDiscussion') saveButtonLabel = isQA ? 'Post Question' : 'Post Discussion';
 
     let placeholder = '';
-    if (type === 'newOpinion') placeholder = 'Your opinion...';
-    if (type === 'newDiscussion') placeholder = 'Discussion summary...';
+    if (type === 'newOpinion') placeholder = isQA ? 'Your answer...\nBe Nice: No Racism, Bigotry, or Offensive Behavior.\n' +
+      'Ask Clear and Specific Questions, with Time and Place in Mind.\n' +
+      'Provide preferably Primary and Secondary Sources If Asked Rather Than Tertiary Sources Like Wikipedia.\n' +
+      'Serious On-Topic Answers Only: No Jokes, Anecdotes, Clutter, or other Digressions.' : 'Your opinion...'
+    if (type === 'newDiscussion') placeholder = isQA ? 'Give a bit of context to your question...' : 'Discussion summary...'
 
     return (
       <div className={classnames('RichEditor_container', readOnly && 'RichEditor_readOnlyContainer')}>
@@ -182,14 +187,6 @@ RichEditor.defaultProps = {
   type: 'newDiscussion',
   onChange: () => { },
   onSave: () => { },
-};
-
-RichEditor.propTypes = {
-  readOnly: React.PropTypes.bool,
-  value: React.PropTypes.any,
-  type: React.PropTypes.oneOf(['newDiscussion', 'newOpinion']),
-  onChange: React.PropTypes.func,
-  onSave: React.PropTypes.func,
 };
 
 export default RichEditor;

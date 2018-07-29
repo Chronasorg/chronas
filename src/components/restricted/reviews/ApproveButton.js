@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+;
 import { connect } from 'react-redux';
 import IconButton from 'material-ui/IconButton';
 import ThumbUp from 'material-ui/svg-icons/action/thumb-up';
@@ -27,12 +27,6 @@ class ApproveButton extends Component {
         );
     }
 }
-
-ApproveButton.propTypes = {
-    record: PropTypes.object,
-    reviewApprove: PropTypes.func,
-    reviewReject: PropTypes.func,
-};
 
 export default connect(null, {
     reviewApprove: reviewApproveAction,

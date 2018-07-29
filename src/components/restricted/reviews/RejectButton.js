@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+;
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
 import ThumbDown from 'material-ui/svg-icons/action/thumb-down';
@@ -23,12 +23,6 @@ class AcceptButton extends Component {
         /> : <span/>;
     }
 }
-
-AcceptButton.propTypes = {
-    record: PropTypes.object,
-    reviewReject: PropTypes.func,
-    translate: PropTypes.func,
-};
 
 const enhance = compose(
     translate,

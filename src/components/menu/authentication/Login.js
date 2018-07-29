@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { propTypes, reduxForm, Field } from 'redux-form'
+import { reduxForm, Field } from 'redux-form'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import compose from 'recompose/compose'
@@ -17,8 +17,7 @@ import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import LockIcon from 'material-ui/svg-icons/action/lock-outline'
 import { cyan500, pinkA200 } from 'material-ui/styles/colors'
 import { userSignup as userSignupAction, USER_SIGNUP } from './actionReducers'
-import { grey50, grey400, chronasMainColor, chronasGradient } from '../../../styles/chronasColors'
-import properties from '../../../properties'
+import { themes, properties } from '../../../properties'
 
 const styles = {
   main: {
@@ -279,19 +278,19 @@ class Login extends Component {
     </div>
 
     return (
-      <Dialog bodyStyle={{ backgroundImage: chronasGradient }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
+      <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0]}} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
         contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0 }} onRequestClose={this.handleClose} >
         <Card style={styles.card}>
           <div style={styles.avatar}>
-            <Avatar backgroundColor={chronasMainColor} icon={<LockIcon />} size={60} />
+            <Avatar backgroundColor={themes[theme].highlightColors[0]} icon={<LockIcon />} size={60} />
           </div>
 
           {this.state.authMode === 'signIn' ? signInComponent : null}
           {this.state.authMode === 'signUp' ? signUpComponent : null}
           {this.state.authMode === 'passwordReset' ? passwordResetComponent : null}
 
-          <IconButton className='closeTopRight' iconStyle={{ width: 24, height: 24, color: grey400 }} touch key={'close'} containerElement={<Link to='/' />}>
-            <CloseIcon hoverColor={grey50} />
+          <IconButton className='closeTopRight' iconStyle={{ width: 24, height: 24, color: themes[theme].foreColors[0] }} touch key={'close'} containerElement={<Link to='/' />}>
+            <CloseIcon hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
         </Card>
       </Dialog>
@@ -321,7 +320,9 @@ const enhance = compose(
       return errors
     },
   }),
-  connect(null, {
+  connect(state => ({
+      theme: state.theme,
+    }), {
     userLogin,
     userSignup: userSignupAction,
     showNotification

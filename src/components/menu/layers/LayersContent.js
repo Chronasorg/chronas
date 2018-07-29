@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import PropTypes from 'prop-types'
+
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
@@ -41,7 +41,7 @@ const styles = {
   },
 };
 
-const allMarkers = ['Politicians', 'Battles']
+const allMarkers = ['Politician', 'Battles']
 
 const allEpics = ['War', 'Battle', 'Campaign', 'Exploration', 'Siege', 'Voyage', 'Other Epic']
 

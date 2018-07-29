@@ -8,7 +8,6 @@ import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui/svg-icons/content/clear';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar'
 import { translate, Restricted } from 'admin-on-rest';
-import { chronasGradient } from '../../../styles/chronasColors';
 
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 
@@ -65,10 +64,12 @@ class Configuration extends PureComponent {
             </div>
             <CardText>
               <div style={styles.label}>{translate('pos.theme.name')}</div>
-              <RaisedButton style={styles.button} label={translate('pos.theme.default')} primary
-                            onClick={() => changeTheme('default')} />
-              <RaisedButton style={styles.button} label={translate('pos.theme.historic')} secondary
-                            onClick={() => changeTheme('historic')} />
+              <RaisedButton style={styles.button} label={translate('pos.theme.light')} primary={theme === 'light'}
+                            onClick={() => changeTheme('light')} />
+              <RaisedButton style={styles.button} label={translate('pos.theme.dark')} primary={theme === 'dark'}
+                            onClick={() => changeTheme('dark')} />
+              <RaisedButton style={styles.button} label={translate('pos.theme.luther')} primary={theme === 'luther'}
+                            onClick={() => changeTheme('luther')} />
             </CardText>
             <CardText>
               <div style={styles.label}>{translate('pos.language')}</div>

@@ -19,7 +19,7 @@ import {
 import styles from './styles.css'
 import appLayout from '../../SharedStyles/appLayout.css'
 
-import properties from '../../../../../../properties'
+import { properties } from '../../../../../../properties'
 
 class NewDiscussion extends Component {
   constructor (props) {
@@ -72,7 +72,7 @@ class NewDiscussion extends Component {
   setUserAndForumID (user, forums, currentForum) {
     const forumId = _.find(forums, { forum_slug: currentForum })
     if (forumId || currentForum === properties.QAID) {
-      const currentForumId = (forumId || {})._id || properties.QAID
+      const currentForumId = (forumId || {})._id
       this.setState({
         forumId: currentForumId,
         userId: user._id || localStorage.getItem('userid'),
@@ -155,12 +155,14 @@ class NewDiscussion extends Component {
       currentDiscussion
     } = this.state
 
+    const isQA = (finalCurrentForm === properties.QAID)
+
     return [
       <input
         key={'title'}
         type='text'
         className='NewDiscussion_titleInput'
-        placeholder={'Discussion title...'}
+        placeholder={isQA ? 'Question title...' : 'Discussion title...'}
         value={title}
         onChange={(event) => { this.updateDiscussionTitle(event.target.value) }}
         />,
@@ -172,6 +174,7 @@ class NewDiscussion extends Component {
       <TagsInput
         key={'tags'}
         value={tags}
+        isQA={isQA}
         onChange={(tags) => { this.updateDiscussionTags(tags) }}
         />,
       <RichEditor
@@ -179,6 +182,7 @@ class NewDiscussion extends Component {
         key={'content'}
         type='newDiscussion'
         value={content}
+        isQA={isQA}
         onChange={(value) => { this.updateDiscussionContent(value) }}
         onSave={() => { this._postDiscussion(userId, forumId, finalCurrentForm, currentDiscussion) }}
         />,

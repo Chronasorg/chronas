@@ -41,13 +41,13 @@ export const makeRootReducer = (asyncReducers) => {
     selectedYear: yearReducer(),
     theme: themeReducer(),
     // board: {
-      user: boardUserReducer,
-      app: appReducer,
-      feed: feedReducer,
-      discussion: singleDiscussionReducer,
-      newDiscussion: newDiscussionReducer,
-      adminInfo: adminInfoReducer,
-      userProfile: userProfileReducer,
+    user: boardUserReducer,
+    app: appReducer,
+    feed: feedReducer,
+    discussion: singleDiscussionReducer,
+    newDiscussion: newDiscussionReducer,
+    adminInfo: adminInfoReducer,
+    userProfile: userProfileReducer,
     // },
     ...asyncReducers
   })

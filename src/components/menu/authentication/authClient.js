@@ -1,7 +1,7 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest'
 import decodeJwt from 'jwt-decode'
 import { USER_SIGNUP, setToken } from './actionReducers'
-import properties from '../../../properties'
+import { properties } from '../../../properties'
 
 export default (type, params) => {
   if (type === AUTH_LOGIN) {

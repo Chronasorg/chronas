@@ -10,6 +10,7 @@ import compose from 'recompose/compose'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
 import {chronasMainColor} from "../../../../../../../styles/chronasColors";
 
+
 const customStyles = {
   menuButtons: {
     margin: 12,
@@ -69,15 +70,6 @@ Profile.defaultProps = {
   gitHandler: 'N/a',
   location: 'Somewhere in the world',
 };
-
-Profile.propTypes = {
-  name: React.PropTypes.string,
-  username: React.PropTypes.string,
-  gitHandler: React.PropTypes.string,
-  location: React.PropTypes.string,
-  avatarUrl: React.PropTypes.string,
-};
-
 
 const enhance = compose(
   connect(state => ({

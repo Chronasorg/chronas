@@ -46,9 +46,12 @@ export const postDiscussion = (userId, forumId, currentForum, currentDiscussion,
       return 'Please write some content before posting.'
     }
 
-    if (tags === null || tags.length === 0) {
+    if (!qId && (tags === null || tags.length === 0)) {
       validated = false;
       return 'Please provide some tags.'
+    }
+    else if (qId) {
+      tags.push(qId)
     }
 
     // make api call if post is validated

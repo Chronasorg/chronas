@@ -148,7 +148,7 @@ class ProvinceTimeline extends React.Component {
             start: new Date(new Date(0, 1, 1).setFullYear(startYear)),
             end: new Date(new Date(0, 1, 1).setFullYear(endYear)),  // end is optional
             content: itemTitle,
-            id: key + ":" + index + ":" + dimKey,
+            id: key + "||" + index + "||" + dimKey,
             group: key,
             type: 'range',
             style: (key === 'capital') ? '' : 'background: ' + (metadata[key][dimKey] || {})[1],

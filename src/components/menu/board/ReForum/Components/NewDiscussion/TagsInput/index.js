@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom'
 import classnames from 'classnames';
 import _ from 'lodash';
 import styles from './styles.css';
 
 import Button from '../../../Components/Button';
 import Tag from '../../../Components/Tag';
+
 
 class TagsInput extends Component {
   constructor(props) {
@@ -20,11 +22,6 @@ class TagsInput extends Component {
   componentWillReceiveProps(nextProps) {
     const { value } = nextProps;
     this.setState({ tags: value, errorMsg: null });
-  }
-
-  validateTag(tagName) {
-    const regex = /^[a-z0-9.\-_$@*!]{4,20}$/;
-    return regex.test(tagName);
   }
 
   sameTag(tagName) {
@@ -43,20 +40,16 @@ class TagsInput extends Component {
       errorMsg,
     } = this.state;
 
-    if (this.validateTag(tagName)) {
-      if (!this.sameTag(tagName)) {
-        const newTags = tags.concat(tagName);
-        this.setState({
-          tags: newTags,
-          errorMsg: null,
-          tagName: '',
-        });
-        this.props.onChange(newTags);
-      } else {
-        this.setState({ errorMsg: 'Same tag!!!' });
-      }
+    if (!this.sameTag(tagName)) {
+      const newTags = tags.concat(tagName);
+      this.setState({
+        tags: newTags,
+        errorMsg: null,
+        tagName: '',
+      });
+      this.props.onChange(newTags);
     } else {
-      this.setState({ errorMsg: 'Tags can only contain small letters and numbers. No space or special characters please. Min 4 and max 20 chars.' });
+      this.setState({ errorMsg: 'Same tag!' });
     }
   }
 
@@ -118,7 +111,15 @@ class TagsInput extends Component {
       tags,
     } = this.state;
 
-    const { maxTagCount } = this.props;
+    const { maxTagCount, isQA } = this.props;
+
+    if (isQA) return <div className='TagsInput_container'>
+      <div className=''>
+        <br />
+        <b><Link to="/info" onClick={localStorage.setItem("info_section", "rules")}>Please read the rules before posting</Link></b>
+      </div>
+      { errorMsg && <div className='TagsInput_errorMsg'>{errorMsg}</div> }
+    </div>
 
     return (
       <div className='TagsInput_container'>
@@ -137,12 +138,6 @@ TagsInput.defaultProps = {
   value: [],
   maxTagCount: 3,
   onChange: (tags) => {},
-};
-
-TagsInput.propTypes = {
-  value: React.PropTypes.array,
-  maxTagCount: React.PropTypes.number,
-  onChange: React.PropTypes.func,
 };
 
 export default TagsInput;

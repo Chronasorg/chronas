@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+;
 import { connect } from 'react-redux';
 import compose from 'recompose/compose';
 import Drawer from 'material-ui/Drawer';
 import Paper from 'material-ui/Paper';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { chronasGradient } from '../../styles/chronasColors';
 import Responsive from './Responsive';
+import { themes } from '../../properties'
 
 const getWidth = width => (typeof width === 'number' ? `${width}px` : width);
 
@@ -20,9 +20,6 @@ const getStyles = ({ drawer }) => {
       order: -1,
       zIndex: 10000,
       borderRadius: 0,
-      backgroundImage: chronasGradient,
-      color: '#fff',
-      backgroundColor: '#110617',
       transition: 'margin 350ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
     },
     sidebarClosed: {
@@ -43,7 +40,7 @@ class Sidebar extends PureComponent {
   }
 
   render() {
-    const { open, setSidebarVisibility, children, muiTheme } = this.props;
+    const { open, setSidebarVisibility, children, muiTheme, theme } = this.props;
     const styles = getStyles(muiTheme);
 
     return (
@@ -54,7 +51,7 @@ class Sidebar extends PureComponent {
           </Drawer>
         }
         medium={
-          <Paper style={open ? styles.sidebarOpen : styles.sidebarClosed}>
+          <Paper style={open ? { ...styles.sidebarOpen, backgroundImage: themes[theme].gradientColors[0], color: themes[theme].foreColors[0], backgroundColor: themes[theme].backColors[0]} : styles.sidebarClosed}>
             {children}
           </Paper>
         }
@@ -63,17 +60,10 @@ class Sidebar extends PureComponent {
   }
 }
 
-Sidebar.propTypes = {
-  children: PropTypes.node.isRequired,
-  muiTheme: PropTypes.object.isRequired,
-  open: PropTypes.bool.isRequired,
-  setSidebarVisibility: PropTypes.func,
-};
-
 const mapStateToProps = (state, props) => ({
   open: props.open,
   locale: state.locale, // force redraw on locale change
-  theme: props.theme, // force redraw on theme changes
+  theme: state.theme, // force redraw on theme changes
 });
 
 export default compose(

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -39,10 +40,6 @@ class ModButton extends Component {
       onClick={this.handleModActive}
     /><span style={{paddingLeft: '1em'}}>{modNote}</span></div>)
   }
-}
-
-ModButton.propTypes = {
-    modType: PropTypes.string,
 }
 
 ModButton.defaultProps = {

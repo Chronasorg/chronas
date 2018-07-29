@@ -46,7 +46,7 @@ import { chronasMainColor } from '../../../styles/chronasColors'
 import ArrayField from './ArrayField'
 import LinkedForm from '../shared/forms/LinkedForm'
 import { TYPE_LINKED } from '../../map/actionReducers'
-import properties from "../../../properties";
+import { properties } from "../../../properties";
 
 export const LinkedIcon = Icon
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import properties from "../../../../../../properties";
+import { properties } from "../../../../../../properties";
 
 export const getAdminDashboardInfoAPI = () => {
   return (axios.get(properties.chronasApiHost + '/board/admin/admin_dashboard_info', { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('token')}}));

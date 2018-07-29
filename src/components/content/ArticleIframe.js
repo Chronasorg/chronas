@@ -132,7 +132,7 @@ class ArticleIframe extends React.Component {
 
   render () {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
-    const { hasChart, selectedItem, selectedWiki, customStyle } = this.props
+    const { hasChart, selectedItem, selectedWiki, isEntity, customStyle } = this.props
 
     if (!selectedItem) return LoadingCompass
     const shouldLoad = (iframeLoading || selectedWiki === null || +selectedWiki === -1)
@@ -178,7 +178,7 @@ class ArticleIframe extends React.Component {
           </FloatingActionButton >
           }
         </Dialog>
-        <div style={ !(isMarker || isMedia) ? { ...styles.actionButtonContainer, top: 254 } : styles.actionButtonContainer } >
+        <div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : styles.actionButtonContainer } >
           <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} containerElement={<Link to={modUrl}/>}>
             <IconEdit hoverColor={chronasMainColor} />
           </IconButton>
@@ -186,7 +186,7 @@ class ArticleIframe extends React.Component {
             <FullscreenEnterIcon
               hoverColor={chronasMainColor} />
           </IconButton>
-          { (isMarker || isMedia) && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
+          { !(isEntity) && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
             <IconClose hoverColor={chronasMainColor} />
           </IconButton> }
         </div>

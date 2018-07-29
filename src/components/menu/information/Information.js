@@ -1,16 +1,16 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import YouTube from 'react-youtube'
 import { Card, CardText } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
 import RaisedButton from 'material-ui/RaisedButton'
 import Divider from 'material-ui/Divider'
 import IconButton from 'material-ui/IconButton'
-import YouTube from 'react-youtube'
+import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import { Tabs, Tab } from 'material-ui/Tabs'
-import { chronasGradient } from '../../../styles/chronasColors'
 
 import {
   translate,
@@ -59,7 +59,7 @@ class Information extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      tabForm: 'a',
+      tabForm: localStorage.getItem("info_section") || "tutorial",
       hiddenElement: true
     }
   }
@@ -75,6 +75,7 @@ class Information extends PureComponent {
   }
 
   componentWillUnmount = () => {
+    localStorage.removeItem("info_section")
     this.setState({ hiddenElement: true })
   }
 
@@ -94,6 +95,9 @@ class Information extends PureComponent {
                 <ToolbarTitle text={translate('pos.information')} />
               </ToolbarGroup>
               <ToolbarGroup>
+                <IconButton touch key={'back'} onClick={() => this.props.history.goBack()}>
+                  <IconBack />
+                </IconButton>
                 <IconButton touch key={'close'} containerElement={<Link to='/' />}>
                   <CloseIcon />
                 </IconButton>
@@ -104,7 +108,7 @@ class Information extends PureComponent {
             value={this.state.tabForm}
             onChange={this.handleChange}
             >
-            <Tab label='How To' value='a'>
+            <Tab label='How To' value='tutorial'>
               <br />
               <div>
                 <h4>Watch 30 sec intro video</h4>
@@ -128,7 +132,7 @@ class Information extends PureComponent {
                 </p>
               </div>
             </Tab>
-            <Tab label='About' value='b'>
+            <Tab label='About' value='about'>
               <br />
               <div>
                 <p>Chronas is an initiative to collect all military history contributed and edited by volunteers - amateur and professional historians from all corners of the world. We return the entered facts
@@ -142,6 +146,42 @@ class Information extends PureComponent {
               <div>
                 <p>
                     In development by Dietmar & Joachim Aumann
+                </p>
+              </div>
+            </Tab>
+            <Tab label='Rules' value='rules'>
+              <br />
+              <div className=''>
+                <br />
+                <h4>The Rules, in Brief</h4>
+                <ol>
+                  <li><i>Be Nice</i>: No Racism, Bigotry, or Offensive Behavior.</li>
+                  <li>Ask <i>Clear and Specific Questions</i>, with <i>Time and Place in Mind</i>.</li>
+                  <li>Provide preferably <i>Primary and Secondary Sources</i> If Asked Rather Than Tertiary Sources Like <i>Wikipedia</i>.</li>
+                  <li>Serious On-Topic Questions Only: <i>No Jokes</i>, <i>Anecdotes</i>, <i>Clutter</i>, or other <i>Digressions</i>.</li>
+                  <li><a href="todo">Report</a> Answers That Break those Rules.</li>
+                </ol>
+              </div>
+              <br />
+              <Divider />
+              <br />
+              <div>
+                <p>
+                  In development by Dietmar & Joachim Aumann
+                </p>
+              </div>
+            </Tab>
+            <Tab label='Terms of Use' value='impressum'>
+              <br />
+              <div>
+                <p>Impressum here</p>
+              </div>
+              <br />
+              <Divider />
+              <br />
+              <div>
+                <p>
+                  In development by Dietmar & Joachim Aumann
                 </p>
               </div>
             </Tab>

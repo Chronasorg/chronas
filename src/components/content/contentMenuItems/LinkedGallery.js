@@ -14,7 +14,7 @@ import ImageGallery from 'react-image-gallery'
 import YouTube from 'react-youtube'
 import axios from 'axios'
 import Badge from 'material-ui/Badge';
-import PropTypes from 'prop-types'
+
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
 import pure from 'recompose/pure'
@@ -38,7 +38,7 @@ import SwipeableViews from 'react-swipeable-views'
 import { translate, ViewTitle, showNotification } from 'admin-on-rest'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
-import properties from "../../../properties"
+import { properties } from "../../../properties"
 import {resetModActive, setFullModActive} from "../../restricted/shared/buttons/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "../actionReducers";
 
@@ -567,7 +567,7 @@ class LinkedGallery extends React.Component {
                 value={filtered}
                 multiple={true}
               >
-                {categories.map((category) => <MenuItem value={category} primaryText={category} disabled={!tileData.some(linkedItem => linkedItem.subtype === category)} />)}
+                {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category} primaryText={category} disabled={!tileData.some(linkedItem => linkedItem.subtype === category)} />)}
               </IconMenu>
               <IconMenu
                 iconButtonElement={<IconButton tooltip='Add Media'><ContentAdd /></IconButton>}

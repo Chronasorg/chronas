@@ -4,6 +4,7 @@ import styles from './styles.css';
 
 import Button from '../../Components/Button';
 
+
 class Tag extends Component {
   render() {
     const {
@@ -32,12 +33,6 @@ Tag.defaultProps = {
   name: '',
   withRemove: false,
   removeAction: () => {},
-};
-
-Tag.propTypes = {
-  name: React.PropTypes.string.isRequired,
-  withRemove: React.PropTypes.bool,
-  removeAction: React.PropTypes.func,
 };
 
 export default Tag;

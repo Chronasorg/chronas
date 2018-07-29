@@ -9,6 +9,7 @@ import PlaceholderImage from '../../../SharedStyles/placeholder.jpg'
 import Button from '../../../Components/Button'
 import RichEditor from '../../../Components/RichEditor'
 
+
 class Opinion extends Component {
   render () {
     const {
@@ -20,6 +21,7 @@ class Opinion extends Component {
       discussion,
       userGitHandler,
       opDate,
+      isQA,
       opContent,
       userId,
       currentUserId,
@@ -53,6 +55,7 @@ class Opinion extends Component {
 
         <div className='Opinion_opContent'>
           <RichEditor
+            isQA={isQA}
             readOnly
             value={opContent}
           />
@@ -77,22 +80,6 @@ Opinion.defaultProps = {
   currentUserRole: 'user',
   deleteAction: () => {},
   deletingOpinion: null,
-}
-
-Opinion.propTypes = {
-  opinionId: React.PropTypes.string,
-  userAvatar: React.PropTypes.string,
-  userName: React.PropTypes.string,
-  userGitHandler: React.PropTypes.string,
-  opDate: React.PropTypes.any,
-  forum: React.PropTypes.object,
-  discussion: React.PropTypes.object,
-  opContent: React.PropTypes.string,
-  userId: React.PropTypes.string,
-  currentUserId: React.PropTypes.string,
-  currentUserRole: React.PropTypes.string,
-  deleteAction: React.PropTypes.func,
-  deletingOpinion: React.PropTypes.any,
 }
 
 export default Opinion

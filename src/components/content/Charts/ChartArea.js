@@ -171,7 +171,7 @@ export default class InfluenceChart extends React.Component {
             onClick={this._mouseClick}
             onMouseLeave={this._mouseLeaveHandler}
             xDomain={xDomain}
-            height={200}>
+            height={(epicMeta) ? 256 : 200}>
             <HorizontalGridLines />
             <GradientDefs>
               { epicMeta ? rulerProps.map((rulerEl, i) => <linearGradient id={'CoolGradient' + i} x1='0' x2='0' y1='0' y2='1'>

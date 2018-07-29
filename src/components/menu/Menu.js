@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types'
+
 import BoardIcon from 'material-ui/svg-icons/communication/forum'
 import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
@@ -23,7 +23,9 @@ import { toggleMenuDrawer as toggleMenuDrawerAction, setActiveMenu as setActiveM
 import { toggleRightDrawer as toggleRightDrawerAction } from '../content/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
+import mainLogo from '../../../public/images/logoChronasWhite.png'
 import { logout, setToken } from './authentication/actionReducers'
+import { themes } from '../../properties'
 
 const styles = {
   main: {
@@ -31,7 +33,12 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'flex-start',
     height: '100%',
-    padding: '8px 4px',
+    padding: '8px 4px'
+  },
+  mainLogo: {
+    width: '64px',
+    color: 'rgb(255, 255, 255)',
+    marginLeft: '-16px'
   },
   bottomMenu: {
     display: 'flex',
@@ -60,19 +67,30 @@ class Menu extends PureComponent {
   }
 
   render() {
-    const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, hasDashboard, onMenuTap, resources, translate } = this.props;
+    const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, hasDashboard, onMenuTap, resources, theme, translate } = this.props;
     const isLoggedIn = userDetails.token !== ''
     const username = localStorage.getItem('username')
 
     return <div style={styles.main}>
       <div className="topMenuItems">
         <IconButton
+          key={'info'}
+          containerElement={<Link to="/info" />}
+          tooltipPosition="bottom-right"
+          tooltip={translate("pos.about")}
+          tooltipStyles={tooltip}
+          onClick={() => localStorage.setItem("info_section", "about")}
+          iconStyle={styles.mainLogo}
+        >
+          <img src={mainLogo} alt='chronas' />
+        </IconButton>
+        <IconButton
           key={'layers'}
           tooltipPosition="bottom-right"
           tooltip={translate('pos.layers')}
           tooltipStyles={tooltip}
           onClick={() => toggleMenuDrawer()}
-          iconStyle={{color: '#fff'}}
+          iconStyle={{color: themes[theme].foreColors[0]}}
         >
           <LayersIcon
             hoverColor={chronasMainColor}
@@ -85,7 +103,7 @@ class Menu extends PureComponent {
           tooltip={translate('pos.discover')}
           tooltipStyles={tooltip}
           onClick={() => setActiveMenu('discover')}
-          iconStyle={{color: '#fff'}}
+          iconStyle={{color: themes[theme].foreColors[0]}}
         >
           <DiscoverIcon
             hoverColor={chronasMainColor}/>
@@ -96,7 +114,7 @@ class Menu extends PureComponent {
           tooltip={translate('pos.random')}
           tooltipStyles={tooltip}
           onClick={() => selectAreaItem("random")}
-          iconStyle={{color: '#fff'}}
+          iconStyle={{color: themes[theme].foreColors[0]}}
         >
           <DiceIcon
             hoverColor={chronasMainColor}/>
@@ -108,7 +126,7 @@ class Menu extends PureComponent {
           tooltip={translate('pos.configuration')}
           tooltipStyles={tooltip}
           onClick={() => setActiveMenu('configuration')}
-          iconStyle={{color: '#fff'}}
+          iconStyle={{color: themes[theme].foreColors[0]}}
         >
           <SettingsIcon hoverColor={chronasMainColor}/>
         </IconButton>
@@ -124,7 +142,7 @@ class Menu extends PureComponent {
                 tooltip={translate('pos.mod')}
                 tooltipStyles={tooltip}
                 onClick={() => toggleRightDrawer()}
-                iconStyle={{color: '#fff'}}
+                iconStyle={{color: themes[theme].foreColors[0]}}
               >
                 <EditIcon
                   hoverColor={chronasMainColor}/>
@@ -136,7 +154,7 @@ class Menu extends PureComponent {
                 tooltip={translate('pos.resources')}
                 tooltipStyles={tooltip}
                 onClick={onMenuTap}
-                iconStyle={{color: '#fff'}}
+                iconStyle={{color: themes[theme].foreColors[0]}}
               >
                 <StorageIcon
                   hoverColor={chronasMainColor}/>
@@ -148,7 +166,7 @@ class Menu extends PureComponent {
                 tooltip={translate('pos.community')}
                 tooltipStyles={tooltip}
                 onClick={onMenuTap}
-                iconStyle={{color: '#fff'}}
+                iconStyle={{color: themes[theme].foreColors[0]}}
               >
                 <BoardIcon
                   hoverColor={chronasMainColor}/>
@@ -160,7 +178,7 @@ class Menu extends PureComponent {
               tooltip={translate('pos.account')}
               tooltipStyles={tooltip}
               onClick={onMenuTap}
-              iconStyle={{color: '#fff'}}
+              iconStyle={{color: themes[theme].foreColors[0]}}
               >
               <AccountIcon
               hoverColor={chronasMainColor}/>
@@ -175,7 +193,7 @@ class Menu extends PureComponent {
             tooltip={translate('pos.share')}
             tooltipStyles={tooltip}
             onClick={() => setActiveMenu('share')}
-            iconStyle={{color: '#fff'}}
+            iconStyle={{color: themes[theme].foreColors[0]}}
           >
             <ShareIcon hoverColor={chronasMainColor}/>
           </IconButton> }
@@ -186,7 +204,7 @@ class Menu extends PureComponent {
             tooltip={translate('pos.help')}
             tooltipStyles={tooltip}
             onClick={() => setActiveMenu('info')}
-            iconStyle={{color: '#fff'}}
+            iconStyle={{color: themes[theme].foreColors[0]}}
           >
             <HelpIcon hoverColor={chronasMainColor}/>
           </IconButton>
@@ -196,7 +214,7 @@ class Menu extends PureComponent {
             tooltipStyles={tooltip}
             onClick={isLoggedIn ? this.handleLogout : userLogout }
             className="logout"
-            iconStyle={{color: isLoggedIn ? chronasMainColor : '#fff'}}
+            iconStyle={{color: isLoggedIn ? themes[theme].highlightColors[0] : themes[theme].foreColors[0]}}
           > <LogoutIcon hoverColor={chronasMainColor}/>
           </IconButton>
         </div>
@@ -205,11 +223,6 @@ class Menu extends PureComponent {
   }
 };
 
-Menu.propTypes = {
-  hasDashboard: PropTypes.bool,
-  onMenuTap: PropTypes.func,
-  translate: PropTypes.func.isRequired,
-};
 
 Menu.defaultProps = {
   onMenuTap: () => null,
@@ -218,6 +231,7 @@ Menu.defaultProps = {
 const enhance = compose(
   connect(state => ({
     userDetails: state.userDetails,
+    theme: state.theme
   }), {
     toggleRightDrawer: toggleRightDrawerAction,
     toggleMenuDrawer: toggleMenuDrawerAction,

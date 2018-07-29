@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'
+;
 import { connect } from 'react-redux'
 import pure from 'recompose/pure'
 import compose from 'recompose/compose'
-import TextField from 'material-ui/TextField';
+import TextField from 'material-ui/TextField'
 import { translate, defaultTheme } from 'admin-on-rest'
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import muiThemeable from 'material-ui/styles/muiThemeable'
 import { setModData as setModDataAction } from './../buttons/actionReducers'
 
 /**
@@ -91,26 +91,6 @@ export class ModGeoInput extends Component {
   }
 }
 
-ModGeoInput.propTypes = {
-  addField: PropTypes.bool.isRequired,
-  accessor: PropTypes.number.isRequired,
-  elStyle: PropTypes.object,
-  modActive: PropTypes.number,//PropTypes.object,
-  setModData: PropTypes.func,
-  input: PropTypes.object,
-  isRequired: PropTypes.bool,
-  label: PropTypes.string,
-  meta: PropTypes.object,
-  name: PropTypes.string,
-  onBlur: PropTypes.func,
-  onChange: PropTypes.func,
-  onFocus: PropTypes.func,
-  options: PropTypes.object,
-  resource: PropTypes.string,
-  source: PropTypes.string,
-  type: PropTypes.string,
-};
-
 ModGeoInput.defaultProps = {
   addField: true,
   accessor: 0,
@@ -122,23 +102,6 @@ ModGeoInput.defaultProps = {
   // modActive: 1,
   setModData: () => {},
 };
-//
-// const enhance = compose(
-//   connect(state => ({
-//     modActive: state.modActive,
-//     input: state.input,
-//     addField: state.addField,
-//     accessor: state.accessor,
-//     onBlur: state.onBlur,
-//     onChange: state.onChange,
-//     onFocus: state.onFocus,
-//     options: state.options,
-//   }), {
-//     setModData: setModDataAction,
-//   }),
-//   pure,
-//   translate,
-// );
 
 const enhance = compose(
   muiThemeable(), // force redraw on theme change

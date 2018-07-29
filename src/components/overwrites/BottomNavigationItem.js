@@ -71,22 +71,6 @@ const BottomNavigationItem = (props, context) => {
   );
 };
 
-BottomNavigationItem.propTypes = {
-  /**
-   * Set the icon representing the view for this item.
-   */
-  icon: PropTypes.node,
-  /**
-   * Set the label describing the view for this item.
-   */
-  label: PropTypes.node,
-  /**
-   * @ignore
-   * Override the inline-styles of the root element.
-   */
-  style: PropTypes.object,
-};
-
 BottomNavigationItem.contextTypes = {
   muiTheme: PropTypes.object.isRequired,
 };

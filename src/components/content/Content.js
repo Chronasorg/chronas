@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import Badge from 'material-ui/Badge'
-import PropTypes from 'prop-types'
+
 import Paper from 'material-ui/Paper'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
@@ -32,7 +32,7 @@ import ArticleIframe from './ArticleIframe'
 import EntityTimeline from './EntityTimeline'
 import EpicTimeline from './EpicTimeline'
 import ProvinceTimeline from './ProvinceTimeline'
-import properties from '../../properties'
+import { properties } from '../../properties'
 
 const MOVIETYPES = ['videos']
 const IMAGETYPES = ['people', 'battle', 'artefacts', 'cities', 'misc']
@@ -117,12 +117,12 @@ const styles = {
 
 class Content extends Component {
   state = {
-    itemHasLinkedItems: false,
     iframeLoading: true,
     iframeSource: '',
     selectedWiki: null,
+    hasQuestions: false,
     sunburstData: [],
-    linkedItems: { media: [], content: [], qaa: [], id: '' },
+    linkedItems: { media: [], content: [], id: '' },
     activeContentMenuItem: (localStorage.getItem('activeContentMenuItem') !== null) ? localStorage.getItem('activeContentMenuItem') : 'sunburst'
   }
 
@@ -137,12 +137,17 @@ class Content extends Component {
       iframeLoading: true,
       selectedWiki: null,
       linkedItems: { media: [], content: [], id: '' },
+      hasQuestions: false,
     })
     this._cleanUp()
   }
 
   selectValueWrapper = (value) => {
     this.props.selectValue(value)
+  }
+
+  _setHasQuestions = (val) => {
+    this.setState({ hasQuestions: val })
   }
 
   setWikiIdWrapper = (wiki) => {
@@ -306,8 +311,10 @@ class Content extends Component {
   }
 
   render () {
-    const { activeContentMenuItem, sunburstData, iframeLoading, selectedWiki, itemHasLinkedItems, linkedItems } = this.state
+    const { activeContentMenuItem, hasQuestions, sunburstData, iframeLoading, selectedWiki, linkedItems } = this.state
     const { activeArea, deselectItem, selectedItem, rulerEntity, provinceEntity, selectedYear, metadata, newWidth, history } = this.props
+
+    const finalLinkedItems = (linkedItems || {}).id ? linkedItems : ((selectedItem.data || {}).data || {}).data || { media: [], content: [], id: '' }
     const shouldLoad = (iframeLoading || selectedWiki === null)
 
     const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
@@ -316,18 +323,18 @@ class Content extends Component {
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED
-    const hasLinkedImage = linkedItems.media.some(lI => IMAGETYPES.includes(lI.subtype))
-    const hasLinkedMovie = linkedItems.media.some(lI => MOVIETYPES.includes(lI.subtype))
-    const hasLinkedAudio = linkedItems.media.some(lI => AUDIOTYPES.includes(lI.subtype))
-    const hasLinkedOther = linkedItems.media.length > 0
+    const hasLinkedImage = (finalLinkedItems.media || []).some(lI => IMAGETYPES.includes(lI.subtype))
+    const hasLinkedMovie = (finalLinkedItems.media || []).some(lI => MOVIETYPES.includes(lI.subtype))
+    const hasLinkedAudio = (finalLinkedItems.media || []).some(lI => AUDIOTYPES.includes(lI.subtype))
+    const hasLinkedOther = (finalLinkedItems.media || []).length > 0
 
     return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
       { (entityTimelineOpen || epicTimelineOpen || isMarker || isMedia) && <div>
         <Paper style={styles.contentLeftMenu}>
           <Menu desktop>
-            { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, backgroundColor: (activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={styles.menuIcon} />} /> }
+            { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, backgroundColor: ((activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon style={styles.menuIcon} />} /> }
             { entityTimelineOpen && <Divider /> }
-            <MenuItem style={{ ...styles.menuItem, top: 0, backgroundColor: (activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
+            <MenuItem style={{ ...styles.menuItem, top: 0, backgroundColor: ((activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
               <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0 }} >
                 <div>
                   <ContentImage style={{...styles.menuIconBadgeContainer1, fill: (hasLinkedImage ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} />
@@ -336,14 +343,15 @@ class Content extends Component {
                   <ContentLink style={{...styles.menuIconBadgeContainer4, fill: (hasLinkedOther ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} />
                 </div>
               </IconButton>
-            } disabled={hasLinkedImage} />
+            } />
             { entityTimelineOpen && <Divider /> }
-            <MenuItem style={{ ...styles.menuItem, top: 0, backgroundColor: (activeContentMenuItem === 'qaa') ? 'rgba(0,0,0,0.2)' : 'inherit' }} onClick={() => this._toggleContentMenuItem('qaa')} leftIcon={<QAAIcon style={{...styles.qaaIcon, fill: (hasLinkedImage ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} /> } disabled={hasLinkedImage} />
+            <MenuItem style={{ ...styles.menuItem, top: 0, backgroundColor: ((activeContentMenuItem === 'qaa') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('qaa')} leftIcon={<QAAIcon style={{...styles.qaaIcon, fill: (hasQuestions ? ACTIVEMEDIATYPE : INACTIVEMEDIATYPE)}} /> } />
           </Menu>
         </Paper>
       </div>}
       {(entityTimelineOpen || epicTimelineOpen)
         ? <EpicTimeline
+          setHasQuestions={this._setHasQuestions}
           history={history}
           newWidth={newWidth}
           setContentMenuItem={this._setContentMenuItem}
@@ -355,21 +363,17 @@ class Content extends Component {
           epicData={entityTimelineOpen ? rulerEntity : selectedItem.data}
           isEntity={entityTimelineOpen}
           sunburstData={sunburstData}
-          linkedItems={linkedItems} />
+          linkedItems={finalLinkedItems} />
         : provinceTimelineOpen
-          ? <ProvinceTimeline metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
+          ? <ProvinceTimeline selectedItem={selectedItem} metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
           : <div style={{ height: '100%' }}>
-              <LinkedQAA history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } />
+              <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } />
               <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems.media} selectedYear={selectedYear} />
               <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki} selectedItem={selectedItem} />
             </div>
       }
     </div>
   }
-}
-
-Content.propTypes = {
-  translate: PropTypes.func.isRequired,
 }
 
 Content.defaultProps = {

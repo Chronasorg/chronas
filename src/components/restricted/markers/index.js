@@ -45,7 +45,7 @@ import { chronasMainColor } from '../../../styles/chronasColors'
 import ArrayField from './ArrayField'
 import MarkerForm from '../shared/forms/MarkerForm'
 import { TYPE_MARKER } from '../../map/actionReducers'
-import properties from '../../../properties'
+import { properties } from '../../../properties'
 
 export const MarkerIcon = Icon
 

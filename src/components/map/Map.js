@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
@@ -18,7 +18,7 @@ import {
   TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
-import properties from '../../properties'
+import { properties } from '../../properties'
 import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
@@ -1305,14 +1305,6 @@ class Map extends Component {
       </div>
     )
   }
-}
-// (geoData.length !== 0 || arcData.length !== 0 || markerData.length !== 0)
-Map.propTypes = {
-  hasDashboard: PropTypes.bool,
-  logout: PropTypes.element,
-  onMenuTap: PropTypes.func,
-  // resources: PropTypes.array.isRequired,
-  translate: PropTypes.func.isRequired,
 }
 
 Map.defaultProps = {

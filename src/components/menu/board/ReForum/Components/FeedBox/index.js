@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import Moment from 'moment';
 import styles from './styles.css';
-import properties from '../../../../../../properties'
+import { properties } from '../../../../../../properties'
 
 import DiscussionBox from './DiscussionBox';
+
 
 class FeedBox extends Component {
   renderSort() {
@@ -92,16 +93,6 @@ FeedBox.defaultProps = {
   activeSortingMethod: 'date',
   onChangeSortingMethod: (val) => { },
   userProfile: false,
-};
-
-FeedBox.propTypes = {
-  type: React.PropTypes.oneOf(['general', 'pinned']),
-  loading: React.PropTypes.bool,
-  discussions: React.PropTypes.array,
-  currentForum: React.PropTypes.string,
-  activeSortingMethod: React.PropTypes.string,
-  onChangeSortingMethod: React.PropTypes.func,
-  userProfile: React.PropTypes.bool,
 };
 
 export default FeedBox;

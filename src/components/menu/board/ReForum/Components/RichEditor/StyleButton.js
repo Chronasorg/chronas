@@ -25,11 +25,4 @@ class StyleButton extends React.Component {
   }
 }
 
-StyleButton.propTypes = {
-  onToggle: React.PropTypes.func.isRequired,
-  active: React.PropTypes.any.isRequired,
-  label: React.PropTypes.string.isRequired,
-  style: React.PropTypes.string.isRequired,
-};
-
 export default StyleButton;

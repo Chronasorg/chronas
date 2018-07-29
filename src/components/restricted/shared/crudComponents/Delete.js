@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types';
+;
 import { connect } from 'react-redux'
 import { Card, CardText, CardActions } from 'material-ui/Card'
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
@@ -148,19 +148,6 @@ class Delete extends Component {
   }
 }
 
-Delete.propTypes = {
-  title: PropTypes.any,
-  id: PropTypes.string.isRequired,
-  resource: PropTypes.string.isRequired,
-  location: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-  data: PropTypes.object,
-  isLoading: PropTypes.bool.isRequired,
-  crudGetOne: PropTypes.func.isRequired,
-  crudDelete: PropTypes.func.isRequired,
-  translate: PropTypes.func.isRequired,
-}
 
 function mapStateToProps (state, props) {
   return {

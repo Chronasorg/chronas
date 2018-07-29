@@ -92,13 +92,14 @@ class EpicTimeline extends React.Component {
     const { epicData, selectedItem, rulerProps } =  this.props
     const { selectedWiki, epicLinkedArticles, influenceChartData  } = this.state
     const itemTyep = (epicLinkedArticles[stepIndex] || {}).type
+    const hasChart = (influenceChartData && influenceChartData.length > 0)
     //TODO: fly to if coo, add geojson up to that index and animate current - if main, add all geojson
     if (itemTyep === 'html') {
       const content = (epicLinkedArticles[stepIndex] || {}).content
       return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
     } else {
       const wikiUrl = (epicLinkedArticles[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || (rulerProps || {})[2] || -1
-      return  <ArticleIframe hasChart={ influenceChartData && influenceChartData.length > 0 } selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? 'calc(100% - 200px)' : 'calc(100% - 246px)') }} selectedWiki={ selectedWiki || wikiUrl} />
+      return  <ArticleIframe hasChart={ hasChart } isEntity={ this.props.isEntity } selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} selectedWiki={ selectedWiki || wikiUrl} />
     }
   }
 
@@ -166,7 +167,6 @@ class EpicTimeline extends React.Component {
   componentWillReceiveProps = (nextProps) => {
     const { selectedItem, epicData, linkedItems, rulerProps, isEntity } = this.props
 
-    // if ((nextProps.selectedItem.value !== selectedItem.value || (nextProps.linkedItems.media || nextProps.epicMeta.media || []).length !== (linkedItems.media || epicMeta.media || []).length) && ((nextProps.epicData || {}).id !== (epicData || {}).id || ((nextProps.epicData || {}).id && (linkedItems || !this.state.epicMeta)))) {
     const nextEntity = ((nextProps.epicData || {}).data || {}).wiki || (nextProps.rulerProps || {})[2]
     const prevEntity = ((epicData || {}).data || {}).wiki || (rulerProps || {})[2]
 
@@ -212,7 +212,7 @@ class EpicTimeline extends React.Component {
         })
       }
 
-      const epicLinkedArticles = ((entityContentData && entityContentData.concat(((nextProps.linkedItems || {}).content || []))) || (nextProps.epicMeta || {}).content || []).map((linkedItem) => {
+      const epicLinkedArticles = ((entityContentData && entityContentData.concat(((nextProps.linkedItems || {}).content || []))) || (nextProps.epicMeta || {}).content || ((nextProps.epicData || {}).data || {}).content || []).map((linkedItem) => {
         return {
           "name": (!linkedItem.properties) ? (linkedItem.name || linkedItem.wiki) : linkedItem.properties.n || linkedItem.properties.w,
           "wiki": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
@@ -250,7 +250,7 @@ class EpicTimeline extends React.Component {
 
   render () {
     const { epicMeta, epicLinkedArticles, stepIndex, selectedWiki, linkedMediaItems, linkedQAAItems, influenceChartData, translate, iframeLoading } = this.state
-    const { activeContentMenuItem, activeAreaDim, rulerProps, isEntity, newWidth, history, selectedYear, setContentMenuItem, linkedItems, sunburstData } = this.props
+    const { activeContentMenuItem, activeAreaDim, epicData, rulerProps, setHasQuestions, isEntity, newWidth, history, selectedYear, setContentMenuItem, linkedItems, sunburstData } = this.props
 
     const contentDetected = epicLinkedArticles.length !== 0
 
@@ -264,9 +264,9 @@ class EpicTimeline extends React.Component {
           selectValue={ this.selectValueWrapper}
           preData={ sunburstData }
           selectedYear={selectedYear} /> }
-        { linkedItems && linkedItems.id && <LinkedQAA history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } /> }
-        <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={ linkedMediaItems } selectedYear={selectedYear} />
-        { isEntity && influenceChartData && influenceChartData.length > 0 && <div style={{ height: '200px', width: '100%' }}>
+        { linkedItems && linkedItems.id && <LinkedQAA setHasQuestions={setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } /> }
+        <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={linkedMediaItems } selectedYear={selectedYear} />
+        { influenceChartData && influenceChartData.length > 0 && <div style={{ height: (!isEntity) ? '256px' : '200px', width: '100%' }}>
           <InfluenceChart epicMeta={isEntity ? false : epicMeta} rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div> }
         { contentDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 248px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden' }}>
