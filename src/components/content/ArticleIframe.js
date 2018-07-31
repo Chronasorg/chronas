@@ -134,7 +134,8 @@ class ArticleIframe extends React.Component {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
     const { hasChart, selectedItem, selectedWiki, isEntity, customStyle } = this.props
 
-    if (!selectedItem) return LoadingCompass
+    console.debug(selectedItem, selectedWiki)
+    if (!selectedItem || !selectedWiki || selectedWiki === -1) return <span>No Wiki found</span> // LoadingCompass
     const shouldLoad = (iframeLoading || selectedWiki === null || +selectedWiki === -1)
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED

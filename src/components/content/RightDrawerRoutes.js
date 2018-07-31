@@ -94,7 +94,6 @@ const styles = {
     borderRadius: '2px'
   },
   iconElementRightStyle: {
-    backgroundColor: '#eceff1',
     position: 'fixed',
     whiteSpace: 'nowrap',
     right: 0,
@@ -525,9 +524,11 @@ class RightDrawerRoutes extends PureComponent {
 
   componentWillReceiveProps (nextProps) {
     // TODO: this gets called too much!
-    const { location, metadata } = this.props
+    const { activeArea, location, metadata, selectedItem } = this.props
     if (
-      !(nextProps.selectedItem.type === TYPE_EPIC && this.props.selectedItem.type === TYPE_EPIC) // don't load twice with type_epic
+      (!(nextProps.selectedItem.type === TYPE_EPIC &&
+        this.props.selectedItem.type === TYPE_EPIC) &&
+        (nextProps.selectedItem.value !== selectedItem.valu || nextProps.activeArea.color !==  activeArea.color )) // don't load twice with type_epic
     ) {
       this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
     }
@@ -660,12 +661,12 @@ class RightDrawerRoutes extends PureComponent {
         </BottomNavigation>
       }
       iconElementRight={
-        <div style={styles.iconElementRightStyle}>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+        <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
+          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
             onClick={() => this.handleBack()}>
             <IconBack />
           </IconButton>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
             onClick={() => this.handleClose()}>
             <IconClose />
           </IconButton>
@@ -763,9 +764,8 @@ class RightDrawerRoutes extends PureComponent {
             className='bottomNavigationItem'
             icon={<CardHeader
               title={selectedProvince}
-              titleStyle={styles.cardHeader.titleStyle}
-              subtitleStyle={styles.cardHeader.titleStyle}
-              textStyle={styles.cardHeader.textStyle}
+              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Summary'
               avatar={this._getFullIconURL(entityMeta.province.icon)}
@@ -779,9 +779,8 @@ class RightDrawerRoutes extends PureComponent {
             className='bottomNavigationItem'
             icon={<CardHeader
               title={entityMeta.ruler.name}
-              titleStyle={styles.cardHeader.titleStyle}
-              subtitleStyle={styles.cardHeader.titleStyle}
-              textStyle={styles.cardHeader.textStyle}
+              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Ruler'
               avatar={this._getFullIconURL(entityMeta.ruler.icon)}
@@ -795,8 +794,8 @@ class RightDrawerRoutes extends PureComponent {
             className='bottomNavigationItem'
             icon={<CardHeader
               title={entityMeta.culture.name}
-              titleStyle={styles.cardHeader.titleStyle}
-              textStyle={styles.cardHeader.textStyle}
+              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Culture'
               avatar={this._getFullIconURL(entityMeta.culture.icon)}
@@ -810,9 +809,8 @@ class RightDrawerRoutes extends PureComponent {
             className='bottomNavigationItem'
             icon={<CardHeader
               title={entityMeta.religion.name + ' [' + entityMeta.religionGeneral.name + ']'}
-              titleStyle={styles.cardHeader.titleStyle}
-              subtitleStyle={styles.cardHeader.titleStyle}
-              textStyle={styles.cardHeader.textStyle}
+              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Religion'
               avatar={this._getFullIconURL(entityMeta.religion.icon)}
@@ -826,9 +824,8 @@ class RightDrawerRoutes extends PureComponent {
             className='bottomNavigationItem'
             icon={<CardHeader
               title={entityMeta.capital.name}
-              titleStyle={styles.cardHeader.titleStyle}
-              subtitleStyle={styles.cardHeader.titleStyle}
-              textStyle={styles.cardHeader.textStyle}
+              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Capital'
               avatar={this._getFullIconURL(entityMeta.capital.icon)}
@@ -842,8 +839,8 @@ class RightDrawerRoutes extends PureComponent {
             className='bottomNavigationItem'
             icon={<CardHeader
               title={populationName}
-              titleStyle={styles.cardHeader.titleStyle}
-              textStyle={styles.cardHeader.textStyle}
+              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Population'
               avatar={this._getFullIconURL(entityMeta.religionGeneral.icon)}
@@ -853,7 +850,7 @@ class RightDrawerRoutes extends PureComponent {
         </BottomNavigation> : null
       }
       iconElementRight={
-        <div style={styles.iconElementRightStyle}>
+        <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             containerElement={<Link to={modUrl} />}><IconEdit />
           </IconButton>

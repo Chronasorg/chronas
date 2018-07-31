@@ -84,12 +84,12 @@ class Map extends Component {
     this._loadGeoJson('provinces', metadata.provinces)
     this._updateMetaMapStyle()
 
-    axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
-      .then((areaDefsRequest) => {
-        changeAreaData(areaDefsRequest.data)
-        this._simulateYearChange(areaDefsRequest.data)
-        this._changeArea(areaDefsRequest.data, activeArea.label, activeArea.color, selectedItem.value)
-      })
+    // axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
+    //   .then((areaDefsRequest) => {
+    //     changeAreaData(activeArea.data)
+        this._simulateYearChange(activeArea.data)
+        this._changeArea(activeArea.data, activeArea.label, activeArea.color, selectedItem.value)
+      // })
   }
 
   _updateMetaMapStyle = (shouldReset = false) => {

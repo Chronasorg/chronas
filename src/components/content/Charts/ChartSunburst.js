@@ -100,7 +100,7 @@ export default class ChartSunburst extends React.Component {
             .meta((preData || {})[1] || {})
             .entries((preData || {})[0] || {})
         },
-        total: preData[0].reduce((a, b) => { return (+a || 0) + (b.size || 0) })
+        total: preData[0].reduce((a, b) => { return (+a || 0) + (b.size || 0) }, 0)
       })
     }
   }

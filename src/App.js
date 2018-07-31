@@ -11,7 +11,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
 import { setLoadStatus, setMetadata } from './components/map/data/actionReducers'
 import { TYPE_MARKER, TYPE_AREA, selectAreaItem, selectMarkerItem } from './components/map/actionReducers'
-import { setMarker, setEpic, setAreaColorLabel } from './components/menu/layers/actionReducers'
+import { setMarker, setEpic, setAreaColorLabel, setArea } from './components/menu/layers/actionReducers'
 import { setYear } from './components/map/timeline/actionReducers'
 import queryString from 'query-string'
 import {
@@ -87,42 +87,47 @@ const prefixedStyles = {}
 class App extends Component {
 
   componentWillMount () {
-    const { setYear, setMarker, setEpic, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
+    const { setArea, setYear, setMarker, setEpic, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
 
     const selectedYear = (utilsQuery.getURLParameter('year') || 1000)
-    const activeArea = {
-      data: {},
-      color: (utilsQuery.getURLParameter('fill') || 'ruler'),
-      label: (utilsQuery.getURLParameter('label') || 'ruler')
-    }
-    const selectedItem = {
-      wiki: '',
-      type: (utilsQuery.getURLParameter('type') || ''),
-      value: (utilsQuery.getURLParameter('value') || ''),
-    }
-    const selectedMarker = (utilsQuery.getURLParameter('markers') || '')
-    const selectedEpics = (utilsQuery.getURLParameter('epics') || '')
+    axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
+      .then((areaDefsRequest) => {
+        const activeArea = {
+          data: {},
+          color: (utilsQuery.getURLParameter('fill') || 'ruler'),
+          label: (utilsQuery.getURLParameter('label') || 'ruler')
+        }
+        const selectedItem = {
+          wiki: '',
+          type: (utilsQuery.getURLParameter('type') || ''),
+          value: (utilsQuery.getURLParameter('value') || ''),
+        }
+        const selectedMarker = (utilsQuery.getURLParameter('markers') || '')
+        const selectedEpics = (utilsQuery.getURLParameter('epics') || '')
 
-    setYear(selectedYear)
-    if (selectedMarker !== '') setMarker(selectedMarker.split(','))
-    if (selectedEpics !== '') setEpic(selectedEpics.split(','))
-    if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
-    if (selectedItem.type === TYPE_AREA) {
-      selectAreaItem('-1', selectedItem.value)
-    } else if (selectedItem.type === TYPE_MARKER) {
-      selectMarkerItem(selectedItem.value, selectedItem.value)
-    }
+        setYear(selectedYear)
+        if (selectedMarker !== '') setMarker(selectedMarker.split(','))
+        if (selectedEpics !== '') setEpic(selectedEpics.split(','))
+        // if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
+        if (selectedItem.type === TYPE_AREA) {
+          selectAreaItem('-1', selectedItem.value)
+        } else if (selectedItem.type === TYPE_MARKER) {
+          selectMarkerItem(selectedItem.value, selectedItem.value)
+        }
 
-    // initialize queryparameters
-    window.history.pushState('', '',
-      '?year=' + selectedYear +
-      '&epics=' + selectedEpics +
-      '&markers=' + selectedMarker +
-      '&type=' + selectedItem.type +
-      '&fill=' + activeArea.color +
-      '&label=' + activeArea.label +
-      '&value=' + selectedItem.value +
-      window.location.hash)
+        setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
+
+        // initialize queryparameters
+        window.history.pushState('', '',
+          '?year=' + selectedYear +
+          '&epics=' + selectedEpics +
+          '&markers=' + selectedMarker +
+          '&type=' + selectedItem.type +
+          '&fill=' + activeArea.color +
+          '&label=' + activeArea.label +
+          '&value=' + selectedItem.value +
+          window.location.hash)
+    })
   }
 
   componentDidMount () {
@@ -257,6 +262,7 @@ const mapStateToProps = (state, props) => ({
 })
 
 const mapDispatchToProps = {
+  setArea,
   setUser,
   setLoadStatus,
   setMetadata,

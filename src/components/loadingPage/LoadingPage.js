@@ -4,7 +4,7 @@ import mainLogo from '../../../public/images/logoChronasWhite.png'
 const styles = {
   parent: {
     width: '100%',
-    background: 'url("/images/logoChronasWhite.png") no-repeat 80% 20% fixed, url("https://upload.wikimedia.org/wikipedia/commons/6/61/Striding_Lion.JPG") center center/cover fixed',
+    background: 'url("/images/logoChronasWhite.png") no-repeat 80% 20% fixed, url("https://upload.wikimedia.org/wikipedia/commons/d/d1/Sappho_and_Alcaeus.jpg") center center/cover fixed',
     backgroundBlendMode: 'overlay',
 
     // https://upload.wikimedia.org/wikipedia/commons/6/61/Striding_Lion.JPG
