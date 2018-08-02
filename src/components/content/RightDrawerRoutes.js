@@ -528,7 +528,7 @@ class RightDrawerRoutes extends PureComponent {
     if (
       (!(nextProps.selectedItem.type === TYPE_EPIC &&
         selectedItem.type === TYPE_EPIC) &&
-        (nextProps.selectedItem.value !== selectedItem.value || nextProps.activeArea.color !==  activeArea.color )) // don't load twice with type_epic
+        (nextProps.selectedItem.wiki !== selectedItem.wiki || nextProps.selectedItem.value !== selectedItem.value || nextProps.activeArea.color !==  activeArea.color )) // don't load twice with type_epic
     ) {
       this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
     }
@@ -585,8 +585,6 @@ class RightDrawerRoutes extends PureComponent {
   componentDidMount () {
     console.debug('### RightDrawerRoutes mounted with props', this.props)
     this._handleNewData(this.props.selectedItem, this.props.activeArea)
-    // window.addEventListener('mousemove', this.handleMouseOver.bind(this), false);
-    // window.addEventListener('mouseup', this.handleMouseUp.bind(this), false);
   }
 
   componentWillUnmount () {

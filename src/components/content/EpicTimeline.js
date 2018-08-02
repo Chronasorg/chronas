@@ -64,7 +64,6 @@ const styles = {
 
 class EpicTimeline extends React.Component {
   state = {
-    linkedSetup: '',
     rulerSetup: '',
     selectedWiki: false,
     stepIndex: -1,
@@ -118,12 +117,14 @@ class EpicTimeline extends React.Component {
     if (!isNaN(newYear)) this.props.setYear(+newYear)
   }
 
-  setUpInfluenceChart = (epicData) => {
+  _setUpInfluenceDataAndMediaAndLinkedContent = (epicData, linkedItems, isEntity) => {
     if (!epicData || !epicData.data) return
 
     console.error('setting up influenceChartData, this should only be done once for so many entities', epicData.id)
 
-    const influenceChartData = (this.props.isEntity) ? [{
+    const epicMeta = ((epicData || {}).data || {}).data || {}
+    const influenceChartData = (isEntity)
+      ? [{
         id: epicData.id,
         data: [
           {
@@ -142,7 +143,8 @@ class EpicTimeline extends React.Component {
             data: epicData.data.influence.map((el) => { return { left: Object.keys(el)[0], top: Object.values(el)[0][2] } })
           }
         ]
-      }] : (epicData.rulerEntities || []).map((epicEntity) => {
+      }]
+      : (epicData.rulerEntities || []).map((epicEntity) => {
         return {
           id: epicEntity._id,
           data: [
@@ -154,90 +156,71 @@ class EpicTimeline extends React.Component {
           ]
         }
       })
+
+    const linkedMediaItems = (linkedItems.media || epicMeta.media || []).map((imageItem) => {
+      return {
+        src: imageItem._id || imageItem.wiki || ((imageItem || {}).properties || {}).w,
+        wiki: imageItem.wiki || imageItem.properties.w,
+        title: imageItem.name || imageItem.title || (imageItem.data || {}).title || ((imageItem || {}).properties || {}).n,
+        subtype: imageItem.subtype || imageItem.properties.t,
+        source: imageItem.source || (imageItem.data || {}).source || ((imageItem || {}).properties || {}).s,
+        subtitle: imageItem.subtitle || imageItem.year || ((imageItem || {}).properties || {}).n,
+        score: imageItem.score || ((imageItem || {}).properties || {}).s,
+      }
+    })
+
+    let entityContentData
+    if (isEntity) {
+      entityContentData = []
+      const entityRulerData = ((epicData || {}).data || {}).ruler || {}
+      Object.keys(entityRulerData).forEach((k) => {
+        entityContentData.push({
+            "name": entityRulerData[k][0],
+            "type": entityRulerData[k][1],
+            "wiki": entityRulerData[k][2],
+            "date": k
+          }
+        )
+      })
+    }
+
+    const epicLinkedArticles = ((entityContentData && entityContentData.concat(((linkedItems || {}).content || []))) || (epicMeta || {}).content || ((epicData || {}).data || {}).content || []).map((linkedItem) => {
+      return {
+        "name": (!linkedItem.properties) ? (linkedItem.name || linkedItem.wiki) : linkedItem.properties.n || linkedItem.properties.w,
+        "wiki": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
+        "content": (!linkedItem.properties) ? (linkedItem.content || linkedItem.name) : linkedItem.properties.c,
+        "type": (!linkedItem.properties) ? linkedItem.type : linkedItem.properties.t,
+        "date": (!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y
+      }}).filter((el) => el["name"] !== "null").sort((a, b) => +a.date - +b.date)
+
     this.setState({
+      epicLinkedArticles,
+      epicMeta,
+      linkedMediaItems: linkedMediaItems,
+      rulerSetup: epicData.id,
       stepIndex: -1,
       influenceChartData
     })
   }
 
   componentDidMount = () => {
-    this.setUpInfluenceChart(this.props.epicData)
+    const { epicData, linkedItems, isEntity } = this.props
+    this._setUpInfluenceDataAndMediaAndLinkedContent(epicData, linkedItems, isEntity)
   }
 
   componentWillReceiveProps = (nextProps) => {
+    const { rulerSetup } = this.state
     const { selectedItem, epicData, linkedItems, rulerProps, isEntity } = this.props
 
-    const nextEntity = ((nextProps.epicData || {}).data || {}).wiki || (nextProps.rulerProps || {})[2]
-    const prevEntity = ((epicData || {}).data || {}).wiki || (rulerProps || {})[2]
+    // const nextEntity = ((nextProps.epicData || {}).data || {}).wiki || (nextProps.rulerProps || {})[2]
+    // const prevEntity = ((epicData || {}).data || {}).wiki || (rulerProps || {})[2]
 
     const nextLinkedId = nextProps.linkedItems.id
     const prevLinkedId = linkedItems.id
 
-    if ((prevEntity !== nextEntity || nextLinkedId !== prevLinkedId) && nextProps.selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
-      const { rulerSetup } = this.state
-      if (rulerSetup !== nextProps.epicData.id) {
-        this.setUpInfluenceChart(nextProps.epicData)
-      }
-
-      const epicMeta = ((nextProps.epicData || {}).data || {}).data || {}
-      this.setState({
-        epicMeta,
-        rulerSetup: nextProps.epicData.id
-      })
-
-      const linkedMediaItems = (nextProps.linkedItems.media || nextProps.epicMeta.media || []).map((imageItem) => {
-        return {
-          src: imageItem._id || imageItem.wiki || ((imageItem || {}).properties || {}).w,
-          wiki: imageItem.wiki || imageItem.properties.w,
-          title: imageItem.name || imageItem.title || (imageItem.data || {}).title || ((imageItem || {}).properties || {}).n,
-          subtype: imageItem.subtype || imageItem.properties.t,
-          source: imageItem.source || (imageItem.data || {}).source || ((imageItem || {}).properties || {}).s,
-          subtitle: imageItem.subtitle || imageItem.year || ((imageItem || {}).properties || {}).n,
-          score: imageItem.score || ((imageItem || {}).properties || {}).s,
-        }
-      })
-
-      let entityContentData
-      if (isEntity) {
-        entityContentData = []
-        const entityRulerData = ((nextProps.epicData || {}).data || {}).ruler || {}
-        Object.keys(entityRulerData).forEach((k) => {
-          entityContentData.push({
-              "name": entityRulerData[k][0],
-              "type": entityRulerData[k][1],
-              "wiki": entityRulerData[k][2],
-              "date": k
-            }
-          )
-        })
-      }
-
-      const epicLinkedArticles = ((entityContentData && entityContentData.concat(((nextProps.linkedItems || {}).content || []))) || (nextProps.epicMeta || {}).content || ((nextProps.epicData || {}).data || {}).content || []).map((linkedItem) => {
-        return {
-          "name": (!linkedItem.properties) ? (linkedItem.name || linkedItem.wiki) : linkedItem.properties.n || linkedItem.properties.w,
-          "wiki": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
-          "content": (!linkedItem.properties) ? (linkedItem.content || linkedItem.name) : linkedItem.properties.c,
-          "type": (!linkedItem.properties) ? linkedItem.type : linkedItem.properties.t,
-          "date": (!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y
-        }}).filter((el) => el["name"] !== "null").sort((a, b) => +a.date - +b.date)
-
-      this.setState({
-          linkedSetup: prevLinkedId,
-          linkedMediaItems: linkedMediaItems,
-        epicLinkedArticles
-      })
+    if (((nextProps.epicData && nextProps.epicData.id && rulerSetup !== nextProps.epicData.id) || nextLinkedId !== prevLinkedId) && nextProps.selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
+      this._setUpInfluenceDataAndMediaAndLinkedContent(nextProps.epicData, nextProps.linkedItems, nextProps.isEntity)
     }
-    // else if (nextProps.selectedItem.wiki !== selectedItem.wiki) {// TODO: reload linked media if wiki changed
-    //   const { epicLinkedArticles } = this.state
-    //
-    //   const newWiki = nextProps.selectedItem.wiki
-    //   const articleIndex = epicLinkedArticles.findIndex(x => x.wiki === newWiki);
-    //   if (articleIndex !== -1) {
-    //     this._selectStepButton(articleIndex, epicLinkedArticles[articleIndex].date)
-    //   } else {
-    //     this.setState({ selectedWiki: newWiki })
-    //   }
-    // }
   }
 
   setWikiIdWrapper = (wiki) => {

@@ -39,7 +39,6 @@ class QAAForum extends Component {
 
   componentDidMount() {
     const {
-      // getDiscussions,
       forums,
       qaaEntity,
       setForums,
@@ -63,7 +62,6 @@ class QAAForum extends Component {
     const {
       setForums,
       qaaEntity,
-      // getDiscussions,
     } = this.props;
 
     const {
@@ -76,17 +74,16 @@ class QAAForum extends Component {
       this.setState({
         fetchingDiscussions: false,
       })
-      getDiscussions(properties.QAID, sortingMethod, nextProps.qaaEntity).then( (data) => {
+      getDiscussions(properties.QAID, sortingMethod, nextProps.qaaEntity).then((data) => {
         this.setState({ fetchingDiscussions: false, discussions: data })
         this.props.setHasQuestions((data || []).length > 0)
-      } )
+      })
     }
   }
 
   handleSortingChange(newSortingMethod) {
     const {
       forums,
-      // getDiscussions,
       qaaEntity
     } = this.props;
 
@@ -162,7 +159,6 @@ export default connect(
     // error: state.feed.error,
   }; },
   (dispatch) => { return {
-    // getDiscussions: (currentForumId, feedChanged, sortingMethod, sortingChanged) => { dispatch(getDiscussions(currentForumId, feedChanged, sortingMethod, sortingChanged)); },
     // updateSortingMethod: (method) => { dispatch(updateSortingMethod(method)); },
   }; }
 )(QAAForum);

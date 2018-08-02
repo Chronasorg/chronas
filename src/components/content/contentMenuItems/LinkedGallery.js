@@ -321,10 +321,10 @@ class LinkedGallery extends React.Component {
     const { linkedItems } = this.props
     console.debug('### LinkedGallery componentWillReceiveProps', this.props)
 
-    if (linkedItems && nextProps.linkedItems && linkedItems.toString() !== nextProps.linkedItems.toString()) {
+    const nextMediaSrc = nextProps.linkedItems.map( el => el.src )
+    if (linkedItems && nextProps.linkedItems && ((linkedItems || []).length !== (nextProps.linkedItems || []).length || (linkedItems || []).some((el => !nextMediaSrc.includes(el.src))))) {
       this.loadLinkedItemsToTileData(nextProps.linkedItems)
     }
-
   }
 
   _handleUpvote = (id, stateDataId) => {
@@ -554,11 +554,11 @@ class LinkedGallery extends React.Component {
           }
           title={<span>Linked Items</span>}
           iconElementLeft={<div />}
-          iconElementRight={this.state.isMinimized
+          iconElementRight={isMinimized
             ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
             : <IconButton onClick={() => this._minimize()}><ChevronRight /></IconButton>}
         />
-        <div style={styles.container}>
+        { !isMinimized && <div style={styles.container}>
           <div style={styles.root}>
             <div style={styles.rootMenu}>
                <IconMenu
@@ -704,7 +704,7 @@ class LinkedGallery extends React.Component {
               </div>
             </div>
           </Dialog>
-        </div>
+        </div> }
       </Paper>
     )
   }

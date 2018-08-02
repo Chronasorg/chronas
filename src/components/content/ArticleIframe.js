@@ -17,7 +17,7 @@ import {chronasMainColor, grey600} from '../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import utilsQuery from "../map/utils/query";
-import { selectLinkedItem, TYPE_AREA, TYPE_MARKER, TYPE_LINKED } from "../map/actionReducers";
+import {selectLinkedItem, TYPE_AREA, TYPE_MARKER, TYPE_LINKED, WIKI_PROVINCE_TIMELINE} from "../map/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "./actionReducers";
 import {resetModActive, setFullModActive} from "../restricted/shared/buttons/actionReducers";
 
@@ -134,14 +134,14 @@ class ArticleIframe extends React.Component {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
     const { hasChart, selectedItem, selectedWiki, isEntity, customStyle } = this.props
 
-    console.debug(selectedItem, selectedWiki)
-    if (!selectedItem || !selectedWiki || selectedWiki === -1) return <span>No Wiki found</span> // LoadingCompass
-    const shouldLoad = (iframeLoading || selectedWiki === null || +selectedWiki === -1)
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED
     const isArea = selectedItem.type === TYPE_AREA
-
+    const isProvince = selectedItem.wiki === WIKI_PROVINCE_TIMELINE
+    const noWiki = (!selectedItem || !selectedWiki || selectedWiki === -1)
     const modUrl = isMarker ?  '/mod/markers' : '/mod/metadata'
+    console.debug(selectedItem, selectedWiki)
+
     const iconEnterFullscreen = {
       key: 'random',
       tooltipPosition: 'bottom-right',
@@ -150,6 +150,27 @@ class ArticleIframe extends React.Component {
       onClick: () => this._enterFullscreen(),
       style: styles.fullscreenButton
     }
+    const modMenu = <div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : (isProvince) ? { ...styles.actionButtonContainer, top: 378 } : styles.actionButtonContainer } >
+      <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} containerElement={<Link to={modUrl}/>}>
+        <IconEdit hoverColor={chronasMainColor} />
+      </IconButton>
+      <IconButton {...iconEnterFullscreen}>
+        <FullscreenEnterIcon
+          hoverColor={chronasMainColor} />
+      </IconButton>
+      { !(isEntity) && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
+        <IconClose hoverColor={chronasMainColor} />
+      </IconButton> }
+    </div>
+
+    if (noWiki) { return <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
+      <span>No Wiki found for <b>{selectedItem.value}</b>. Consider adding one <Link to={modUrl}>here</Link></span>
+      { modMenu }
+    </div> // LoadingCompass
+    }
+
+    const shouldLoad = (iframeLoading || selectedWiki === null || +selectedWiki === -1)
+
     return (
       <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
         <Dialog
@@ -179,18 +200,7 @@ class ArticleIframe extends React.Component {
           </FloatingActionButton >
           }
         </Dialog>
-        <div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : styles.actionButtonContainer } >
-          <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} containerElement={<Link to={modUrl}/>}>
-            <IconEdit hoverColor={chronasMainColor} />
-          </IconButton>
-          <IconButton {...iconEnterFullscreen}>
-            <FullscreenEnterIcon
-              hoverColor={chronasMainColor} />
-          </IconButton>
-          { !(isEntity) && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
-            <IconClose hoverColor={chronasMainColor} />
-          </IconButton> }
-        </div>
+        { modMenu }
         { shouldLoad && LoadingCompass }
         { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
       </div>

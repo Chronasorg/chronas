@@ -25,7 +25,6 @@ export default class LoadingBar extends React.Component {
   _load = () => {
     loaded += incrementLoaded;
     if (!stoppedFlag){
-      console.debug('_load')
       this.setState({ completedPercent: (Math.sqrt(Math.sqrt(loaded)) * 15) })
     }
 
@@ -37,17 +36,14 @@ export default class LoadingBar extends React.Component {
   }
 
   _resetLoadingBar = () => {
-    console.debug("### LoadingBar: resetingLoadBar, this should be done with isVisible false")
     stoppedFlag = true
     clearInterval(this.state.isLoadingInterval)
-    console.debug('_resetLoadingBar')
     this.setState({
       isVisible: false,
       completedPercent: 0,
       activeColor: COLOR_SUCCESS
     },() => {
       stoppedFlag = false
-      console.debug('_resetLoadingBar2')
       this.setState({
         isVisible: true
       })
@@ -56,7 +52,6 @@ export default class LoadingBar extends React.Component {
 
   _startLoadingBar = () => {
     if (!stoppedFlag && typeof this.state.isLoadingInterval === "undefined")
-      console.debug('_startLoadingBar')
     this.setState({
       isVisible: true,
       completedPercent: 0
@@ -66,16 +61,13 @@ export default class LoadingBar extends React.Component {
 
   _setupStartProgress = () => {
     axios.interceptors.request.use(config => {
-      console.debug('### LoadingBar: startingProgress')
       this._startLoadingBar()
       return config
     })
   }
 
-
   _setupStopProgress = () => {
     const responseFunc = response => {
-      console.debug('### LoadingBar: stopProgress')
         stoppedFlag = true
         clearInterval(this.state.isLoadingInterval)
         this.setState({ completedPercent: 100 })
@@ -84,7 +76,6 @@ export default class LoadingBar extends React.Component {
     }
 
     const errorFunc = error => {
-      console.debug('### LoadingBar: errorProgress')
         clearInterval(this.state.isLoadingInterval)
         this._errorOut()
       return Promise.reject(error)
@@ -93,7 +84,6 @@ export default class LoadingBar extends React.Component {
   }
 
   _errorOut() {
-    console.debug('_errorOut')
     this.setState({ completedPercent: 100,
       activeColor: COLOR_ERROR })
     setTimeout(() => this._resetLoadingBar(), 500)
@@ -108,14 +98,12 @@ export default class LoadingBar extends React.Component {
   }
 
   componentWillUnmount() {
-    console.debug('### LoadingBar: WillUnmount')
     if (typeof this.state.isLoadingInterval !== "undefined") {
       clearInterval(this.state.isLoadingInterval)
     }
   }
 
   componentDidMount() {
-    console.debug('### LoadingBar: axios intercepted')
     this._setupStartProgress()
     this._setupStopProgress()
     // this.timer = setTimeout(() => this.progress(5), 1000)

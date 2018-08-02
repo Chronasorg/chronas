@@ -105,51 +105,63 @@ export default class InfluenceChart extends React.Component {
     }
   }
 
+  componentDidMount = () => {
+    const { newData, epicMeta, selectedYear } = this.props
+    const newId = (newData[0] || {}).id
+    if (((newData || [])[0] || {}).data) {
+      this._setupData(newData, epicMeta, selectedYear, newId)
+    }
+  }
+
   componentWillReceiveProps (nextProps) {
-    const newId = (nextProps.newData[0] || {}).id
-    if (((nextProps.newData || [])[0] || {}).data &&
+    const { newData, epicMeta, selectedYear } = nextProps
+    const newId = (newData[0] || {}).id
+    if (((newData || [])[0] || {}).data &&
       (newId !== ((this.props.newData || [])[0] || {}).id ||
         (newId !== this.state.idSetup) ||
-      nextProps.selectedYear !== this.props.selectedYear)) {
-      this.setState({ idSetup: newId })
-      const { selectedYear } = nextProps
-      const nextSeries = nextProps.newData.map((seriesEl) => seriesEl.data)
-
-      const currentYearMarkerValues = nextProps.epicMeta
-        ? nextSeries.map((s, i) => {
-          const nearestYear = s[0].data.map(y => +y.left).reduce(function (prev, curr) {
-            return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
-          }).toString()
-          return {
-            left: selectedYear,
-            top: s[0].data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
-          }
-        })
-        : nextProps.newData[0].data.map((s, i) => {
-          const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
-            return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
-          }).toString()
-          return {
-            left: selectedYear,
-            top: s.data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
-          }
-        })
-
-      const crosshairStartValues = nextProps.epicMeta ? [{
-        left: +nextProps.epicMeta.start
-      }] : undefined
-      const crosshairEndValues = nextProps.epicMeta ? [{
-        left: +nextProps.epicMeta.end || +nextProps.epicMeta.start
-      }] : undefined
-
-      this.setState({
-        sortedData: nextProps.newData[0].data[0].data.map((el) => { if (!isNaN(el.left)) return el.left }).sort((a, b) => +a - +b),
-        series: nextSeries,
-        currentYearMarkerValues,
-        crosshairStartValues,
-        crosshairEndValues
-      })
+      selectedYear !== this.props.selectedYear)) {
+      this._setupData(newData, epicMeta, selectedYear, newId)
     }
+  }
+
+  _setupData = (newData, epicMeta, selectedYear, newId) => {
+    this.setState({ idSetup: newId })
+    const nextSeries = newData.map((seriesEl) => seriesEl.data)
+
+    const currentYearMarkerValues = epicMeta
+      ? nextSeries.map((s, i) => {
+        const nearestYear = s[0].data.map(y => +y.left).reduce(function (prev, curr) {
+          return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
+        }).toString()
+        return {
+          left: selectedYear,
+          top: s[0].data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
+        }
+      })
+      : newData[0].data.map((s, i) => {
+        const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
+          return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
+        }).toString()
+        return {
+          left: selectedYear,
+          top: s.data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
+        }
+      })
+
+    const crosshairStartValues = epicMeta ? [{
+      left: +epicMeta.start
+    }] : undefined
+    const crosshairEndValues = epicMeta ? [{
+      left: +epicMeta.end || +epicMeta.start
+    }] : undefined
+
+    this.setState({
+      sortedData: newData[0].data[0].data.map((el) => { if (!isNaN(el.left)) return el.left }).sort((a, b) => +a - +b),
+      series: nextSeries,
+      currentYearMarkerValues,
+      crosshairStartValues,
+      crosshairEndValues
+    })
   }
 
   render () {

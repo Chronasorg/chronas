@@ -32,7 +32,6 @@ class ForumFeed extends Component {
   componentDidMount() {
     const {
       currentForumId,
-      // getDiscussions,
       forums,
       currentForum,
       setForums,
@@ -59,7 +58,6 @@ class ForumFeed extends Component {
       currentForumId,
       forums,
       setForums,
-      // getDiscussions,
       // getPinnedDiscussions,
     } = this.props;
 
@@ -71,7 +69,6 @@ class ForumFeed extends Component {
     // if the forum didn't matched
     if (nextProps.currentForum !== currentForum || forums.length !== nextProps.forums.length) {
       // const feedChanged = true;
-      // getDiscussions(currentForumId(), feedChanged);
       // getPinnedDiscussions(currentForumId(), feedChanged);
       const forumId = ((nextProps.forums.filter(f => f.forum_slug === nextProps.currentForum) || {})[0] || {})._id
       this.setState({
@@ -88,7 +85,6 @@ class ForumFeed extends Component {
     const {
       currentForum,
       forums,
-      // getDiscussions,
     } = this.props;
 
     const {
@@ -187,7 +183,6 @@ export default connect(
     // error: state.feed.error,
   }; },
   (dispatch) => { return {
-    // getDiscussions: (currentForumId, feedChanged, sortingMethod, sortingChanged) => { dispatch(getDiscussions(currentForumId, feedChanged, sortingMethod, sortingChanged)); },
     // getPinnedDiscussions: (currentForumId, feedChanged) => { dispatch(getPinnedDiscussions(currentForumId, feedChanged)); },
     // updateSortingMethod: (method) => { dispatch(updateSortingMethod(method)); },
   }; }
