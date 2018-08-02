@@ -73,7 +73,7 @@ const defaultIcons = {
 const styles = {
   articleHeader: {
     height: '56px',
-    width: 'calc(100% - 95px)'
+    overflow: 'hidden'
   },
   cardArticle: {
     paddingBottom: '0px',
@@ -527,8 +527,8 @@ class RightDrawerRoutes extends PureComponent {
     const { activeArea, location, metadata, selectedItem } = this.props
     if (
       (!(nextProps.selectedItem.type === TYPE_EPIC &&
-        this.props.selectedItem.type === TYPE_EPIC) &&
-        (nextProps.selectedItem.value !== selectedItem.valu || nextProps.activeArea.color !==  activeArea.color )) // don't load twice with type_epic
+        selectedItem.type === TYPE_EPIC) &&
+        (nextProps.selectedItem.value !== selectedItem.value || nextProps.activeArea.color !==  activeArea.color )) // don't load twice with type_epic
     ) {
       this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
     }
@@ -631,6 +631,7 @@ class RightDrawerRoutes extends PureComponent {
           onChange={this.handleChange}
           selectedIndex={this.state.selectedIndex}>
           <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/markers/create' />}
             label='Articles'
@@ -638,6 +639,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/metadata/create' />}
             label='Area Entity'
@@ -645,6 +647,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => { this.select(2) }}
           />
           <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/areas' />}
             label='Assign Area'
@@ -652,6 +655,7 @@ class RightDrawerRoutes extends PureComponent {
             // onClick={() => { this.select(4) }}
           />
           <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/links' />}
             label='Link Articles'
@@ -757,6 +761,7 @@ class RightDrawerRoutes extends PureComponent {
             ? 0
             : selectedIndexObject[activeArea.color]}>
           <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
             onClick={() => {
               setWikiId(WIKI_PROVINCE_TIMELINE)
               setAreaColorLabel('ruler', 'ruler')
@@ -772,6 +777,7 @@ class RightDrawerRoutes extends PureComponent {
             />}
           />
           <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
             onClick={() => {
               setWikiId(selectedItem.value)
               setAreaColorLabel('ruler', 'ruler')
@@ -787,6 +793,7 @@ class RightDrawerRoutes extends PureComponent {
             />}
           />
           <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
             onClick={() => {
               setWikiId(selectedItem.value)
               setAreaColorLabel('culture', 'culture')
@@ -802,6 +809,7 @@ class RightDrawerRoutes extends PureComponent {
             />}
           />
           <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
             onClick={() => {
               setWikiId(selectedItem.value)
               setAreaColorLabel('religion', 'religion')
@@ -817,21 +825,7 @@ class RightDrawerRoutes extends PureComponent {
             />}
           />
           <BottomNavigationItem
-            onClick={() => {
-              setWikiId(selectedItem.value)
-              changeColor('population')
-            }}
-            className='bottomNavigationItem'
-            icon={<CardHeader
-              title={entityMeta.capital.name}
-              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
-              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
-              style={styles.cardHeader.style}
-              subtitle='Capital'
-              avatar={this._getFullIconURL(entityMeta.capital.icon)}
-            />}
-          />
-          <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
             onClick={() => {
               setWikiId(selectedItem.value)
               changeColor('population')

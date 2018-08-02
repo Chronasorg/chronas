@@ -117,23 +117,23 @@ export default class InfluenceChart extends React.Component {
 
       const currentYearMarkerValues = nextProps.epicMeta
         ? nextSeries.map((s, i) => {
-        const nearestYear = s[0].data.map(y => +y.left).reduce(function (prev, curr) {
-          return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
-        }).toString()
-        return {
-          left: selectedYear,
-          top: s[0].data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
-        }
-      })
+          const nearestYear = s[0].data.map(y => +y.left).reduce(function (prev, curr) {
+            return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
+          }).toString()
+          return {
+            left: selectedYear,
+            top: s[0].data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
+          }
+        })
         : nextProps.newData[0].data.map((s, i) => {
-        const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
-          return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
-        }).toString()
-        return {
-          left: selectedYear,
-          top: s.data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
-        }
-      })
+          const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
+            return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
+          }).toString()
+          return {
+            left: selectedYear,
+            top: s.data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
+          }
+        })
 
       const crosshairStartValues = nextProps.epicMeta ? [{
         left: +nextProps.epicMeta.start
@@ -174,7 +174,7 @@ export default class InfluenceChart extends React.Component {
             height={(epicMeta) ? 256 : 200}>
             <HorizontalGridLines />
             <GradientDefs>
-              { epicMeta ? rulerProps.map((rulerEl, i) => <linearGradient id={'CoolGradient' + i} x1='0' x2='0' y1='0' y2='1'>
+              { epicMeta ? rulerProps.map((rulerEl, i) => <linearGradient key={'CoolGradient' + i} id={'CoolGradient' + i} x1='0' x2='0' y1='0' y2='1'>
                 <stop offset='0%' stopColor={(rulerEl || {})[1] || 'grey'} stopOpacity={0.8} />
                 <stop offset='100%' stopColor='white' stopOpacity={0.3} />
               </linearGradient>) : <linearGradient id='CoolGradient0' x1='0' x2='0' y1='0' y2='1'>
@@ -191,16 +191,16 @@ export default class InfluenceChart extends React.Component {
               tickSizeInner={0}
               tickSizeOuter={8}
             />
-            {series.map((seriesEl, i) => <LineMarkSeries
+            {series.map((seriesEl, i) => <LineMarkSeries key={'LineMarkSeries' + i}
               color={epicMeta ? ((rulerProps || {})[i] || {})[1] || 'grey' : (rulerProps || {})[1]}
-              data={epicMeta ? seriesEl[0].data : seriesEl[2].data}
+              data={epicMeta ? (seriesEl[0] || {}).data : (seriesEl[2] || {}).data}
               curve='curveMonotoneX'
               onNearestX={this._nearestXHandler} />
             )}
-            {series.map((seriesEl, i) => <AreaSeries
+            {series.map((seriesEl, i) => <AreaSeries key={'AreaSeries' + i}
               color={'url(#CoolGradient' + i + ')'}
               curve='curveMonotoneX'
-              data={epicMeta ? seriesEl[0].data : seriesEl[2].data} />
+              data={epicMeta ? (seriesEl[0] || {}).data : (seriesEl[2] || {}).data} />
             )}
             { epicMeta && <Crosshair
               className='startMarker'

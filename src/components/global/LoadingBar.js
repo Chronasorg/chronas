@@ -6,7 +6,6 @@ const COLOR_SUCCESS = "rgb(0, 232, 18)"
 const COLOR_ERROR = "rgb(232, 0, 18)"
 
 const incrementLoaded = 15
-let isLoadingInterval
 let stoppedFlag = false
 let loaded = 0
 
@@ -16,9 +15,10 @@ export default class LoadingBar extends React.Component {
     super(props)
 
     this.state = {
+      activeColor: COLOR_SUCCESS,
       completedPercent: 0,
       isVisible: true,
-      activeColor: COLOR_SUCCESS,
+      isLoadingInterval: undefined,
     }
   }
 
@@ -30,7 +30,7 @@ export default class LoadingBar extends React.Component {
     }
 
     if ((Math.sqrt(Math.sqrt(loaded)) * 15) > 100) {
-      clearInterval(isLoadingInterval)
+      clearInterval(this.state.isLoadingInterval)
       stoppedFlag = false
       this._errorOut()
     }
@@ -39,7 +39,7 @@ export default class LoadingBar extends React.Component {
   _resetLoadingBar = () => {
     console.debug("### LoadingBar: resetingLoadBar, this should be done with isVisible false")
     stoppedFlag = true
-    clearInterval(isLoadingInterval)
+    clearInterval(this.state.isLoadingInterval)
     console.debug('_resetLoadingBar')
     this.setState({
       isVisible: false,
@@ -55,7 +55,7 @@ export default class LoadingBar extends React.Component {
   }
 
   _startLoadingBar = () => {
-    if (!stoppedFlag && typeof isLoadingInterval === "undefined")
+    if (!stoppedFlag && typeof this.state.isLoadingInterval === "undefined")
       console.debug('_startLoadingBar')
     this.setState({
       isVisible: true,
@@ -77,7 +77,7 @@ export default class LoadingBar extends React.Component {
     const responseFunc = response => {
       console.debug('### LoadingBar: stopProgress')
         stoppedFlag = true
-        clearInterval(isLoadingInterval)
+        clearInterval(this.state.isLoadingInterval)
         this.setState({ completedPercent: 100 })
         setTimeout(() => this._resetLoadingBar(), 1000)
       return response
@@ -85,7 +85,7 @@ export default class LoadingBar extends React.Component {
 
     const errorFunc = error => {
       console.debug('### LoadingBar: errorProgress')
-        clearInterval(isLoadingInterval)
+        clearInterval(this.state.isLoadingInterval)
         this._errorOut()
       return Promise.reject(error)
     }
@@ -99,18 +99,18 @@ export default class LoadingBar extends React.Component {
     setTimeout(() => this._resetLoadingBar(), 500)
   }
   _startSimulation() {
-    if (typeof isLoadingInterval !== "undefined") {
-      clearInterval(isLoadingInterval)
+    if (typeof this.state.isLoadingInterval !== "undefined") {
+      clearInterval(this.state.isLoadingInterval)
     }
 
     loaded = 0
-    isLoadingInterval = setInterval(() => this._load(), 500)
+    this.setState({ isLoadingInterval: setInterval(() => this._load(), 500) })
   }
 
   componentWillUnmount() {
     console.debug('### LoadingBar: WillUnmount')
-    if (typeof isLoadingInterval !== "undefined") {
-      clearInterval(isLoadingInterval)
+    if (typeof this.state.isLoadingInterval !== "undefined") {
+      clearInterval(this.state.isLoadingInterval)
     }
   }
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import EnhancedButton from 'material-ui/internal/EnhancedButton'
 
 function getStyles(props, context) {
-  const {selected} = props;
+  const {selected, themeBackColors} = props;
   const {
     muiTheme: {
       bottomNavigation,
@@ -19,11 +19,13 @@ function getStyles(props, context) {
       transition: 'padding-top 0.3s',
       paddingTop: selected ? 6 : 8,
       paddingBottom: 10,
-      background: selected ? '#37393130' : 'none',
+      background: selected ? (themeBackColors || '#37393130') : 'none',
       paddingLeft: 12,
       paddingRight: 12,
-      minWidth: 80,
-      maxWidth: 168,
+      minWidth: 124,
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
     },
     label: {
       fontSize: selected ?
@@ -50,6 +52,7 @@ const BottomNavigationItem = (props, context) => {
     label,
     icon,
     style,
+    themeBackColors,
     ...other
   } = props;
 
@@ -73,6 +76,7 @@ const BottomNavigationItem = (props, context) => {
 
 BottomNavigationItem.contextTypes = {
   muiTheme: PropTypes.object.isRequired,
+  themeBackColors: PropTypes.string,
 };
 
 export default BottomNavigationItem;

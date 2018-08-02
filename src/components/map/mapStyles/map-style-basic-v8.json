@@ -4,7 +4,7 @@
     "watercolor": {
       "type": "raster",
       "tiles": [
-        "http://tile.stamen.com/watercolor/{z}/{x}/{y}.png"
+        "https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png"
       ],
       "tileSize": 256
     },

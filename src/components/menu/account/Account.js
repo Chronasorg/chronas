@@ -144,13 +144,11 @@ class Account extends PureComponent {
       </Edit>
     }
 
-    const UserDeleteTitle = translate(({ record, translate }) => <span> {translate('resources.customers.page.delete')}&nbsp;tata
-      {username}
-    </span>)
+    const UserDeleteTitle = <span>{translate('resources.users.page.delete')} "{username}"</span>
 
     const UserDelete = (props) => {
       const tt = { ...props, ...routeProps }
-      return <Delete account history={props.history} {...tt} title={<UserDeleteTitle />} />
+      return <Delete account history={props.history} title={<UserDeleteTitle />} {...tt} />
     }
 
     const restrictPage = (component, route, commonProps) => {

@@ -83,7 +83,7 @@ export default class ChartSunburst extends React.Component {
   componentWillReceiveProps (nextProps) {
     const { activeAreaDim } = this.props
 
-    if (nextProps.preData && nextProps.preData.length > 0 || nextProps.selectedYear !== this.props.selectedYear) {
+    if (!nextProps.isMinimized && (nextProps.preData && nextProps.preData.length > 0 || nextProps.selectedYear !== this.props.selectedYear)) {
       const { preData } = nextProps
       if (!preData || preData.length === 0) return
 
@@ -159,7 +159,7 @@ export default class ChartSunburst extends React.Component {
     const { isMinimized } = this.props
     const { data, finalValue, pathValue, modeIndex } = this.state
 
-    const chartProps = {
+    const chartProps = (isMinimized) ? false : {
       animation: {
         damping: 9,
         stiffness: 300

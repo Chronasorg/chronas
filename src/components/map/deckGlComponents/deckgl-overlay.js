@@ -435,7 +435,7 @@ export default class DeckGLOverlay extends Component {
         id: 'icon',
         data: marker,
         pickable: true,
-        iconAtlas: 'http://deck.gl/images/location-icon-atlas.png',
+        iconAtlas: '/images/location-icon-atlas.png',
         iconMapping,
         sizeScale: ICON_SIZE * size * window.devicePixelRatio,
         getPosition: d => d.coo,

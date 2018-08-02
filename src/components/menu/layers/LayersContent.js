@@ -10,7 +10,6 @@ import RaisedButton from 'material-ui/RaisedButton'
 import Download from 'material-ui/svg-icons/file/file-download'
 import { translate, defaultTheme } from 'admin-on-rest'
 import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actionReducers'
-import { selectEpicItem } from '../../map/actionReducers'
 import {
   changeBasemap as changeBasemapAction,
   setAreaColorLabel as setAreaColorLabelAction,
@@ -55,9 +54,11 @@ class LayerContent extends Component {
 
   handleChange = (event, index, value) => this.setState({value})
 
+  // TODO: FEATURE: ADD + SELECT, SEARCH EPIC
+
   render() {
     const {basemapId} = this.state
-    const {activeArea, setPopOpacity, setProvinceBorders, selectedText, selectEpicItem, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic} = this.props
+    const {activeArea, setPopOpacity, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic} = this.props
     return (
       <div style={styles.main}>
         <h4>Basemap</h4>
@@ -153,12 +154,6 @@ class LayerContent extends Component {
               toggleEpic(id.toLowerCase())
             }}/>)}
         {activeEpics}
-        <br/>
-        <RaisedButton style={styles.button} label='Test Epic' onClick={() => {
-          selectEpicItem('Byzantine–Sasanian_War_of_602–628', 602)
-        }}/>
-        <h4>Year</h4>
-        {selectedYear}
       </div>
     )
   }
@@ -184,7 +179,6 @@ const enhance = compose(
     toggleMarker: toggleMarkerAction,
     toggleEpic: toggleEpicAction,
     toggleMenuDrawer: toggleMenuDrawerAction,
-    selectEpicItem
   }),
   pure,
   translate,

@@ -531,7 +531,7 @@ class Discover extends PureComponent {
           tooltipPosition="bottom-center"
           tooltip={sourceSelected}
           onClick={() => this._handleOpenSource(sourceSelected)} >
-          tooltip={hasWiki ? translate('pos.discover.hasNoSource') : translate('pos.discover.openSource')}>
+          tooltip={hasWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
           <FloatingActionButton
             mini={true}
             backgroundColor='#aaaaaaba'
@@ -744,7 +744,7 @@ class Discover extends PureComponent {
               <IconButton
                 style={{ ...styles.buttonOpenArticle, paddingRight: '1em' }}
                 tooltipPosition="bottom-center"
-                tooltip={hasWiki ? translate('pos.discover.hasNoArticle') : translate('pos.discover.openArticle')}>
+                tooltip={hasWiki ? translate('pos.discover_component.hasNoArticle') : translate('pos.discover_component.openArticle')}>
                   <RaisedButton
                     disabled={hasWiki}
                     label="Open Article"
@@ -756,7 +756,7 @@ class Discover extends PureComponent {
               <IconButton
                 style={styles.buttonOpenArticle}
                 tooltipPosition="bottom-center"
-                tooltip={hasWiki ? translate('pos.discover.hasNoSource') : translate('pos.discover.openSource')}>
+                tooltip={hasWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
                 <RaisedButton
                   disabled={hasSource}
                   label="Open Source"
@@ -768,7 +768,7 @@ class Discover extends PureComponent {
               <IconButton
                 style={styles.buttonOpenArticle}
                 tooltipPosition="bottom-center"
-                tooltip={translate('pos.discover.edit')}>
+                tooltip={translate('pos.discover_component.edit')}>
                 <RaisedButton
                   label="Edit"
                   primary={true}

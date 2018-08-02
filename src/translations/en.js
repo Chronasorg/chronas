@@ -105,7 +105,7 @@ export default {
         stats: 'Stats',
       },
       page: {
-        delete: 'Delete Customer',
+        delete: 'Delete Account',
       },
 
     },

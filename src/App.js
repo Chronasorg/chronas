@@ -10,17 +10,17 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
 import { setLoadStatus, setMetadata } from './components/map/data/actionReducers'
-import { TYPE_MARKER, TYPE_AREA, selectAreaItem, selectMarkerItem } from './components/map/actionReducers'
+import { TYPE_AREA, TYPE_EPIC, TYPE_MARKER, selectAreaItem, selectMarkerItem } from './components/map/actionReducers'
 import { setMarker, setEpic, setAreaColorLabel, setArea } from './components/menu/layers/actionReducers'
 import { setYear } from './components/map/timeline/actionReducers'
 import queryString from 'query-string'
 import {
   defaultTheme,
   Delete,
-  Notification,
   Restricted,
   TranslationProvider,
 } from 'admin-on-rest'
+import Notification from './components/overwrites/Notification'
 import Menu from './components/menu/Menu'
 import Map from './components/map/Map'
 import LayerContent from './components/menu/layers/LayersContent'

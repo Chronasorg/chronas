@@ -29,7 +29,6 @@ import LinkedGallery from './contentMenuItems/LinkedGallery'
 import LinkedQAA from './contentMenuItems/LinkedQAA'
 import utils from '../map/utils/general'
 import ArticleIframe from './ArticleIframe'
-import EntityTimeline from './EntityTimeline'
 import EpicTimeline from './EpicTimeline'
 import ProvinceTimeline from './ProvinceTimeline'
 import { properties } from '../../properties'
@@ -280,7 +279,7 @@ class Content extends Component {
             })
             linkedItems.content = res.map
 
-            showNotification(linkedItems.media.length + ' linked media item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found. ')
+            showNotification(linkedItems.media.length + ' linked media item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
 
             if (res.map) {
               if (isMarker || isMedia) {

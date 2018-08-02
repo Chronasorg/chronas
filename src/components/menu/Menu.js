@@ -55,7 +55,8 @@ class Menu extends PureComponent {
     super(props);
     const token = localStorage.getItem('token');
     if (token !== null) {
-      props.showNotification("Welcome " + localStorage.getItem('username')) // TODO: translate welcome
+      //  <span>{translate('resources.users.page.delete')} "{username}"</span>
+      props.showNotification("Welcome " + localStorage.getItem('username'), 'confirm') // TODO: translate welcome
       props.setToken(token)
     }
   }

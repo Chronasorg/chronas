@@ -39,8 +39,8 @@ import { translate, ViewTitle, showNotification } from 'admin-on-rest'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { properties } from "../../../properties"
-import {resetModActive, setFullModActive} from "../../restricted/shared/buttons/actionReducers";
-import {toggleRightDrawer as toggleRightDrawerAction} from "../actionReducers";
+import { resetModActive, setFullModActive } from "../../restricted/shared/buttons/actionReducers";
+import { toggleRightDrawer as toggleRightDrawerAction } from "../actionReducers";
 
 const fullRadian = Math.PI * 2
 
@@ -683,7 +683,7 @@ class LinkedGallery extends React.Component {
                 <IconButton
                   style={styles.buttonOpenArticle}
                   tooltipPosition="bottom-center"
-                  tooltip={hasWiki ? translate('pos.discover.hasNoSource') : translate('pos.discover.openSource')}>
+                  tooltip={hasWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
                   <RaisedButton
                     disabled={hasSource}
                     label="Open Source"
@@ -695,7 +695,7 @@ class LinkedGallery extends React.Component {
                 <IconButton
                   style={styles.buttonOpenArticle}
                   tooltipPosition="bottom-center"
-                  tooltip={translate('pos.discover.edit')}>
+                  tooltip={translate('pos.discover_component.edit')}>
                   <RaisedButton
                     label="Edit"
                     primary={true}

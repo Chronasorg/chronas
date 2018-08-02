@@ -15,7 +15,7 @@ import DeckGLOverlay from './deckGlComponents/deckgl-overlay.js'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import { setModData as setModDataAction, setModToUpdate, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
 import {
-  TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectAreaItem as selectAreaItemAction,
+  TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectEpicItem, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
 import { properties } from '../../properties'
@@ -41,8 +41,7 @@ const getRandomInt = (min, max) => {
 let animationInterval = -1
 
 class Map extends Component {
-
-  constructor(props) {
+  constructor (props) {
     super(props)
     this._onMarkerClick = this._onMarkerClick.bind(this)
     this._onDeckHover = this._onDeckHover.bind(this)
@@ -87,8 +86,13 @@ class Map extends Component {
     // axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
     //   .then((areaDefsRequest) => {
     //     changeAreaData(activeArea.data)
-        this._simulateYearChange(activeArea.data)
-        this._changeArea(activeArea.data, activeArea.label, activeArea.color, selectedItem.value)
+    this._simulateYearChange(activeArea.data)
+    this._changeArea(activeArea.data, activeArea.label, activeArea.color, selectedItem.value)
+
+    const { selectEpicItem } = this.props
+    if ((utilsQuery.getURLParameter('type') || '') === TYPE_EPIC) {
+      selectEpicItem((utilsQuery.getURLParameter('value') || ''), +(utilsQuery.getURLParameter('year') || 1000))
+    }
       // })
   }
 
@@ -289,7 +293,10 @@ class Map extends Component {
       if (typeof multiPolygonToOutline !== 'undefined') {
         let newMapStyle = mapStyle
           .setIn(['sources', 'entity-outlines', 'data'],
-            fromJS({ ...multiPolygonToOutline, properties: { color: (newColor === 'population') ? metadata[prevColor][prevActiveprovinceValue][1] : metadata[newColor][activeprovinceValue][1] } }))
+            fromJS({ ...multiPolygonToOutline,
+              properties: { color: (newColor === 'population')
+                  ? (metadata[prevColor][prevActiveprovinceValue] || [])[1]
+                  : (metadata[newColor][activeprovinceValue] || [])[1] } }))
 
         if (newColor === 'population' && prevColor && prevColor !== 'population') {
           const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
@@ -371,8 +378,7 @@ class Map extends Component {
     /** Acting on store changes **/
     if (nextProps.history.location.pathname === '/discover') {
       this.setState({ mapTimelineContainerClass: 'mapTimeline discoverActive' })
-    }
-    else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '') {
+    } else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '') {
       this.setState({ mapTimelineContainerClass: 'mapTimeline' })
     }
 
@@ -447,14 +453,14 @@ class Map extends Component {
     // selected item is EPIC?
     if (nextProps.selectedItem.type === TYPE_EPIC) {
       // contentIndex changed?
-      if (typeof nextProps.contentIndex !== "undefined" &&
-        typeof contentIndex !== "undefined" &&
+      if (typeof nextProps.contentIndex !== 'undefined' &&
+        typeof contentIndex !== 'undefined' &&
         nextProps.contentIndex !== contentIndex) {
         this._updateEpicGeo(nextProps.contentIndex)
         const content = (((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || [])
         const selectedFeature = content.filter(f => f.index === nextProps.contentIndex)[0]
         let prevFeature
-        for (let i = +nextProps.contentIndex -1; i > -1; i--) {
+        for (let i = +nextProps.contentIndex - 1; i > -1; i--) {
           const currCoords = ((content[i] || {}).geometry || {}).coordinates || []
           if (currCoords.length === 2) {
             prevFeature = content[i]
@@ -464,7 +470,6 @@ class Map extends Component {
 
         if (selectedFeature && selectedFeature.geometry.coordinates && selectedFeature.geometry.coordinates.length > 1) {
           if (prevFeature && prevFeature.geometry.coordinates && prevFeature.geometry.coordinates.length > 1) {
-
             const bbox = turf.bbox({
               'type': 'FeatureCollection',
               'features': [prevFeature, selectedFeature]
@@ -502,21 +507,21 @@ class Map extends Component {
       // TODO: only go ahead if selectedYear is starting year
 
       // setup new epic!
-      if (selectedItem.type === TYPE_EPIC && !nextProps.selectedItem.data) {
+        if (selectedItem.type === TYPE_EPIC && !nextProps.selectedItem.data) {
         // remove old geoJson // TODO: this could complicate with sequential wars
-        mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, TYPE_EPIC)
-      }
+          mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, TYPE_EPIC)
+        }
 
-      if ((nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id) {
+        if (nextProps.selectedItem.data && (nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id) {
         // draw outlines after main
-        const participants = (((nextProps.selectedItem.data || {}).data || {}).data || {}).participants
-        if (!participants) return
-        const { viewport, multiPolygonToOutlines } = this._getAreaViewportAndOutlines('ruler', '', false, false, participants)
+          const participants = (((nextProps.selectedItem.data || {}).data || {}).data || {}).participants
+          if (!participants) return
+          const { viewport, multiPolygonToOutlines } = this._getAreaViewportAndOutlines('ruler', '', false, false, participants)
 
-        if (typeof multiPolygonToOutlines !== 'undefined') {
-          const warEndYear = (((nextProps.selectedItem.data || {}).data || {}).data || {}).end
-          if (!isNaN(warEndYear)) {
-            axios.get(properties.chronasApiHost + '/areas/' + warEndYear)
+          if (typeof multiPolygonToOutlines !== 'undefined') {
+            const warEndYear = (((nextProps.selectedItem.data || {}).data || {}).data || {}).end
+            if (!isNaN(warEndYear)) {
+              axios.get(properties.chronasApiHost + '/areas/' + warEndYear)
               .then((endYearDataRes) => {
                 const endYearData = endYearDataRes.data
                 const participantFlatList = participants.reduce((acc, val) => acc.concat(val), [])
@@ -548,11 +553,11 @@ class Map extends Component {
                 })
                 this.setState({ arcData })
               })
-          }
+            }
 
           // Todo: multiPolygonToOutlines[0] has properties! does that slow things down?
-          this.setState({
-            mapStyle: this._getDirtyOrOriginalMapStyle(mapStyleDirty)
+            this.setState({
+              mapStyle: this._getDirtyOrOriginalMapStyle(mapStyleDirty)
               .setIn(['sources', 'entity-outlines', 'data'], fromJS({
                 'type': 'FeatureCollection',
                 'features': [ ]
@@ -561,25 +566,26 @@ class Map extends Component {
                 'type': 'FeatureCollection',
                 'features': [{ ...multiPolygonToOutlines[0], properties: { color: 'red' } }, { ...multiPolygonToOutlines[1], properties: { color: 'blue' } }]
               })),
-            viewport,
-            hoverInfo: null
-          })
+              viewport,
+              hoverInfo: null
+            })
+          } else {
+            this.setState({
+              mapStyle: this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['sources', 'area-hover', 'data'], fromJS({
+                'type': 'FeatureCollection',
+                'features': [ ]
+              })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+                'type': 'FeatureCollection',
+                'features': [ ]
+              })),
+              hoverInfo: null
+            })
+          }
         } else {
-          this.setState({
-            mapStyle: this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['sources', 'area-hover', 'data'], fromJS({
-              'type': 'FeatureCollection',
-              'features': [ ]
-            })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
-              'type': 'FeatureCollection',
-              'features': [ ]
-            })),
-            hoverInfo: null
-          })
-        }
-      } else {
+          //TODO: this gets called too much!
         // load initial epic data object
-        const epicWiki = nextProps.selectedItem.value
-        axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
+          const epicWiki = nextProps.selectedItem.value
+          axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
           .then((newEpicEntitiesRes) => {
             const newEpicEntities = newEpicEntitiesRes.data
 
@@ -877,11 +883,11 @@ class Map extends Component {
     const prevMapStyle = this.state.mapStyle
     let mapStyle = prevMapStyle
       .setIn(['sources', 'epicroute', 'data', 'features'], [{
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "type": "LineString",
-          "coordinates": sourceData
+        'type': 'Feature',
+        'properties': {},
+        'geometry': {
+          'type': 'LineString',
+          'coordinates': sourceData
         }
       }])
     this.setState({ mapStyle })
@@ -962,8 +968,8 @@ class Map extends Component {
         }))
     } else {
       this.setState({ markerData: this.state.markerData.filter(function (obj) {
-          return ((obj.properties || {}).t !== entityId)
-        })
+        return ((obj.properties || {}).t !== entityId)
+      })
       })
       return prevMapStyle
     }
@@ -979,13 +985,13 @@ class Map extends Component {
   _updateEpicGeo = (selectedIndex) => {
     this.setState((prevState) => {
       return { geoData: prevState.geoData.map((f) => {
-          if (selectedIndex !== -1 && f.index >= selectedIndex) {
-            f.hidden = true
-          } else {
-            f.hidden = false
-          }
-          return f
-        }) }
+        if (selectedIndex !== -1 && f.index >= selectedIndex) {
+          f.hidden = true
+        } else {
+          f.hidden = false
+        }
+        return f
+      }) }
     })
   }
 
@@ -1087,8 +1093,7 @@ class Map extends Component {
     if ((modActive.type === TYPE_MARKER || modActive.type === TYPE_METADATA) && modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    }
-    else if (modActive.type === TYPE_AREA) {
+    } else if (modActive.type === TYPE_AREA) {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = modActive.data
@@ -1146,17 +1151,17 @@ class Map extends Component {
     }
   }
 
-  _onDeckHover({x, y, object}) {
+  _onDeckHover ({ x, y, object }) {
     // const {viewState, params} = this.props;
     // const z = Math.floor(viewState.zoom);
     // const showCluster = params.cluster.value;
 
     // const { viewport } = this.state;
 
-    let hoveredItems = null;
+    let hoveredItems = null
 
     if (object) {
-      if (false /*showCluster*/) {
+      if (false /* showCluster */) {
         // hoveredItems = object.zoomLevels[z].points.sort((m1, m2) => m1.year - m2.year);
       } else {
         delete object.zoomLevels
@@ -1176,7 +1181,7 @@ class Map extends Component {
     }
 
     // x, y,
-    this.setState({ hoveredItems, hoverInfo });
+    this.setState({ hoveredItems, hoverInfo })
   }
 
   _onMarkerClick (layerClicked) {
@@ -1334,6 +1339,7 @@ const enhance = compose(
     selectValue,
     setWikiId,
     setModToUpdate,
+    selectEpicItem,
     selectMarkerItem : selectMarkerItemAction,
     setModData: setModDataAction,
     removeModData: removeModDataAction,

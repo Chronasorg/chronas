@@ -11,12 +11,12 @@ import TextField from 'material-ui/TextField';
 import IconArrowUp from 'material-ui/svg-icons/navigation/expand-less'
 import IconArrowDown from 'material-ui/svg-icons/navigation/expand-more'
 import { setYear } from './actionReducers'
-import { selectEpicItem } from '../actionReducers'
-
+import { selectEpicItem, TYPE_EPIC } from '../actionReducers'
 import Timeline from 'react-visjs-timeline'
 import './mapTimeline.scss'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import {red400} from "material-ui/styles/colors";
+import utilsQuery from "../utils/query";
 
 const start = '-000200-01-05',
   min = '-002000-01-01T00:00:00.000Z',
@@ -275,6 +275,8 @@ class MapTimeline extends Component {
       const selectedItem = groupItems.filter(el => el.id === selectedItemId)[0]
       const selectedItemDate = selectedItem.start.getFullYear()
       selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear)
+      utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
+      utilsQuery.updateQueryStringParameter('value', selectedItem.wiki)
     } else {
       setYear(clickedYear)
     }

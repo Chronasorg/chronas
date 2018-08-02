@@ -121,7 +121,7 @@ class EpicTimeline extends React.Component {
   setUpInfluenceChart = (epicData) => {
     if (!epicData || !epicData.data) return
 
-    console.error('setting up influenceChartData, this should only be done once for so many entities', epicData.length)
+    console.error('setting up influenceChartData, this should only be done once for so many entities', epicData.id)
 
     const influenceChartData = (this.props.isEntity) ? [{
         id: epicData.id,
