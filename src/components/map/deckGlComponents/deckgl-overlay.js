@@ -3,7 +3,7 @@ import { scaleQuantile } from 'd3-scale'
 import { rgb } from 'd3-color'
 import { easeCubic } from 'd3-ease'
 import rbush from 'rbush'
-import DeckGL, { WebMercatorViewport, IconLayer, PathLayer, GeoJsonLayer, ArcLayer } from 'deck.gl'
+import DeckGL, { WebMercatorViewport, IconLayer, PathLayer, GeoJsonLayer, TextLayer, ArcLayer } from 'deck.gl'
 const Arc = require('arc')
 
 const ICON_SIZE = 300
@@ -216,7 +216,8 @@ export default class DeckGLOverlay extends Component {
     this.state = {
       animatedFeature: [],
       arcs: this._getArcs(props.arcData),
-      marker: this._getMarker(props),
+      marker: [],
+      texts: [],
       // geo: props.geoData || [],
       x: 0,
       y: 0,
@@ -233,9 +234,16 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
+  componentDidMount () {
+    const { markerData, viewport, showCluster } = this.props
+    this._getMarker( {...{markerData: markerData.filter(el => el.subtype !== 'cities')} ,viewport, showCluster})
+    this._getTexts( {...{markerData: markerData.filter(el => el.subtype === 'cities')}, viewport, showCluster})
+  }
+
   componentWillReceiveProps (nextProps) {
     const { contentIndex, markerData, arcData, geoData, updateLine } = this.props
 
+    const { showCluster } = nextProps
     if (
       nextProps.arcData !== arcData || !nextProps.arcData.every((el, i) => el === arcData[i])
     ) {
@@ -247,13 +255,23 @@ export default class DeckGLOverlay extends Component {
     const { viewport } = nextProps
     const oldViewport = this.props.viewport
 
-    if (
-      (nextProps.showCluster || (this.props.showCluster !== nextProps.showCluster)) &&
+    if (this.props.showCluster !== showCluster ||
       nextProps.markerData.length !== markerData.length ||
       viewport.width !== oldViewport.width ||
-      viewport.height !== oldViewport.height
-    ) {
-      this.setState({ marker: this._getMarker(nextProps) })
+      viewport.height !== oldViewport.height) {
+
+
+      const nextIconMarker = nextProps.markerData.filter(el => el.subtype !== 'cities')
+      const nextTextMarker = nextProps.markerData.filter(el => el.subtype === 'cities')
+      const iconMarker = markerData.filter(el => el.subtype !== 'cities')
+      const textMarker = markerData.filter(el => el.subtype === 'cities')
+
+      if (nextIconMarker.length !== iconMarker.length) {
+        this.setState({ marker: this._getMarker({ ...{markerData: nextIconMarker}, viewport, showCluster}) })
+      }
+      if (nextTextMarker.length !== textMarker.length) {
+        this.setState({ texts: this._getTexts({ ...{markerData: nextTextMarker}, viewport}) })
+      }
     }
 
     if (interval !== -1 && (nextProps.geoData || []).length === 0) {
@@ -326,7 +344,7 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
-  _getMarker ({ markerData, viewport }) {
+  _getTexts ({ markerData, viewport }) {
     if (!markerData) {
       return false
     }
@@ -348,38 +366,65 @@ export default class DeckGLOverlay extends Component {
     tree.clear()
     tree.load(markerData)
 
-    for (let z = 0; z <= 20; z++) {
-      const radius = ICON_SIZE / 2 / Math.pow(2, z)
+    return markerData
+  }
 
-      markerData.forEach(p => {
-        if (p.zoomLevels[z] === undefined) {
-          // this point does not belong to a cluster
-          const { x, y } = p
+  _getMarker ({ markerData, viewport, showCluster }) {
+    if (!markerData) {
+      return false
+    }
 
-          // find all points within radius that do not belong to a cluster
-          const neighbors = tree
-            .search({
-              minX: x - radius,
-              minY: y - radius,
-              maxX: x + radius,
-              maxY: y + radius
-            })
-            .filter(neighbor => neighbor.zoomLevels[z] === undefined)
+    const tree = this._tree
 
-          // only show the center point at this zoom level
-          neighbors.forEach(neighbor => {
-            if (neighbor === p) {
-              p.zoomLevels[z] = {
-                icon: getIconName(neighbors.length),
-                size: getIconSize(neighbors.length),
-                points: neighbors
+    const transform = new WebMercatorViewport({
+      ...viewport,
+      zoom: 0
+    })
+
+    markerData.forEach(p => {
+      const screenCoords = transform.project(p.coo)
+      p.x = screenCoords[0]
+      p.y = screenCoords[1]
+      p.zoomLevels = []
+    })
+
+    tree.clear()
+    tree.load(markerData)
+
+    if (showCluster) {
+      for (let z = 0; z <= 20; z++) {
+        const radius = ICON_SIZE / 2 / Math.pow(2, z)
+
+        markerData.forEach(p => {
+          if (p.zoomLevels[z] === undefined) {
+            // this point does not belong to a cluster
+            const { x, y } = p
+
+            // find all points within radius that do not belong to a cluster
+            const neighbors = tree
+              .search({
+                minX: x - radius,
+                minY: y - radius,
+                maxX: x + radius,
+                maxY: y + radius
+              })
+              .filter(neighbor => neighbor.zoomLevels[z] === undefined)
+
+            // only show the center point at this zoom level
+            neighbors.forEach(neighbor => {
+              if (neighbor === p) {
+                p.zoomLevels[z] = {
+                  icon: getIconName(neighbors.length),
+                  size: getIconSize(neighbors.length),
+                  points: neighbors
+                }
+              } else {
+                neighbor.zoomLevels[z] = null
               }
-            } else {
-              neighbor.zoomLevels[z] = null
-            }
-          })
-        }
-      })
+            })
+          }
+        })
+      }
     }
     return markerData
   }
@@ -421,7 +466,7 @@ export default class DeckGLOverlay extends Component {
 
   render () {
     const { viewport, strokeWidth, showCluster, geoData, setTooltip, onHover, onMarkerClick } = this.props
-    const { animatedFeature, arcs, marker /* geo */ } = this.state
+    const { animatedFeature, arcs, marker, texts /* geo */ } = this.state
 
     const z = Math.floor(viewport.zoom)
     const size = showCluster ? 1 : Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
@@ -447,6 +492,21 @@ export default class DeckGLOverlay extends Component {
           getIcon: updateTrigger,
           getSize: updateTrigger
         }
+      }))
+    }
+
+    if (texts && texts.length > 0) {
+      layers.push(new TextLayer({
+        id: 'text-layer',
+        data: texts,
+        pickable: true,
+        getPosition: d => d.coo,
+        getText: d => d.name,
+        getSize: 32,
+        getAngle: 0,
+        getTextAnchor: 'middle',
+        getAlignmentBaseline: 'center',
+        onHover: ({object}) => setTooltip(`${object.name}\n${object.year} ${object.end}`)
       }))
     }
 

@@ -40,7 +40,7 @@ const styles = {
   },
 };
 
-const allMarkers = ['Politician', 'Battles']
+const allMarkers = ['Politicians', 'Battles', 'Cities']
 
 const allEpics = ['War', 'Battle', 'Campaign', 'Exploration', 'Siege', 'Voyage', 'Other Epic']
 

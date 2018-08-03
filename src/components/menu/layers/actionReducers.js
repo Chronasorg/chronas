@@ -107,7 +107,7 @@ export const toggleEpic = epic => ({
 
 /** Reducers **/
 
-export const mapStylesReducer = (initial = { basemap: 'watercolor', showProvinceBorders: true, 'popOpacity': false, 'clusterMarkers': true }) =>
+export const mapStylesReducer = (initial = { basemap: 'watercolor', showProvinceBorders: true, 'popOpacity': false, 'clusterMarkers': false }) =>
   (prevMapStyle = initial, { type, payload }) => {
     switch (type) {
       case SET_POPOPACITY:

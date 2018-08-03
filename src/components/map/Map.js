@@ -968,7 +968,8 @@ class Map extends Component {
         }))
     } else {
       this.setState({ markerData: this.state.markerData.filter(function (obj) {
-        return ((obj.properties || {}).t !== entityId)
+        return ((obj.properties || {}).t !== entityId) && (obj.subtype !== entityId)
+        // return ((obj.properties || {}).t !== entityId)
       })
       })
       return prevMapStyle
@@ -1093,7 +1094,8 @@ class Map extends Component {
     if ((modActive.type === TYPE_MARKER || modActive.type === TYPE_METADATA) && modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    } else if (modActive.type === TYPE_AREA) {
+    }
+    else if (modActive.type === TYPE_AREA) {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = modActive.data
@@ -1186,7 +1188,7 @@ class Map extends Component {
 
   _onMarkerClick (layerClicked) {
     const itemName = (layerClicked.object || {}).name || layerClicked.properties.n
-    const wikiId = (layerClicked.object || {}).wiki || layerClicked.properties.w
+    const wikiId = (layerClicked.object || {}).wiki || (layerClicked.properties || {}).w || (layerClicked.object || {})._id
 
     const prevMapStyle = this.state.mapStyle
     let mapStyle = prevMapStyle
@@ -1207,6 +1209,7 @@ class Map extends Component {
     } else {
       utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
       utilsQuery.updateQueryStringParameter('value', wikiId)
+      // TODO: check a good marker against a bad one go on
       this.props.selectMarkerItem(wikiId, { ...(layerClicked.object || layerClicked.properties), 'coo': (layerClicked.object || {}).coo || layerClicked.geometry.coordinates })
     }
     if (this.props.modActive.type === TYPE_MARKER) return

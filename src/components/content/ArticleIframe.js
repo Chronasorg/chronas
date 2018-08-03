@@ -164,7 +164,7 @@ class ArticleIframe extends React.Component {
     </div>
 
     if (noWiki) { return <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
-      <span>No Wiki found for <b>{selectedItem.value}</b>. Consider adding one <Link to={modUrl}>here</Link></span>
+      <span>No Wiki found for <b>{JSON.stringify((selectedItem || {}).value || "n/a")}</b>. Consider adding one <Link to={modUrl}>here</Link></span>
       { modMenu }
     </div> // LoadingCompass
     }
