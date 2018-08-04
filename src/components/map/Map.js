@@ -1220,7 +1220,7 @@ class Map extends Component {
     const { hoverInfo, popupInfo } = this.state
     if (hoverInfo) {
       return (
-        <Popup longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
+        <Popup className='mapHoverTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
           <div className='county-info'>{JSON.stringify(hoverInfo)}</div>
         </Popup>
       )

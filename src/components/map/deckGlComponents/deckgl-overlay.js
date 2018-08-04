@@ -4,6 +4,7 @@ import { rgb } from 'd3-color'
 import { easeCubic } from 'd3-ease'
 import rbush from 'rbush'
 import DeckGL, { WebMercatorViewport, IconLayer, PathLayer, GeoJsonLayer, TextLayer, ArcLayer } from 'deck.gl'
+import TagmapLayer from './tagmap-layer';
 const Arc = require('arc')
 
 const ICON_SIZE = 300
@@ -236,7 +237,7 @@ export default class DeckGLOverlay extends Component {
 
   componentDidMount () {
     const { markerData, viewport, showCluster } = this.props
-    this._getMarker( {...{markerData: markerData.filter(el => el.subtype !== 'cities')} ,viewport, showCluster})
+    this._getMarker( {...{markerData: markerData},viewport, showCluster}) // .filter(el => el.subtype !== 'cities')
     this._getTexts( {...{markerData: markerData.filter(el => el.subtype === 'cities')}, viewport, showCluster})
   }
 
@@ -261,12 +262,12 @@ export default class DeckGLOverlay extends Component {
       viewport.height !== oldViewport.height) {
 
 
-      const nextIconMarker = nextProps.markerData.filter(el => el.subtype !== 'cities')
+      const nextIconMarker = nextProps.markerData/*.filter(el => el.subtype !== 'cities')*/
       const nextTextMarker = nextProps.markerData.filter(el => el.subtype === 'cities')
-      const iconMarker = markerData.filter(el => el.subtype !== 'cities')
+      const iconMarker = markerData/*.filter(el => el.subtype !== 'cities')*/
       const textMarker = markerData.filter(el => el.subtype === 'cities')
 
-      if (nextIconMarker.length !== iconMarker.length) {
+      if (this.props.showCluster !== showCluster || nextIconMarker.length !== iconMarker.length) {
         this.setState({ marker: this._getMarker({ ...{markerData: nextIconMarker}, viewport, showCluster}) })
       }
       if (nextTextMarker.length !== textMarker.length) {
@@ -469,7 +470,7 @@ export default class DeckGLOverlay extends Component {
     const { animatedFeature, arcs, marker, texts /* geo */ } = this.state
 
     const z = Math.floor(viewport.zoom)
-    const size = showCluster ? 1 : Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
+    const size = /*showCluster ? 1 :*/ Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
     const updateTrigger = z * showCluster
 
     // console.debug("remder iconlayer with data", iconData)
@@ -478,14 +479,16 @@ export default class DeckGLOverlay extends Component {
     if (marker && marker.length > 0) {
       layers.push(new IconLayer({
         id: 'icon',
+        autoHighlight: true,
+        highlightColor: [255, 0, 0, 255],
         data: marker,
         pickable: true,
         iconAtlas: '/images/location-icon-atlas.png',
         iconMapping,
         sizeScale: ICON_SIZE * size * window.devicePixelRatio,
         getPosition: d => d.coo,
-        getIcon: d => (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'),
-        getSize: d => (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 10),
+        getIcon: d => (d.subtype === 'cities') ? 'marker-10' : (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'),
+        getSize: d => (d.subtype === 'cities') ? 4 : 10 /*(showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 10)*/,
         onHover: onHover,
         onClick: onMarkerClick,
         updateTriggers: {
@@ -496,18 +499,27 @@ export default class DeckGLOverlay extends Component {
     }
 
     if (texts && texts.length > 0) {
-      layers.push(new TextLayer({
+      layers.push(new TagmapLayer({
+        id: 'cities-layer',
+        data: texts,
+        getWeight: x => /*normalize(x.pop) ||*/ Math.random()*100,
+        getLabel: d => d.name,
+        getPosition: d => d.coo,
+        minFontSize: 24,
+        maxFontSize: 32 * 2 - 14
+      })/*new TextLayer({
         id: 'text-layer',
         data: texts,
-        pickable: true,
+        pickable: false,
         getPosition: d => d.coo,
         getText: d => d.name,
         getSize: 32,
         getAngle: 0,
         getTextAnchor: 'middle',
         getAlignmentBaseline: 'center',
-        onHover: ({object}) => setTooltip(`${object.name}\n${object.year} ${object.end}`)
-      }))
+        // onClick: onMarkerClick,
+        // onHover: onHover//({object}) => setTooltip(`${object.name}\n${object.year} ${object.end}`)
+      })*/)
     }
 
     if (arcs && arcs.length > 0) {

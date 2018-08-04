@@ -119,48 +119,6 @@ const utils = {
     }
   }, // probably won't need
 
-  /*
-   var textOnCurve = function(fontSize,text,offset,x1,y1,x2,y2,x3,y3,x4,y4){
-   // exaggerate x2,y2
-
-   ctx.save();
-   ctx.textAlign = "center";
-   var widths = [];
-   for(var i = 0; i < text.length; i ++){
-
-   var availableLength = Math.sqrt(((x1-x2) * (x1-x2)) + ((y1-y2) * (y1-y2)) )
-
-   ctx.shadowColor = "white";
-   ctx.shadowOffsetX = 0;
-   ctx.shadowOffsetY = 0;
-   ctx.shadowBlur = 7;
-   ctx.font = fontSize+"px Tahoma black";
-
-   while ( ctx.measureText(text).width * 1.8 < availableLength && fontSize < 400 ) {
-   fontSize++;
-   ctx.font = fontSize+"px Tahoma black";
-   }
-
-   widths[widths.length] = ctx.measureText(text[i]).width;
-   offset = Math.round(availableLength / 2)
-   }
-   var ch = curveHelper(x1,y1,x2,y2,x3,y3,x4,y4);
-   var pos = offset;
-   var cpos = 0;
-
-   for(var i = 0; i < text.length; i ++){
-   pos += widths[i] / 2;
-   cpos = ch.forward(pos);
-   ch.tangent(cpos);
-   ctx.setTransform(ch.vect.x, ch.vect.y, -ch.vect.y, ch.vect.x, ch.vec.x, ch.vec.y);
-   ctx.fillText(text[i],0,0);
-
-   pos += widths[i] / 2;
-   }
-   ctx.restore();
-   },
-   */
-
 // helper function locates points on bezier curves.
   curveHelper: function (x1, y1, x2, y2, x3, y3, x4, y4) {
     var tx1, ty1, tx2, ty2, tx3, ty3, tx4, ty4
@@ -279,16 +237,16 @@ const utils = {
     for (var key in myId) {
       if (postfix === 'r') {
         tmpName = ''
-        if (metadata['ruler'][key]) tmpName = metadata['ruler'][key][0]
+        if (metadata['ruler'][key]) tmpName = metadata['ruler'][key][0] || ''
       } else if (postfix === 'e') {
         tmpName = ''
-        if (metadata['religion'][key]) tmpName = metadata['religion'][key][0]
+        if (metadata['religion'][key]) tmpName = metadata['religion'][key][0] || ''
       } else if (postfix === 'g') {
         tmpName = ''
-        if (metadata['religionGeneral'][key]) tmpName = metadata['religionGeneral'][key][0]
+        if (metadata['religionGeneral'][key]) tmpName = metadata['religionGeneral'][key][0] || ''
       } else if (postfix === 'c') {
         tmpName = ''
-        if (metadata['culture'][key]) tmpName = metadata['culture'][key][0]
+        if (metadata['culture'][key]) tmpName = metadata['culture'][key][0] || ''
       }
 
       for (var i1 = 1; i1 < myId[key].length; i1++) {

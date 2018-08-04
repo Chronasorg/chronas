@@ -333,3 +333,12 @@ button:focus {
     text-shadow: 2px 2px rgba(0, 0, 0, 0.8);
   }
 }
+
+.mapHoverTooltip {
+  pointer-events: none;
+}
+.mapboxgl-popup-content {
+  pointer-events: none !important;
+  border: 2px solid black;
+  background: rgba(220,220,220,0.8);
+}
