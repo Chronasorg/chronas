@@ -8,6 +8,7 @@ import IconButton from 'material-ui/IconButton'
 import FontIcon from 'material-ui/FontIcon'
 import { toggleMenuDrawer as toggleMenuDrawerAction } from './actionReducers';
 import {grey600, grey400, chronasDark} from '../../styles/chronasColors';
+import {properties, themes} from '../../properties'
 import {backIcon, drawer} from '../../styles/chronasStyleComponents';
 
 import Responsive from './Responsive';
@@ -24,7 +25,7 @@ class MenuDrawer extends PureComponent {
   }
 
   render() {
-    const { menuDrawerOpen, setMenuDrawerVisibility, children, muiTheme } = this.props;
+    const { menuDrawerOpen, setMenuDrawerVisibility, children, theme } = this.props;
 
     return (
       <Responsive
@@ -35,20 +36,20 @@ class MenuDrawer extends PureComponent {
         }
         medium={
           <Drawer
-            containerStyle={{ overflow: 'none', backgroundColor: '#eceff1', paddingLeft: 56 }} style={{ overflow: 'none', zIndex: 9}} open={menuDrawerOpen}>
+            containerStyle={{ overflow: 'none', backgroundColor: themes[theme].backColors[0], paddingLeft: 56 }} style={{ overflow: 'none', zIndex: 9}} open={menuDrawerOpen}>
             <AppBar
               title={
                 <span style={{
-                  color: chronasDark,
+                  color: themes[theme].foreColors[0],
                   fontSize: 20
                 }}
                 >LAYERS</span>
               }
               showMenuIconButton={false}
-              style={{backgroundColor: '#eceff1'}}
+              style={{ backgroundColor: themes[theme].backColors[0] }}
               iconElementRight={
-                <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this.handleClose()}>
-                  <FontIcon className="fa fa-chevron-left"/>
+                <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }} onClick={() => this.handleClose()}>
+                  <FontIcon style={{ color: themes[theme].foreColors[0] }} className="fa fa-chevron-left"/>
                 </IconButton>
               }
             />

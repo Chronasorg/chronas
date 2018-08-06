@@ -9,7 +9,7 @@ import spacing from 'material-ui/styles/spacing';
 
 const customTheme = {
   spacing: spacing,
-  fontFamily: 'Roboto, sans-serif',
+  fontFamily: 'Cinzel, serif',
   drawer : {
     width: 50
   },

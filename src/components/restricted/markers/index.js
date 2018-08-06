@@ -115,18 +115,18 @@ export const MarkerEdit = (props) => {
       />
     </BottomNavigation><Create title={'Edit Article'}  {...props}>
     {(props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit'>
-      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={properties.linkedTypes} label='resources.markers.fields.type' />
+      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.type + '|' + props.selectedItem.value.subtype} choices={properties.linkedTypes} label='resources.markers.fields.type' />
       <TextInput source='name' defaultValue={props.selectedItem.value.name} label='resources.markers.fields.name' />
-      <DisabledInput source='wiki' defaultValue={props.selectedItem.value.wiki} label='resources.markers.fields.url' />
+      <DisabledInput source='wiki' defaultValue={'https://en.wikipedia.org/wiki/' + props.selectedItem.value._id} label='resources.markers.fields.url' />
       <ModButton modType='marker' />
-      <TextInput source='coo[0]' onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={props.selectedItem.value.coo[0]} label='resources.markers.fields.lat' />
-      <TextInput source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={props.selectedItem.value.coo[1]} label='resources.markers.fields.lng' />
+      <TextInput source='coo[0]' onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0]} label='resources.markers.fields.lat' />
+      <TextInput source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1]} label='resources.markers.fields.lng' />
       <NumberInput validate={required} defaultValue={props.selectedItem.value.year} source='year' label='resources.markers.fields.year' type='number' />
       <LongTextInput source='geojson' label='resources.linked.fields.geojson' defaultValue={props.selectedItem.value.geojson || ''} />
       <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
-      <DeleteButton resource='markers' id={props.selectedItem.value.wiki} {...props} />
+      <DeleteButton resource='markers' id={props.selectedItem.value._id} {...props} />
     </MarkerForm> : <MarkerForm hidesavebutton>
-      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.t} choices={properties.linkedTypes} label='resources.markers.fields.type' />
+      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.type} choices={properties.linkedTypes} label='resources.markers.fields.type' />
       <h4>click on marker on the map which you like to modify</h4></MarkerForm>}
   </Create></div>
 }

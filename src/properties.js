@@ -24,7 +24,7 @@ export const properties = {
     { name: '[Wiki Article] Cities -> Cities', id: 'w|cities' },
     { name: '[Wiki Article] Cities -> Castles', id: 'w|castles' },
     { name: '[Wiki Article] People -> Military', id: 'w|military' },
-    { name: '[Wiki Article] People -> Politicians', id: 'politicians' },
+    { name: '[Wiki Article] People -> Politicians', id: 'w|politicians' },
     { name: '[Wiki Article] People -> Explorers', id: 'w|explorers' },
     { name: '[Wiki Article] People -> Scientists', id: 'w|scientists' },
     { name: '[Wiki Article] People -> Artists', id: 'w|artists' },
@@ -75,34 +75,51 @@ export const properties = {
 export const themes = {
   default: {
     foreColors: ["#110617",
+      "#383B32",
       "#383B32"],
     backColors: ["#ababab",
+      "#cfcfcf",
       "#cfcfcf"],
-    highlightColors: ["#ffcc00"],
-    gradientColors: ["linear-gradient(180deg,#fff 0,#F2F2F2)"]
+    highlightColors: ["rgba(255,204,0,200)"],
+    gradientColors: ["linear-gradient(180deg,#fff 0,#F2F2F2)"],
+    className: "defaultTheme"
   },
   light: {
-    foreColors: ["#110617",
+    foreColors: ["#6a6a6a",
+      "#494949",
       "#383B32"],
-    backColors: ["#F2F2F2",
-      "#F2F2F2"],
-    highlightColors: ["#ffcc00"],
-    gradientColors: ["linear-gradient(180deg,#fff 0,#F2F2F2)"]
+    backColors: ["#ffffff",
+      "#F2F2F2",
+      "#cbcbcb"],
+    highlightColors: ["rgba(255,204,0,200)"],
+    gradientColors: ["linear-gradient(180deg,#fff 0,#F2F2F2)"],
+    className: "lightTheme"
   },
   dark: {
     foreColors: ["#F2F2F2",
-      "#fff"],
+      "#e2e2e2",
+      "#cbcbcb"],
     backColors: ["#333",
+      "#171717",
       "#000"],
-    highlightColors: ["#ffcc00"],
-    gradientColors: ["linear-gradient(180deg,#333 0,#000)"]
+    highlightColors: ["rgba(255,204,0,200)"],
+    gradientColors: ["linear-gradient(180deg,#333 0,#000)"],
+    className: "darkTheme"
   },
   luther: {
     foreColors: ["#fff3d3",
+      "#e9caab",
       "#e9caab"],
     backColors: ["#011c31",
+      "#451c2e",
       "#451c2e"],
-    highlightColors: ["#451c2e"],
-    gradientColors: ["linear-gradient(180deg,#011c31 0,#451c2e)"]
+    highlightColors: ["rgba(69,28,46,200)"],
+    gradientColors: ["linear-gradient(180deg,#011c31 0,#451c2e)"],
+    className: "lutherTheme"
   }
+}
+
+export const RGBAtoArray = (str) => {
+  var match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d{1,3})\))?/);
+  return match ? [+match[1], +match[2], +match[3], +(match[4] || 255)] : [0,0,0,0];
 }

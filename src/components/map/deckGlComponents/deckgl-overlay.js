@@ -4,8 +4,9 @@ import { rgb } from 'd3-color'
 import { easeCubic } from 'd3-ease'
 import rbush from 'rbush'
 import DeckGL, { WebMercatorViewport, IconLayer, PathLayer, GeoJsonLayer, TextLayer, ArcLayer } from 'deck.gl'
-import TagmapLayer from './tagmap-layer';
 const Arc = require('arc')
+import TagmapLayer from './tagmap-layer';
+import { RGBAtoArray } from '../../../properties'
 
 const ICON_SIZE = 300
 const iconMapping = {
@@ -236,15 +237,15 @@ export default class DeckGLOverlay extends Component {
   }
 
   componentDidMount () {
-    const { markerData, viewport, showCluster } = this.props
-    this._getMarker( {...{markerData: markerData},viewport, showCluster}) // .filter(el => el.subtype !== 'cities')
+    const { markerData, viewport, sizeScale, showCluster } = this.props
+    this._getMarker( {...{markerData: markerData}, sizeScale, viewport, showCluster}) // .filter(el => el.subtype !== 'cities')
     this._getTexts( {...{markerData: markerData.filter(el => el.subtype === 'cities')}, viewport, showCluster})
   }
 
   componentWillReceiveProps (nextProps) {
     const { contentIndex, markerData, arcData, geoData, updateLine } = this.props
 
-    const { showCluster } = nextProps
+    const { showCluster, sizeScale } = nextProps
     if (
       nextProps.arcData !== arcData || !nextProps.arcData.every((el, i) => el === arcData[i])
     ) {
@@ -268,7 +269,7 @@ export default class DeckGLOverlay extends Component {
       const textMarker = markerData.filter(el => el.subtype === 'cities')
 
       if (this.props.showCluster !== showCluster || nextIconMarker.length !== iconMarker.length) {
-        this.setState({ marker: this._getMarker({ ...{markerData: nextIconMarker}, viewport, showCluster}) })
+        this.setState({ marker: this._getMarker({ ...{markerData: nextIconMarker}, sizeScale, viewport, showCluster}) })
       }
       if (nextTextMarker.length !== textMarker.length) {
         this.setState({ texts: this._getTexts({ ...{markerData: nextTextMarker}, viewport}) })
@@ -350,8 +351,6 @@ export default class DeckGLOverlay extends Component {
       return false
     }
 
-    const tree = this._tree
-
     const transform = new WebMercatorViewport({
       ...viewport,
       zoom: 0
@@ -363,9 +362,6 @@ export default class DeckGLOverlay extends Component {
       p.y = screenCoords[1]
       p.zoomLevels = []
     })
-
-    tree.clear()
-    tree.load(markerData)
 
     return markerData
   }
@@ -393,10 +389,11 @@ export default class DeckGLOverlay extends Component {
     tree.load(markerData)
 
     if (showCluster) {
+      const sizeScale = ICON_SIZE *  Math.min(Math.pow(1.5, viewport.zoom - 10), 1) * window.devicePixelRatio
       for (let z = 0; z <= 20; z++) {
-        const radius = ICON_SIZE / 2 / Math.pow(2, z)
+        const radius = sizeScale / Math.sqrt(2) / Math.pow(2, z) //ICON_SIZE / 2 / Math.pow(2, z)
 
-        markerData.forEach(p => {
+        markerData.filter(el => el.subtype !== 'cities').forEach(p => {
           if (p.zoomLevels[z] === undefined) {
             // this point does not belong to a cluster
             const { x, y } = p
@@ -466,9 +463,8 @@ export default class DeckGLOverlay extends Component {
   // }
 
   render () {
-    const { viewport, strokeWidth, showCluster, geoData, setTooltip, onHover, onMarkerClick } = this.props
+    const { viewport, strokeWidth, showCluster, geoData, setTooltip, onHover, theme, onMarkerClick } = this.props
     const { animatedFeature, arcs, marker, texts /* geo */ } = this.state
-
     const z = Math.floor(viewport.zoom)
     const size = /*showCluster ? 1 :*/ Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
     const updateTrigger = z * showCluster
@@ -480,7 +476,7 @@ export default class DeckGLOverlay extends Component {
       layers.push(new IconLayer({
         id: 'icon',
         autoHighlight: true,
-        highlightColor: [255, 0, 0, 255],
+        highlightColor: RGBAtoArray(theme.highlightColors[0]),
         data: marker,
         pickable: true,
         iconAtlas: '/images/location-icon-atlas.png',
@@ -489,7 +485,7 @@ export default class DeckGLOverlay extends Component {
         getPosition: d => d.coo,
         getIcon: d => (d.subtype === 'cities') ? 'marker-10' : (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'),
         getSize: d => (d.subtype === 'cities') ? 4 : 10 /*(showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 10)*/,
-        onHover: onHover,
+        onHover: e => onHover(e),
         onClick: onMarkerClick,
         updateTriggers: {
           getIcon: updateTrigger,
@@ -507,19 +503,7 @@ export default class DeckGLOverlay extends Component {
         getPosition: d => d.coo,
         minFontSize: 24,
         maxFontSize: 32 * 2 - 14
-      })/*new TextLayer({
-        id: 'text-layer',
-        data: texts,
-        pickable: false,
-        getPosition: d => d.coo,
-        getText: d => d.name,
-        getSize: 32,
-        getAngle: 0,
-        getTextAnchor: 'middle',
-        getAlignmentBaseline: 'center',
-        // onClick: onMarkerClick,
-        // onHover: onHover//({object}) => setTooltip(`${object.name}\n${object.year} ${object.end}`)
-      })*/)
+      }))
     }
 
     if (arcs && arcs.length > 0) {

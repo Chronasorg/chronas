@@ -104,9 +104,8 @@ class ProvinceTimeline extends React.Component {
   }
 
   render () {
-    const { timelineOptions } = this.state
-    const { selectedWiki } = this.state
-    const { activeArea, selectedItem, selectedYear, provinceEntity, metadata } = this.props
+    const { timelineOptions, selectedWiki } = this.state
+    const { activeArea, history, selectedItem, selectedYear, provinceEntity, metadata, deselectItem } = this.props
     const contentStyle = {
       padding: '8px 0px 0px 8px',
       height: '100%',
@@ -168,7 +167,7 @@ class ProvinceTimeline extends React.Component {
           clickHandler={this._onClickTimeline.bind(this)}
         />
         <div style={contentStyle}>
-          <ArticleIframe customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } selectedItem={ selectedItem } />
+          <ArticleIframe history={history} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } selectedItem={ selectedItem } deselectItem={deselectItem} />
         </div>
       </div>
     )

@@ -13,6 +13,7 @@ import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
+import SVG from 'react-inlinesvg'
 import { Link } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
@@ -23,11 +24,22 @@ import { toggleMenuDrawer as toggleMenuDrawerAction, setActiveMenu as setActiveM
 import { toggleRightDrawer as toggleRightDrawerAction } from '../content/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
-import mainLogo from '../../../public/images/logoChronasWhite.png'
 import { logout, setToken } from './authentication/actionReducers'
 import { themes } from '../../properties'
 
 const styles = {
+  mainLogo: {
+    marginBottom: '24px',
+    width: '50px',
+    color: 'rgb(255, 255, 255)',
+    marginLeft: '-6px',
+    marginTop: '-8px',
+    'svg': {
+      'g': {
+        'fill': 'red'
+      }
+    }
+  },
   main: {
     display: 'flex',
     flexDirection: 'column',
@@ -35,10 +47,12 @@ const styles = {
     height: '100%',
     padding: '8px 4px'
   },
-  mainLogo: {
-    width: '64px',
-    color: 'rgb(255, 255, 255)',
-    marginLeft: '-16px'
+  topMenu: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    height: '100%',
+    padding: '8px 4px'
   },
   bottomMenu: {
     display: 'flex',
@@ -47,7 +61,7 @@ const styles = {
     height: '100%',
     padding: '8px 4px'
   }
-};
+}
 
 class Menu extends PureComponent {
 
@@ -67,15 +81,17 @@ class Menu extends PureComponent {
     logout()
   }
 
+
   render() {
     const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, hasDashboard, onMenuTap, resources, theme, translate } = this.props;
     const isLoggedIn = userDetails.token !== ''
     const username = localStorage.getItem('username')
 
     return <div style={styles.main}>
-      <div className="topMenuItems">
+      <div style={styles.topMenu} className="topMenuItems">
         <IconButton
           key={'info'}
+          style={ styles.mainLogo }
           containerElement={<Link to="/info" />}
           tooltipPosition="bottom-right"
           tooltip={translate("pos.about")}
@@ -83,15 +99,21 @@ class Menu extends PureComponent {
           onClick={() => localStorage.setItem("info_section", "about")}
           iconStyle={styles.mainLogo}
         >
-          <img src={mainLogo} alt='chronas' />
+          <SVG
+            className={ ("logoMenuContainer " + themes[theme].className) }
+            src="/images/newLogo10.svg"
+          >
+            CHRONAS
+          </SVG>
         </IconButton>
         <IconButton
+          style={{ marginTop: '32px' }}
           key={'layers'}
           tooltipPosition="bottom-right"
           tooltip={translate('pos.layers')}
           tooltipStyles={tooltip}
           onClick={() => toggleMenuDrawer()}
-          iconStyle={{color: themes[theme].foreColors[0]}}
+          iconStyle={{ color: themes[theme].foreColors[0] }}
         >
           <LayersIcon
             hoverColor={chronasMainColor}

@@ -36,6 +36,7 @@ export default {
     search: 'Search',
     map: '',
     layers: 'Layers',
+    loading: 'loading...',
     configuration: 'Configuration',
     discover: 'Discover',
     discover_label: 'Discover the year ',

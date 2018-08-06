@@ -12,9 +12,10 @@ import ChartSunburst from './Charts/ChartSunburst'
 import LinkedGallery from './contentMenuItems/LinkedGallery'
 import LinkedQAA from './contentMenuItems/LinkedQAA'
 import { setYear  as setYearAction} from '../map/timeline/actionReducers'
-import {selectValue, setEpicContentIndex, WIKI_PROVINCE_TIMELINE} from '../map/actionReducers'
+import {selectValue, deselectItem, setEpicContentIndex, WIKI_PROVINCE_TIMELINE} from '../map/actionReducers'
 import InfluenceChart from './Charts/ChartArea'
 import ArticleIframe from './ArticleIframe'
+import { themes } from '../../properties'
 
 /**
  * Non-linear steppers allow users to enter a multi-step flow at any point.
@@ -36,6 +37,7 @@ const styles = {
     // whiteSpace: 'nowrap'
   },
   stepContainer: {
+    maxHeight: '40px'
     // whiteSpace: 'nowrap',
     // textOverflow: 'ellipsis',
     // overflow: 'hidden'
@@ -88,7 +90,7 @@ class EpicTimeline extends React.Component {
   };
 
   getStepContent (stepIndex) {
-    const { epicData, selectedItem, rulerProps } =  this.props
+    const { deselectItem, epicData, selectedItem, rulerProps, history } =  this.props
     const { selectedWiki, epicLinkedArticles, influenceChartData  } = this.state
     const itemTyep = (epicLinkedArticles[stepIndex] || {}).type
     const hasChart = (influenceChartData && influenceChartData.length > 0)
@@ -98,7 +100,7 @@ class EpicTimeline extends React.Component {
       return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
     } else {
       const wikiUrl = (epicLinkedArticles[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || (rulerProps || {})[2] || -1
-      return  <ArticleIframe hasChart={ hasChart } isEntity={ this.props.isEntity } selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} selectedWiki={ selectedWiki || wikiUrl} />
+      return  <ArticleIframe history={history} hasChart={ hasChart } isEntity={ this.props.isEntity } deselectItem={deselectItem} selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} selectedWiki={ selectedWiki || wikiUrl} />
     }
   }
 
@@ -233,7 +235,7 @@ class EpicTimeline extends React.Component {
 
   render () {
     const { epicMeta, epicLinkedArticles, stepIndex, selectedWiki, linkedMediaItems, linkedQAAItems, influenceChartData, translate, iframeLoading } = this.state
-    const { activeContentMenuItem, activeAreaDim, epicData, rulerProps, setHasQuestions, isEntity, newWidth, history, selectedYear, setContentMenuItem, linkedItems, sunburstData } = this.props
+    const { activeContentMenuItem, activeAreaDim, epicData, rulerProps, setHasQuestions, isEntity, newWidth, history, selectedYear, setContentMenuItem, linkedItems, sunburstData, theme } = this.props
 
     const contentDetected = epicLinkedArticles.length !== 0
 
@@ -252,15 +254,15 @@ class EpicTimeline extends React.Component {
         { influenceChartData && influenceChartData.length > 0 && <div style={{ height: (!isEntity) ? '256px' : '200px', width: '100%' }}>
           <InfluenceChart epicMeta={isEntity ? false : epicMeta} rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div> }
-        { contentDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 248px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden' }}>
+        { contentDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 248px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden', background: themes[theme].gradientColors[0] }}>
           <FlatButton backgroundColor={(rulerProps || {})[1] || 'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(epicMeta || {}).title || (rulerProps || {})[0] || 'Epic Main'} onClick={this._selectMainArticle.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}
             orientation='vertical'
-            style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
+            style={{ float: 'left', width: '100%', background:  'transparent', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
             {epicLinkedArticles.map((epicContent, i) => (
               <Step key={i} style={ styles.stepContainer}>
-                <StepButton iconContainerStyle={{ background: (( (+(epicLinkedArticles[i].date) <= +selectedYear) && (+selectedYear < +((epicLinkedArticles[i+1] || {}).date || 2000)) ) ? 'red' : 'inherit') }} icon={<span style={styles.stepLabel}>{epicLinkedArticles[i].date}</span>} onClick={() => { console.debug(i, epicLinkedArticles[i].date); this._selectStepButton(i, epicLinkedArticles[i].date) }}>
+                <StepButton icon={<span style={{...styles.stepLabel, color: themes[theme].foreColors[0], background: (( (+(epicLinkedArticles[i].date) <= +selectedYear) && (+selectedYear < +((epicLinkedArticles[i+1] || {}).date || 2000)) ) ? themes[theme].highlightColors[0] : themes[theme].backColors[0]) }}>{epicLinkedArticles[i].date}</span>} onClick={() => { console.debug(i, epicLinkedArticles[i].date); this._selectStepButton(i, epicLinkedArticles[i].date) }}>
                   <div style={{
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
@@ -269,7 +271,8 @@ class EpicTimeline extends React.Component {
                     width: '20$',
                     left: '60px',
                     top: '16px',
-                    fontSize: '15px'
+                    fontSize: '15px',
+                    color: themes[theme].foreColors[0]
                   }}>
                     {epicContent.name || epicContent.wiki}
                   </div>
@@ -281,7 +284,8 @@ class EpicTimeline extends React.Component {
                     width: '20$',
                     left: '60px',
                     top: '32px',
-                    fontSize: '12px'
+                    fontSize: '12px',
+                    color: themes[theme].foreColors[1]
                   }}>
                     {epicContent.type}
                   </div>
@@ -331,7 +335,9 @@ class EpicTimeline extends React.Component {
 const enhance = compose(
   connect(state => ({
     selectedItem: state.selectedItem,
+    theme: state.theme,
   }), {
+    deselectItem,
     setYear: setYearAction,
     selectValue,
     setEpicContentIndex

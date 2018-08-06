@@ -15,8 +15,10 @@ import FullscreenEnterIcon from 'material-ui/svg-icons/navigation/fullscreen'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import {chronasMainColor, grey600} from '../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
+import { LoadingCircle } from '../global/LoadingCircle'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import utilsQuery from "../map/utils/query";
+import { themes } from '../../properties'
 import {selectLinkedItem, TYPE_AREA, TYPE_MARKER, TYPE_LINKED, WIKI_PROVINCE_TIMELINE} from "../map/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "./actionReducers";
 import {resetModActive, setFullModActive} from "../restricted/shared/buttons/actionReducers";
@@ -127,12 +129,15 @@ class ArticleIframe extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.props.selectedWiki !== nextProps.selectedWiki) this.forceUpdate()
+    if (this.props.selectedWiki !== nextProps.selectedWiki) {
+      this.setState({ iframeLoading: true })
+      this.forceUpdate()
+    }
   }
 
   render () {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
-    const { hasChart, selectedItem, selectedWiki, isEntity, customStyle } = this.props
+    const { hasChart, selectedItem, selectedWiki, theme, isEntity, customStyle } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED
@@ -186,7 +191,7 @@ class ArticleIframe extends React.Component {
           style={{ zIndex: 15000, height: '100%', width: '100%', backgroundColor: 'transparent', overflow: 'auto' }}
           titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
           autoScrollBodyContent={false}>
-          { (selectedWiki !== '') && shouldLoad && LoadingCompass }
+          { (selectedWiki !== '') && shouldLoad && <LoadingCircle theme={themes[theme]} title={translate('pos.loading')} /> }
           { (selectedWiki === '') && <span>no wiki article found, consider adding one by clicking the edit button...</span> }
           { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%' style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' /> }
           { isFullScreen &&
@@ -201,15 +206,16 @@ class ArticleIframe extends React.Component {
           }
         </Dialog>
         { modMenu }
-        { shouldLoad && LoadingCompass }
+        { shouldLoad && <LoadingCircle theme={themes[theme]} title={translate('pos.loading')} /> }
         { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
       </div>
     )
   }
 }
-
+//
 const enhance = compose(
   connect(state => ({
+    theme: state.theme,
   }), {
     setRightDrawerVisibility,
   }),

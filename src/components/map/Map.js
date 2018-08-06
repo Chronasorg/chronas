@@ -4,6 +4,11 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { translate, defaultTheme } from 'admin-on-rest'
+import {
+  Step,
+  Stepper,
+  StepButton,
+} from 'material-ui/Stepper'
 import axios from 'axios'
 import { easeCubic } from 'd3-ease'
 import WebMercatorViewport from 'viewport-mercator-project'
@@ -18,7 +23,7 @@ import {
   TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectEpicItem, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
-import { properties } from '../../properties'
+import {properties, themes} from '../../properties'
 import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
@@ -39,6 +44,23 @@ const getRandomInt = (min, max) => {
 }
 
 let animationInterval = -1
+
+const styles = {
+  stepLabel: {
+    fontWeight: 'bold',
+    background: '#9e9e9e',
+    padding: ' 5px',
+    borderRadius: '15px',
+    color: 'white',
+    marginLeft: '-5px',
+    // whiteSpace: 'nowrap'
+  },
+  stepContainer: {
+    // whiteSpace: 'nowrap',
+    // textOverflow: 'ellipsis',
+    // overflow: 'hidden'
+  }
+}
 
 class Map extends Component {
   constructor (props) {
@@ -65,6 +87,7 @@ class Map extends Component {
         height: 500
       },
       hoveredItems: [],
+      activatedTooltip: true,
       hoverInfo: null,
       popupInfo: null
     }
@@ -82,10 +105,6 @@ class Map extends Component {
     const { metadata, activeArea, changeAreaData, selectedYear, selectedItem } = this.props
     this._loadGeoJson('provinces', metadata.provinces)
     this._updateMetaMapStyle()
-
-    // axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
-    //   .then((areaDefsRequest) => {
-    //     changeAreaData(activeArea.data)
     this._simulateYearChange(activeArea.data)
     this._changeArea(activeArea.data, activeArea.label, activeArea.color, selectedItem.value)
 
@@ -93,7 +112,6 @@ class Map extends Component {
     if ((utilsQuery.getURLParameter('type') || '') === TYPE_EPIC) {
       selectEpicItem((utilsQuery.getURLParameter('value') || ''), +(utilsQuery.getURLParameter('year') || 1000))
     }
-      // })
   }
 
   _updateMetaMapStyle = (shouldReset = false) => {
@@ -1158,13 +1176,17 @@ class Map extends Component {
     // const z = Math.floor(viewState.zoom);
     // const showCluster = params.cluster.value;
 
-    // const { viewport } = this.state;
+    const { viewport, expanded } = this.state;
+
+    // don;t reset on mouseleave if expanded
+    if (expanded) return
 
     let hoveredItems = null
 
     if (object) {
-      if (false /* showCluster */) {
-        // hoveredItems = object.zoomLevels[z].points.sort((m1, m2) => m1.year - m2.year);
+      if (((object || {}).zoomLevels || []).length > 0) {
+        const z = Math.floor(viewport.zoom)
+        hoveredItems = object.zoomLevels[z].points.sort((a, b) => a.name.localeCompare(b.name))
       } else {
         delete object.zoomLevels
         hoveredItems = [object]
@@ -1187,6 +1209,11 @@ class Map extends Component {
   }
 
   _onMarkerClick (layerClicked) {
+    if ((((layerClicked || {}).object || {}).zoomLevels || []).length > 0) {
+      this.setState({ expanded: true })
+      return
+    }
+
     const itemName = (layerClicked.object || {}).name || layerClicked.properties.n
     const wikiId = (layerClicked.object || {}).wiki || (layerClicked.properties || {}).w || (layerClicked.object || {})._id
 
@@ -1217,8 +1244,71 @@ class Map extends Component {
   }
 
   _renderPopup () {
-    const { hoverInfo, popupInfo } = this.state
+    const { hoverInfo, popupInfo, expanded } = this.state
     if (hoverInfo) {
+      const content = (hoverInfo.feature || [])
+      if (Array.isArray(content)) {
+        if (expanded) {
+          return (
+            <Popup className='mapHoverTooltip interactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
+              <div className='county-info' onMouseLeave={() => this.setState({expanded: false, hoverInfo: null})}>
+                <Stepper linear={false}
+                         activeStep={-1}
+                         orientation='vertical'
+                         style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
+                  {content.map(({name, year, wiki, type}) => {
+                    return (<Step key={name} style={ styles.stepContainer}>
+                      <StepButton iconContainerStyle={{ background:  'inherit' }} icon={<span style={styles.stepLabel}>{year}</span>} onClick={(i) => { console.debug(i, content[i], "openMarker"); }}>
+                        <div style={{
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis',
+                          position: 'absolute',
+                          width: '20$',
+                          left: '60px',
+                          top: '16px',
+                          fontSize: '15px'
+                        }}>
+                          {name || wiki}
+                        </div>
+                        <div style={{
+                          overflow: 'hidden',
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis',
+                          position: 'absolute',
+                          width: '20$',
+                          left: '60px',
+                          top: '32px',
+                          fontSize: '12px'
+                        }}>
+                          {type}
+                        </div>
+                      </StepButton>
+                    </Step>
+                    );
+                  })}
+                </Stepper>
+              </div>
+            </Popup>
+          )
+        }
+
+        return (
+          <Popup className='mapHoverTooltip inactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
+            <div className='county-info' onClick={() => this.setState({expanded: true})}>
+              {content.map(({name, year}) => {
+                return (
+                  <div key={name}>
+                    <h5>{name}</h5>
+                    <div>Year: {year || 'unknown'}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </Popup>
+        )
+      }
+
       return (
         <Popup className='mapHoverTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
           <div className='county-info'>{JSON.stringify(hoverInfo)}</div>
@@ -1241,7 +1331,7 @@ class Map extends Component {
 
   render () {
     const { epics, markerData, geoData, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
-    const { modActive, menuDrawerOpen, rightDrawerOpen, history, contentIndex, mapStyles } = this.props
+    const { modActive, menuDrawerOpen, rightDrawerOpen, history, contentIndex, theme, mapStyles } = this.props
 
     let leftOffset = (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.24
@@ -1288,6 +1378,7 @@ class Map extends Component {
           onLoad={this._initializeMap}
         >
           <DeckGLOverlay
+            theme={themes[theme]}
             viewport={viewport}
             updateLine={this._updateLine}
             geoData={geoData}

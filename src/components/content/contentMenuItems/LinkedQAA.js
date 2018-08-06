@@ -250,7 +250,7 @@ const styles = {
     lineHeight: '1.3',
     textAlign: 'left',
     color: '#fff',
-    fontFamily: "Roboto Slab','Georgia','Times New Roman',serif",
+    fontFamily: "'Cinzel', serif",
     textShadow: '1px 1px 1px black',
     padding: 0
   },

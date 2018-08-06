@@ -334,11 +334,113 @@ button:focus {
   }
 }
 
-.mapHoverTooltip {
-  pointer-events: none;
-}
 .mapboxgl-popup-content {
-  pointer-events: none !important;
   border: 2px solid black;
   background: rgba(220,220,220,0.8);
+}
+
+
+.mapHoverTooltip.inactive {
+  cursor: pointer !important;
+
+  .mapboxgl-popup-content {
+    pointer-events: none !important;
+  }
+}
+
+.mapHoverTooltip.interactive {
+  .mapboxgl-popup-content {
+    cursor: pointer !important;
+    pointer-events: all !important;
+  }
+}
+
+//variables
+$spin-speed: 1s;
+//the more time, the slower it spins
+
+#LoadingCircle_g_logoCircle {
+  fill: #333
+}
+
+.LoadingCircle_loading{
+  animation:blinkingText $spin-speed infinite;
+  animation-timing-function: ease-in-out;
+  font-size: 18px;
+  color: #333;
+  text-align: center;
+  width: calc(100% - -28px);
+  margin-top: -4%;
+}
+
+@keyframes blinkingText{
+  0%{		opacity: 1;	}
+  49%{	opacity: 0;	}
+  100%{	opacity: 1;	}
+}
+
+.LoadingCircle_wrapper {
+  text-align: center;
+  height: 100%;
+  width: 100%;
+}
+
+.LoadingCircle_inner {
+  width: 100%;
+  margin-top: 15%;
+  display: inline-block;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+svg.LoadingCircle_rotate {
+  animation-name: rotate;
+  animation-duration: $spin-speed;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+.logoChronas {
+  width: 24px;
+  height: 24px;
+  fill: red;
+}
+
+.logoMenuContainer.lightTheme {
+  svg {
+    g {
+      fill: #1f1f1f;
+    }
+  }
+}
+
+.logoMenuContainer.defaultTheme {
+  svg {
+    g {
+      fill: #1f1f1f;
+    }
+  }
+}
+
+.logoMenuContainer.dark {
+  svg {
+    g {
+      fill: #F2F2F2;
+    }
+  }
+}
+
+.logoMenuContainer.lutherTheme {
+  svg {
+    g {
+      fill: #fff3d3;
+    }
+  }
 }

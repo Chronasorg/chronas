@@ -81,7 +81,7 @@ const styles = {
     backgroundColor: 'rgb(255, 255, 255)',
     transition: 'transform 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
     boxSizing: 'border-box',
-    fontFamily: 'Roboto, sans-serif',
+    fontFamily: 'Cinzel, serif',
     boxShadow: '0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4)',
     height: 'calc(40% - 40px)',
     width: '2254px',

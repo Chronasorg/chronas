@@ -20,6 +20,7 @@ import {
   changeColor as changeColorAction,
   toggleMarker as toggleMarkerAction,
   toggleEpic as toggleEpicAction } from './actionReducers'
+import { properties, themes } from '../../../properties'
 
 const styles = {
   listIcon: {
@@ -58,9 +59,9 @@ class LayerContent extends Component {
 
   render() {
     const {basemapId} = this.state
-    const {activeArea, setPopOpacity, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic} = this.props
+    const {activeArea, setPopOpacity, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic, theme} = this.props
     return (
-      <div style={styles.main}>
+      <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
         <h4>Basemap</h4>
         <DropDownMenu value={this.state.value} onChange={this.handleChange} openImmediately={true}>
           <MenuItem value={1} primaryText="Watercolor" leftIcon={<Avatar
