@@ -18,7 +18,7 @@ import Badge from 'material-ui/Badge';
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import { properties } from "../../../properties";
+import { properties, themes } from "../../../properties";
 import {resetModActive, setFullModActive} from "../../restricted/shared/buttons/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "../actionReducers";
 import NewDiscussion from "../../menu/board/ReForum/Views/NewDiscussion";
@@ -278,7 +278,7 @@ class LinkedQAA extends React.Component {
 
 
   render () {
-    const { isMinimized, options, qId, setHasQuestions } = this.props
+    const { isMinimized, options, qId, setHasQuestions, theme } = this.props
 
     const commonProps = {
       options,
@@ -308,10 +308,11 @@ class LinkedQAA extends React.Component {
             {
               marginBottom: 0,
               transition: 'all .5s ease-in-out',
-              background: (isMinimized ? 'white' : 'rgba(55, 57, 49, 0.19)')
+              background: (isMinimized ? 'white' : themes[theme].backColors[0]),
+              boxShadow: 'rgba(0, 0, 0, 0.4) -1px 2px 3px 1px'
             }
           }
-          title={<span>Questions and Answers</span>}
+          title={<span style={{ color: themes[theme].foreColors[0] }}>Questions and Answers</span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
             ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>

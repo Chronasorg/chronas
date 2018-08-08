@@ -46,12 +46,14 @@ export default {
     help: 'Intro and Information',
     share: 'Share as link or export image',
     resources: 'Resources',
+    related_item: 'Related Items...',
     users: 'Manage Users',
     upvote: 'Interesting and accurate',
     theme: {
       name: 'Theme',
       light: 'Light',
       dark: 'Dark',
+      font: 'Font'
     },
     discover_component: {
       openArticle: 'Open related Wikipedia article',

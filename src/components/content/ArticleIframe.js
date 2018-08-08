@@ -83,8 +83,6 @@ const styles = {
   }
 }
 
-const LoadingCompass = <span>iframe loading placeholder...</span>
-
 class ArticleIframe extends React.Component {
   constructor (props) {
     super(props)
@@ -145,7 +143,6 @@ class ArticleIframe extends React.Component {
     const isProvince = selectedItem.wiki === WIKI_PROVINCE_TIMELINE
     const noWiki = (!selectedItem || !selectedWiki || selectedWiki === -1)
     const modUrl = isMarker ?  '/mod/markers' : '/mod/metadata'
-    console.debug(selectedItem, selectedWiki)
 
     const iconEnterFullscreen = {
       key: 'random',
@@ -191,7 +188,7 @@ class ArticleIframe extends React.Component {
           style={{ zIndex: 15000, height: '100%', width: '100%', backgroundColor: 'transparent', overflow: 'auto' }}
           titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
           autoScrollBodyContent={false}>
-          { (selectedWiki !== '') && shouldLoad && <LoadingCircle theme={themes[theme]} title={translate('pos.loading')} /> }
+          { (selectedWiki !== '') && shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} /> }
           { (selectedWiki === '') && <span>no wiki article found, consider adding one by clicking the edit button...</span> }
           { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%' style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' /> }
           { isFullScreen &&
@@ -206,7 +203,7 @@ class ArticleIframe extends React.Component {
           }
         </Dialog>
         { modMenu }
-        { shouldLoad && <LoadingCircle theme={themes[theme]} title={translate('pos.loading')} /> }
+        { shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} /> }
         { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'http://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
       </div>
     )

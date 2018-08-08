@@ -12,7 +12,7 @@ import ChartSunburst from './Charts/ChartSunburst'
 import LinkedGallery from './contentMenuItems/LinkedGallery'
 import LinkedQAA from './contentMenuItems/LinkedQAA'
 import { setYear  as setYearAction} from '../map/timeline/actionReducers'
-import {selectValue, deselectItem, setEpicContentIndex, WIKI_PROVINCE_TIMELINE} from '../map/actionReducers'
+import { selectValue, setData, deselectItem, setEpicContentIndex, TYPE_AREA, WIKI_PROVINCE_TIMELINE } from '../map/actionReducers'
 import InfluenceChart from './Charts/ChartArea'
 import ArticleIframe from './ArticleIframe'
 import { themes } from '../../properties'
@@ -192,7 +192,8 @@ class EpicTimeline extends React.Component {
         "wiki": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
         "content": (!linkedItem.properties) ? (linkedItem.content || linkedItem.name) : linkedItem.properties.c,
         "type": (!linkedItem.properties) ? linkedItem.type : linkedItem.properties.t,
-        "date": (!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y
+        "date": (!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y,
+        "geometry": linkedItem.geometry
       }}).filter((el) => el["name"] !== "null").sort((a, b) => +a.date - +b.date)
 
     this.setState({
@@ -203,6 +204,18 @@ class EpicTimeline extends React.Component {
       stepIndex: -1,
       influenceChartData
     })
+
+    if ((this.props.selectedItem || {}).type === TYPE_AREA && ((linkedItems || {}).content || []).length > 0) {
+      this.props.setData({
+        id: epicData._id,
+        content: epicLinkedArticles.map((el, index) => {
+          el.index = index
+          el.hidden = false
+          return el
+        }),
+        contentIndex: -1
+      })
+    }
   }
 
   componentDidMount = () => {
@@ -242,6 +255,7 @@ class EpicTimeline extends React.Component {
     return (
       <div style={{ height: '100%' }}>
         { isEntity && <ChartSunburst
+          theme={theme}
           activeAreaDim={activeAreaDim}
           setContentMenuItem={setContentMenuItem}
           isMinimized={ activeContentMenuItem !== 'sunburst' }
@@ -254,7 +268,7 @@ class EpicTimeline extends React.Component {
         { influenceChartData && influenceChartData.length > 0 && <div style={{ height: (!isEntity) ? '256px' : '200px', width: '100%' }}>
           <InfluenceChart epicMeta={isEntity ? false : epicMeta} rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div> }
-        { contentDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 248px)', overflow: 'auto', display: 'inline-block', overflowX: 'hidden', background: themes[theme].gradientColors[0] }}>
+        { contentDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 248px)', overflow: 'auto', display: 'inline-block', overflowX: 'auto', background: themes[theme].gradientColors[0] }}>
           <FlatButton backgroundColor={(rulerProps || {})[1] || 'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(epicMeta || {}).title || (rulerProps || {})[0] || 'Epic Main'} onClick={this._selectMainArticle.bind(this)} />
           <Stepper linear={false}
             activeStep={stepIndex}
@@ -338,6 +352,7 @@ const enhance = compose(
     theme: state.theme,
   }), {
     deselectItem,
+    setData,
     setYear: setYearAction,
     selectValue,
     setEpicContentIndex

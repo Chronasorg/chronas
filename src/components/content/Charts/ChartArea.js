@@ -10,6 +10,7 @@ import {
   VerticalRectSeries,
   Crosshair
 } from 'react-vis'
+import { themes } from '../../../properties'
 
 export default class InfluenceChart extends React.Component {
   constructor (props) {

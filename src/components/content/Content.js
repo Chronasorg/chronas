@@ -333,15 +333,15 @@ class Content extends Component {
             <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
               <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0 }} >
                 <div>
-                  <ContentImage hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer1, fill: (hasLinkedImage ? themes[theme].foreColors[0] : themes[theme].highlightColors[0])}} />
-                  <ContentMovie hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer2, fill: (hasLinkedMovie ? themes[theme].foreColors[0] : themes[theme].highlightColors[0])}} />
-                  <ContentAudio hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer3, fill: (hasLinkedAudio ? themes[theme].foreColors[0] : themes[theme].highlightColors[0])}} />
-                  <ContentLink hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer4, fill: (hasLinkedOther ? themes[theme].foreColors[0] : themes[theme].highlightColors[0])}} />
+                  <ContentImage hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer1, fill: (hasLinkedImage ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
+                  <ContentMovie hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer2, fill: (hasLinkedMovie ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
+                  <ContentAudio hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer3, fill: (hasLinkedAudio ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
+                  <ContentLink hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer4, fill: (hasLinkedOther ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
                 </div>
               </IconButton>
             } />
             { entityTimelineOpen && <Divider style={{ backgroundColor: themes[theme].backColors[2] }} /> }
-            <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'qaa') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('qaa')} leftIcon={<QAAIcon hoverColor={themes[theme].highlightColors[0]} style={{...styles.qaaIcon, fill: (hasQuestions ? themes[theme].foreColors[0] : themes[theme].highlightColors[0])}} /> } />
+            <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'qaa') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('qaa')} leftIcon={<QAAIcon hoverColor={themes[theme].highlightColors[0]} style={{...styles.qaaIcon, fill: (hasQuestions ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} /> } />
           </Menu>
         </Paper>
       </div>}

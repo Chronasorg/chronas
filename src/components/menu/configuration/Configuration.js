@@ -87,15 +87,18 @@ class Configuration extends PureComponent {
               <RaisedButton style={styles.button} label="fr" primary={locale === 'fr'}
                             onClick={() => changeLocale('fr')} />
             </CardText>
-            <SelectField
-              floatingLabelText={translate('pos.fontType')}
-              value={ selectedFontValue }
-              onChange={ (event, index, value) => { setBodyFont(value) } }
-            >
-              { properties.fontOptions.map((el) => {
-                return <MenuItem value={el.id}  primaryText={el.name} />
-              })}
-            </SelectField>
+            <CardText>
+              <div style={styles.label}>{translate('pos.theme.font')}</div>
+              <SelectField
+                floatingLabelText={translate('pos.fontType')}
+                value={ selectedFontValue }
+                onChange={ (event, index, value) => { setBodyFont(value) } }
+              >
+                { properties.fontOptions.map((el) => {
+                  return <MenuItem value={el.id}  primaryText={el.name} />
+                })}
+              </SelectField>
+            </CardText>
 
             TEXT FONT SELECT
 

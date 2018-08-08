@@ -469,13 +469,14 @@ class Map extends Component {
     }
 
     // selected item is EPIC?
-    if (nextProps.selectedItem.type === TYPE_EPIC) {
+    if (nextProps.selectedItem.type === TYPE_EPIC
+      || (nextProps.selectedItem.type === TYPE_AREA && (nextProps.selectedItem || {}).data)) {
       // contentIndex changed?
       if (typeof nextProps.contentIndex !== 'undefined' &&
         typeof contentIndex !== 'undefined' &&
         nextProps.contentIndex !== contentIndex) {
         this._updateEpicGeo(nextProps.contentIndex)
-        const content = (((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || [])
+        const content = ((nextProps.selectedItem || {}).data || {}).content || ((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || []
         const selectedFeature = content.filter(f => f.index === nextProps.contentIndex)[0]
         let prevFeature
         for (let i = +nextProps.contentIndex - 1; i > -1; i--) {
@@ -486,7 +487,7 @@ class Map extends Component {
           }
         }
 
-        if (selectedFeature && selectedFeature.geometry.coordinates && selectedFeature.geometry.coordinates.length > 1) {
+        if (selectedFeature && selectedFeature.geometry && selectedFeature.geometry.coordinates && selectedFeature.geometry.coordinates.length > 1) {
           if (prevFeature && prevFeature.geometry.coordinates && prevFeature.geometry.coordinates.length > 1) {
             const bbox = turf.bbox({
               'type': 'FeatureCollection',
@@ -521,7 +522,7 @@ class Map extends Component {
           }
         }
       }
-      if (nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id)) {
+      if (nextProps.selectedItem.type !== TYPE_AREA && nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id)) {
       // TODO: only go ahead if selectedYear is starting year
 
       // setup new epic!
@@ -1209,6 +1210,7 @@ class Map extends Component {
   }
 
   _onMarkerClick (layerClicked) {
+    const { selectedItem, setWikiId, selectMarkerItem, modActive, history } = this.props
     if ((((layerClicked || {}).object || {}).zoomLevels || []).length > 0) {
       this.setState({ expanded: true })
       return
@@ -1229,18 +1231,18 @@ class Map extends Component {
     })
     // setWikiId
 
-    if (this.props.selectedItem.type === TYPE_EPIC) {
+    if (selectedItem.type === TYPE_EPIC && !((((((selectedItem || {}).data || {}).data || {}).data || {}).content || []).every(el => (el.properties || {}).w !== wikiId))) {
       utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
       // utilsQuery.updateQueryStringParameter('wiki', wikiId)
-      this.props.setWikiId(wikiId)
+      setWikiId(wikiId)
     } else {
       utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
       utilsQuery.updateQueryStringParameter('value', wikiId)
       // TODO: check a good marker against a bad one go on
-      this.props.selectMarkerItem(wikiId, { ...(layerClicked.object || layerClicked.properties), 'coo': (layerClicked.object || {}).coo || layerClicked.geometry.coordinates })
+      selectMarkerItem(wikiId, { ...(layerClicked.object || layerClicked.properties), 'coo': (layerClicked.object || {}).coo || layerClicked.geometry.coordinates })
     }
-    if (this.props.modActive.type === TYPE_MARKER) return
-    if (layerClicked.object) this.props.history.push('/article')
+    if (modActive.type === TYPE_MARKER) return
+    if (layerClicked.object) history.push('/article')
   }
 
   _renderPopup () {

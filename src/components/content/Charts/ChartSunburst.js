@@ -9,6 +9,7 @@ import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
 import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left'
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
 import nest from './utilsNest'
+import { themes } from '../../../properties'
 
 const LABEL_STYLE = {
   fontSize: '14px',
@@ -156,7 +157,7 @@ export default class ChartSunburst extends React.Component {
   }
 
   render () {
-    const { isMinimized } = this.props
+    const { isMinimized, theme } = this.props
     const { data, finalValue, pathValue, modeIndex } = this.state
 
     const chartProps = (isMinimized) ? false : {
@@ -216,7 +217,7 @@ export default class ChartSunburst extends React.Component {
         top: '4px',
         padding: '0em',
         transition: 'all .3s ease-in-out',
-        backgroundColor: 'rgba(255, 255, 255, 0.67)',
+        backgroundColor: 'rgb(255, 255, 255)',
         width: (isMinimized ? '30px' : '500px'),
         height: (isMinimized ? '30px' : '524px'),
         pointerEvents: (isMinimized ? 'none' : 'inherit'),
@@ -228,14 +229,15 @@ export default class ChartSunburst extends React.Component {
             {
               marginBottom: 20,
               transition: 'all .5s ease-in-out',
-              background: (isMinimized ? 'white' : 'rgba(55, 57, 49, 0.19)')
+              background: themes[theme].backColors[0],
+              boxShadow: 'rgba(0, 0, 0, 0.4) -1px 2px 3px 1px'
             }
           }
-          title={<span>Composition <span style={{ fontSize: 'inherit', color: 'inherit' }}>of {this.state.total} subjects</span></span>}
+          title={<span style={{ color: themes[theme].foreColors[0] }}>Composition <span style={{ fontSize: 'inherit', color: 'inherit' }}>of {this.state.total} subjects</span></span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
-            ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
-            : <IconButton onClick={() => this._minimize()}><ChevronRight /></IconButton>}
+            ? <IconButton style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon  color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>
+            : <IconButton onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
         <div style={styles.chartContainer}>
         { !isMinimized && (modeIndex === -1) && <Sunburst {...chartProps}>

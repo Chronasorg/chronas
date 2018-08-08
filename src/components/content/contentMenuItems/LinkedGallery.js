@@ -38,7 +38,7 @@ import SwipeableViews from 'react-swipeable-views'
 import { translate, ViewTitle, showNotification } from 'admin-on-rest'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
-import { properties } from "../../../properties"
+import { properties, themes } from "../../../properties"
 import { resetModActive, setFullModActive } from "../../restricted/shared/buttons/actionReducers";
 import { toggleRightDrawer as toggleRightDrawerAction } from "../actionReducers";
 
@@ -471,7 +471,7 @@ class LinkedGallery extends React.Component {
   }
 
   render () {
-    const { isMinimized, linkedItems, selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
+    const { isMinimized, linkedItems, selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility, theme } = this.props
     const { selectedImage, filtered, slideIndex, tileData, categories } = this.state
 
     const noTiles = (typeof linkedItems === 'undefined' || (tileData && tileData.length === 0))
@@ -549,10 +549,11 @@ class LinkedGallery extends React.Component {
             {
               marginBottom: 0,
               transition: 'all .5s ease-in-out',
-              background: (isMinimized ? 'white' : 'rgba(55, 57, 49, 0.19)')
+              background: (isMinimized ? 'white' : themes[theme].backColors[0]),
+              boxShadow: 'rgba(0, 0, 0, 0.4) -1px 2px 3px 1px'
             }
           }
-          title={<span>Linked Items</span>}
+          title={<span style={{ color: themes[theme].foreColors[0] }}>Linked Items</span>}
           iconElementLeft={<div />}
           iconElementRight={isMinimized
             ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>

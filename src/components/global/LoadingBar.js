@@ -1,6 +1,7 @@
 import React from 'react'
 import LinearProgress from 'material-ui/LinearProgress'
 import axios from 'axios'
+import { themes } from '../../properties'
 
 const COLOR_SUCCESS = "rgb(0, 232, 18)"
 const COLOR_ERROR = "rgb(232, 0, 18)"
@@ -15,7 +16,7 @@ export default class LoadingBar extends React.Component {
     super(props)
 
     this.state = {
-      activeColor: COLOR_SUCCESS,
+      activeColor: themes[this.props.theme].highlightColors[0],
       completedPercent: 0,
       isVisible: true,
       isLoadingInterval: undefined,
@@ -41,7 +42,7 @@ export default class LoadingBar extends React.Component {
     this.setState({
       isVisible: false,
       completedPercent: 0,
-      activeColor: COLOR_SUCCESS
+      activeColor: themes[this.props.theme].highlightColors[0]
     },() => {
       stoppedFlag = false
       this.setState({

@@ -197,7 +197,8 @@ class App extends Component {
     const {
       width,
       isLoading,
-      store
+      store,
+      theme
     } = this.props
 
     const {
@@ -207,6 +208,7 @@ class App extends Component {
 
     defaultTheme.fontFamily = 'inherit'
     const muiTheme = getMuiTheme(defaultTheme) // CustomTheme
+    console.debug('muiTheme', muiTheme)
     if (!prefixedStyles.main) {
       // do this once because user agent never changes
       const prefix = autoprefixer(muiTheme)
@@ -234,7 +236,7 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
-                  <LoadingBar />
+                  <LoadingBar theme={theme} />
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     {isLoading ? <LoadingPage /> : createElement(Map, { history: history, isLoading: isLoading })}
                     {!isLoading && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
@@ -288,6 +290,7 @@ class App extends Component {
 
 const mapStateToProps = (state, props) => ({
   isLoading: state.isLoading,
+  theme: state.theme
 })
 
 const mapDispatchToProps = {

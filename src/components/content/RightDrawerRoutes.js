@@ -2,14 +2,11 @@ import React, { createElement, PureComponent } from 'react'
 
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import Avatar from 'material-ui/Avatar'
 import AppBar from 'material-ui/AppBar'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
-import FontIcon from 'material-ui/FontIcon'
-import Chip from 'material-ui/Chip'
 import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import axios from 'axios'
@@ -23,14 +20,13 @@ import { ModLinksEdit } from './mod/ModLinksEdit'
 import { ModAreasAll } from './mod/ModAreasAll'
 import { ModMetaAdd } from './mod/ModMetaAdd'
 import { ModMetaEdit } from './mod/ModMetaEdit'
-import { AreaList, AreaCreate, AreaEditAll, AreaDelete, AreaIcon } from '../restricted/areas'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
 import { LinkedList, LinkedCreate, LinkedEdit, LinkedDelete, LinkedIcon } from '../restricted/linked'
-// import MarkerCreate from '../restricted/markers/MarkerCreate'
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import { BottomNavigation } from 'material-ui/BottomNavigation'
-import BottomNavigationItem from '../overwrites/BottomNavigationItem'
 import Paper from 'material-ui/Paper'
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on'
 import IconEdit from 'material-ui/svg-icons/editor/mode-edit'
@@ -38,7 +34,7 @@ import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import IconDrag from 'material-ui/svg-icons/editor/drag-handle'
 import IconArrowLeft from 'material-ui/svg-icons/navigation/chevron-left'
-
+import BottomNavigationItem from '../overwrites/BottomNavigationItem'
 import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../restricted/metadata'
 import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../restricted/revisions'
 import { setRightDrawerVisibility } from './actionReducers'
@@ -394,13 +390,6 @@ class RightDrawerRoutes extends PureComponent {
             'start': rawDefault.data.start,
             'end': rawDefault.data.end,
             'participants': [{ 'participantTeam': [{ 'name': '_kingdom_of_nri' }, { 'name': '_Zhili_clique' }] }, { 'participantTeam': [{ 'name': '_kingdom_of_nri' }] }],
-            // 'content': rawDefault.data.content.map((el) => {
-            //   const contentType = el.split(':')[0]
-            //   const name = el.split(':')[1]
-            //
-            //   contentChoice.push({ id: name, name: name })
-            //   return { 'contentType': contentType, 'name': name }
-            // }),
             'coo': rawDefault.coo,
             'partOf': rawDefault.partOf
           }
@@ -410,26 +399,6 @@ class RightDrawerRoutes extends PureComponent {
             metadataEntity,
             defaultEpicValues: modifiedDefaultValues
           })
-
-          // {
-          //   "_id":"e_Great_Turkish_War",
-          //   "data":
-          //     {"title":"Great Turkish War",
-          //       "wiki":"Great_Turkish_War",
-          //       "start":1683,
-          //       "end":1699,
-          //       "participants":[],
-          //       "content":[]},
-          //   "wiki":"Great_Turkish_War",
-          //   "subtype":"war",
-          //   "year":1683,
-          //   "linked":[],
-          //   "score":0,
-          //   "partOf":[],
-          //   "type":"e",
-          //   "coo":[]}
-
-          // {"type":"e","url":"https://en.wikipedia.org/wiki/Byzyyantine_Empire","subtype":"war","start":"100","end":"350","participants":[{"participantTeam":[{"name":"_kingdom_of_nri"},{"name":"_Zhili_clique"}]},{"participantTeam":[{"name":"_kingdom_of_nri"}]}],"content":[{"contentType":"m_religious","name":"Albert_Einstein"},{"contentType":"meta_image","name":"http://deremilitari.org/wp-content/uploads/2014/07/mounted-medieval-knights-in-battle-in-ken-welsh.jpg"}],"coo":[51.028,69.867],"partOf":"Roman_Empire"}
         })
         .catch(() => {
           this.setState({ metadataEntity })
@@ -610,7 +579,7 @@ class RightDrawerRoutes extends PureComponent {
     const {
       options, setWikiId, setRightDrawerVisibility, theme,
       selectedYear, selectedItem, activeArea, setAreaColorLabel, location,
-      setModData, setModDataLng, setModDataLat, history, metadata, changeColor
+      setModData, setModDataLng, setModDataLat, history, metadata, changeColor, translate
     } = this.props
     const { newWidth, newMarkerWidth, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, provinceEntity, partOfEntities } = this.state
 
@@ -899,13 +868,23 @@ class RightDrawerRoutes extends PureComponent {
           </Card>
             { partOfEntities && partOfEntities.length !== 0 && <div style={{ ...styles.partOfDiv, width: this.state.newMarkerPartOfWidth, top: this.state.newMarkerPartOfHeight }}>
               <CardActions style={{ textAlign: 'center' }}>
-            { partOfEntities.map( (el) => { console.debug(el);
-            return <FlatButton
+            { (partOfEntities.length === 1) ? <FlatButton
               style={{ color: '#fff' }}
               backgroundColor='rgb(255, 64, 129)'
               hoverColor='#8AA62F'
-              onClick={() => this._openPartOf(el)}
-              label={'Part of ' + ((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} /> })}
+              onClick={() => this._openPartOf(partOfEntities[0])}
+              label={'Part of ' + ((partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()} /> :
+              <SelectField
+                floatingLabelText={translate('pos.related_item')}
+                hintText={translate('pos.related_item')}
+                value={ null }
+                onChange={ (event, index, value) => { this._openPartOf(value) } }
+              >
+                { partOfEntities.map((el) => {
+                  return <MenuItem value={el} primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                })}
+              </SelectField>
+              }
               </CardActions>
             </div>}
           </div> : <Drawer
