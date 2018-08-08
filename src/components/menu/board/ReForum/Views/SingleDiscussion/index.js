@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import compose from 'recompose/compose'
 import { connect } from 'react-redux';
 import { properties } from "../../../../../../properties";
+import classnames from 'classnames';
 
 import {
   getDiscussion,
@@ -20,20 +21,11 @@ import Discussion from '../../Components/SingleDiscussion/Discussion';
 import ReplyBox from '../../Components/SingleDiscussion/ReplyBox';
 import Opinion from '../../Components/SingleDiscussion/Opinion';
 
-import styles from './styles.css';
-import appLayout from '../../SharedStyles/appLayout.css';
-import {toggleRightDrawer as toggleRightDrawerAction} from "../../../../../content/actionReducers";
-import {
-  setActiveMenu as setActiveMenuAction,
-  toggleMenuDrawer as toggleMenuDrawerAction
-} from "../../../../actionReducers";
-import {logout, setToken} from "../../../../authentication/actionReducers";
-import {selectAreaItem as selectAreaItemAction} from "../../../../../map/actionReducers";
-
 class SingleDiscussion extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      activeSortingMethod: 'date',
       opinionContent: '',
       discussion: {},
       opinion: {},
@@ -56,6 +48,29 @@ class SingleDiscussion extends Component {
       setForums()
     }
     getDiscussion(discussion).then( (data) => this.setState({ fetchingDiscussion: false, discussion: data }) )
+  }
+
+  _onChangeSortingMethod = (method) => {
+
+    const prevDiscussion = this.state.discussion
+    const prevOpinions = prevDiscussion.opinions || []
+
+    if (method === 'date') {
+      prevDiscussion.opinions = prevOpinions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+      this.setState ({
+        discussion: prevDiscussion,
+        activeSortingMethod: method,
+      })
+    } else if (method === 'popularity') {
+      prevDiscussion.opinions = prevOpinions.sort((a, b) => b.score - a.score)
+
+      this.setState ({
+        discussion: prevDiscussion,
+        activeSortingMethod: method,
+      })
+    }
+
   }
 
   componentWillReceiveProps(nextProps) {
@@ -209,6 +224,7 @@ class SingleDiscussion extends Component {
       fetchingDiscussion,
       discussion,
       opinionContent,
+      activeSortingMethod
       // toggleFavorite,
       // toggleingFavorite,
       // postingOpinion,
@@ -286,6 +302,21 @@ class SingleDiscussion extends Component {
           translate={translate}
         />
 
+
+        <div className='FeedBox_sortList'>
+          <span
+            className={classnames('FeedBox_sort', (activeSortingMethod === 'date') && 'FeedBox_sortActive')}
+            onClick={() => this._onChangeSortingMethod('date')}
+          >
+            Latest
+          </span>
+          <span
+            className={classnames('FeedBox_sort', (activeSortingMethod === 'popularity') && 'FeedBox_sortActive')}
+            onClick={() => this._onChangeSortingMethod('popularity')}
+          >
+            Popular
+          </span>
+        </div>
         { opinions && opinions.map((opinion) => {
           return (
             <Opinion
