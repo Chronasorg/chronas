@@ -32,7 +32,7 @@ export class AreaForm extends Component {
       if (values.culture === initialValues.culture) delete values.culture
       if (values.population === initialValues.population) delete values.population
 
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('chs_token')
       fetch(properties.chronasApiHost + "/areas", {
         method: 'PUT',
         headers: {

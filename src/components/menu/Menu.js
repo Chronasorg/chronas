@@ -67,10 +67,10 @@ class Menu extends PureComponent {
 
   constructor(props) {
     super(props);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('chs_token');
     if (token !== null) {
       //  <span>{translate('resources.users.page.delete')} "{username}"</span>
-      props.showNotification("Welcome " + localStorage.getItem('username'), 'confirm') // TODO: translate welcome
+      props.showNotification("Welcome " + localStorage.getItem('chs_username'), 'confirm') // TODO: translate welcome
       props.setToken(token)
     }
   }
@@ -85,7 +85,7 @@ class Menu extends PureComponent {
   render() {
     const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, hasDashboard, onMenuTap, resources, theme, translate } = this.props;
     const isLoggedIn = userDetails.token !== ''
-    const username = localStorage.getItem('username')
+    const username = localStorage.getItem('chs_username')
 
     return <div style={styles.main}>
       <div style={styles.topMenu} className="topMenuItems">
@@ -96,7 +96,7 @@ class Menu extends PureComponent {
           tooltipPosition="bottom-right"
           tooltip={translate("pos.about")}
           tooltipStyles={tooltip}
-          onClick={() => localStorage.setItem("info_section", "about")}
+          onClick={() => localStorage.setItem('chs_info_section', 'about')}
           iconStyle={styles.mainLogo}
         >
           <SVG

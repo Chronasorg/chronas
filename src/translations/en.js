@@ -22,6 +22,7 @@ export default {
     information: 'Information',
     areas: 'Areas',
     edit: 'Edit',
+    fontType: 'Font Type',
     goFullScreen: 'Toggle Fullscreen Mode',
     noLinkedContents: 'There are no linked articles yet, consider adding and linking articles.',
     downvote: 'Inappropriate, broken or inaccurate',

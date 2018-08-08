@@ -12,6 +12,7 @@ import {
   deletePost,
   deletedDiscussionRedirect,
   deleteOpinion,
+  voteOpinion
 } from './actions';
 
 import { translate, defaultTheme, userLogout, showNotification } from 'admin-on-rest'
@@ -109,7 +110,7 @@ class SingleDiscussion extends Component {
       {
         forum_id: forumId,
         discussion_id: discussion._id,
-        user_id: localStorage.getItem('userid'),
+        user_id: localStorage.getItem('chs_userid'),
         content: opinionContent,
       },
       discussion_slug
@@ -134,6 +135,54 @@ class SingleDiscussion extends Component {
     deleteOpinion(opinionId, discussion).then((data) => this.setState({ discussion: data }))
   }
 
+  _voteOpinion(opinionId, isUpvote) {
+    const { discussion } = this.props.match.params;
+
+    const upvotedItems = (localStorage.getItem('chs_upvotedOpinions') || '').split(',')
+    const downvotedItems = (localStorage.getItem('chs_downvotedOpinions') || '').split(',')
+    const alreadyUpvoted = (upvotedItems.indexOf(opinionId) > -1)
+    const alreadyDownvoted = (downvotedItems.indexOf(opinionId) > -1)
+
+    let delta = 0
+    if (isUpvote) {
+      delta = 0
+
+      if (alreadyUpvoted) {
+        delta = -1
+        localStorage.setItem('chs_upvotedOpinions', upvotedItems.filter((elId) => elId !== opinionId))
+      }
+      else if (alreadyDownvoted) {
+        localStorage.setItem('chs_downvotedOpinions', downvotedItems.filter((elId) => elId !== opinionId))
+        localStorage.setItem('chs_upvotedOpinions', upvotedItems.filter((elId) => elId !== opinionId).concat([opinionId]))
+        delta = 2
+      } else {
+        localStorage.setItem('chs_downvotedOpinions', downvotedItems.filter((elId) => elId !== opinionId))
+        localStorage.setItem('chs_upvotedOpinions', upvotedItems.filter((elId) => elId !== opinionId).concat([opinionId]))
+        delta = 1
+      }
+
+
+    } else {
+      delta = 0
+
+      if (alreadyDownvoted) {
+        localStorage.setItem('chs_downvotedOpinions', downvotedItems.filter((elId) => elId !== opinionId))
+        delta = 1
+      }
+      else if (alreadyUpvoted) {
+        localStorage.setItem('chs_upvotedOpinions', upvotedItems.filter((elId) => elId !== opinionId))
+        localStorage.setItem('chs_downvotedOpinions', downvotedItems.filter((elId) => elId !== opinionId).concat([opinionId]))
+        delta = -2
+      } else {
+        localStorage.setItem('chs_upvotedOpinions', upvotedItems.filter((elId) => elId !== opinionId))
+        localStorage.setItem('chs_downvotedOpinions', downvotedItems.filter((elId) => elId !== opinionId).concat([opinionId]))
+        delta = -1
+      }
+    }
+
+    voteOpinion(opinionId, discussion, delta).then((data) => this.setState({ discussion: data }))
+  }
+
   _toggleFavorite(discussionId) {
     toggleFavorite(discussionId).then((data) => this.setState({ discussion: data }))
   }
@@ -153,6 +202,7 @@ class SingleDiscussion extends Component {
       deletingOpinion,
       deletingDiscussion,
       error,
+      translate
     } = this.props;
 
     const {
@@ -196,10 +246,10 @@ class SingleDiscussion extends Component {
 
     // check if logged in user is owner of the discussion
     let allowDelete = false;
-    if (discussion.user._id === localStorage.getItem('userid')) allowDelete = true
+    if (discussion.user._id === localStorage.getItem('chs_userid')) allowDelete = true
 
     // check if user favorated the discussion
-    const userFavorited = this.userFavoritedDiscussion(localStorage.getItem('userid'), favorites)
+    const userFavorited = this.userFavoritedDiscussion(localStorage.getItem('chs_userid'), favorites)
 
 
     const { forum } = this.props.match.params;
@@ -222,6 +272,7 @@ class SingleDiscussion extends Component {
           allowDelete={allowDelete}
           deletingDiscussion={deletingDiscussion}
           deleteAction={this.deleteDiscussion.bind(this)}
+          translate={translate}
         />
 
         { opinionError && <div className='SD_errorMsg'>{opinionError}</div> }
@@ -232,6 +283,7 @@ class SingleDiscussion extends Component {
           onSubmit={this.handleReplySubmit.bind(this)}
           onChange={(content) => { this.updateOpinionContent(content) }}
           opinionContent={opinionContent}
+          translate={translate}
         />
 
         { opinions && opinions.map((opinion) => {
@@ -242,14 +294,17 @@ class SingleDiscussion extends Component {
               opinionId={opinion._id}
               userAvatar={opinion.user.avatar}
               userName={opinion.user.name}
+              score={opinion.score}
               userGitHandler={opinion.user.username}
               opDate={opinion.date}
               opContent={opinion.content}
               userId={opinion.user_id}
-              currentUserId={localStorage.getItem('userid')}
+              currentUserId={localStorage.getItem('chs_userid')}
               currentUserRole={this.props.userRole}
               deleteAction={this._deleteOpinion.bind(this)}
+              voteAction={this._voteOpinion.bind(this)}
               deletingOpinion={deletingOpinion}
+              translate={translate}
             />
           );
         }) }

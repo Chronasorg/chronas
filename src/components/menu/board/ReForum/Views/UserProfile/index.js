@@ -55,7 +55,7 @@ class UserProfile extends Component {
 
   render() {
     const {
-      forums
+      forums, translate
     } = this.props;
 
     const {
@@ -138,6 +138,7 @@ class UserProfile extends Component {
                     opinionTitle={opinion._id}
                     opinionSlug={opinion._id}
                     key={opinion._id}
+                    score={opinion.score}
                     discussion={opinion.discussion}
                     opinionId={opinion._id}
                     userAvatar={opinion.user.avatarUrl}
@@ -146,8 +147,9 @@ class UserProfile extends Component {
                     opDate={opinion.date}
                     opContent={opinion.content}
                     userId={opinion.user_id}
-                    currentUserId={localStorage.getItem('userid')}
+                    currentUserId={localStorage.getItem('chs_userid')}
                     currentUserRole={this.props.userRole}
+                    translate={translate}
                   />
                 )
               }) }

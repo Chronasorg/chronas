@@ -30,6 +30,7 @@ import {
   toggleFavoriteApi,
   postOpinionApi,
   deletePostApi,
+  voteOpinionApi,
   deleteOpinionApi,
 } from './api'
 
@@ -138,4 +139,17 @@ export const deleteOpinion = (opinionId, discussionSlug) => {
         }
       }
     )
+}
+
+export const voteOpinion = (opinionId, discussionSlug, delta) => {
+  return voteOpinionApi(opinionId, delta).then(
+    data => {
+      if (data.data.voted) {
+        // fetch the discussion again to refresh the opinions
+        return fetchSingleDiscussion(discussionSlug).then(
+          data => data.data
+        )
+      }
+    }
+  )
 }

@@ -70,7 +70,7 @@ export class SelectArrayInput extends Component {
 
     axios.put(properties.chronasApiHost + '/metadata/links/addLink', JSON.stringify(linkedBody), {
       'headers': {
-          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          'Authorization': 'Bearer ' + localStorage.getItem('chs_token'),
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         }
@@ -101,7 +101,7 @@ export class SelectArrayInput extends Component {
 
     axios.put(properties.chronasApiHost + '/metadata/links/removeLink', JSON.stringify(linkedBody), {
       'headers': {
-        'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        'Authorization': 'Bearer ' + localStorage.getItem('chs_token'),
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }

@@ -1,7 +1,12 @@
 import React, { Component, createElement } from 'react'
 import { Provider, connect } from 'react-redux'
 import axios from 'axios'
-
+import {
+  defaultTheme,
+  Delete,
+  Restricted,
+  TranslationProvider,
+} from 'admin-on-rest'
 import decodeJwt from 'jwt-decode'
 import 'font-awesome/css/font-awesome.css'
 import { Switch, Route } from 'react-router-dom'
@@ -9,17 +14,11 @@ import { ConnectedRouter } from 'react-router-redux'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
+import queryString from 'query-string'
 import { setLoadStatus, setMetadata } from './components/map/data/actionReducers'
 import { TYPE_AREA, TYPE_EPIC, TYPE_MARKER, selectAreaItem, selectMarkerItem } from './components/map/actionReducers'
 import { setMarker, setEpic, setAreaColorLabel, setArea } from './components/menu/layers/actionReducers'
 import { setYear } from './components/map/timeline/actionReducers'
-import queryString from 'query-string'
-import {
-  defaultTheme,
-  Delete,
-  Restricted,
-  TranslationProvider,
-} from 'admin-on-rest'
 import Notification from './components/overwrites/Notification'
 import Menu from './components/menu/Menu'
 import Map from './components/map/Map'
@@ -86,8 +85,17 @@ const prefixedStyles = {}
 
 class App extends Component {
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      drawerOpen: false
+    }
+  }
+
   componentWillMount () {
     const { setArea, setYear, setMarker, setEpic, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
+
+    document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
     const selectedYear = (utilsQuery.getURLParameter('year') || 1000)
     axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
@@ -130,6 +138,19 @@ class App extends Component {
     })
   }
 
+  _setBodyFont = (newFont) => {
+    if (properties.fontOptions.map(el => el.id).includes(newFont)) {
+      const currBodyClasses = Array.from(document.body.classList)
+      properties.fontOptions.forEach((el) => {
+        if (currBodyClasses.includes(el.id)) {
+          document.body.classList.remove(el.id)
+        }
+      })
+      document.body.classList.add(newFont)
+      localStorage.setItem('chs_font', newFont)
+    }
+  }
+
   componentDidMount () {
     const { setMetadata, setLoadStatus, setUser } = this.props
     axios.get(properties.chronasApiHost + '/metadata?f=provinces,ruler,culture,religion,capital,province,religionGeneral')
@@ -151,30 +172,25 @@ class App extends Component {
 
       const decodedToken = decodeJwt(token)
       console.debug('decodedToken',decodedToken)
-      localStorage.setItem('userid', decodedToken.id)
-      localStorage.setItem('username', decodedToken.username)
-      localStorage.setItem('token', token)
+      localStorage.setItem('chs_userid', decodedToken.id)
+      localStorage.setItem('chs_username', decodedToken.username)
+      localStorage.setItem('chs_token', token)
       window.history.pushState(null, null, (target ? (target + '/') : '') + queryString.stringify(parsedQuery) || '/')
     } else {
-      token = localStorage.getItem('token')
+      token = localStorage.getItem('chs_token')
     }
 
     if (token) {
       const decodedToken = decodeJwt(token)
-      localStorage.setItem('userid', decodedToken.id)
-      localStorage.setItem('username', decodedToken.username)
-      localStorage.setItem('token', token)
+      localStorage.setItem('chs_userid', decodedToken.id)
+      localStorage.setItem('chs_username', decodedToken.username)
+      localStorage.setItem('chs_token', token)
       setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege)
     }
   }
 
   shouldComponentUpdate () {
     return false
-  }
-
-  constructor (props) {
-    super(props)
-    this.state = { drawerOpen: false }
   }
 
   render () {
@@ -184,7 +200,13 @@ class App extends Component {
       store
     } = this.props
 
-    const muiTheme = getMuiTheme(defaultTheme)
+    const {
+      drawerOpen,
+      selectedFontClass
+    } = this.state
+
+    defaultTheme.fontFamily = 'inherit'
+    const muiTheme = getMuiTheme(defaultTheme) // CustomTheme
     if (!prefixedStyles.main) {
       // do this once because user agent never changes
       const prefix = autoprefixer(muiTheme)
@@ -199,7 +221,7 @@ class App extends Component {
     prefixedStyles.content.transition = 'margin-left 350ms cubic-bezier(0.23, 1, 0.32, 1)'
     prefixedStyles.content.overflow = 'hidden'
 
-    if (this.state.drawerOpen) {
+    if (drawerOpen) {
       prefixedStyles.content.marginLeft = 156
     } else {
       prefixedStyles.content.marginLeft = 0
@@ -218,7 +240,14 @@ class App extends Component {
                     {!isLoading && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path='/' />
-                        <Route exact path='/configuration' component={Configuration} />
+                        <Route exact path='/configuration' render={(props) => {
+                          return (
+                            <Configuration
+                              setBodyFont={this._setBodyFont}
+                              {...props}
+                            />
+                          )
+                        }} />
                         <Route exact path='/discover' component={Discover} />
                         <Route exact path='/login' component={Login} />
                         <Route exact path='/share' component={Share} />

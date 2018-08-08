@@ -69,57 +69,62 @@ export const properties = {
     'w|areainfo': '[Wiki Article] Other -> Area Info',
     'w|other': '[Wiki Article] Other -> Unknown',
     'o': 'Other'
-  }
+  },
+  fontOptions: [
+    { name: 'Cinzel', id: 'cinzelFont' },
+    { name: 'Tahoma', id: 'tahomaFont' },
+    { name: 'Times New Roman', id: 'timesnewromanFont' }
+  ]
 }
 
 export const themes = {
   default: {
-    foreColors: ["#110617",
-      "#383B32",
-      "#383B32"],
-    backColors: ["#ababab",
-      "#cfcfcf",
-      "#cfcfcf"],
-    highlightColors: ["rgba(255,204,0,200)"],
-    gradientColors: ["linear-gradient(180deg,#fff 0,#F2F2F2)"],
-    className: "defaultTheme"
+    foreColors: ['#110617',
+      '#383B32',
+      '#383B32'],
+    backColors: ['#ababab',
+      '#cfcfcf',
+      '#cfcfcf'],
+    highlightColors: ['rgba(255,204,0,200)'],
+    gradientColors: ['linear-gradient(180deg,#fff 0,#F2F2F2)'],
+    className: 'defaultTheme'
   },
   light: {
-    foreColors: ["#6a6a6a",
-      "#494949",
-      "#383B32"],
-    backColors: ["#ffffff",
-      "#F2F2F2",
-      "#cbcbcb"],
-    highlightColors: ["rgba(255,204,0,200)"],
-    gradientColors: ["linear-gradient(180deg,#fff 0,#F2F2F2)"],
-    className: "lightTheme"
+    foreColors: ['#6a6a6a',
+      '#494949',
+      '#383B32'],
+    backColors: ['#ffffff',
+      '#F2F2F2',
+      '#cbcbcb'],
+    highlightColors: ['rgba(255,204,0,200)'],
+    gradientColors: ['linear-gradient(180deg,#fff 0,#F2F2F2)'],
+    className: 'lightTheme'
   },
   dark: {
-    foreColors: ["#F2F2F2",
-      "#e2e2e2",
-      "#cbcbcb"],
-    backColors: ["#333",
-      "#171717",
-      "#000"],
-    highlightColors: ["rgba(255,204,0,200)"],
-    gradientColors: ["linear-gradient(180deg,#333 0,#000)"],
-    className: "darkTheme"
+    foreColors: ['#F2F2F2',
+      '#e2e2e2',
+      '#cbcbcb'],
+    backColors: ['#333',
+      '#171717',
+      '#000'],
+    highlightColors: ['rgba(255,204,0,200)'],
+    gradientColors: ['linear-gradient(180deg,#333 0,#000)'],
+    className: 'darkTheme'
   },
   luther: {
-    foreColors: ["#fff3d3",
-      "#e9caab",
-      "#e9caab"],
-    backColors: ["#011c31",
-      "#451c2e",
-      "#451c2e"],
-    highlightColors: ["rgba(69,28,46,200)"],
-    gradientColors: ["linear-gradient(180deg,#011c31 0,#451c2e)"],
-    className: "lutherTheme"
+    foreColors: ['#fff3d3',
+      '#e9caab',
+      '#e9caab'],
+    backColors: ['#011c31',
+      '#451c2e',
+      '#451c2e'],
+    highlightColors: ['rgba(69,28,46,200)'],
+    gradientColors: ['linear-gradient(180deg,#011c31 0,#451c2e)'],
+    className: 'lutherTheme'
   }
 }
 
 export const RGBAtoArray = (str) => {
-  var match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d{1,3})\))?/);
-  return match ? [+match[1], +match[2], +match[3], +(match[4] || 255)] : [0,0,0,0];
+  var match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d{1,3})\))?/)
+  return match ? [+match[1], +match[2], +match[3], +(match[4] || 255)] : [0, 0, 0, 0]
 }

@@ -38,7 +38,7 @@ class Profile extends Component {
       width: '80px'
     }} />
 
-    const localStorageUsername = localStorage.getItem('username')
+    const localStorageUsername = localStorage.getItem('chs_username')
 
     const authTypeIcon = (profile.authType) === 'github' ? <i className={classnames('fa fa-github-alt', 'UserProfile_gitIcon')}></i> : (profile.authType) === 'facebook' ? <i className={classnames('fa fa-facebook', 'UserProfile_gitIcon')}></i> : (profile.authType) === 'google' ? <i className={classnames('fa fa-google', 'UserProfile_gitIcon')}></i> : (profile.authType) === 'twitter' ? <i className={classnames('fa fa-twitter', 'UserProfile_gitIcon')}></i> : <i className={classnames('fa fa-chronas-alt', 'UserProfile_gitIcon')}></i>
 

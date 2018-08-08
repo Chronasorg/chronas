@@ -73,7 +73,7 @@ export class MetaForm extends Component {
 
         const bodyToSend = { ...nextBodyByType }
         const metadataItem = values.type
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('chs_token')
         fetch((redirect === 'create') ? properties.chronasApiHost + '/metadata/' : properties.chronasApiHost + '/metadata/e_' + newWikiURL, {
           method: (redirect === 'create') ? 'POST' : 'PUT',
           headers: {
@@ -155,7 +155,7 @@ export class MetaForm extends Component {
           bodyToSend['subEntityId'] = (redirect === 'edit') ? values.select || metadataEntity : '_' + values.name.replace(/ /g, '_')
           bodyToSend['nextBody'] = nextBodyByType[metadataItem]
 
-          const token = localStorage.getItem('token')
+          const token = localStorage.getItem('chs_token')
           fetch(properties.chronasApiHost + '/metadata/' + metadataItem + '/single', {
             method: 'PUT',
             headers: {

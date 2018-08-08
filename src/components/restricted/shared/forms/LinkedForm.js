@@ -23,7 +23,7 @@ export class LinkedForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
       const { setModType, showNotification, initialValues, history } = this.props
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('chs_token')
       const wikiURL = values.wiki
 
       if (values.wiki !== initialValues.wiki && typeof wikiURL !== 'undefined') {

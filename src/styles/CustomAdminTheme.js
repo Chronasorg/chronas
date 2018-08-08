@@ -1,6 +1,5 @@
 import {
-  cyan500, cyan700,
-  pinkA200,
+  cyan500, cyan700, pinkA200,
   grey100, grey300, grey400, grey500,
   white, darkBlack, fullBlack,
 } from 'material-ui/styles/colors';
@@ -9,7 +8,7 @@ import spacing from 'material-ui/styles/spacing';
 
 const customTheme = {
   spacing: spacing,
-  fontFamily: 'Cinzel, serif',
+  fontFamily: 'inherit',
   drawer : {
     width: 50
   },
@@ -29,6 +28,20 @@ const customTheme = {
     clockCircleColor: fade(darkBlack, 0.07),
     shadowColor: fullBlack,
   },
+  tabs: {
+    backgroundColor: 'white',
+    selectedTextColor: '#00bcd4',
+    textColor: '#757575',
+  },
+  inkBar: {
+    backgroundColor: '#00bcd4',
+  },
+  baseTheme: {
+    palette: {
+      primary1Color: '#00bcd4',
+      accent1Color: '#ff4081'
+    }
+  }
 };
 
 export default customTheme

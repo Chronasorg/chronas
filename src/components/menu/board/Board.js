@@ -129,6 +129,7 @@ class Board extends PureComponent {
       hasCreate: false,
       hasDelete: true,
       resource: 'users',
+      translate: translate,
     }
 
     const restrictPage = (component, commonProps, customProps) => {
@@ -200,7 +201,7 @@ class Board extends PureComponent {
 
     return <Switch>
       <Route exact path="/community/admin" render={restrictPage(AdminContainer, {
-        ...commonProps, history: this.props.history, translate: this.props.translate, forums: this.state.forums, users: this.state.users })} >
+        ...commonProps, history: this.props.history, forums: this.state.forums, users: this.state.users })} >
       </Route>
       <Route exact path="/community" render={restrictPage(AppContainer, commonProps, {
         setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum })} />

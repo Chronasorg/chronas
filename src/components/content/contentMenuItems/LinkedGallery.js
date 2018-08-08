@@ -328,19 +328,19 @@ class LinkedGallery extends React.Component {
   }
 
   _handleUpvote = (id, stateDataId) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('chs_token')
     if (!token) {
       this.props.showNotification('pos.pleaseLogin')
       return
     }
 
-    const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
-    const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
+    const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
+    const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
     const tileData = this.state.tileData
 
     if (upvotedItems.indexOf(id) > -1) {
       // already upvoted -> downvote
-      localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
+      localStorage.setItem('chs_upvotedItems', upvotedItems.filter((elId) => elId !== id))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
           this.setState({ tileData: tileData.map((el) => {
@@ -351,8 +351,8 @@ class LinkedGallery extends React.Component {
         })
     } else if (downvotedItems.indexOf(id) > -1) {
       // already downvoted -> upvote twice
-      localStorage.setItem('upvotedItems', upvotedItems.concat([id]))
-      localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
+      localStorage.setItem('chs_upvotedItems', upvotedItems.concat([id]))
+      localStorage.setItem('chs_downvotedItems', downvotedItems.filter((elId) => elId !== id))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
@@ -366,7 +366,7 @@ class LinkedGallery extends React.Component {
         })
     } else {
       // neutral -> just upvote
-      localStorage.setItem('upvotedItems', upvotedItems.concat([id]))
+      localStorage.setItem('chs_upvotedItems', upvotedItems.concat([id]))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
           this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
@@ -380,18 +380,18 @@ class LinkedGallery extends React.Component {
   }
 
   _handleDownvote = (id) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('chs_token')
     if (!token) {
       this.props.showNotification('pos.pleaseLogin')
       return
     }
-    const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
-    const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
+    const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
+    const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
     const tileData = this.state.tileData
 
     if (downvotedItems.indexOf(id) > -1) {
       // already downvoted -> upvote
-      localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
+      localStorage.setItem('chs_downvotedItems', downvotedItems.filter((elId) => elId !== id))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
           this.setState({ tileData: tileData.map((el) => {
@@ -402,8 +402,8 @@ class LinkedGallery extends React.Component {
         })
     } else if (upvotedItems.indexOf(id) > -1) {
       // already upvoted -> downvote twice
-      localStorage.setItem('downvotedItems', downvotedItems.concat([id]))
-      localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
+      localStorage.setItem('chs_downvotedItems', downvotedItems.concat([id]))
+      localStorage.setItem('chs_upvotedItems', upvotedItems.filter((elId) => elId !== id))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
           axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
@@ -417,7 +417,7 @@ class LinkedGallery extends React.Component {
         })
     } else {
       // neutral -> just downvote
-      localStorage.setItem('downvotedItems', downvotedItems.concat([id]))
+      localStorage.setItem('chs_downvotedItems', downvotedItems.concat([id]))
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
         .then(() => {
           this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
@@ -482,8 +482,8 @@ class LinkedGallery extends React.Component {
     const slideButtons = (score, id, source, stateData) => {
       console.debug(id, source, source || id)
 
-      const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
-      const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
+      const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
+      const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
       const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'white' : 'green'
       const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'white' : 'red'
 

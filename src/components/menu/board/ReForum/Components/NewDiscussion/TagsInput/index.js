@@ -116,7 +116,7 @@ class TagsInput extends Component {
     if (isQA) return <div className='TagsInput_container'>
       <div className=''>
         <br />
-        <b><Link to="/info" onClick={localStorage.setItem("info_section", "rules")}>Please read the rules before posting</Link></b>
+        <b><Link to="/info" onClick={localStorage.setItem('chs_info_section', 'rules')}>Please read the rules before posting</Link></b>
       </div>
       { errorMsg && <div className='TagsInput_errorMsg'>{errorMsg}</div> }
     </div>

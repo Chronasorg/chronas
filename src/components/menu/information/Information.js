@@ -59,7 +59,7 @@ class Information extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      tabForm: localStorage.getItem("info_section") || "tutorial",
+      tabForm: localStorage.getItem('chs_info_section') || 'tutorial',
       hiddenElement: true
     }
   }
@@ -75,7 +75,7 @@ class Information extends PureComponent {
   }
 
   componentWillUnmount = () => {
-    localStorage.removeItem("info_section")
+    localStorage.removeItem('chs_info_section')
     this.setState({ hiddenElement: true })
   }
 

@@ -24,7 +24,7 @@ export class MarkerForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
       const { setModType, showNotification, history } = this.props
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('chs_token')
 
       const wikiURL = values.wiki
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')

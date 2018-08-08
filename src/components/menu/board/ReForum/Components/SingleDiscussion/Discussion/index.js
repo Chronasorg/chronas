@@ -36,11 +36,11 @@ class Discussion extends Component {
     dateDisplay = dateDisplay.from(moment())
 
     let favCount = ''
-    if (toggleingFavorite) favCount = 'Toggling Favorite...'
-    else if (userFavorited) favCount = `Favorited (${favoriteCount})`
-    else if (favoriteCount === 0) favCount = 'Make favorite'
-    else if (favoriteCount === 1) favCount = '1 favorite'
-    else favCount = `${favoriteCount} favorites`
+    if (toggleingFavorite) favCount = 'Toggling Upvote...'
+    else if (userFavorited) favCount = `Points (${favoriteCount})`
+    else if (favoriteCount === 0) favCount = 'Upvote'
+    else if (favoriteCount === 1) favCount = '1 Upvote'
+    else favCount = `${favoriteCount} Upvotes`
 
     const finalAvatarUrl = userAvatar ? <img className='Discussion_avatar' src={userAvatar} alt={`${name} avatar`} /> : <AccountIcon className='Discussion_avatar' />
 

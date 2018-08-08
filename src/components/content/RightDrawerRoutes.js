@@ -618,7 +618,7 @@ class RightDrawerRoutes extends PureComponent {
 
     const isMarker = (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_LINKED) && location.pathname.indexOf('/article') > -1
     const isEpic = (selectedItem.type === TYPE_EPIC) && location.pathname.indexOf('/article') > -1
-    const currPrivilege = +localStorage.getItem('privilege')
+    const currPrivilege = +localStorage.getItem('chs_privilege')
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege)
     const modHeader = <AppBar
       className='articleHeader'

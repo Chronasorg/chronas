@@ -7,7 +7,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui/svg-icons/content/clear';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar'
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 import { translate, Restricted } from 'admin-on-rest';
+import { properties } from '../../../properties'
 
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 
@@ -28,7 +31,9 @@ const styles = {
 class Configuration extends PureComponent {
   constructor(props) {
     super(props)
-    this.state = { hiddenElement: true }
+    this.state = {
+      hiddenElement: true
+    }
   }
 
   componentDidMount = () => {
@@ -43,8 +48,12 @@ class Configuration extends PureComponent {
     this.props.history.push('/')
   }
 
+
   render() {
-    const {theme, locale, changeTheme, changeLocale, menuItemActive, translate} = this.props;
+    const {theme, locale, changeTheme, changeLocale, menuItemActive, setBodyFont, translate} = this.props;
+
+    const currBodyClasses = Array.from(document.body.classList) || []
+    const selectedFontValue = ((properties.fontOptions.filter(el => currBodyClasses.includes(el.id)) || [])[0] || {}).id
 
     return (
         <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
@@ -78,6 +87,17 @@ class Configuration extends PureComponent {
               <RaisedButton style={styles.button} label="fr" primary={locale === 'fr'}
                             onClick={() => changeLocale('fr')} />
             </CardText>
+            <SelectField
+              floatingLabelText={translate('pos.fontType')}
+              value={ selectedFontValue }
+              onChange={ (event, index, value) => { setBodyFont(value) } }
+            >
+              { properties.fontOptions.map((el) => {
+                return <MenuItem value={el.id}  primaryText={el.name} />
+              })}
+            </SelectField>
+
+            TEXT FONT SELECT
 
             * add locked feature toggle (automatically detect timestamped waypoints to wiki article)
 

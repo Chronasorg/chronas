@@ -15,29 +15,9 @@ import YouTube from 'react-youtube'
 import axios from 'axios'
 import Badge from 'material-ui/Badge';
 
-import Menu from 'material-ui/Menu'
-import MenuItem from 'material-ui/MenuItem'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import { Player } from 'video-react'
-import Dialog from 'material-ui/Dialog'
-import { Card } from 'material-ui/Card'
-import { GridList, GridTile } from 'material-ui/GridList'
-import RaisedButton from 'material-ui/RaisedButton'
-import FloatingActionButton from 'material-ui/FloatingActionButton'
-import IconThumbUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
-import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
-import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
-import IconEdit from 'material-ui/svg-icons/content/create'
-import CloseIcon from 'material-ui/svg-icons/content/clear'
-import ContentAdd from 'material-ui/svg-icons/content/add'
-import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
-import IconMenu from 'material-ui/IconMenu'
-import { Tabs, Tab } from 'material-ui/Tabs'
-import SwipeableViews from 'react-swipeable-views'
-import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
-import { tooltip } from '../../../styles/chronasStyleComponents'
 import { properties } from "../../../properties";
 import {resetModActive, setFullModActive} from "../../restricted/shared/buttons/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "../actionReducers";
@@ -138,13 +118,6 @@ const styles = {
     transform: '',
     transition: 'opacity 1s',
     opacity: 0,
-    // display: 'flex',
-    // '-ms-flex-direction': 'row',
-    // '-webkit-flex-direction': 'row',
-    // 'flex-direction': 'row',
-    //   '-ms-flex-wrap': 'wrap',
-    // '-webkit-flex-wrap': 'wrap',
-    // 'flex-wrap': 'wrap',
     maxWidth: '100%',
     backgroundColor: 'transparent'
     // margin-left:auto,margin-right:auto,position:absolute,top:0,right:0,bottom:0,left:0
@@ -294,121 +267,8 @@ class LinkedQAA extends React.Component {
     console.debug('### LinkedQAA componentWillReceiveProps', this.props, nextProps)
   }
 
-  _handleUpvote = (id, stateDataId) => {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      this.props.showNotification('pos.pleaseLogin')
-      return
-    }
-
-    const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
-    const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
-    const tileData = this.state.tileData
-
-    if (upvotedItems.indexOf(id) > -1) {
-      // already upvoted -> downvote
-      localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          this.setState({ tileData: tileData.map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score -= 1
-              return el
-            }) })
-          this.forceUpdate()
-        })
-    } else if (downvotedItems.indexOf(id) > -1) {
-      // already downvoted -> upvote twice
-      localStorage.setItem('upvotedItems', upvotedItems.concat([id]))
-      localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-            .then(() => {
-              this.setState({ tileData: tileData.map((el) => {
-                  if (encodeURIComponent(el.src) === id) el.score += 2
-                  return el
-                }) })
-              this.forceUpdate()
-            })
-        })
-    } else {
-      // neutral -> just upvote
-      localStorage.setItem('upvotedItems', upvotedItems.concat([id]))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          this.setState({ tileData: tileData.map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score += 1
-              return el
-            }) })
-          this.forceUpdate()
-        })
-    }
-  }
-
-  _handleDownvote = (id) => {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      this.props.showNotification('pos.pleaseLogin')
-      return
-    }
-    const upvotedItems = (localStorage.getItem('upvotedItems') || '').split(',')
-    const downvotedItems = (localStorage.getItem('downvotedItems') || '').split(',')
-    const tileData = this.state.tileData
-
-    if (downvotedItems.indexOf(id) > -1) {
-      // already downvoted -> upvote
-      localStorage.setItem('downvotedItems', downvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          this.setState({ tileData: tileData.map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score += 1
-              return el
-            }) })
-          this.forceUpdate()
-        })
-    } else if (upvotedItems.indexOf(id) > -1) {
-      // already upvoted -> downvote twice
-      localStorage.setItem('downvotedItems', downvotedItems.concat([id]))
-      localStorage.setItem('upvotedItems', upvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-            .then(() => {
-              this.setState({ tileData: tileData.map((el) => {
-                  if (encodeURIComponent(el.src) === id) el.score -= 2
-                  return el
-                }) })
-              this.forceUpdate()
-            })
-        })
-    } else {
-      // neutral -> just downvote
-      localStorage.setItem('downvotedItems', downvotedItems.concat([id]))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          this.setState({ tileData: tileData.map((el) => {f
-              if (encodeURIComponent(el.src) === id) el.score -= 1
-              return el
-            }) })
-          this.forceUpdate()
-        })
-    }
-  }
-
   _minimize = () => {
     this.props.setContentMenuItem('')
-  }
-
-  _handleEdit = (id) => {
-    const selectedItem = this.state.tileData.filter(el => (el.src === decodeURIComponent(id)))[0]
-    this.props.selectLinkedItem(selectedItem)
-    this.props.history.push('/mod/linked')
-  }
-
-  _handleAdd = () => {
-    this.props.history.push('/mod/links')
   }
 
   _handleOpenSource = (source) => {
@@ -416,26 +276,6 @@ class LinkedQAA extends React.Component {
     window.open(source, '_blank').focus()
   }
 
-  _getYoutubeId = (url) => {
-    if (typeof url === 'undefined') return false
-    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length == 11) {
-      return match[2];
-    } else {
-      false
-    }
-  }
-
-  _removeTile = (tileSrc) => {
-    const originalTileData = this.state.tileData.filter(el => el.src !== tileSrc)
-
-    this.setState({
-      tileData: originalTileData
-    })
-
-    this.forceUpdate()
-  }
 
   render () {
     const { isMinimized, options, qId, setHasQuestions } = this.props

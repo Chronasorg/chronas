@@ -6,7 +6,7 @@ import { translate, defaultTheme } from 'admin-on-rest'
 import styles from './styles.css';
 
 const Logo = (props) => {
-  const username = localStorage.getItem('username')
+  const username = localStorage.getItem('chs_username')
   console.debug("Logo", props)
   return (
     <div className='BoardLogo_logoContainer'>

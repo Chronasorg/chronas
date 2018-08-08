@@ -41,7 +41,7 @@ class DiscussionBox extends Component {
 
           <div className='DiscussionBox_postInfo'>
             <span className='DiscussionBox_info'>{timeDisplay}</span>
-            <span className='DiscussionBox_info'>{voteCount || '1'} {isQuestion ? 'points' : 'favorites'}</span>
+            <span className='DiscussionBox_info'>{voteCount || '1'} {isQuestion ? 'points' : 'upvotes'}</span>
             <span className='DiscussionBox_info'>{opinionCount} {isQuestion ? 'answers' : 'opinions'}</span>
           </div>
         </div>

@@ -65,7 +65,7 @@ class CrudRoute extends PureComponent {
 
   render() {
     const { list, create, edit, show, remove, options, onMenuTap, translate } = this.props
-    const currPrivilege = +localStorage.getItem("privilege")
+    const currPrivilege = +localStorage.getItem('chs_privilege')
     const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
 
     const restrictPage = (component, route, commonProps) => {

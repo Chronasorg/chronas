@@ -41,7 +41,7 @@ const createStore = (initialState = {}) => {
     if (!options.headers) {
       options.headers = new Headers({ Accept: 'application/json' });
     }
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('chs_token');
     options.headers.set('Authorization', `Bearer ${token}`);
     return fetchUtils.fetchJson(url, options);
   }

@@ -56,7 +56,7 @@ export const userReducer = (initial = { 'token': '', 'username': '', 'privilege'
       case FLUSH_USER:
       case USER_LOGOUT:
       case USER_LOGIN_FAILURE:
-        localStorage.removeItem('token');
+        localStorage.removeItem('chs_token');
         return initial
       case SET_USER:
         return {

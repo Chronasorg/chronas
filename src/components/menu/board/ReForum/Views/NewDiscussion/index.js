@@ -75,7 +75,7 @@ class NewDiscussion extends Component {
       const currentForumId = (forumId || {})._id
       this.setState({
         forumId: currentForumId,
-        userId: user._id || localStorage.getItem('userid'),
+        userId: user._id || localStorage.getItem('chs_userid'),
       })
     } else {
       this.setState({

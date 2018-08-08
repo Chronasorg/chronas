@@ -23,8 +23,26 @@
 /**
  * typography
  */
+
+html {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%
+}
+
+body.cinzelFont {
+  font-family: Cinzel, sans-serif;
+}
+
+body.tahomaFont {
+  font-family: Tahoma,Verdana,Segoe,sans-serif
+}
+
+body.timesnewromanFont {
+  font-family: Times New Roman, sans-serif;
+}
+
 body {
   font-size: 14px;
   line-height: 22px;
-  font-family: 'Cinzel', serif;
 }
+

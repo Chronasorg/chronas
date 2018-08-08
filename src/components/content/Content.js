@@ -119,7 +119,7 @@ class Content extends Component {
     hasQuestions: false,
     sunburstData: [],
     linkedItems: { media: [], content: [], id: '' },
-    activeContentMenuItem: (localStorage.getItem('activeContentMenuItem') !== null) ? localStorage.getItem('activeContentMenuItem') : 'sunburst'
+    activeContentMenuItem: (localStorage.getItem('chs_activeContentMenuItem') !== null) ? localStorage.getItem('chs_activeContentMenuItem') : 'sunburst'
   }
 
   componentDidMount = () => {
@@ -155,13 +155,13 @@ class Content extends Component {
   }
 
   _setContentMenuItem = (newContentMenuItem) => {
-    localStorage.setItem('activeContentMenuItem', newContentMenuItem)
+    localStorage.setItem('chs_activeContentMenuItem', newContentMenuItem)
     this.setState({ activeContentMenuItem: newContentMenuItem })
   }
 
   _toggleContentMenuItem = (preContentMenuItem) => {
     const newContentMenuItem = (preContentMenuItem === this.state.activeContentMenuItem) ? '' : preContentMenuItem
-    localStorage.setItem('activeContentMenuItem', newContentMenuItem)
+    localStorage.setItem('chs_activeContentMenuItem', newContentMenuItem)
     this.setState({ activeContentMenuItem:  newContentMenuItem })
   }
 
