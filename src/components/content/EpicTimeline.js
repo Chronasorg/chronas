@@ -5,6 +5,8 @@ import {
   Stepper,
   StepButton,
 } from 'material-ui/Stepper'
+import YouTube from 'react-youtube'
+import { Player } from 'video-react'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 import compose from 'recompose/compose'
@@ -92,15 +94,96 @@ class EpicTimeline extends React.Component {
   getStepContent (stepIndex) {
     const { deselectItem, epicData, selectedItem, rulerProps, history } =  this.props
     const { selectedWiki, epicLinkedArticles, influenceChartData  } = this.state
-    const itemTyep = (epicLinkedArticles[stepIndex] || {}).type
+    const selectedItem = (epicLinkedArticles[stepIndex] || {})
+    const itemType = selectedItem.type
+    const isMarker = selectedItem.isMarker || true
     const hasChart = (influenceChartData && influenceChartData.length > 0)
     //TODO: fly to if coo, add geojson up to that index and animate current - if main, add all geojson
-    if (itemTyep === 'html') {
-      const content = (epicLinkedArticles[stepIndex] || {}).content
-      return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
-    } else {
-      const wikiUrl = (epicLinkedArticles[stepIndex] || {}).wiki || ((epicData || {}).data || {}).wiki || (rulerProps || {})[2] || -1
+    if (isMarker) {
+      const wikiUrl = selectedItem.wiki || ((epicData || {}).data || {}).wiki || (rulerProps || {})[2] || -1
       return  <ArticleIframe history={history} hasChart={ hasChart } isEntity={ this.props.isEntity } deselectItem={deselectItem} selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} selectedWiki={ selectedWiki || wikiUrl} />
+    } else {
+      if (itemType === 'html') {
+        const content = selectedItem.content
+        return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
+      }
+
+      return (itemType !== 'videos' && itemType !== 'audios' && itemType !== 'ps' && itemType !== 'articles')
+        ? <div
+          // key={tile.src}
+          // style={{border: '1px solid black', cursor: 'pointer' }}
+          // titleStyle={styles.title}
+          // subtitleStyle={styles.subtitle}
+          // title={tile.subtitle}
+          // subtitle={tile.title}
+          // actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0])}
+          // actionPosition='right'
+          // titlePosition='bottom'
+          // titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+          // cols={1}
+          // rows={2}
+        >
+          <img src={tile.src}
+               onError={() => this._removeTile(tile.src)}
+               onClick={() => { this.setState({ selectedImage: {
+                   src: tile.src,
+                   year: tile.subtitle,
+                   title: tile.title,
+                   wiki: tile.wiki,
+                   source: tile.source
+                 } })}}
+          />
+        </div>
+        : (itemType === 'articles' || itemType === 'ps')
+          ? <div
+            // key={tile.src}
+            // style={{border: '1px solid black', cursor: 'pointer'}}
+            // titleStyle={styles.title}
+            // subtitleStyle={styles.subtitle}
+            // title={tile.subtitle}
+            // subtitle={tile.title}
+            // actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
+            // actionPosition='right'
+            // titlePosition='bottom'
+            // titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+            // cols={1}
+            // rows={2}
+          ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
+                onError={() => this._removeTile(tile.src)}
+                onClick={() => { this.setState({ selectedImage: {
+                    src: tile.src,
+                    year: tile.subtitle,
+                    title: tile.title,
+                    wiki: tile.wiki,
+                    source: tile.source
+                  } })}}
+          />
+          </div>
+          : <div
+            // key={tile.src}
+            // style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
+            // titleStyle={styles.title}
+            // subtitleStyle={styles.subtitle}
+            // title={tile.subtitle}
+            // subtitle={tile.title}
+            // actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
+            // actionPosition='right'
+            // titlePosition='bottom'
+            // titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+            // rows={2}
+          >
+            {this._getYoutubeId(tile.src)
+              ? <YouTube
+                className='videoContent'
+                videoId={this._getYoutubeId(tile.src)}
+                opts={YOUTUBEOPTS}
+                onError={() => this._removeTile(tile.src)}
+              />
+              : <Player className='videoContent' fluid={false} ref="player">
+                <source src={tile.src} />
+              </Player>
+            }
+          </div>
     }
   }
 
@@ -192,6 +275,7 @@ class EpicTimeline extends React.Component {
         "wiki": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
         "content": (!linkedItem.properties) ? (linkedItem.content || linkedItem.name) : linkedItem.properties.c,
         "type": (!linkedItem.properties) ? linkedItem.type : linkedItem.properties.t,
+        "isMarker": (!linkedItem.properties) ? true : (linkedItem.properties.ct === "marker"),
         "date": (!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y,
         "geometry": linkedItem.geometry
       }}).filter((el) => el["name"] !== "null").sort((a, b) => +a.date - +b.date)
@@ -207,7 +291,7 @@ class EpicTimeline extends React.Component {
 
     if ((this.props.selectedItem || {}).type === TYPE_AREA && ((linkedItems || {}).content || []).length > 0) {
       this.props.setData({
-        id: epicData._id,
+        id: epicData.id || epicData._id,
         content: epicLinkedArticles.map((el, index) => {
           el.index = index
           el.hidden = false

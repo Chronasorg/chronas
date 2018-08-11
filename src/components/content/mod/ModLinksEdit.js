@@ -64,13 +64,12 @@ export const ModLinksEdit = (props) => {
                          onSearchChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType1, "linkedItemKey1choice" ) }}
                          onChange={(val) => { return props.ensureLoadLinkedItem(props.linkedItemData.linkedItemKey1 ) }}
       />
-      <Subheader>Items to link</Subheader>
       <h3>Link to media section</h3>
       <SelectArrayInput
         setLinkedItemData={props.setLinkedItemData}
         linkedItemData={props.linkedItemData}
         choices={props.linkedItemData.linkedItemKey2choice}
-        onSearchChange={(val) => {return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, "linkedItemKey2choice") }}
+        onSearchChange={(val) => {return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, "linkedItemKey2choice", false) }}
         onChange={(val) => {  console.debug('onChange!!', val, props); return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}}
 
         source="linkedMedia" label="resources.areas.fields.province_list" />

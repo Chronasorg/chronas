@@ -40,7 +40,7 @@ import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIco
 import { setRightDrawerVisibility } from './actionReducers'
 import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
-  selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, selectMarkerItem
+  selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, selectAreaItem, selectMarkerItem
 } from '../map/actionReducers'
 import { ModHome } from './mod/ModHome'
 import {
@@ -275,12 +275,12 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
 
-  setSearchSnippet = (searchText, contentTypeRaw = false, stateItem = false) => {
+  setSearchSnippet = (searchText, contentTypeRaw = false, stateItem = false, includeMarkers = true) => {
     // contentChoice
     if (searchText.length > 2) {
       if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
         this.setState({ isFetchingSearch: new Date().getTime() })
-        axios.get(properties.chronasApiHost + '/markers?both=true&search=' + searchText)
+        axios.get(properties.chronasApiHost + '/markers?both=true&search=' + searchText + '&includeMarkers=' + includeMarkers)
           .then(response => {
             if (stateItem) {
               const newlinkedItemData = this.state.linkedItemData
@@ -571,8 +571,23 @@ class RightDrawerRoutes extends PureComponent {
 
   _openPartOf (el) {
     console.debug(el)
-    this.props.selectLinkedItem(el.properties.w)
-    this.props.history.push('/article')
+    const { activeArea, changeColor, selectAreaItem, selectLinkedItem, history } = this.props
+
+    const aeId = ((el || {}).properties || {}).aeId
+    if (aeId) {
+      const [ ae, colorToSelect, rulerToHold ] = aeId.split('|')
+      const nextData = activeArea.data
+      const provinceWithOldRuler = Object.keys(nextData).find(key => nextData[key][utils.activeAreaDataAccessor(colorToSelect)] === rulerToHold) // TODO: go on here
+      if (provinceWithOldRuler) {
+        selectAreaItem(provinceWithOldRuler, provinceWithOldRuler)
+        if (colorToSelect !== activeArea.color) {
+          changeColor(colorToSelect)
+        }
+      }
+    } else {
+      selectLinkedItem(el.properties.w)
+    }
+    history.push('/article')
   }
 
   render () {
@@ -1117,6 +1132,7 @@ const enhance = compose(
       changeColor,
       setWikiId,
       selectValue,
+      selectAreaItem,
       deselectItem: deselectItemAction,
       toggleRightDrawer: toggleRightDrawerAction,
       setModData: setModDataAction,

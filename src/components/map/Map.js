@@ -329,10 +329,20 @@ class Map extends Component {
             ]
           ))
         }
-        this.setState({
+
+        const stateToUpdate = {
           viewport,
           mapStyle: newMapStyle
-        })
+        }
+
+        const content = ((selectedItem || {}).data || {}).content || ((((selectedItem || {}).data || {}).data || {}).data || {}).content || []
+        const selectedIndex = ((selectedItem || {}).data || {}).contentIndex || -1
+        const selectedFeature = content.filter(f => f.index === selectedIndex)[0]
+
+        if ((((selectedFeature || {}).geometry || {}).coordinates || []).length > 0) {
+          delete stateToUpdate.viewport
+        }
+        this.setState(stateToUpdate)
       } else {
         this.setState({ mapStyle: mapStyle.setIn(['sources', 'entity-outlines', 'data'], fromJS({
           'type': 'FeatureCollection',
@@ -522,6 +532,7 @@ class Map extends Component {
           }
         }
       }
+
       if (nextProps.selectedItem.type !== TYPE_AREA && nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {}).id !== (selectedItem.data || {}).id)) {
       // TODO: only go ahead if selectedYear is starting year
 
@@ -806,8 +817,7 @@ class Map extends Component {
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
     } else if (nextProps.activeArea.color === 'ruler' && nextProps.selectedItem.type === 'areas' && nextProps.selectedItem.value !== '' && activeArea.data[nextProps.selectedItem.value] && activeArea.data[nextProps.selectedItem.value][0] !== (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[0]) {
       // year changed while ruler article open and new ruler in province, ensure same ruler is kept if possible
-      const rulerToHold =
-        activeArea.data[selectedItem.value][0]
+      const rulerToHold = activeArea.data[selectedItem.value][0]
       const nextData = nextProps.activeArea.data
       const provinceWithOldRuler = Object.keys(nextData).filter(key => nextData[key][0] === rulerToHold)[0]
       if (provinceWithOldRuler) selectAreaItem(provinceWithOldRuler, provinceWithOldRuler)
