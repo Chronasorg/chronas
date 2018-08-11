@@ -13,8 +13,7 @@ import ContentFilter from 'material-ui/svg-icons/content/filter-list'
 import ImageGallery from 'react-image-gallery'
 import YouTube from 'react-youtube'
 import axios from 'axios'
-import Badge from 'material-ui/Badge';
-
+import Badge from 'material-ui/Badge'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
 import pure from 'recompose/pure'
@@ -38,7 +37,7 @@ import SwipeableViews from 'react-swipeable-views'
 import { translate, ViewTitle, showNotification } from 'admin-on-rest'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
-import { properties, themes } from "../../../properties"
+import { getYoutubeId, properties, themes } from "../../../properties"
 import { resetModActive, setFullModActive } from "../../restricted/shared/buttons/actionReducers";
 import { toggleRightDrawer as toggleRightDrawerAction } from "../actionReducers";
 
@@ -228,14 +227,6 @@ const styles = {
     color: 'rgba(255,255,255,0.87)',
     lineHeight: 1.5,
     margin: 0,
-  }
-}
-
-const YOUTUBEOPTS = {
-  height: '100%',
-  width: '100%',
-  playerVars: { // https://developers.google.com/youtube/player_parameters
-    autoplay: 0
   }
 }
 
@@ -445,19 +436,7 @@ class LinkedGallery extends React.Component {
   }
 
   _handleOpenSource = (source) => {
-    console.debug("_handleOpenSource", source)
     window.open(source, '_blank').focus()
-  }
-
-  _getYoutubeId = (url) => {
-    if (typeof url === 'undefined') return false
-    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length == 11) {
-      return match[2];
-    } else {
-      false
-    }
   }
 
   _removeTile = (tileSrc) => {
@@ -587,7 +566,7 @@ class LinkedGallery extends React.Component {
                   (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
                   ? <GridTile
                     key={tile.src}
-                    style={{border: '1px solid black', cursor: 'pointer' }}
+                    style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
                     titleStyle={styles.title}
                     subtitleStyle={styles.subtitle}
                     title={tile.subtitle}
@@ -613,7 +592,7 @@ class LinkedGallery extends React.Component {
                   : (tile.subtype === 'articles' || tile.subtype === 'ps')
                     ? <GridTile
                       key={tile.src}
-                      style={{border: '1px solid black', cursor: 'pointer'}}
+                      style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
                       titleStyle={styles.title}
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
@@ -648,11 +627,11 @@ class LinkedGallery extends React.Component {
                       titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
                       rows={2}
                     >
-                      {this._getYoutubeId(tile.src)
+                      {getYoutubeId(tile.src)
                         ? <YouTube
                           className='videoContent'
-                          videoId={this._getYoutubeId(tile.src)}
-                          opts={YOUTUBEOPTS}
+                          videoId={getYoutubeId(tile.src)}
+                          opts={properties.YOUTUBEOPTS}
                           onError={() => this._removeTile(tile.src)}
                         />
                         : <Player className='videoContent' fluid={false} ref="player">

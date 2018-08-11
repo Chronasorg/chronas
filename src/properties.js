@@ -76,7 +76,14 @@ export const properties = {
     { name: 'Cinzel', id: 'cinzelFont' },
     { name: 'Tahoma', id: 'tahomaFont' },
     { name: 'Times New Roman', id: 'timesnewromanFont' }
-  ]
+  ],
+  YOUTUBEOPTS: {
+    height: '100%',
+    width: '100%',
+    playerVars: { // https://developers.google.com/youtube/player_parameters
+      autoplay: 0
+    }
+  }
 }
 
 export const themes = {
@@ -127,6 +134,16 @@ export const themes = {
 }
 
 export const RGBAtoArray = (str) => {
-  var match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d{1,3})\))?/)
+  const match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d{1,3})\))?/)
   return match ? [+match[1], +match[2], +match[3], +(match[4] || 255)] : [0, 0, 0, 0]
+}
+
+export const getYoutubeId = (url) => {
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  if (match && match[2].length == 11) {
+    return match[2];
+  } else {
+    false
+  }
 }

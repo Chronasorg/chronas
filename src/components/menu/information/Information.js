@@ -33,14 +33,6 @@ import {
   TextInput,
 } from 'admin-on-rest'
 
-const YOUTUBEOPTS = {
-  height: '100%',
-  width: '100%',
-  playerVars: { // https://developers.google.com/youtube/player_parameters
-    autoplay: 0
-  }
-}
-
 const styles = {
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
   button: { margin: '1em' },
@@ -117,7 +109,7 @@ class Information extends PureComponent {
                     className='introVideo'
                     height={600}
                     videoId='5mJliez-Jlw'
-                    opts={YOUTUBEOPTS}
+                    opts={properties.YOUTUBEOPTS}
                     />
                 </p>
                 <br />
@@ -127,7 +119,7 @@ class Information extends PureComponent {
                     className='introVideo'
                     height='600px'
                     videoId='5mJliez-Jlw'
-                    opts={YOUTUBEOPTS}
+                    opts={properties.YOUTUBEOPTS}
                     />
                 </p>
               </div>

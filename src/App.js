@@ -40,10 +40,10 @@ import Share from './components/menu/share/Share'
 import RightDrawerRoutes from './components/content/RightDrawerRoutes'
 import Discover from './components/menu/discover/Discover'
 import Login from './components/menu/authentication/Login'
-import CustomTheme from './styles/CustomAdminTheme'
+import customTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
 import utilsQuery from './components/map/utils/query'
-import { properties } from './properties'
+import { properties, themes } from './properties'
 
 const styles = {
   wrapper: {
@@ -88,7 +88,14 @@ class App extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      drawerOpen: false
+      drawerOpen: false,
+      isFullScreen: localStorage.getItem('chs_fullscreen') === 'true' || false
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.theme !== nextProps.theme) {
+      this.forceUpdate()
     }
   }
 
@@ -136,6 +143,39 @@ class App extends Component {
           '&value=' + selectedItem.value +
           window.location.hash)
     })
+  }
+
+  _launchFullscreen = (element) => {
+    if(element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if(element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if(element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen();
+    } else if(element.msRequestFullscreen) {
+      element.msRequestFullscreen();
+    }
+  }
+
+  _exitFullscreen = () => {
+    if(document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if(document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if(document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+
+  _setFullscreen = () => {
+    const goFullscreen = typeof (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) === "undefined"
+    if (goFullscreen) {
+      this._launchFullscreen(document.documentElement)
+    } else {
+      this._exitFullscreen()
+    }
+    localStorage.setItem('chs_fullscreen', goFullscreen)
+    this.setState({ isFullScreen: goFullscreen })
   }
 
   _setBodyFont = (newFont) => {
@@ -194,6 +234,8 @@ class App extends Component {
   }
 
   render () {
+
+    console.error('!!! rendering App component')
     const {
       width,
       isLoading,
@@ -203,12 +245,23 @@ class App extends Component {
 
     const {
       drawerOpen,
+      isFullScreen,
       selectedFontClass
     } = this.state
 
-    defaultTheme.fontFamily = 'inherit'
-    const muiTheme = getMuiTheme(defaultTheme) // CustomTheme
-    console.debug('muiTheme', muiTheme)
+    // console.debug(customTheme, defaultTheme )
+    customTheme.fontFamily = 'inherit'
+
+    customTheme.palette.primary1Color = themes[theme].backColors[1]
+    customTheme.palette.primary2Color = themes[theme].backColors[0]
+    customTheme.palette.textColor = themes[theme].foreColors[0]
+    customTheme.palette.alternateTextColor = themes[theme].backColors[0]
+    customTheme.palette.canvasColor = themes[theme].backColors[1]
+    customTheme.baseTheme.palette.primary1Color = themes[theme].backColors[0]
+    customTheme.baseTheme.palette.accent1Color = themes[theme].highlightColors[0]
+
+    const muiTheme = getMuiTheme(customTheme) // customTheme
+
     if (!prefixedStyles.main) {
       // do this once because user agent never changes
       const prefix = autoprefixer(muiTheme)
@@ -229,6 +282,7 @@ class App extends Component {
       prefixedStyles.content.marginLeft = 0
     }
 
+
     return (
       <Provider store={store}>
         <TranslationProvider messages={messages}>
@@ -245,6 +299,7 @@ class App extends Component {
                         <Route exact path='/configuration' render={(props) => {
                           return (
                             <Configuration
+                              setFullscreen={this._setFullscreen}
                               setBodyFont={this._setBodyFont}
                               {...props}
                             />
@@ -268,10 +323,10 @@ class App extends Component {
                         <RightDrawerRoutes history={history} />
                       </Switch>
                     </div>}
-                    {!isLoading && <MenuDrawer muiTheme={CustomTheme}>
+                    {!isLoading && <MenuDrawer muiTheme={customTheme}>
                       {createElement(LayerContent)}
                     </MenuDrawer>}
-                    {!isLoading && <Sidebar open muiTheme={CustomTheme}>
+                    {!isLoading && <Sidebar open muiTheme={customTheme}>
                       {createElement(Menu)}
                     </Sidebar>}
                   </div>

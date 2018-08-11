@@ -24,7 +24,7 @@ import { green400, green600, blue400, blue600, red400, red600 } from 'material-u
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
 import {selectLinkedItem, selectMarkerItem} from '../../map/actionReducers'
-import { properties } from "../../../properties";
+import { getYoutubeId, properties } from "../../../properties";
 
 const imgButton = { width: 20, height: 20}
 const styles = {
@@ -195,14 +195,6 @@ const styles = {
     color: 'rgba(255,255,255,0.87)',
     lineHeight: 1.5,
     margin: 0,
-  }
-}
-
-const YOUTUBEOPTS = {
-  height: '100%',
-  width: '100%',
-  playerVars: { // https://developers.google.com/youtube/player_parameters
-    autoplay: 0
   }
 }
 
@@ -466,16 +458,6 @@ class Discover extends PureComponent {
     this.props.history.push('/article')
   }
 
-  _getYoutubeId = (url) => {
-    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    if (match && match[2].length == 11) {
-      return match[2];
-    } else {
-      false
-    }
-  }
-
   _removeTile = (tileDataKey, tileSrc) => {
     const originalTileData = this.state.tileData
     const originalSlideData = this.state.slidesData
@@ -644,7 +626,7 @@ class Discover extends PureComponent {
                 {tileData[tabKey[0]].length > 0 ? tileData[tabKey[0]].map((tile, j) => (
                     (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles') ? <GridTile
                         key={tile.src}
-                        style={{border: '1px solid black', cursor: 'pointer' }}
+                        style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
                         titleStyle={styles.title}
                         subtitleStyle={styles.subtitle}
                         title={tile.subtitle}
@@ -670,7 +652,7 @@ class Discover extends PureComponent {
                     : (tile.subtype === 'articles' || tile.subtype === 'ps')
                       ? <GridTile
                           key={tile.src}
-                          style={{border: '1px solid black', cursor: 'pointer'}}
+                          style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
                           titleStyle={styles.title}
                           subtitleStyle={styles.subtitle}
                           title={tile.subtitle}
@@ -705,11 +687,11 @@ class Discover extends PureComponent {
                             titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
                             rows={ tile.subtype === 'audios' ? 1 : 2}
                           >
-                            {this._getYoutubeId(tile.src)
+                            {getYoutubeId(tile.src)
                               ? <YouTube
                                   className='videoContent'
-                                  videoId={this._getYoutubeId(tile.src)}
-                                  opts={YOUTUBEOPTS}
+                                  videoId={getYoutubeId(tile.src)}
+                                  opts={properties.YOUTUBEOPTS}
                                   onError={() => this._removeTile(tabKey[0], tile.src)}
                                 />
                               : <Player className='videoContent' fluid={false} ref="player">

@@ -63,7 +63,7 @@ class SingleDiscussion extends Component {
         activeSortingMethod: method,
       })
     } else if (method === 'popularity') {
-      prevDiscussion.opinions = prevOpinions.sort((a, b) => b.score - a.score)
+      prevDiscussion.opinions = prevOpinions.sort((a, b) => (+b.score || 0) - (+a.score || 0))
 
       this.setState ({
         discussion: prevDiscussion,

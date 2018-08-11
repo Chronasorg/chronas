@@ -5,7 +5,7 @@ import { hideNotification as hideNotificationAction, translate } from 'admin-on-
 import Snackbar from 'material-ui/Snackbar';
 
 function getStyles(context) {
-  if (!context) return { primary1Color: '#00bcd4', accent1Color: '#ff4081' };
+  if (!context) return { primary1Color: '#18d400', accent1Color: '#9300ff' };
   const {
     muiTheme: { baseTheme: { palette: { primary1Color, accent1Color } } },
   } = context;

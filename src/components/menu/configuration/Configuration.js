@@ -10,7 +10,7 @@ import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar'
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import { translate, Restricted } from 'admin-on-rest';
-import { properties } from '../../../properties'
+import { properties, themes } from '../../../properties'
 
 import { changeTheme as changeThemeAction, changeLocale as changeLocaleAction } from './actionReducers'
 
@@ -50,29 +50,28 @@ class Configuration extends PureComponent {
 
 
   render() {
-    const {theme, locale, changeTheme, changeLocale, menuItemActive, setBodyFont, translate} = this.props;
+    const {theme, locale, changeTheme, changeLocale, menuItemActive, setBodyFont, setFullscreen, translate} = this.props;
 
     const currBodyClasses = Array.from(document.body.classList) || []
     const selectedFontValue = ((properties.fontOptions.filter(el => currBodyClasses.includes(el.id)) || [])[0] || {}).id
 
     return (
-        <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-                contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} onRequestClose={this.handleClose}>
+        <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open={true} contentClassName={(this.state.hiddenElement) ? '' : "classReveal"} contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} onRequestClose={this.handleClose}>
           <Card style={styles.card}>
             <div>
               <Toolbar style={styles.toolbar}>
                 <ToolbarGroup>
-                  <ToolbarTitle text={translate('pos.configuration')} />
+                  <ToolbarTitle style={{ ...styles.label, color: themes[theme].foreColors[0] }} text={translate('pos.configuration')} />
                 </ToolbarGroup>
                 <ToolbarGroup>
-                  <IconButton touch={true} key={'close'} containerElement={<Link to="/" />}>
+                  <IconButton iconStyle={{ ...styles.label, color: themes[theme].foreColors[0] }} touch={true} key={'close'} containerElement={<Link to="/" />}>
                     <CloseIcon />
                   </IconButton>
                 </ToolbarGroup>
               </Toolbar>
             </div>
             <CardText>
-              <div style={styles.label}>{translate('pos.theme.name')}</div>
+              <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.theme.name')}</div>
               <RaisedButton style={styles.button} label={translate('pos.theme.light')} primary={theme === 'light'}
                             onClick={() => changeTheme('light')} />
               <RaisedButton style={styles.button} label={translate('pos.theme.dark')} primary={theme === 'dark'}
@@ -81,18 +80,28 @@ class Configuration extends PureComponent {
                             onClick={() => changeTheme('luther')} />
             </CardText>
             <CardText>
-              <div style={styles.label}>{translate('pos.language')}</div>
+              <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.language')}</div>
               <RaisedButton style={styles.button} label="en" primary={locale === 'en'}
                             onClick={() => changeLocale('en')} />
               <RaisedButton style={styles.button} label="fr" primary={locale === 'fr'}
                             onClick={() => changeLocale('fr')} />
             </CardText>
             <CardText>
-              <div style={styles.label}>{translate('pos.theme.font')}</div>
+              <CardText>
+                <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.goFullScreen')}</div>
+                <RaisedButton style={styles.button} label={translate('pos.goFullScreen')}
+                              onClick={() => setFullscreen()} />
+              </CardText>
+              <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.theme.font')}</div>
               <SelectField
                 floatingLabelText={translate('pos.fontType')}
                 value={ selectedFontValue }
                 onChange={ (event, index, value) => { setBodyFont(value) } }
+                style={{ ...styles.label, color: themes[theme].foreColors[0] }}
+                floatingLabelStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
+                inputStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
+                textareaStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
+                hintStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
               >
                 { properties.fontOptions.map((el) => {
                   return <MenuItem value={el.id}  primaryText={el.name} />

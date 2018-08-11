@@ -1,23 +1,29 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import {
-  Step,
-  Stepper,
-  StepButton,
-} from 'material-ui/Stepper'
+import { translate } from 'admin-on-rest'
 import YouTube from 'react-youtube'
 import { Player } from 'video-react'
+import { Step, Stepper, StepButton } from 'material-ui/Stepper'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
+import { red400 } from 'material-ui/styles/colors'
+import pure from 'recompose/pure'
 import compose from 'recompose/compose'
+import Dialog from 'material-ui/Dialog'
+import { GridList, GridTile } from 'material-ui/GridList'
+import IconButton from 'material-ui/IconButton'
+import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import ChartSunburst from './Charts/ChartSunburst'
 import LinkedGallery from './contentMenuItems/LinkedGallery'
 import LinkedQAA from './contentMenuItems/LinkedQAA'
 import { setYear  as setYearAction} from '../map/timeline/actionReducers'
-import { selectValue, setData, deselectItem, setEpicContentIndex, TYPE_AREA, WIKI_PROVINCE_TIMELINE } from '../map/actionReducers'
+import {
+  selectValue, setData, deselectItem, setEpicContentIndex, TYPE_AREA, WIKI_PROVINCE_TIMELINE,
+  selectLinkedItem
+} from '../map/actionReducers'
 import InfluenceChart from './Charts/ChartArea'
 import ArticleIframe from './ArticleIframe'
-import { themes } from '../../properties'
+import { getYoutubeId, themes, properties } from '../../properties'
 
 /**
  * Non-linear steppers allow users to enter a multi-step flow at any point.
@@ -29,6 +35,23 @@ import { themes } from '../../properties'
  */
 
 const styles = {
+  buttonOpenArticle: {
+    // float: 'left',
+    backgroundColor: 'transparent',
+    paddingRight: '1em',
+    width: 'inherit',
+    height: 'inherit',
+  },
+  selectedIMG: {
+    height: 'auto',
+    /* transform: translateY(-50%); */
+    position: 'relative',
+    left: 0,
+    width: '100%',
+  },
+  selectedImageButtonContainer: {
+    marginTop: '2.85em'
+  },
   stepLabel: {
     fontWeight: 'bold',
     background: '#9e9e9e',
@@ -44,10 +67,51 @@ const styles = {
     // textOverflow: 'ellipsis',
     // overflow: 'hidden'
   },
+  selectedImageContent: {
+    alignItems: 'flex-start',
+    margin: '0 0 0 10%',
+    padding: 0,
+    boxSizing: 'border-box',
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%',
+    justifyContent: 'center',
+    maxWidth: '32em',
+    position: 'absolute',
+    width: '100%',
+    zIndex: 2,
+    bottom: '10%'
+  },
+  selectedImageTitle: {
+    fontWeight: 400,
+    fontSize: '2.125em',
+    margin: '.4em 0',
+    lineHeight: '1.3',
+    textAlign: 'left',
+    color: '#fff',
+    fontFamily: "'Cinzel', serif",
+    textShadow: '1px 1px 1px black',
+    padding: 0
+  },
+  selectedImageDescription: {
+    textShadow: '1px 1px 1px black',
+    textAlign: 'left',
+    fontSize: '1em',
+    fontWeight: 400,
+    color: 'rgba(255,255,255,0.87)',
+    lineHeight: 1.5,
+    margin: 0,
+  },
   iframe: {
     width: '100%',
     right: 0,
     padding: '2px 8px'
+  },
+  imageItem: {
+    width: '100%',
+    objectFit: 'cover',
+    cursor: 'pointer',
+    pointerEvents: 'all'
   },
   contentStyle: {
     display: 'flex',
@@ -63,7 +127,39 @@ const styles = {
     left: 'calc(20% + 4px)',
     bottom: '10px',
     position: 'fixed'
-  }
+  },
+  gridList: {
+    maxHeight: '100%',
+    height: 'calc(100% - 300px)',
+    width: '100%',
+    overflowY: 'auto',
+    margin: '0 auto'
+  },
+  subtitle: {
+    pointerEvents: 'none',
+    fontSize: '16px',
+    // paddingLeft: '28px',
+    // paddingRight: '28px',
+    fontWeight: '400',
+    lineHeight: '24px',
+    color: '#bcbcbc',
+    transition: 'all .5s ease',
+    bottom: '20px',
+    left: '30px',
+    paddingRight: '2em',
+
+  },
+  title: {
+    pointerEvents: 'none',
+    // padding: '36px 28px 0 28px',
+    lineHeight: '32px',
+    fontWeight: 300,
+    color: '#fff',
+    fontSize: '24px',
+    bottom: '50px',
+    position: 'absolute',
+    left: '30px',
+  },
 }
 
 class EpicTimeline extends React.Component {
@@ -71,6 +167,8 @@ class EpicTimeline extends React.Component {
     rulerSetup: '',
     selectedWiki: false,
     stepIndex: -1,
+    hiddenElement: true,
+    selectedImage: { src: '', year: '', title: '', wiki: '', source: '' },
     influenceChartData: [],
     epicMeta: false,
     epicLinkedArticles: [],
@@ -92,98 +190,102 @@ class EpicTimeline extends React.Component {
   };
 
   getStepContent (stepIndex) {
-    const { deselectItem, epicData, selectedItem, rulerProps, history } =  this.props
-    const { selectedWiki, epicLinkedArticles, influenceChartData  } = this.state
-    const selectedItem = (epicLinkedArticles[stepIndex] || {})
-    const itemType = selectedItem.type
-    const isMarker = selectedItem.isMarker || true
+    const { deselectItem, epicData, rulerProps, selectedItem, history } =  this.props
+    const { selectedWiki, epicLinkedArticles, influenceChartData } = this.state
+    const selectedIndexItem = (epicLinkedArticles[stepIndex] || {})
+    const itemType = selectedIndexItem.type
+    const isMarker = !(selectedIndexItem.isMarker === false) || (selectedIndexItem.type.substr(0, 3) === "ae|")
     const hasChart = (influenceChartData && influenceChartData.length > 0)
     //TODO: fly to if coo, add geojson up to that index and animate current - if main, add all geojson
     if (isMarker) {
-      const wikiUrl = selectedItem.wiki || ((epicData || {}).data || {}).wiki || (rulerProps || {})[2] || -1
+      const wikiUrl = selectedIndexItem.wiki || ((epicData || {}).data || {}).wiki || (rulerProps || {})[2] || -1
       return  <ArticleIframe history={history} hasChart={ hasChart } isEntity={ this.props.isEntity } deselectItem={deselectItem} selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} selectedWiki={ selectedWiki || wikiUrl} />
     } else {
       if (itemType === 'html') {
-        const content = selectedItem.content
+        const content = selectedIndexItem.content
         return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
       }
 
-      return (itemType !== 'videos' && itemType !== 'audios' && itemType !== 'ps' && itemType !== 'articles')
-        ? <div
-          // key={tile.src}
-          // style={{border: '1px solid black', cursor: 'pointer' }}
-          // titleStyle={styles.title}
-          // subtitleStyle={styles.subtitle}
-          // title={tile.subtitle}
-          // subtitle={tile.title}
-          // actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0])}
-          // actionPosition='right'
-          // titlePosition='bottom'
-          // titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-          // cols={1}
-          // rows={2}
+      return <GridList
+        cellHeight={'calc(100% - 300px)'}
+        padding={1}
+        cols={1}
+        style={styles.gridList}
+      >{(itemType !== 'videos' && itemType !== 'audios' && itemType !== 'ps' && itemType !== 'articles')
+        ? <GridTile
+          key={selectedIndexItem.wiki}
+          style={{border: '0px solid black', cursor: 'pointer', pointerEvents: 'none'}}
+          titleStyle={styles.title}
+          subtitleStyle={styles.subtitle}
+          title={selectedIndexItem.name}
+          subtitle={selectedIndexItem.name}
+          actionPosition='right'
+          titlePosition='bottom'
+          titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+          cols={1}
+          rows={1}
         >
-          <img src={tile.src}
-               onError={() => this._removeTile(tile.src)}
-               onClick={() => { this.setState({ selectedImage: {
-                   src: tile.src,
-                   year: tile.subtitle,
-                   title: tile.title,
-                   wiki: tile.wiki,
-                   source: tile.source
-                 } })}}
+          <img src={selectedIndexItem.wiki}
+             style={styles.imageItem}
+             onClick={() => { this.setState({ selectedImage: {
+               src: selectedIndexItem.wiki,
+               year: selectedIndexItem.date,
+               title: selectedIndexItem.name,
+               wiki: selectedIndexItem.wiki,
+               source: selectedIndexItem.source
+             } })}}
           />
-        </div>
+        </GridTile>
         : (itemType === 'articles' || itemType === 'ps')
-          ? <div
-            // key={tile.src}
-            // style={{border: '1px solid black', cursor: 'pointer'}}
-            // titleStyle={styles.title}
-            // subtitleStyle={styles.subtitle}
-            // title={tile.subtitle}
-            // subtitle={tile.title}
-            // actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
-            // actionPosition='right'
-            // titlePosition='bottom'
-            // titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-            // cols={1}
-            // rows={2}
-          ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
-                onError={() => this._removeTile(tile.src)}
-                onClick={() => { this.setState({ selectedImage: {
-                    src: tile.src,
-                    year: tile.subtitle,
-                    title: tile.title,
-                    wiki: tile.wiki,
-                    source: tile.source
-                  } })}}
-          />
-          </div>
-          : <div
-            // key={tile.src}
-            // style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
-            // titleStyle={styles.title}
-            // subtitleStyle={styles.subtitle}
-            // title={tile.subtitle}
-            // subtitle={tile.title}
-            // actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
-            // actionPosition='right'
-            // titlePosition='bottom'
-            // titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-            // rows={2}
+          ? <GridTile
+            key={selectedIndexItem.wiki}
+            style={{border: '0px solid black', cursor: 'pointer', pointerEvents: 'none'}}
+            titleStyle={styles.title}
+            subtitleStyle={styles.subtitle}
+            title={selectedIndexItem.name}
+            subtitle={selectedIndexItem.name}
+            actionPosition='right'
+            titlePosition='bottom'
+            titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+            cols={1}
+            rows={1}
           >
-            {this._getYoutubeId(tile.src)
+            <img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
+              style={styles.imageItem}
+              onClick={() => { this.setState({ selectedImage: {
+                src: selectedIndexItem.wiki,
+                year: selectedIndexItem.date,
+                title: selectedIndexItem.name,
+                wiki: selectedIndexItem.wiki,
+                source: selectedIndexItem.source
+              } })}}
+          />
+          </GridTile>
+          : <GridTile
+            key={selectedIndexItem.wiki}
+            style={{border: '0px solid black', cursor: 'pointer', pointerEvents: 'none'}}
+            titleStyle={styles.title}
+            subtitleStyle={styles.subtitle}
+            title={selectedIndexItem.name}
+            subtitle={selectedIndexItem.name}
+            actionPosition='right'
+            titlePosition='bottom'
+            titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+            cols={1}
+            rows={1}
+          >
+            {getYoutubeId(selectedIndexItem.wiki)
               ? <YouTube
                 className='videoContent'
-                videoId={this._getYoutubeId(tile.src)}
-                opts={YOUTUBEOPTS}
-                onError={() => this._removeTile(tile.src)}
+                videoId={getYoutubeId(selectedIndexItem.wiki)}
+                opts={properties.YOUTUBEOPTS}
               />
               : <Player className='videoContent' fluid={false} ref="player">
-                <source src={tile.src} />
+                <source src={selectedIndexItem.wiki} />
               </Player>
             }
-          </div>
+          </GridTile>}
+      </GridList>
     }
   }
 
@@ -251,6 +353,7 @@ class EpicTimeline extends React.Component {
         source: imageItem.source || (imageItem.data || {}).source || ((imageItem || {}).properties || {}).s,
         subtitle: imageItem.subtitle || imageItem.year || ((imageItem || {}).properties || {}).n,
         score: imageItem.score || ((imageItem || {}).properties || {}).s,
+        date: imageItem.year || ((imageItem || {}).properties || {}).y
       }
     })
 
@@ -273,12 +376,15 @@ class EpicTimeline extends React.Component {
       return {
         "name": (!linkedItem.properties) ? (linkedItem.name || linkedItem.wiki) : linkedItem.properties.n || linkedItem.properties.w,
         "wiki": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
-        "content": (!linkedItem.properties) ? (linkedItem.content || linkedItem.name) : linkedItem.properties.c,
+        "content": (!linkedItem.properties) ? (linkedItem.content || linkedItem.name) : (linkedItem.properties.c || linkedItem.properties.n),
         "type": (!linkedItem.properties) ? linkedItem.type : linkedItem.properties.t,
+        "source": (!linkedItem.properties) ? false : linkedItem.properties.s,
         "isMarker": (!linkedItem.properties) ? true : (linkedItem.properties.ct === "marker"),
-        "date": (!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y,
+        "date": ((!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y),
         "geometry": linkedItem.geometry
-      }}).filter((el) => el["name"] !== "null").sort((a, b) => +a.date - +b.date)
+      }}).filter((el) => el["name"] !== "null").sort((a, b) => {
+      return +(a.date || 0) - +(b.date || 0)
+    })
 
     this.setState({
       epicLinkedArticles,
@@ -302,6 +408,10 @@ class EpicTimeline extends React.Component {
     }
   }
 
+  handleImageClose = () => {
+    this.setState({ selectedImage: { src: '', year: '', title: '', wiki: '', source: '' } })
+  }
+
   componentDidMount = () => {
     const { epicData, linkedItems, isEntity } = this.props
     this._setUpInfluenceDataAndMediaAndLinkedContent(epicData, linkedItems, isEntity)
@@ -310,9 +420,6 @@ class EpicTimeline extends React.Component {
   componentWillReceiveProps = (nextProps) => {
     const { rulerSetup } = this.state
     const { selectedItem, epicData, linkedItems, rulerProps, isEntity } = this.props
-
-    // const nextEntity = ((nextProps.epicData || {}).data || {}).wiki || (nextProps.rulerProps || {})[2]
-    // const prevEntity = ((epicData || {}).data || {}).wiki || (rulerProps || {})[2]
 
     const nextLinkedId = nextProps.linkedItems.id
     const prevLinkedId = linkedItems.id
@@ -330,10 +437,22 @@ class EpicTimeline extends React.Component {
     this.props.selectValue(value)
   }
 
-  render () {
-    const { epicMeta, epicLinkedArticles, stepIndex, selectedWiki, linkedMediaItems, linkedQAAItems, influenceChartData, translate, iframeLoading } = this.state
-    const { activeContentMenuItem, activeAreaDim, epicData, rulerProps, setHasQuestions, isEntity, newWidth, history, selectedYear, setContentMenuItem, linkedItems, sunburstData, theme } = this.props
+  _handleEdit = (id) => {
+    // const selectedItem = this.state.tileData.filter(el => (el.src === decodeURIComponent(id)))[0]
+    this.props.selectLinkedItem(this.state.selectedImage)
+    this.props.history.push('/mod/linked')
+  }
 
+  _handleOpenSource = (source) => {
+    window.open(source, '_blank').focus()
+  }
+
+  render () {
+    const { epicMeta, epicLinkedArticles, stepIndex,linkedMediaItems, linkedQAAItems, influenceChartData, selectedImage, selectedWiki, iframeLoading } = this.state
+    const { activeContentMenuItem, activeAreaDim, epicData, rulerProps, setHasQuestions, isEntity, newWidth, history, selectedYear, setContentMenuItem, linkedItems, sunburstData, translate, theme } = this.props
+
+    const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
+    const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
     const contentDetected = epicLinkedArticles.length !== 0
 
     return (
@@ -425,6 +544,49 @@ class EpicTimeline extends React.Component {
             </div> }
           </div>
         </div>
+        <Dialog
+          autoDetectWindowHeight={false}
+          modal={false}
+          contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogImageBackgroundHack'}
+          contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', padding: '0px', maxWidth: 'calc(100% - 64px)'}}
+          bodyStyle={{ backgroundColor: 'transparent', padding: '0px', border: 'none' }}
+          overlayStyle={{ padding: '0px'}}
+          actionsContainerStyle={{ backgroundColor: red400 }}
+          style={{ backgroundColor: 'transparent', padding: '0px',  overflow: 'auto' }}
+          titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
+          autoScrollBodyContent={false}
+          open={(selectedImage.src !== '')}
+          onRequestClose={this.handleImageClose}
+        >
+          <img src={selectedImage.src} style={styles.selectedIMG} />
+          <div style={styles.selectedImageContent}>
+            <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
+            <p style={styles.selectedImageDescription}>{selectedImage.title}</p>
+            <div style={styles.selectedImageButtonContainer}>
+              <IconButton
+                style={styles.buttonOpenArticle}
+                tooltipPosition="bottom-center"
+                tooltip={hasWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
+                <RaisedButton
+                  disabled={hasSource}
+                  label="Open Source"
+                  primary={true}
+                  onClick={() => this._handleOpenSource(selectedImage.source)} >
+                  <IconOutbound color="white" style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
+                </RaisedButton>
+              </IconButton>
+              <IconButton
+                style={styles.buttonOpenArticle}
+                tooltipPosition="bottom-center"
+                tooltip={translate('pos.discover_component.edit')}>
+                <RaisedButton
+                  label="Edit"
+                  primary={true}
+                  onClick={() => this._handleEdit(selectedImage.source)} />
+              </IconButton>
+            </div>
+          </div>
+        </Dialog>
       </div>
     )
   }
@@ -439,8 +601,11 @@ const enhance = compose(
     setData,
     setYear: setYearAction,
     selectValue,
+    selectLinkedItem,
     setEpicContentIndex
-  })
+  }),
+  pure,
+  translate,
 )
 
 export default enhance(EpicTimeline)
