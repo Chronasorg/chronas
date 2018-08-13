@@ -33,6 +33,7 @@ import {
   TextInput,
 } from 'admin-on-rest'
 
+import { properties, themes } from '../../../properties'
 const styles = {
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
   button: { margin: '1em' },
@@ -76,9 +77,9 @@ class Information extends PureComponent {
   }
 
   render () {
-    const { translate } = this.props
+    const { translate, theme } = this.props
     return (
-      <Dialog bodyStyle={{ backgroundImage: '#fff' }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal modalMenu'}  titleStyle={{ overflow: 'auto'}} overlayStyle={{ overflow: 'auto'}} style={{ overflow: 'auto'}}
+      <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal modalMenu'}  titleStyle={{ overflow: 'auto'}} overlayStyle={{ overflow: 'auto'}} style={{ overflow: 'auto'}}
         contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, height: '940px' }} onRequestClose={this.handleClose}>
         <Card style={styles.card}>
           <div>

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 // import { browserHistory } from 'react-router';
 import compose from 'recompose/compose'
 import { connect } from 'react-redux';
-import { properties } from "../../../../../../properties";
+import { properties, themes } from "../../../../../../properties";
 import classnames from 'classnames';
 
 import {
@@ -131,7 +131,6 @@ class SingleDiscussion extends Component {
       discussion_slug
     ).then((data) => {
       showNotification("Replied")
-      // this.updateOpinionContent('{"blocks":[{"key":"8mpkt","text":"","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}')
       this.setState({
         opinionContent: '{"blocks":[{"text":"","type":"header-three","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}',
         discussion: data
@@ -217,7 +216,8 @@ class SingleDiscussion extends Component {
       deletingOpinion,
       deletingDiscussion,
       error,
-      translate
+      translate,
+      theme
     } = this.props;
 
     const {
@@ -225,13 +225,6 @@ class SingleDiscussion extends Component {
       discussion,
       opinionContent,
       activeSortingMethod
-      // toggleFavorite,
-      // toggleingFavorite,
-      // postingOpinion,
-      // opinionError,
-      // deletingOpinion,
-      // deletingDiscussion,
-      // error,
     } = this.state;
 
 
@@ -303,20 +296,22 @@ class SingleDiscussion extends Component {
         />
 
 
-        <div className='FeedBox_sortList'>
+        { opinions && opinions.length > 0 && <div className='FeedBox_sortList'>
           <span
+            style={{ color: (activeSortingMethod === 'popularity') ? themes[theme].foreColors[0] : themes[theme].highlightColors[0] }}
             className={classnames('FeedBox_sort', (activeSortingMethod === 'date') && 'FeedBox_sortActive')}
             onClick={() => this._onChangeSortingMethod('date')}
           >
             Latest
           </span>
           <span
+            style={{ color: (activeSortingMethod === 'popularity') ? themes[theme].highlightColors[0] : themes[theme].foreColors[0] }}
             className={classnames('FeedBox_sort', (activeSortingMethod === 'popularity') && 'FeedBox_sortActive')}
             onClick={() => this._onChangeSortingMethod('popularity')}
           >
             Popular
           </span>
-        </div>
+        </div> }
         { opinions && opinions.map((opinion) => {
           return (
             <Opinion
@@ -347,6 +342,7 @@ class SingleDiscussion extends Component {
 
 const enhance = compose(
   connect(state => ({
+    theme: state.theme,
     userRole: state.user.role,
     fetchingDiscussion: state.discussion.fetchingDiscussion,
     toggleingFavorite: state.discussion.toggleingFavorite,

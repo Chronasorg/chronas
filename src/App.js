@@ -249,16 +249,23 @@ class App extends Component {
       selectedFontClass
     } = this.state
 
-    // console.debug(customTheme, defaultTheme )
+    console.debug(customTheme, defaultTheme)
     customTheme.fontFamily = 'inherit'
 
-    customTheme.palette.primary1Color = themes[theme].backColors[1]
+    customTheme.palette.primary1Color = themes[theme].foreColors[0]
     customTheme.palette.primary2Color = themes[theme].backColors[0]
     customTheme.palette.textColor = themes[theme].foreColors[0]
     customTheme.palette.alternateTextColor = themes[theme].backColors[0]
     customTheme.palette.canvasColor = themes[theme].backColors[1]
     customTheme.baseTheme.palette.primary1Color = themes[theme].backColors[0]
     customTheme.baseTheme.palette.accent1Color = themes[theme].highlightColors[0]
+    customTheme.tabs = {
+      backgroundColor: 'transparent',
+      selectedTextColor:  themes[theme].foreColors[1],
+      textColor: themes[theme].foreColors[0]
+    }
+
+    delete customTheme.drawer
 
     const muiTheme = getMuiTheme(customTheme) // customTheme
 
@@ -308,16 +315,18 @@ class App extends Component {
                         <Route exact path='/discover' component={Discover} />
                         <Route exact path='/login' component={Login} />
                         <Route exact path='/share' component={Share} />
-                        <Route exact path='/info' component={Information} />
+                        <Route exact path='/info' render={(props) => { return (
+                            <Information theme={theme} />
+                          )}} />
                       </Switch>
                       <Switch>
-                        <CrudRoute history={history} />
+                        <CrudRoute theme={theme} history={history} />
                       </Switch>
                       <Switch>
-                        <Board history={history} />
+                        <Board theme={theme} history={history} />
                       </Switch>
                       <Switch>
-                        <Account history={history} />
+                        <Account theme={theme} history={history} />
                       </Switch>
                       <Switch>
                         <RightDrawerRoutes history={history} />

@@ -8,6 +8,7 @@ import IconButton from 'material-ui/IconButton';
 import CloseIcon from 'material-ui/svg-icons/content/clear';
 import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
 import { translate, Restricted } from 'admin-on-rest';
+import {themes} from "../../../properties";
 
 const styles = {
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
@@ -45,7 +46,7 @@ class Share extends PureComponent {
     const {theme, locale, changeTheme, changeLocale, menuItemActive, translate} = this.props;
 
     return (
-      <Dialog bodyStyle={{ backgroundImage: '#fff' }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal modalMenu"}
+      <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal modalMenu"}
               contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} onRequestClose={this.handleClose}>
         <Card style={styles.card}>
           <div>

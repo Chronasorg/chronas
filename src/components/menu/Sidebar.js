@@ -11,7 +11,7 @@ import { themes } from '../../properties'
 const getWidth = width => (typeof width === 'number' ? `${width}px` : width);
 
 const getStyles = ({ drawer }) => {
-  const width = drawer && drawer.width ? getWidth(drawer.width) : '16em';
+  const width = drawer && drawer.width ? getWidth(drawer.width) : '50px'
 
   return ({
     sidebarOpen: {

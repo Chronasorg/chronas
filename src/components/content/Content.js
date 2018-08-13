@@ -53,7 +53,8 @@ const styles = {
     justifyContent: 'flex-start',
     height: '100%',
     padding: '8px 0px',
-    boxShadow: 'inset 0 5px 6px -3px rgba(0,0,0,.4)'
+    boxShadow: 'inset 0 5px 6px -3px rgba(0,0,0,.4)',
+    background: 'white'
   },
   menuIcon: {
     left: 20
@@ -363,9 +364,9 @@ class Content extends Component {
         : provinceTimelineOpen
           ? <ProvinceTimeline deselectItem={deselectItem} selectedItem={selectedItem} metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
           : <div style={{ height: '100%' }}>
-              <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } />
-              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems.media} selectedYear={selectedYear} />
-              <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki} selectedItem={selectedItem} />
+              <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } qName={ selectedWiki || '' } />
+              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems.media} selectedYear={selectedYear} qName={ selectedWiki || '' } />
+              <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki} selectedItem={selectedItem} />
             </div>
       }
     </div>

@@ -24,7 +24,7 @@ export default {
     edit: 'Edit',
     fontType: 'Font Type',
     goFullScreen: 'Toggle Fullscreen Mode',
-    noLinkedContents: 'There are no linked articles yet, consider adding and linking articles.',
+    noLinkedContents: 'There are no linked media items yet, consider adding and linking one.',
     downvote: 'Inappropriate, broken or inaccurate',
     feedbackSuccess: 'Thanks for curating the data!',
     signupToGatherPoints: 'Sign up to get points for your curations',

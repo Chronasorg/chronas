@@ -126,7 +126,8 @@ const styles = {
     marginTop:'12px',
     left: 'calc(20% + 4px)',
     bottom: '10px',
-    position: 'fixed'
+    position: 'fixed',
+    color: '#333'
   },
   gridList: {
     maxHeight: '100%',
@@ -190,7 +191,7 @@ class EpicTimeline extends React.Component {
   };
 
   getStepContent (stepIndex) {
-    const { deselectItem, epicData, rulerProps, selectedItem, history } =  this.props
+    const { deselectItem, epicData, rulerProps, selectedItem, history, theme } =  this.props
     const { selectedWiki, epicLinkedArticles, influenceChartData } = this.state
     const selectedIndexItem = (epicLinkedArticles[stepIndex] || {})
     const itemType = selectedIndexItem.type
@@ -210,7 +211,7 @@ class EpicTimeline extends React.Component {
         cellHeight={'calc(100% - 300px)'}
         padding={1}
         cols={1}
-        style={styles.gridList}
+        style={{ ...styles.gridList, background: 'rgb(23, 23, 23)' }}
       >{(itemType !== 'videos' && itemType !== 'audios' && itemType !== 'ps' && itemType !== 'articles')
         ? <GridTile
           key={selectedIndexItem.wiki}
@@ -455,6 +456,8 @@ class EpicTimeline extends React.Component {
     const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
     const contentDetected = epicLinkedArticles.length !== 0
 
+    const entityName = (epicMeta || {}).title || (rulerProps || {})[0]
+
     return (
       <div style={{ height: '100%' }}>
         { isEntity && <ChartSunburst
@@ -466,10 +469,10 @@ class EpicTimeline extends React.Component {
           selectValue={ this.selectValueWrapper}
           preData={ sunburstData }
           selectedYear={selectedYear} /> }
-        { linkedItems && linkedItems.id && <LinkedQAA setHasQuestions={setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } /> }
-        <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={linkedMediaItems } selectedYear={selectedYear} />
+        { linkedItems && linkedItems.id && <LinkedQAA setHasQuestions={setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qName={entityName || ''} qId={ linkedItems.id } /> }
+        <LinkedGallery history={history} qName={entityName || ''} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={linkedMediaItems } selectedYear={selectedYear} />
         { influenceChartData && influenceChartData.length > 0 && <div style={{ height: (!isEntity) ? '256px' : '200px', width: '100%' }}>
-          <InfluenceChart epicMeta={isEntity ? false : epicMeta} rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
+          <InfluenceChart qName={entityName || ''} epicMeta={isEntity ? false : epicMeta} rulerProps={rulerProps} setYear={ this.setYearWrapper } newData={influenceChartData} selectedYear={selectedYear} />
         </div> }
         { contentDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 248px)', overflow: 'auto', display: 'inline-block', overflowX: 'auto', background: themes[theme].gradientColors[0] }}>
           <FlatButton backgroundColor={(rulerProps || {})[1] || 'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px' }} label={(epicMeta || {}).title || (rulerProps || {})[0] || 'Epic Main'} onClick={this._selectMainArticle.bind(this)} />
@@ -533,7 +536,7 @@ class EpicTimeline extends React.Component {
                 label='Back'
                 disabled={stepIndex < 1}
                 onClick={() => this.handlePrev(epicLinkedArticles[stepIndex-1].date)}
-                style={{ marginRight: 12 }}
+                style={{ color: '#333', marginRight: 12 }}
               />
               <RaisedButton
                 label='Next'

@@ -217,7 +217,7 @@ export default class ChartSunburst extends React.Component {
         top: '4px',
         padding: '0em',
         transition: 'all .3s ease-in-out',
-        backgroundColor: 'rgb(255, 255, 255)',
+        background: (isMinimized ? 'white' : themes[theme].backColors[1]),
         width: (isMinimized ? '30px' : '500px'),
         height: (isMinimized ? '30px' : '524px'),
         pointerEvents: (isMinimized ? 'none' : 'inherit'),
@@ -256,7 +256,7 @@ export default class ChartSunburst extends React.Component {
         </div>
         <FlatButton
           style={{
-            color: 'rgba(0,0,0,0.5',
+            color: themes[theme].foreColors[0],
             position: 'relative',
             top: '-418px',
             left: '352px'

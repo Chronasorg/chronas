@@ -36,6 +36,7 @@ import Toolbar from 'material-ui/Toolbar'
 import FlatButton from 'material-ui/FlatButton'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../../styles/chronasColors'
+import {themes} from "../../../properties";
 
 const styles = {
   menuButtons: {
@@ -43,16 +44,17 @@ const styles = {
     color: '#fff',
   },
   dialogStyle: {
-    width: 'calc(100% - 64px)',
+    width: 'calc(100% - 42px)',
     height: '800px',
     maxWidth: 'none',
     maxHeight: 'none',
-    left: 32,
+    left: 42,
     top: 0,
     transform: '',
     transition: 'opacity 1s',
     opacity: 0,
-    paddingTop: 0
+    paddingTop: 0,
+    overflow: 'hidden',
   },
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
   button: { margin: '1em' },
@@ -88,7 +90,7 @@ class Account extends PureComponent {
   }
 
   render () {
-    const { resources, userDetails, list, create, edit, show, remove, options, onMenuTap, translate } = this.props
+    const { resources, userDetails, list, create, edit, show, remove, options, onMenuTap, translate, theme } = this.props
     const commonProps = {
       options,
       hasList: false,
@@ -127,8 +129,8 @@ class Account extends PureComponent {
     const UserEdit = (props) => {
       console.debug(props)
       const t = { ...props, ...routeProps }
-      return <Edit title={<span>UserEdit</span>} {...t}>
-        <SimpleForm>
+      return <Edit style={{ }} title={<span>UserEdit</span>} {...t}>
+        <SimpleForm style={{ }}>
           <DisabledInput source='username' />
           <TextInput source='name' />
           <TextInput source='education' />
@@ -154,8 +156,23 @@ class Account extends PureComponent {
     const restrictPage = (component, route, commonProps) => {
       const RestrictedPage = routeProps => (
         <Restricted location={{ pathname: 'account' }} authParams={{ routeProps }} {...routeProps}>
-          <Dialog bodyStyle={{ backgroundImage: '#fff' }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
-            contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
+          <Dialog open
+            autoDetectWindowHeight={false}
+            modal={false}
+            autoScrollBodyContent={false}
+            bodyStyle={{
+              background: themes[theme].backColors[0]
+            }}
+            actionsContainerStyle={{
+              bottom: '4em',
+              top: '4em',
+              width: 'calc(100% - 64px)',
+              overflow: 'auto',
+              position: 'fixed !important'
+            }}
+            contentClassName={(this.state.hiddenElement) ? '' : 'classReveal accountContentStyle'}
+            contentStyle={{ ...styles.dialogStyle, background: themes[theme].backColors[0] }}
+                  onRequestClose={this.handleClose}>
             <Card style={styles.card}>
               {createElement(component, {
                 ...commonProps,
@@ -191,6 +208,7 @@ class Account extends PureComponent {
 
 const enhance = compose(
   connect(state => ({
+    theme: state.theme,
     userDetails: state.userDetails
   }), { }),
   pure,

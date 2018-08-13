@@ -278,7 +278,7 @@ class LinkedQAA extends React.Component {
 
 
   render () {
-    const { isMinimized, options, qId, setHasQuestions, theme } = this.props
+    const { isMinimized, options, qId, qName, setHasQuestions, theme } = this.props
 
     const commonProps = {
       options,
@@ -312,11 +312,11 @@ class LinkedQAA extends React.Component {
               boxShadow: 'rgba(0, 0, 0, 0.4) -1px 2px 3px 1px'
             }
           }
-          title={<span style={{ color: themes[theme].foreColors[0] }}>Questions and Answers</span>}
+          title={<span style={{ color: themes[theme].foreColors[0] }}>Q&A: {qName}</span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
             ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
-            : <IconButton onClick={() => this._minimize()}><ChevronRight /></IconButton>}
+            : <IconButton onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
         <div style={styles.container}>
           <QAAForum setHasQuestions={setHasQuestions} forums={[]} qaaEntity={qId} users={this.state.users} discussions={this.state.discussions} />

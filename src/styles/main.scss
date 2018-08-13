@@ -44,6 +44,18 @@ body {
   }
 }
 
+.accountContentStyle{
+  > div {
+    box-shadow: none !important;
+  }
+  position: fixed !important;
+  top: 2em !important;
+  bottom: 2em;
+  height: 100% !important;
+  max-height: calc(100% - 4em) !important;
+  overflow: auto;
+}
+
 .boardContentStyle{
    > div {
     background-color: #eee !important;

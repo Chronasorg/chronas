@@ -33,6 +33,7 @@ const styles = {
     maxHeight: 'calc(100% - 64px)',
     position: 'initial',
     overflow: 'auto',
+    overflowX: 'hidden',
     justifyContent: 'flex-start',
     height: '100%',
     padding: '18px 14px',

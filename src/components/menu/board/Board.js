@@ -54,6 +54,7 @@ import NotFound from './ReForum/Views/NotFound';
 
 import { getForums, updateCurrentForum, getUser } from './ReForum/App/actions'
 import {red400} from "material-ui/styles/colors";
+import {themes} from "../../../properties";
 
 const styles = {
   menuButtons: {
@@ -164,6 +165,7 @@ class Board extends PureComponent {
 
     const restrictPageForumWrapper = (component, commonProps, customProps) => {
       const { forums } = this.state
+      const { theme } = this.props
       const RestrictedPage = routeProps => (
         <Restricted location={{ pathname: 'community' }} authParams={{ routeProps }} {...routeProps}>
           <Dialog open
@@ -171,7 +173,7 @@ class Board extends PureComponent {
                   modal={false}
                   autoScrollBodyContent={false}
                   bodyStyle={{
-                    backgroundImage: '#fff',
+                    backgroundImage: themes[theme].gradientColors[0]
                   }}
                   actionsContainerStyle={{
                     bottom: '4em',
