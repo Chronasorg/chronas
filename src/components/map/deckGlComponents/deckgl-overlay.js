@@ -13,142 +13,142 @@ const iconMapping = {
   'marker-1': {
     'x': 0,
     'y': 0,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 117
   },
   'marker-2': {
-    'x': 128,
+    'x': 126,
     'y': 0,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 117
   },
   'marker-3': {
-    'x': 256,
+    'x': 252,
     'y': 0,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-4': {
-    'x': 384,
+    'x': 378,
     'y': 0,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-5': {
     'x': 0,
-    'y': 128,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'y': 117,
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-6': {
-    'x': 128,
-    'y': 128,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'x': 126,
+    'y': 117,
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-7': {
-    'x': 256,
-    'y': 128,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'x': 252,
+    'y': 117,
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-8': {
-    'x': 384,
-    'y': 128,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'x': 378,
+    'y': 117,
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-9': {
     'x': 0,
-    'y': 256,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'y': 234,
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-10': {
-    'x': 128,
-    'y': 256,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'x': 126,
+    'y': 234,
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-20': {
-    'x': 256,
-    'y': 256,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'x': 252,
+    'y': 234,
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-30': {
-    'x': 384,
-    'y': 256,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'x': 378,
+    'y': 234,
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-40': {
     'x': 0,
     'y': 384,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-50': {
-    'x': 128,
+    'x': 126,
     'y': 384,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-60': {
-    'x': 256,
+    'x': 252,
     'y': 384,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-70': {
-    'x': 384,
+    'x': 378,
     'y': 384,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-80': {
     'x': 0,
     'y': 512,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-90': {
-    'x': 128,
+    'x': 126,
     'y': 512,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker-100': {
-    'x': 256,
+    'x': 252,
     'y': 512,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   },
   'marker': {
-    'x': 384,
+    'x': 378,
     'y': 512,
-    'width': 128,
-    'height': 128,
-    'anchorY': 128
+    'width': 126,
+    'height': 117,
+    'anchorY': 146
   }
 }
 const fullTime = 4000
@@ -479,12 +479,12 @@ export default class DeckGLOverlay extends Component {
         highlightColor: RGBAtoArray(theme.highlightColors[0]),
         data: marker,
         pickable: true,
-        iconAtlas: '/images/location-icon-atlas.png',
+        iconAtlas: '/images/cluster-icon-atlas.png',
         iconMapping,
         sizeScale: ICON_SIZE * size * window.devicePixelRatio,
         getPosition: d => d.coo,
         getIcon: d => (d.subtype === 'cities') ? 'marker-10' : (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'),
-        getSize: d => (d.subtype === 'cities') ? 4 : 10 /*(showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 10)*/,
+        getSize: d => (d.subtype === 'cities') ? 4 : 6 /*(showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 10)*/,
         onHover: e => onHover(e),
         onClick: onMarkerClick,
         updateTriggers: {

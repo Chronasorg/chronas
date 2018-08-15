@@ -160,7 +160,7 @@ class ArticleIframe extends React.Component {
         <FullscreenEnterIcon
           hoverColor={chronasMainColor} />
       </IconButton>
-      { !(isEntity) && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
+      { !(isEntity || isProvince) && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
         <IconClose hoverColor={chronasMainColor} />
       </IconButton> }
     </div>
