@@ -5,173 +5,303 @@ import { easeCubic } from 'd3-ease'
 import rbush from 'rbush'
 import DeckGL, { WebMercatorViewport, IconLayer, PathLayer, GeoJsonLayer, TextLayer, ArcLayer } from 'deck.gl'
 const Arc = require('arc')
-import TagmapLayer from './tagmap-layer';
+import TagmapLayer from './tagmap-layer'
 import { properties, RGBAtoArray } from '../../../properties'
 
+const iconWidthModern = 128
+const iconHeightModern = 169
+const iconWidth = 135
+const iconHeight = 127
+
 const iconMapping = {
+  abst: {
   'marker-1': {
     'x': 0,
     'y': 0,
-    'width': 126,
-    'height': 117,
-    'anchorY': 117
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-2': {
-    'x': 126,
+    'x': iconWidth,
     'y': 0,
-    'width': 126,
-    'height': 117,
-    'anchorY': 117
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-3': {
-    'x': 252,
+    'x': 2 * iconWidth,
     'y': 0,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-4': {
-    'x': 378,
+    'x': 3 * iconWidth,
     'y': 0,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-5': {
     'x': 0,
-    'y': 117,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'y': iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-6': {
-    'x': 126,
-    'y': 117,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': iconWidth,
+    'y': iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-7': {
-    'x': 252,
-    'y': 117,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': 2 * iconWidth,
+    'y': iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-8': {
-    'x': 378,
-    'y': 117,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': 3 * iconWidth,
+    'y': iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-9': {
     'x': 0,
-    'y': 234,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'y': 2 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-10': {
-    'x': 126,
-    'y': 234,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': iconWidth,
+    'y': 2 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-20': {
-    'x': 252,
-    'y': 234,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': 2 * iconWidth,
+    'y': 2 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-30': {
-    'x': 378,
-    'y': 234,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': 3 * iconWidth,
+    'y': 2 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-40': {
     'x': 0,
-    'y': 384,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'y': 3 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-50': {
-    'x': 126,
-    'y': 384,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': iconWidth,
+    'y': 3 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-60': {
-    'x': 252,
-    'y': 384,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': 2 * iconWidth,
+    'y': 3 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-70': {
-    'x': 378,
-    'y': 384,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': 3 * iconWidth,
+    'y': 3 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-80': {
     'x': 0,
-    'y': 512,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'y': 4 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-90': {
-    'x': 126,
-    'y': 512,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': iconWidth,
+    'y': 4 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker-100': {
-    'x': 252,
-    'y': 512,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': 2 * iconWidth,
+    'y': 4 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
   },
   'marker': {
-    'x': 378,
-    'y': 512,
-    'width': 126,
-    'height': 117,
-    'anchorY': 146
+    'x': 3 * iconWidth,
+    'y': 4 * iconHeight,
+    'width': iconWidth,
+    'height': iconHeight,
+    'anchorY': iconHeight
+  }
+},
+  mode: {
+    'marker-1': {
+      'x': 0,
+      'y': 0,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-2': {
+      'x': iconWidthModern,
+      'y': 0,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-3': {
+      'x': 2 * iconWidthModern,
+      'y': 0,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-4': {
+      'x': 3 * iconWidthModern,
+      'y': 0,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-5': {
+      'x': 0,
+      'y': iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-6': {
+      'x': iconWidthModern,
+      'y': iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-7': {
+      'x': 2 * iconWidthModern,
+      'y': iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-8': {
+      'x': 3 * iconWidthModern,
+      'y': iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-9': {
+      'x': 0,
+      'y': 2 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-10': {
+      'x': iconWidthModern,
+      'y': 2 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-20': {
+      'x': 2 * iconWidthModern,
+      'y': 2 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-30': {
+      'x': 3 * iconWidthModern,
+      'y': 2 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-40': {
+      'x': 0,
+      'y': 3 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-50': {
+      'x': iconWidthModern,
+      'y': 3 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-60': {
+      'x': 2 * iconWidthModern,
+      'y': 3 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-70': {
+      'x': 3 * iconWidthModern,
+      'y': 3 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-80': {
+      'x': 0,
+      'y': 4 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-90': {
+      'x': iconWidthModern,
+      'y': 4 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker-100': {
+      'x': 2 * iconWidthModern,
+      'y': 4 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'marker': {
+      'x': 3 * iconWidthModern,
+      'y': 4 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    }
   }
 }
+
 const fullTime = 4000
 let interval = -1
-
-export const inFlowColors = [
-  [255, 255, 204],
-  [199, 233, 180],
-  [127, 205, 187],
-  [65, 182, 196],
-  [29, 145, 192],
-  [34, 94, 168],
-  [12, 44, 132]
-]
-
-export const outFlowColors = [
-  [255, 255, 178],
-  [254, 217, 118],
-  [254, 178, 76],
-  [253, 141, 60],
-  [252, 78, 42],
-  [227, 26, 28],
-  [177, 0, 38]
-]
 
 function getIconName (size) {
   if (size === 0) {
@@ -462,7 +592,7 @@ export default class DeckGLOverlay extends Component {
   // }
 
   render () {
-    const { viewport, strokeWidth, showCluster, geoData, setTooltip, onHover, theme, onMarkerClick } = this.props
+    const { viewport, strokeWidth, showCluster, geoData, setTooltip, onHover, markerTheme, theme, onMarkerClick } = this.props
     const { animatedFeature, arcs, marker, texts /* geo */ } = this.state
     const z = Math.floor(viewport.zoom)
     const size = /*showCluster ? 1 :*/ Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
@@ -478,8 +608,10 @@ export default class DeckGLOverlay extends Component {
         highlightColor: RGBAtoArray(theme.highlightColors[0]),
         data: marker,
         pickable: true,
-        iconAtlas: '/images/cluster-icon-atlas.png',
-        iconMapping,
+        iconAtlas: showCluster
+          ? ('/images/' + markerTheme + '-cluster-atlas.png')
+          : ('/images/' + markerTheme + '-atlas.png'),
+        iconMapping: iconMapping[markerTheme.substr(0, 4)],
         sizeScale: properties.markerSize * size * window.devicePixelRatio,
         getPosition: d => d.coo,
         getIcon: d => (d.subtype === 'cities') ? 'marker-10' : (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'),

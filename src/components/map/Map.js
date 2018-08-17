@@ -1381,7 +1381,7 @@ class Map extends Component {
 
   render () {
     const { epics, markerData, geoData, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
-    const { modActive, menuDrawerOpen, rightDrawerOpen, history, contentIndex, theme, mapStyles } = this.props
+    const { modActive, menuDrawerOpen, rightDrawerOpen, history, theme, mapStyles, markerTheme, contentIndex } = this.props
 
     let leftOffset = (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.24
@@ -1433,6 +1433,7 @@ class Map extends Component {
             updateLine={this._updateLine}
             geoData={geoData}
             markerData={markerData}
+            markerTheme={markerTheme}
             arcData={arcData}
             onMarkerClick={this._onMarkerClick}
             // setTooltip={this._onHover}
@@ -1472,6 +1473,7 @@ const enhance = compose(
     selectedYear: state.selectedYear,
     selectedItem: state.selectedItem,
     contentIndex: ((state.selectedItem || {}).data || {}).contentIndex,
+    markerTheme: state.markerTheme,
     metadata: state.metadata,
     menuDrawerOpen: state.menuDrawerOpen,
     modActive: state.modActive,

@@ -33,6 +33,7 @@ export default {
     areas: 'Areas',
     edit: 'Edit',
     fontType: 'Font Type',
+    markerType: 'Marker Type',
     goFullScreen: 'Toggle Fullscreen Mode',
     noLinkedContents: 'There are no linked media items yet, consider adding and linking one.',
     downvote: 'Inappropriate, broken or inaccurate',
@@ -61,8 +62,9 @@ export default {
     upvote: 'Interesting and accurate',
     theme: {
       name: 'Theme',
-      light: 'Light',
       dark: 'Dark',
+      marker: 'Marker',
+      light: 'Light',
       font: 'Font'
     },
     discover_component: {
