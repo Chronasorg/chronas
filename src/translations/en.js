@@ -1,9 +1,19 @@
 export default {
   aor: {
+    action: {
+      delete: 'Delete Account',
+      cancel: 'Cancel',
+      refresh: 'Refresh',
+      save: 'Save'
+    },
+    edit_profile: 'Edit Profile',
     input: {
       autocomplete: {
-        none: ''
+        none: '',
       }
+    },
+    message: {
+      are_you_sure: 'Are you sure? This cannot be undone!'
     }
   },
   auth: {

@@ -1,10 +1,15 @@
 import React from 'react'
 import mainLogo from '../../../public/images/logoChronasWhite.png'
+import utilsQuery from "../map/utils/query"
+
+const backgroundByYear = [
+  { year: -2000, image: 'https://upload.wikimedia.org/wikipedia/commons/d/d1/Sappho_and_Alcaeus.jpg', description: '605-562 BCE: Striding Lion, Neo-Babylonian Empire' },
+  { year: 2000, image: 'https://upload.wikimedia.org/wikipedia/commons/3/33/The_Roses_of_Heliogabalus.jpg', description: '1881: Siege of La Rochelle' }
+]
 
 const styles = {
   parent: {
     width: '100%',
-    background: 'url("/images/logoChronasWhite.png") no-repeat 80% 20% fixed, url("https://upload.wikimedia.org/wikipedia/commons/d/d1/Sappho_and_Alcaeus.jpg") center center/cover fixed',
     backgroundBlendMode: 'overlay',
 
     // https://upload.wikimedia.org/wikipedia/commons/6/61/Striding_Lion.JPG
@@ -21,14 +26,27 @@ const styles = {
     top: ' calc(80% - 380px)',
     opacity: 0.7
   },
-
 }
 
-const LoadingPage = () => (
-  <div className="loadingPage" style={styles.parent}>
-    {/*<img src={mainLogo} style={styles.mainLogo} alt='chronas' />*/}
-    <div className="splash_description">605-562 BCE: Striding Lion, Neo-Babylonian Empire</div>
+const closest = (preArr, closestTo) => {
+  var arr = preArr.map(el => el.year)
+  var closest = Math.max.apply(null, arr);
+
+  for(var i = 0; i < arr.length; i++){
+    if(arr[i] >= closestTo && arr[i] < closest) closest = arr[i];
+  }
+
+  return closest;
+}
+
+
+const LoadingPage = () => {
+  const selectedYear = +utilsQuery.getURLParameter('year') || 1000
+  const closestImage = backgroundByYear.find(el => el.year === closest(backgroundByYear, selectedYear))
+  console.debug(selectedYear)
+  return <div className="loadingPage" style={{ ...styles.parent, background: `url("/images/logoChronasWhite.png") no-repeat 80% 20% fixed, url("${closestImage.image}") center center/cover fixed` }}>
+    <div className="splash_description">{closestImage.description}</div>
   </div>
-)
+}
 
 export default LoadingPage

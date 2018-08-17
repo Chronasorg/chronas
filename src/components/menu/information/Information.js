@@ -34,6 +34,7 @@ import {
 } from 'admin-on-rest'
 
 import { properties, themes } from '../../../properties'
+
 const styles = {
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
   button: { margin: '1em' },

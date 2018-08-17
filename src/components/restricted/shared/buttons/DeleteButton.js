@@ -1,5 +1,4 @@
 import React from 'react';
-;
 import { Link } from 'react-router-dom';
 import FlatButton from 'material-ui/FlatButton';
 import ActionDelete from 'material-ui/svg-icons/action/delete';

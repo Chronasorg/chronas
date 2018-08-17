@@ -104,7 +104,8 @@ class App extends Component {
 
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
-    const selectedYear = (utilsQuery.getURLParameter('year') || 1000)
+    const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 4000) - 2000)
+    utilsQuery.updateQueryStringParameter('year', selectedYear)
     axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
       .then((areaDefsRequest) => {
         const activeArea = {
@@ -234,8 +235,6 @@ class App extends Component {
   }
 
   render () {
-
-    console.error('!!! rendering App component')
     const {
       width,
       isLoading,
@@ -249,6 +248,7 @@ class App extends Component {
       selectedFontClass
     } = this.state
 
+    console.error('!!! rendering App component !!! ' + theme)
     console.debug(customTheme, defaultTheme)
     customTheme.fontFamily = 'inherit'
 

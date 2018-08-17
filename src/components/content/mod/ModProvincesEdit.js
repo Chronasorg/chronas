@@ -49,8 +49,8 @@ export const ModProvincesEdit = (props) => {
     'dataReligion': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')] || '',
     'dataCapital': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('capital')] || '',
     'dataPopulation': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('population')] || 1000,
-    'yearStart': props.selectedYear || 1000,
-    'yearEnd': props.selectedYear || 1000,
+    'yearStart': props.selectedYear,
+    'yearEnd': props.selectedYear,
   }
 
   const choicesRuler = Object.keys(metadata['ruler']).map((rulerId) => {

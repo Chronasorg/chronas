@@ -77,6 +77,7 @@ export const properties = {
     { name: 'Tahoma', id: 'tahomaFont' },
     { name: 'Times New Roman', id: 'timesnewromanFont' }
   ],
+  markerSize: 500,
   YOUTUBEOPTS: {
     height: '100%',
     width: '100%',

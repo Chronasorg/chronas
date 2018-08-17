@@ -23,7 +23,7 @@ import {
   TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectEpicItem, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
-import {properties, themes} from '../../properties'
+import { properties, themes } from '../../properties'
 import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
@@ -110,7 +110,7 @@ class Map extends Component {
 
     const { selectEpicItem } = this.props
     if ((utilsQuery.getURLParameter('type') || '') === TYPE_EPIC) {
-      selectEpicItem((utilsQuery.getURLParameter('value') || ''), +(utilsQuery.getURLParameter('year') || 1000))
+      selectEpicItem((utilsQuery.getURLParameter('value') || ''), +(utilsQuery.getURLParameter('year') || selectedYear))
     }
   }
 
@@ -479,8 +479,8 @@ class Map extends Component {
     }
 
     // selected item is EPIC?
-    if (nextProps.selectedItem.type === TYPE_EPIC
-      || (nextProps.selectedItem.type === TYPE_AREA && (nextProps.selectedItem || {}).data)) {
+    if (nextProps.selectedItem.type === TYPE_EPIC ||
+      (nextProps.selectedItem.type === TYPE_AREA && (nextProps.selectedItem || {}).data)) {
       // contentIndex changed?
       if (typeof nextProps.contentIndex !== 'undefined' &&
         typeof contentIndex !== 'undefined' &&
@@ -612,7 +612,7 @@ class Map extends Component {
             })
           }
         } else {
-          //TODO: this gets called too much!
+          // TODO: this gets called too much!
         // load initial epic data object
           const epicWiki = nextProps.selectedItem.value
           axios.get(properties.chronasApiHost + '/metadata/e_' + window.encodeURIComponent(epicWiki))
@@ -962,7 +962,7 @@ class Map extends Component {
             const endYear = el.data.end
             return {
               start: new Date(new Date(0, 1, 1).setFullYear(+el.data.start)),
-              className: 'timelineItem_wars',
+              className: 'timelineItem_' + subtype,
               editable: false,
               subtype: el.subtype,
               end: endYear ? new Date(new Date(0, 1, 1).setFullYear(+endYear)) : undefined,
@@ -1123,8 +1123,7 @@ class Map extends Component {
     if ((modActive.type === TYPE_MARKER || modActive.type === TYPE_METADATA) && modActive.selectActive) {
       this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
       return
-    }
-    else if (modActive.type === TYPE_AREA) {
+    } else if (modActive.type === TYPE_AREA) {
       let provinceName = ''
       const province = event.features && event.features[0]
       const prevModData = modActive.data
@@ -1187,7 +1186,7 @@ class Map extends Component {
     // const z = Math.floor(viewState.zoom);
     // const showCluster = params.cluster.value;
 
-    const { viewport, expanded } = this.state;
+    const { viewport, expanded } = this.state
 
     // don;t reset on mouseleave if expanded
     if (expanded) return
@@ -1221,7 +1220,10 @@ class Map extends Component {
 
   _onMarkerClick (layerClicked) {
     const { selectedItem, setWikiId, selectMarkerItem, modActive, history } = this.props
+    const { markerData, viewport } = this.state
+
     if ((((layerClicked || {}).object || {}).zoomLevels || []).length > 0) {
+      // cluster on
       this.setState({ expanded: true })
       return
     }
@@ -1239,8 +1241,9 @@ class Map extends Component {
       hoverInfo: null,
       mapStyle
     })
-    // setWikiId
 
+    // scan area (get lat lng from click event) and filter markerData with it)
+    // markerData
     if (selectedItem.type === TYPE_EPIC && !((((((selectedItem || {}).data || {}).data || {}).data || {}).content || []).every(el => (el.properties || {}).w !== wikiId))) {
       utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
       // utilsQuery.updateQueryStringParameter('wiki', wikiId)
@@ -1248,14 +1251,41 @@ class Map extends Component {
     } else {
       utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
       utilsQuery.updateQueryStringParameter('value', wikiId)
-      // TODO: check a good marker against a bad one go on
-      selectMarkerItem(wikiId, { ...(layerClicked.object || layerClicked.properties), 'coo': (layerClicked.object || {}).coo || layerClicked.geometry.coordinates })
+
+      // scan area
+      const centerCoo = (layerClicked.object || {}).coo || layerClicked.geometry.coordinates || layerClicked.lngLat
+      const radius = properties.markerSize * Math.min(Math.pow(1.5, viewport.zoom - 10), 1) * window.devicePixelRatio / Math.sqrt(2) / Math.pow(2, viewport.zoom)
+
+      const neighbors = markerData.filter(neighbor => {
+        return (
+          (Math.abs((neighbor.coo || {})[0] - centerCoo[0]) < radius) &&
+          (Math.abs((neighbor.coo || {})[1] - centerCoo[1]) < radius)
+        )
+      })
+
+      if (neighbors.length > 1) {
+        const hoveredItems = neighbors.sort((a, b) => a.name.localeCompare(b.name))
+        const hoverInfo = {
+          lngLat: centerCoo,
+          feature: neighbors
+        }
+        this.setState({
+          expanded: true,
+          hoverInfo
+        })
+        return
+      } else {
+        // TODO: check a good marker against a bad one go on
+        selectMarkerItem(wikiId, { ...(layerClicked.object || layerClicked.properties), 'coo': (layerClicked.object || {}).coo || layerClicked.geometry.coordinates })
+      }
     }
+
     if (modActive.type === TYPE_MARKER) return
     if (layerClicked.object) history.push('/article')
   }
 
   _renderPopup () {
+    const { selectMarkerItem, history } = this.props
     const { hoverInfo, popupInfo, expanded } = this.state
     if (hoverInfo) {
       const content = (hoverInfo.feature || [])
@@ -1263,14 +1293,22 @@ class Map extends Component {
         if (expanded) {
           return (
             <Popup className='mapHoverTooltip interactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
-              <div className='county-info' onMouseLeave={() => this.setState({expanded: false, hoverInfo: null})}>
+              <div className='county-info' onMouseLeave={() => this.setState({ expanded: false, hoverInfo: null })}>
                 <Stepper linear={false}
-                         activeStep={-1}
-                         orientation='vertical'
-                         style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
-                  {content.map(({name, year, wiki, type}) => {
-                    return (<Step key={name} style={ styles.stepContainer}>
-                      <StepButton iconContainerStyle={{ background:  'inherit' }} icon={<span style={styles.stepLabel}>{year}</span>} onClick={(i) => { console.debug(i, content[i], "openMarker"); }}>
+                  activeStep={-1}
+                  orientation='vertical'
+                  style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
+                  {content.map(({ name, year, wiki, type }, i) => {
+                    return (<Step key={i} style={styles.stepContainer}>
+                      <StepButton
+                        iconContainerStyle={{ background:  'inherit' }}
+                        icon={<span style={styles.stepLabel}>{year}</span>}
+                        onClick={() => {
+                          delete content[i].zoomLevels
+                          selectMarkerItem(content[i].wiki, content[i])
+                          history.push('/article')
+                          this.setState({  expanded: false, hoverInfo: null })
+                        }}>
                         <div style={{
                           overflow: 'hidden',
                           whiteSpace: 'nowrap',
@@ -1297,7 +1335,7 @@ class Map extends Component {
                         </div>
                       </StepButton>
                     </Step>
-                    );
+                    )
                   })}
                 </Stepper>
               </div>
@@ -1307,14 +1345,14 @@ class Map extends Component {
 
         return (
           <Popup className='mapHoverTooltip inactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
-            <div className='county-info' onClick={() => this.setState({expanded: true})}>
-              {content.map(({name, year}) => {
+            <div className='county-info' onClick={() => this.setState({ expanded: true })}>
+              {content.map(({ name, year }) => {
                 return (
                   <div key={name}>
                     <h5>{name}</h5>
                     <div>Year: {year || 'unknown'}</div>
                   </div>
-                );
+                )
               })}
             </div>
           </Popup>

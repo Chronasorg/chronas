@@ -40,21 +40,6 @@ export const ModMetaAdd = (props) => {
   const { metadata } = props
   const selectedProvince = (props.selectedItem || {}).province || ''
   const activeArea = props.activeArea || { data: {} }
-  // const activeAreaDim = props.activeArea.color
-  // const activeprovinceDim = (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
-  // const selectedWiki = (metadata[activeAreaDim][activeprovinceDim] || {})[2]
-
-  // const defaultValues = {
-  //   'provinces': selectedProvince || '',
-  //   'dataRuler': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('ruler')] || '',
-  //   'dataCulture': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('culture')] || '',
-  //   'dataReligion': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')] || '',
-  //   'dataCapital': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('capital')] || '',
-  //   'dataPopulation': (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('population')] || 1000,
-  //   'yearStart': props.selectedYear || 1000,
-  //   'yearEnd': props.selectedYear || 1000,
-  //   'dataIcon': ''
-  // }
 
   const choicesRuler = Object.keys(metadata['ruler']).map((rulerId) => {
     return { id: rulerId, name: metadata['ruler'][rulerId][0] }

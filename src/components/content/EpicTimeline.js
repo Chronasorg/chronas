@@ -482,7 +482,9 @@ class EpicTimeline extends React.Component {
             style={{ float: 'left', width: '100%', background:  'transparent', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
             {epicLinkedArticles.map((epicContent, i) => (
               <Step key={i} style={ styles.stepContainer}>
-                <StepButton icon={<span style={{...styles.stepLabel, color: themes[theme].foreColors[0], background: (( (+(epicLinkedArticles[i].date) <= +selectedYear) && (+selectedYear < +((epicLinkedArticles[i+1] || {}).date || 2000)) ) ? themes[theme].highlightColors[0] : themes[theme].backColors[0]) }}>{epicLinkedArticles[i].date}</span>} onClick={() => { console.debug(i, epicLinkedArticles[i].date); this._selectStepButton(i, epicLinkedArticles[i].date) }}>
+                <StepButton
+                  icon={<span style={{...styles.stepLabel, color: themes[theme].foreColors[0], background: (( (+(epicLinkedArticles[i].date) <= +selectedYear) && (+selectedYear < +((epicLinkedArticles[i+1] || {}).date || 2000)) ) ? themes[theme].highlightColors[0] : themes[theme].backColors[0]) }}>{epicLinkedArticles[i].date}</span>}
+                  onClick={() => { console.debug(i, epicLinkedArticles[i].date); this._selectStepButton(i, epicLinkedArticles[i].date) }}>
                   <div style={{
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',

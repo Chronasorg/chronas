@@ -6,9 +6,8 @@ import rbush from 'rbush'
 import DeckGL, { WebMercatorViewport, IconLayer, PathLayer, GeoJsonLayer, TextLayer, ArcLayer } from 'deck.gl'
 const Arc = require('arc')
 import TagmapLayer from './tagmap-layer';
-import { RGBAtoArray } from '../../../properties'
+import { properties, RGBAtoArray } from '../../../properties'
 
-const ICON_SIZE = 300
 const iconMapping = {
   'marker-1': {
     'x': 0,
@@ -389,9 +388,9 @@ export default class DeckGLOverlay extends Component {
     tree.load(markerData)
 
     if (showCluster) {
-      const sizeScale = ICON_SIZE *  Math.min(Math.pow(1.5, viewport.zoom - 10), 1) * window.devicePixelRatio
+      const sizeScale = properties.markerSize *  Math.min(Math.pow(1.5, viewport.zoom - 10), 1) * window.devicePixelRatio
       for (let z = 0; z <= 20; z++) {
-        const radius = sizeScale / Math.sqrt(2) / Math.pow(2, z) //ICON_SIZE / 2 / Math.pow(2, z)
+        const radius = sizeScale / Math.sqrt(2) / Math.pow(2, z)
 
         markerData.filter(el => el.subtype !== 'cities').forEach(p => {
           if (p.zoomLevels[z] === undefined) {
@@ -481,7 +480,7 @@ export default class DeckGLOverlay extends Component {
         pickable: true,
         iconAtlas: '/images/cluster-icon-atlas.png',
         iconMapping,
-        sizeScale: ICON_SIZE * size * window.devicePixelRatio,
+        sizeScale: properties.markerSize * size * window.devicePixelRatio,
         getPosition: d => d.coo,
         getIcon: d => (d.subtype === 'cities') ? 'marker-10' : (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'),
         getSize: d => (d.subtype === 'cities') ? 4 : 6 /*(showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 10)*/,

@@ -29,14 +29,18 @@ import {
   TextField,
   TextInput,
 } from 'admin-on-rest'
-import { Card } from 'material-ui/Card'
+import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
+import { Card, CardActions } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
+import IconButton from 'material-ui/IconButton'
+import CloseIcon from 'material-ui/svg-icons/content/clear'
+import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import Delete from '../../restricted/shared/crudComponents/Delete'
-import Toolbar from 'material-ui/Toolbar'
+import DeleteButton from '../../restricted/shared/buttons/DeleteButton'
 import FlatButton from 'material-ui/FlatButton'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../../styles/chronasColors'
-import {themes} from "../../../properties";
+import { themes } from '../../../properties'
 
 const styles = {
   menuButtons: {
@@ -64,12 +68,13 @@ const styles = {
     backgroundColor: 'transparent'
   },
   toolbar: {
+    top: '28px',
+    position: 'fixed',
+    right: '8px',
     background: 'transparent',
     boxShadow: 'none',
   }
 }
-
-const detailStyle = { display: 'inline-block', verticalAlign: 'top', marginRight: '2em', minWidth: '8em' }
 
 class Account extends PureComponent {
   constructor (props) {
@@ -127,20 +132,14 @@ class Account extends PureComponent {
     }
 
     const UserEdit = (props) => {
-      console.debug(props)
       const t = { ...props, ...routeProps }
-      return <Edit style={{ }} title={<span>UserEdit</span>} {...t}>
+      return <Edit style={{ }} title={<span>{translate('aor.edit_profile')}</span>} {...t}>
         <SimpleForm style={{ }}>
           <DisabledInput source='username' />
           <TextInput source='name' />
           <TextInput source='education' />
-          <TextInput type='email' label='resources.users.fields.email' source='email' validation={{ email: true }} options={{ fullWidth: true }} style={{ width: 544 }} />
-          <DisabledInput source='privilege' label='resources.users.fields.privilege' elStyle={{ width: '5em' }} />
-          <DisabledInput source='karma' elStyle={{ width: '5em' }} />
+          <TextInput source='email' type='email' label='resources.users.fields.email' validation={{ email: true }} options={{ fullWidth: true }} style={{ width: 544 }} />
           <TextInput source='website' type='url' />
-          <DisabledInput source='loginCount' label='resources.users.fields.loginCount' type='number' />
-          <DisabledInput source='createdAt' label='resources.users.fields.createdAt' type='date' />
-          <DisabledInput source='lastUpdated' label='resources.users.fields.lastUpdated' type='date' />
           <TextInput source='password' type='password' />
         </SimpleForm>
       </Edit>
@@ -173,6 +172,19 @@ class Account extends PureComponent {
             contentClassName={(this.state.hiddenElement) ? '' : 'classReveal accountContentStyle'}
             contentStyle={{ ...styles.dialogStyle, background: themes[theme].backColors[0] }}
                   onRequestClose={this.handleClose}>
+            <Toolbar style={styles.toolbar}>
+              <ToolbarGroup>
+                <ToolbarTitle text={''} />
+              </ToolbarGroup>
+              <ToolbarGroup>
+                <IconButton touch key={'back'} onClick={() => this.props.history.goBack()}>
+                  <IconBack />
+                </IconButton>
+                <IconButton touch key={'close'} containerElement={<Link to='/' />}>
+                  <CloseIcon />
+                </IconButton>
+              </ToolbarGroup>
+            </Toolbar>
             <Card style={styles.card}>
               {createElement(component, {
                 ...commonProps,
