@@ -87,11 +87,12 @@ class Configuration extends PureComponent {
                             onClick={() => changeLocale('fr')} />
             </CardText>
             <CardText>
-              <CardText>
-                <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.goFullScreen')}</div>
-                <RaisedButton style={styles.button} label={translate('pos.goFullScreen')}
-                              onClick={() => setFullscreen()} />
-              </CardText>
+              <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.goFullScreen')}</div>
+              <RaisedButton style={styles.button} label={translate('pos.goFullScreen')}
+                            onClick={() => setFullscreen()} />
+            </CardText>
+
+            <CardText>
               <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.theme.font')}</div>
               <SelectField
                 floatingLabelText={translate('pos.fontType')}

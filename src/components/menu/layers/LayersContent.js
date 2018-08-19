@@ -4,6 +4,8 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import Avatar from 'material-ui/Avatar'
+import { Card, CardText } from 'material-ui/Card'
+import ListItem from 'material-ui/List/ListItem'
 import DropDownMenu from 'material-ui/DropDownMenu'
 import MenuItem from 'material-ui/MenuItem'
 import RaisedButton from 'material-ui/RaisedButton'
@@ -50,11 +52,15 @@ class LayerContent extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      basemapId: 0
+      basemapId: 0,
+      selectedBasemap: "watercolor",
     }
   }
 
-  handleChange = (event, index, value) => this.setState({value})
+  handleChange = (event, index, value) => {
+    this.props.changeBasemap(value)
+    this.setState({ selectedBasemap: value })
+  }
 
   // TODO: FEATURE: ADD + SELECT, SEARCH EPIC
 
@@ -63,26 +69,16 @@ class LayerContent extends Component {
     const {activeArea, setPopOpacity, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic, theme} = this.props
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
-        <h4>Basemap</h4>
-        <DropDownMenu value={this.state.value} onChange={this.handleChange} openImmediately={true}>
-          <MenuItem value={1} primaryText="Watercolor" leftIcon={<Avatar
-            src="https://v0.material-ui.com/images/uxceo-128.jpg"
-            size={30}
-            style={styles.listIcon}
-             />}
+        <DropDownMenu selectedMenuItemStyle={{ paddingLeft: 0 }} value={this.state.selectedBasemap} onChange={this.handleChange} openImmediately={false}>
+          <MenuItem value="watercolor" primaryText="Watercolor" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" style={styles.listIcon} />} label={<ListItem leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
           />
-          <MenuItem value={2} primaryText="Topographic" leftIcon={<Download />} />
-          <MenuItem value={3} primaryText="None" leftIcon={<Download />} />
+          <MenuItem value="topographic" primaryText="Topographic" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" style={styles.listIcon} />} label={<ListItem leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+          />
+          <MenuItem value="none" primaryText="None" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" style={styles.listIcon} />} label={<ListItem leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+          />
         </DropDownMenu>
-        <RaisedButton style={styles.button} label="None" primary={mapStyles.basemap === ''}
-                      onClick={() => changeBasemap('')}/>
-        <RaisedButton style={styles.button} label="Watercolor" primary={mapStyles.basemap === 'watercolor'}
-                      onClick={() => changeBasemap('watercolor')}/>
-        <RaisedButton style={styles.button} label="Topographic" primary={mapStyles.basemap === 'topographic'}
-                      onClick={() => changeBasemap('topographic')}/>
         <br/>
-        <RaisedButton style={styles.button} label="Show Provinces" primary={mapStyles.showProvinceBorders}
-                      onClick={() => setProvinceBorders(!mapStyles.showProvinceBorders)}/>
+        <RaisedButton style={styles.button} label="Show Provinces" primary={mapStyles.showProvinceBorders} onClick={() => setProvinceBorders(!mapStyles.showProvinceBorders)}/>
         <br/>
         <h4>Area</h4>
         Population Opacity:
