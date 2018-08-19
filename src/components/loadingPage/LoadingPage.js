@@ -1,6 +1,6 @@
 import React from 'react'
 import mainLogo from '../../../public/images/logoChronasWhite.png'
-import utilsQuery from "../map/utils/query"
+import utilsQuery from '../map/utils/query'
 
 const backgroundByYear = [
   { year: -2000,

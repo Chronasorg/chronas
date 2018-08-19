@@ -35,6 +35,8 @@ const turf = require('@turf/turf')
 const FLYTOANIMATIONDURATION = 2000
 const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A'
 
+const isStatic = utilsQuery.getURLParameter('isStatic') === "true"
+
 // defines fill-opacity when Population Opacity is switched on
 const opacityPopBounds = [0.3, 0.8]
 const getRandomInt = (min, max) => {
@@ -898,10 +900,11 @@ class Map extends Component {
   }
 
   _resize = () => {
+    const newWidth = (isStatic) ? window.innerWidth : (this.props.width || (window.innerWidth - 56))
     this.setState({
       viewport: {
         ...this.state.viewport,
-        width: this.props.width || (window.innerWidth - 56),
+        width: newWidth,
         height: (this.props.height || window.innerHeight)
       }
     })
@@ -1383,7 +1386,7 @@ class Map extends Component {
     const { epics, markerData, geoData, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
     const { modActive, menuDrawerOpen, rightDrawerOpen, history, theme, mapStyles, markerTheme, contentIndex } = this.props
 
-    let leftOffset = (menuDrawerOpen) ? 156 : 56
+    let leftOffset = isStatic ? 0 : (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.24
 
     let modMarker = ((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') ? <Marker
@@ -1401,7 +1404,7 @@ class Map extends Component {
         left: leftOffset,
         position: 'absolute',
         top: 0,
-        width: 'calc(100% - 56px)',
+        width: !isStatic ? 'calc(100% - 56px)' : '100%',
         height: '100%',
         overflow: 'hidden',
         transition: 'left 300ms cubic-bezier(0.4, 0, 0.2, 1), right 300ms cubic-bezier(0.4, 0, 0.2, 1)'
@@ -1445,13 +1448,12 @@ class Map extends Component {
             animationInterval={animationInterval}
             contentIndex={contentIndex}
           />
-
           {modMarker}
           {this._renderPopup()}
         </MapGL>
-        <div className={mapTimelineContainerClass}>
+        { !isStatic && <div className={mapTimelineContainerClass}>
           <Timeline groupItems={epics} />
-        </div>
+        </div> }
       </div>
     )
   }

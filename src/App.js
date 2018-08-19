@@ -82,6 +82,7 @@ const styles = {
 }
 
 const prefixedStyles = {}
+const isStatic = utilsQuery.getURLParameter('isStatic') === "true"
 
 class App extends Component {
 
@@ -194,7 +195,7 @@ class App extends Component {
 
   componentDidMount () {
     const { setMetadata, setLoadStatus, setUser } = this.props
-    axios.get(properties.chronasApiHost + '/metadata?f=provinces,ruler,culture,religion,capital,province,religionGeneral')
+    axios.get(properties.chronasApiHost + '/metadata?type=g&f=provinces,ruler,culture,religion,capital,province,religionGeneral')
       .then((metadata) => {
         setMetadata(metadata.data)
       })
@@ -297,10 +298,11 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
-                  <LoadingBar theme={theme} />
+                  {!isStatic && <LoadingBar theme={theme} />}
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
-                    {isLoading ? <LoadingPage /> : createElement(Map, { history: history, isLoading: isLoading })}
-                    {!isLoading && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
+                    {isLoading && !isStatic && <LoadingPage />}
+                    {!isLoading && createElement(Map, { history: history, isLoading: isLoading })}
+                    {!isLoading && !isStatic && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path='/' />
                         <Route exact path='/configuration' render={(props) => {
@@ -332,16 +334,16 @@ class App extends Component {
                         <RightDrawerRoutes history={history} />
                       </Switch>
                     </div>}
-                    {!isLoading && <MenuDrawer muiTheme={customTheme}>
+                    {!isLoading && !isStatic && <MenuDrawer muiTheme={customTheme}>
                       {createElement(LayerContent)}
                     </MenuDrawer>}
-                    {!isLoading && <Sidebar open muiTheme={customTheme}>
+                    {!isLoading && !isStatic && <Sidebar open muiTheme={customTheme}>
                       {createElement(Menu)}
                     </Sidebar>}
                   </div>
-                  <div className='notifications'>
+                  { !isStatic && <div className='notifications'>
                     <Notification />
-                  </div>
+                  </div>}
                 </div>
               </div>
             </MuiThemeProvider>
