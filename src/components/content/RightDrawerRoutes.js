@@ -391,7 +391,8 @@ class RightDrawerRoutes extends PureComponent {
             'end': rawDefault.data.end,
             'participants': [{ 'participantTeam': [{ 'name': '_kingdom_of_nri' }, { 'name': '_Zhili_clique' }] }, { 'participantTeam': [{ 'name': '_kingdom_of_nri' }] }],
             'coo': rawDefault.coo,
-            'partOf': rawDefault.partOf
+            'partOf': rawDefault.partOf,
+            'poster': rawDefault.poster
           }
 
           this.setState({

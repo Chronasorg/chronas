@@ -138,6 +138,7 @@ export const ModMetaAdd = (props) => {
   <MetaForm  validate={validateValueInput} {...props} redirect='create' >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
+    <TextInput validate={required} type='url' source='poster' label='resources.areas.fields.poster' />
     <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' />
     <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' />
     <TextInput type='number' source='end' label='resources.areas.fields.end' />

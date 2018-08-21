@@ -23,10 +23,10 @@ import axios from 'axios'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
-import {selectLinkedItem, selectMarkerItem} from '../../map/actionReducers'
-import { getYoutubeId, properties } from "../../../properties";
+import { selectLinkedItem, selectMarkerItem } from '../../map/actionReducers'
+import { getYoutubeId, properties } from '../../../properties'
 
-const imgButton = { width: 20, height: 20}
+const imgButton = { width: 20, height: 20 }
 const styles = {
   addButton: {
     zIndex: 15000,
@@ -101,7 +101,7 @@ const styles = {
     position: 'fixed',
     left: 64,
     right: 0,
-},
+  },
   headline: {
     fontSize: 24,
     paddingTop: 16,
@@ -221,17 +221,17 @@ class Discover extends PureComponent {
         tilesPsData: []
       },
       tabDataKeys: [
-        ['tilesHighlightData','HIGHLIGHTS',''],
-        ['tilesArtefactsData','ARTEFACTS','artefacts'],
-        ['tilesArticlesData','ARTICLES','articles'],
-        ['tilesEpicsData','EPICS','epics'],
-        ['tilesPeopleData','PEOPLE','people'],
-        ['tilesCitiesData','CITIES','cities'],
-        ['tilesBattlesData','BATTLES','battles'],
-        ['tilesOtherData','OTHER','misc'],
-        ['tilesVideosData','VIDEOS','videos'],
-        ['tilesPodcastsData','PODCASTS','audios'],
-        ['tilesPsData','PRIMARY SOURCES','ps']
+        ['tilesHighlightData', 'HIGHLIGHTS', ''],
+        ['tilesArtefactsData', 'ARTEFACTS', 'artefacts'],
+        ['tilesArticlesData', 'ARTICLES', 'articles'],
+        ['tilesEpicsData', 'EPICS', 'epics'],
+        ['tilesPeopleData', 'PEOPLE', 'people'],
+        ['tilesCitiesData', 'CITIES', 'cities'],
+        ['tilesBattlesData', 'BATTLES', 'battles'],
+        ['tilesOtherData', 'OTHER', 'misc'],
+        ['tilesVideosData', 'VIDEOS', 'videos'],
+        ['tilesPodcastsData', 'PODCASTS', 'audios'],
+        ['tilesPsData', 'PRIMARY SOURCES', 'ps']
       ]
     }
   }
@@ -257,7 +257,7 @@ class Discover extends PureComponent {
   }
 
   componentWillMount = () => {
-    console.debug("componentWillMountcomponentWillMount")
+    console.debug('componentWillMountcomponentWillMount')
     if (this.props.selectedYear !== this.state.currentYearLoaded) {
       this._updateImages(this.props.selectedYear)
     }
@@ -279,11 +279,12 @@ class Discover extends PureComponent {
 
   _updateImages = (selectedYear) => {
     // Load slides data
-    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i')
+    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=300&type=i')
       .then(response => {
         const newSlideData = []
-        const res = response.data
-        res.forEach((imageItem, i) => {
+        const allImages = response.data
+        const tileData = this.state.tileData
+        allImages.forEach((imageItem, i) => {
           if (i < 10) {
             newSlideData.push({
               original: imageItem._id,
@@ -298,18 +299,12 @@ class Discover extends PureComponent {
             })
           }
         })
-        this.setState({
-          currentYearLoaded: selectedYear,
-          slidesData: newSlideData,
-        })
-      })
 
-    // Load tab data
-    this.state.tabDataKeys.forEach(categoryObj => {
-      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=15&type=i&subtype=' + categoryObj[2])
-        .then(response => {
+        // Load tab data
+        this.state.tabDataKeys.forEach(categoryObj => {
+          // if image metadata
           const newTilesData = []
-          const res = response.data
+          const res = allImages.filter(el => el.subtype === categoryObj[2])
           res.forEach((imageItem) => {
             newTilesData.push({
               src: imageItem._id,
@@ -322,12 +317,15 @@ class Discover extends PureComponent {
               score: imageItem.score,
             })
           })
-          this.setState({
-            currentYearLoaded: selectedYear,
-            tileData: {...this.state.tileData, [categoryObj[0]]: newTilesData}
-          })
+          tileData[categoryObj[0]] = newTilesData
         })
-    })
+
+        this.setState({
+          slidesData: newSlideData,
+          currentYearLoaded: selectedYear,
+          tileData
+        })
+      })
   }
 
   _handleUpvote = (id, stateDataId) => {
@@ -343,42 +341,42 @@ class Discover extends PureComponent {
     if (upvotedItems.indexOf(id) > -1) {
       // already upvoted -> downvote
       localStorage.setItem('chs_upvotedItems', upvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
             if (encodeURIComponent(el.src) === id) el.score -= 1
             return el
           })
-          this.setState({ tileData: tileData  })
+          this.setState({ tileData: tileData })
           this.forceUpdate()
         })
     } else if (downvotedItems.indexOf(id) > -1) {
       // already downvoted -> upvote twice
       localStorage.setItem('chs_upvotedItems', upvotedItems.concat([id]))
       localStorage.setItem('chs_downvotedItems', downvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
-          axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
+          axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
             .then(() => {
               tileData[stateDataId] = tileData[stateDataId].map((el) => {
-                  if (encodeURIComponent(el.src) === id) el.score += 2
-                  return el
-                })
-              this.setState({ tileData: tileData  })
+                if (encodeURIComponent(el.src) === id) el.score += 2
+                return el
+              })
+              this.setState({ tileData: tileData })
               this.forceUpdate()
             })
         })
     } else {
       // neutral -> just upvote
       localStorage.setItem('chs_upvotedItems', upvotedItems.concat([id]))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
-          this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+          this.props.showNotification((typeof token !== 'undefined') ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score += 1
-              return el
-            })
-          this.setState({ tileData: tileData  })
+            if (encodeURIComponent(el.src) === id) el.score += 1
+            return el
+          })
+          this.setState({ tileData: tileData })
           this.forceUpdate()
         })
     }
@@ -397,42 +395,42 @@ class Discover extends PureComponent {
     if (downvotedItems.indexOf(id) > -1) {
       // already downvoted -> upvote
       localStorage.setItem('chs_downvotedItems', downvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score += 1
-              return el
-            })
-          this.setState({ tileData: tileData  })
+            if (encodeURIComponent(el.src) === id) el.score += 1
+            return el
+          })
+          this.setState({ tileData: tileData })
           this.forceUpdate()
         })
     } else if (upvotedItems.indexOf(id) > -1) {
       // already upvoted -> downvote twice
       localStorage.setItem('chs_downvotedItems', downvotedItems.concat([id]))
       localStorage.setItem('chs_upvotedItems', upvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
-          axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
+          axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
             .then(() => {
               tileData[stateDataId] = tileData[stateDataId].map((el) => {
-                  if (encodeURIComponent(el.src) === id) el.score -= 2
-                  return el
-                })
-              this.setState({ tileData: tileData  })
+                if (encodeURIComponent(el.src) === id) el.score -= 2
+                return el
+              })
+              this.setState({ tileData: tileData })
               this.forceUpdate()
             })
         })
     } else {
       // neutral -> just downvote
       localStorage.setItem('chs_downvotedItems', downvotedItems.concat([id]))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
-          this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+          this.props.showNotification((typeof token !== 'undefined') ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score -= 1
-              return el
-            })
-          this.setState({ tileData: tileData  })
+            if (encodeURIComponent(el.src) === id) el.score -= 1
+            return el
+          })
+          this.setState({ tileData: tileData })
           this.forceUpdate()
         })
     }
@@ -449,7 +447,7 @@ class Discover extends PureComponent {
   }
 
   _handleOpenSource = (source) => {
-    console.debug("_handleOpenSource", source)
+    console.debug('_handleOpenSource', source)
     window.open(source, '_blank').focus()
   }
 
@@ -473,12 +471,12 @@ class Discover extends PureComponent {
   }
 
   render () {
-    const {  selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
+    const { selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
     const { slidesData, selectedImage, slideIndex, tileData, tabDataKeys } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
 
-    const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
-    const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
+    const hasSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
+    const hasWiki = typeof selectedImage.wiki === 'undefined' || selectedImage.wiki === ''
 
     const slideButtons = (score, id, source, stateData) => {
       console.debug(id, source, source || id)
@@ -488,43 +486,43 @@ class Discover extends PureComponent {
       const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'white' : 'green'
       const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'white' : 'red'
 
-      const sourceSelected = decodeURIComponent(source !== "undefined" ? source : id)
+      const sourceSelected = decodeURIComponent(source !== 'undefined' ? source : id)
 
-      return <div className="slideButtons" style={(stateData[2] !== 'audios') ? styles.buttonContainer : { ...styles.buttonContainer, bottom: 100} }>
+      return <div className='slideButtons' style={(stateData[2] !== 'audios') ? styles.buttonContainer : { ...styles.buttonContainer, bottom: 100 }}>
         <IconButton
           onClick={() => this._handleUpvote(id, stateData[0])}
           color='red'
-          style={ styles.upArrow }
-          tooltipPosition="center-left"
+          style={styles.upArrow}
+          tooltipPosition='center-left'
           tooltip={translate('pos.upvote')}
-          iconStyle={ styles.iconButton }
+          iconStyle={styles.iconButton}
         ><IconThumbUp color={upvoteColor} />
         </IconButton>
         <IconButton
           onClick={() => this._handleDownvote(id, stateData[0])}
-          style={ styles.downArrow }
-          iconStyle={ styles.iconButton }
-          tooltipPosition="center-left"
+          style={styles.downArrow}
+          iconStyle={styles.iconButton}
+          tooltipPosition='center-left'
           tooltip={translate('pos.downvote')}
         ><IconThumbDown color={downvoteColor} /></IconButton>
-        <div style={ styles.scoreLabel }>{ score} </div>
+        <div style={styles.scoreLabel}>{ score} </div>
         {(stateData[2] === 'audios' || stateData[2] === 'articles' || stateData[2] === 'ps' || stateData[2] === 'videos') ? <IconButton
           style={styles.sourceButton}
-          tooltipPosition="bottom-center"
+          tooltipPosition='bottom-center'
           tooltip={sourceSelected}
           onClick={() => this._handleOpenSource(sourceSelected)} >
           tooltip={hasWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
           <FloatingActionButton
-            mini={true}
+            mini
             backgroundColor='#aaaaaaba'
-          ><IconOutbound color="white" style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
+          ><IconOutbound color='white' style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
           </FloatingActionButton >
         </IconButton> : null }
         <FloatingActionButton
-          mini={true}
+          mini
           onClick={() => this._handleEdit(id, stateData[0])}
           backgroundColor='#aaaaaaba'
-          style={ styles.editButton }
+          style={styles.editButton}
         ><IconEdit color='white' />
         </FloatingActionButton >
       </div>
@@ -532,7 +530,7 @@ class Discover extends PureComponent {
 
     const titleText = (selectedImage.src !== '') ? '' : translate('pos.discover_label') + selectedYear
 
-    const addButtonDynamicStyle = {...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit'}
+    const addButtonDynamicStyle = { ...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit' }
     return (
       <div>
         <Toolbar style={{ zIndex: 15000, color: 'white', boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px' }}>
@@ -542,7 +540,7 @@ class Discover extends PureComponent {
           <ToolbarGroup>
             <FloatingActionButton
               onClick={this._handleAdd}
-              style={ addButtonDynamicStyle }>
+              style={addButtonDynamicStyle}>
               <ContentAdd />
             </FloatingActionButton>
             <FloatingActionButton
@@ -571,9 +569,9 @@ class Discover extends PureComponent {
           <ImageGallery
             showPlayButton={false}
             showFullscreenButton={false}
-            autoPlay={true}
+            autoPlay
             slideDuration={1200}
-            showBullets={true}
+            showBullets
             showThumbnails={false}
             items={slidesData}
             onClick={(event) => {
@@ -605,28 +603,56 @@ class Discover extends PureComponent {
               marginTop: '1em' }}
           >
             {tabDataKeys.map((tabKey, i) => (
-            <Tab disabled={tileData[tabKey[0]].length > 0 ? false : true}  style={tileData[tabKey[0]].length > 0 ? {} : {opacity: 0.3, cursor: 'not-allowed'}} key={'tabHeader_' + i} label={tabKey[1]} value={i} />
+              <Tab disabled={!(tileData[tabKey[0]].length > 0)} style={tileData[tabKey[0]].length > 0 ? {} : { opacity: 0.3, cursor: 'not-allowed' }} key={'tabHeader_' + i} label={tabKey[1]} value={i} />
               ))}
           </Tabs>
           <SwipeableViews
             index={slideIndex}
             onChangeIndex={this.handleChange}>
             {tabDataKeys.map((tabKey, i) => (
-            <div style={styles.root} key={'tab_' + i}>
-              <GridList
-                cellHeight={180}
-                padding={1}
-                cols={(tabKey[2] !== 'videos')
-                  ? (tabKey[2] === 'audios') ?
-                    1 : 3
+              <div style={styles.root} key={'tab_' + i}>
+                <GridList
+                  cellHeight={180}
+                  padding={1}
+                  cols={(tabKey[2] !== 'videos')
+                  ? (tabKey[2] === 'audios')
+                    ? 1 : 3
                   : 2
                 }
-                style={styles.gridList}
+                  style={styles.gridList}
               >
-                {tileData[tabKey[0]].length > 0 ? tileData[tabKey[0]].map((tile, j) => (
+                  {tileData[tabKey[0]].length > 0 ? tileData[tabKey[0]].map((tile, j) => (
                     (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles') ? <GridTile
+                      key={tile.src}
+                      style={{ border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
+                      titleStyle={styles.title}
+                      subtitleStyle={styles.subtitle}
+                      title={tile.subtitle}
+                      subtitle={tile.title}
+                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
+                      actionPosition='right'
+                      titlePosition='bottom'
+                      titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                      cols={((j + 3) % 4 < 2) ? 1 : 2}
+                      rows={2}
+                      >
+                      <img src={tile.src}
+                        onError={() => this._removeTile(tabKey[0], tile.src)}
+                        onClick={() => {
+                          this.setState({ selectedImage: {
+                            src: tile.src,
+                            year: tile.subtitle,
+                            title: tile.title,
+                            wiki: tile.wiki,
+                            source: tile.source
+                          } })
+                        }}
+                          />
+                    </GridTile>
+                    : (tile.subtype === 'articles' || tile.subtype === 'ps')
+                      ? <GridTile
                         key={tile.src}
-                        style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
+                        style={{ border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
                         titleStyle={styles.title}
                         subtitleStyle={styles.subtitle}
                         title={tile.subtitle}
@@ -635,24 +661,24 @@ class Discover extends PureComponent {
                         actionPosition='right'
                         titlePosition='bottom'
                         titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                        cols={((j+3)%4 < 2) ? 1 : 2}
+                        cols={((j + 3) % 4 < 2) ? 1 : 2}
                         rows={2}
-                      >
-                        <img src={tile.src}
-                                     onError={() => this._removeTile(tabKey[0], tile.src)}
-                                     onClick={() => { this.setState({ selectedImage: {
-                                         src: tile.src,
-                                         year: tile.subtitle,
-                                         title: tile.title,
-                                         wiki: tile.wiki,
-                                         source: tile.source
-                                       } })}}
-                          />
+                        ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
+                          onError={() => this._removeTile(tabKey[0], tile.src)}
+                          onClick={() => {
+                            this.setState({ selectedImage: {
+                              src: tile.src,
+                              year: tile.subtitle,
+                              title: tile.title,
+                              wiki: tile.wiki,
+                              source: tile.source
+                            } })
+                          }}
+                        />
                       </GridTile>
-                    : (tile.subtype === 'articles' || tile.subtype === 'ps')
-                      ? <GridTile
+                        : <GridTile
                           key={tile.src}
-                          style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
+                          style={{ border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
                           titleStyle={styles.title}
                           subtitleStyle={styles.subtitle}
                           title={tile.subtitle}
@@ -661,54 +687,30 @@ class Discover extends PureComponent {
                           actionPosition='right'
                           titlePosition='bottom'
                           titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                          cols={((j+3)%4 < 2) ? 1 : 2}
-                          rows={2}
-                        ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
-                               onError={() => this._removeTile(tabKey[0], tile.src)}
-                               onClick={() => { this.setState({ selectedImage: {
-                                   src: tile.src,
-                                   year: tile.subtitle,
-                                   title: tile.title,
-                                   wiki: tile.wiki,
-                                   source: tile.source
-                                 } })}}
-                        />
-                        </GridTile>
-                        : <GridTile
-                            key={tile.src}
-                            style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
-                            titleStyle={styles.title}
-                            subtitleStyle={styles.subtitle}
-                            title={tile.subtitle}
-                            subtitle={tile.title}
-                            actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
-                            actionPosition='right'
-                            titlePosition='bottom'
-                            titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                            rows={ tile.subtype === 'audios' ? 1 : 2}
+                          rows={tile.subtype === 'audios' ? 1 : 2}
                           >
-                            {getYoutubeId(tile.src)
+                          {getYoutubeId(tile.src)
                               ? <YouTube
-                                  className='videoContent'
-                                  videoId={getYoutubeId(tile.src)}
-                                  opts={properties.YOUTUBEOPTS}
-                                  onError={() => this._removeTile(tabKey[0], tile.src)}
+                                className='videoContent'
+                                videoId={getYoutubeId(tile.src)}
+                                opts={properties.YOUTUBEOPTS}
+                                onError={() => this._removeTile(tabKey[0], tile.src)}
                                 />
-                              : <Player className='videoContent' fluid={false} ref="player">
+                              : <Player className='videoContent' fluid={false} ref='player'>
                                 <source src={tile.src} />
                               </Player>
                             }
-                          </GridTile>
+                        </GridTile>
                     )) : <span> - nothing here - </span>}
-              </GridList>
-            </div>))}
+                </GridList>
+              </div>))}
           </SwipeableViews>
         </Dialog>
         <Dialog
           autoDetectWindowHeight={false}
           modal={false}
           contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogImageBackgroundHack'}
-          contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', maxWidth: 'calc(100% - 64px)'}}
+          contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', maxWidth: 'calc(100% - 64px)' }}
           bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
           actionsContainerStyle={{ backgroundColor: red400 }}
           style={{ backgroundColor: 'transparent', overflow: 'auto' }}
@@ -725,35 +727,35 @@ class Discover extends PureComponent {
 
               <IconButton
                 style={{ ...styles.buttonOpenArticle, paddingRight: '1em' }}
-                tooltipPosition="bottom-center"
+                tooltipPosition='bottom-center'
                 tooltip={hasWiki ? translate('pos.discover_component.hasNoArticle') : translate('pos.discover_component.openArticle')}>
-                  <RaisedButton
-                    disabled={hasWiki}
-                    label="Open Article"
-                    primary={true}
-                    onClick={() => this._handleOpenArticle(selectedImage)}
+                <RaisedButton
+                  disabled={hasWiki}
+                  label='Open Article'
+                  primary
+                  onClick={() => this._handleOpenArticle(selectedImage)}
                   />
               </IconButton>
 
               <IconButton
                 style={styles.buttonOpenArticle}
-                tooltipPosition="bottom-center"
+                tooltipPosition='bottom-center'
                 tooltip={hasWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
                 <RaisedButton
                   disabled={hasSource}
-                  label="Open Source"
-                  primary={true}
+                  label='Open Source'
+                  primary
                   onClick={() => this._handleOpenSource(selectedImage.source)} >
-                  <IconOutbound color="white" style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
+                  <IconOutbound color='white' style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
                 </RaisedButton>
               </IconButton>
               <IconButton
                 style={styles.buttonOpenArticle}
-                tooltipPosition="bottom-center"
+                tooltipPosition='bottom-center'
                 tooltip={translate('pos.discover_component.edit')}>
                 <RaisedButton
-                  label="Edit"
-                  primary={true}
+                  label='Edit'
+                  primary
                   onClick={() => this._handleEdit(selectedImage.source)} />
               </IconButton>
             </div>

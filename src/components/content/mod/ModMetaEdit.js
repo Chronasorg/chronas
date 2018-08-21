@@ -162,6 +162,7 @@ export const ModMetaEdit = (props) => {
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteInput source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.display_name" />
     {(props.metadataEntity !== '') ? <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput validate={required} type='url' source='poster' label='resources.areas.fields.poster' /> : null}
     {(props.metadataEntity !== '') ? <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' /> : null}
     {(props.metadataEntity !== '') ? <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' /> : null}
     {(props.metadataEntity !== '') ? <TextInput type='number' source='end' label='resources.areas.fields.end' /> : null}

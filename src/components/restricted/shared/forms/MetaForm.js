@@ -61,6 +61,7 @@ export class MetaForm extends Component {
               const contentType = (el.contentType.substr(0, 2) === 'w|') ? 'markers' : 'metadata'
               return contentType + '||' + el.name
             }),
+            'poster': values.poster,
             'partOf': values.partOf,
           },
           'wiki': newWikiURL,
