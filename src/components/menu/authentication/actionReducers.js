@@ -19,9 +19,9 @@ export const userSignup = (payload, pathName) => ({
   meta: { auth: true, pathName },
 });
 
-export const setUser = (token, user, privilege) => ({
+export const setUser = (token, user, privilege, avatar) => ({
   type: SET_USER,
-  payload: [token, user, privilege],
+  payload: [token, user, privilege, avatar],
 });
 
 export const customNotification = message => ({
@@ -62,7 +62,8 @@ export const userReducer = (initial = { 'token': '', 'username': '', 'privilege'
         return {
           token: payload[0],
           username: payload[1],
-          privilege: payload[2]
+          privilege: payload[2],
+          avatar: payload[3]
         }
       case USER_LOGIN_SUCCESS:
       case SET_TOKEN:

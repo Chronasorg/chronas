@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import YouTube from 'react-youtube'
 import { Player } from 'video-react'
 import Dialog from 'material-ui/Dialog'
-import { GridList, GridTile } from 'material-ui/GridList'
+import { GridList } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
@@ -21,6 +21,7 @@ import SwipeableViews from 'react-swipeable-views'
 import { translate, ViewTitle, showNotification } from 'admin-on-rest'
 import axios from 'axios'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
+import GridTile from '../../overwrites/GridTile'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
 import { selectLinkedItem, selectMarkerItem } from '../../map/actionReducers'
@@ -39,7 +40,7 @@ const styles = {
     /* margin-top: -315px; */
     position: 'relative',
     right: 0,
-    bottom: 290,
+    bottom: 258,
     pointerEvents: 'all'
   },
   closeButton: {
@@ -279,10 +280,14 @@ class Discover extends PureComponent {
 
   _updateImages = (selectedYear) => {
     // Load slides data
-    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=300&type=i')
-      .then(response => {
+    axios.all([axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=300&type=i'),
+      axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&delta=10&end=12&type=e')])
+      .then(axios.spread((...args) => {
         const newSlideData = []
-        const allImages = response.data
+        const allImages = args[0].data
+        const allEpics = args[1].data
+
+        // SLIDERS
         const tileData = this.state.tileData
         allImages.forEach((imageItem, i) => {
           if (i < 10) {
@@ -300,7 +305,7 @@ class Discover extends PureComponent {
           }
         })
 
-        // Load tab data
+        // IMAGES
         this.state.tabDataKeys.forEach(categoryObj => {
           // if image metadata
           const newTilesData = []
@@ -320,12 +325,31 @@ class Discover extends PureComponent {
           tileData[categoryObj[0]] = newTilesData
         })
 
+        // EPICS
+        const newEpicData = []
+        allEpics.forEach((epicItem) => {
+          const epicTile = {
+            src: epicItem._id,
+            coo: epicItem.coo,
+            poster: epicItem.data.poster,
+            title: epicItem.data.title,
+            source: epicItem.data.source,
+            subtype: "epics",
+            subtitle: epicItem.year,
+            score: epicItem.score,
+            wiki: epicItem.wiki,
+          }
+          tileData["tilesHighlightData"].push(epicTile)
+          newEpicData.push(epicTile)
+        })
+        tileData["tilesEpicsData"] = newEpicData
+
         this.setState({
           slidesData: newSlideData,
           currentYearLoaded: selectedYear,
           tileData
         })
-      })
+      }))
   }
 
   _handleUpvote = (id, stateDataId) => {
@@ -479,8 +503,6 @@ class Discover extends PureComponent {
     const hasWiki = typeof selectedImage.wiki === 'undefined' || selectedImage.wiki === ''
 
     const slideButtons = (score, id, source, stateData) => {
-      console.debug(id, source, source || id)
-
       const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
       const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
       const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'white' : 'green'
@@ -622,9 +644,9 @@ class Discover extends PureComponent {
                   style={styles.gridList}
               >
                   {tileData[tabKey[0]].length > 0 ? tileData[tabKey[0]].map((tile, j) => (
-                    (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles') ? <GridTile
+                    (tile.subtype !== 'epics' && tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles') ? <GridTile
                       key={tile.src}
-                      style={{ border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
+                      style={{ border: '1px solid black', cursor: 'pointer'}}
                       titleStyle={styles.title}
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
@@ -649,10 +671,10 @@ class Discover extends PureComponent {
                         }}
                           />
                     </GridTile>
-                    : (tile.subtype === 'articles' || tile.subtype === 'ps')
+                    : (tile.subtype === 'epics')
                       ? <GridTile
                         key={tile.src}
-                        style={{ border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
+                        style={{ border: '1px solid black', cursor: 'pointer' }}
                         titleStyle={styles.title}
                         subtitleStyle={styles.subtitle}
                         title={tile.subtitle}
@@ -660,25 +682,27 @@ class Discover extends PureComponent {
                         actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
                         actionPosition='right'
                         titlePosition='bottom'
-                        titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                        cols={((j + 3) % 4 < 2) ? 1 : 2}
+                        titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 10%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                        cols={((j + 3) % 4 < 2) ? 1 : 2} titleHeight={128}
                         rows={2}
-                        ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
-                          onError={() => this._removeTile(tabKey[0], tile.src)}
-                          onClick={() => {
-                            this.setState({ selectedImage: {
-                              src: tile.src,
-                              year: tile.subtitle,
-                              title: tile.title,
-                              wiki: tile.wiki,
-                              source: tile.source
-                            } })
-                          }}
+                      >
+                        <img src={tile.poster || 'https://getbento.imgix.net/accounts/06ec34f15b98e80d7eae5ee58fe27c32/media/accounts/media/xVCzw16XRnyz5jliBzyr_EPIC_Colour.jpg'}
+                             onError={() => this._removeTile(tabKey[0], tile.src)}
+                             onClick={() => {
+                               this.setState({ selectedImage: {
+                                   src: tile.src,
+                                   poster: tile.poster,
+                                   year: tile.subtitle,
+                                   title: tile.title,
+                                   wiki: tile.wiki,
+                                   source: tile.source
+                                 } })
+                             }}
                         />
                       </GridTile>
                         : <GridTile
                           key={tile.src}
-                          style={{ border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
+                          style={{ border: '1px solid black', cursor: 'pointer' }}
                           titleStyle={styles.title}
                           subtitleStyle={styles.subtitle}
                           title={tile.subtitle}
@@ -719,7 +743,7 @@ class Discover extends PureComponent {
           open={(selectedImage.src !== '')}
           onRequestClose={this.handleImageClose}
         >
-          <img src={selectedImage.src} style={styles.selectedIMG} />
+          <img src={selectedImage.poster || selectedImage.src} style={styles.selectedIMG} />
           <div style={styles.selectedImageContent}>
             <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
             <p style={styles.selectedImageDescription}>{selectedImage.title}</p>

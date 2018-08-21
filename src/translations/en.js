@@ -6,6 +6,7 @@ export default {
       refresh: 'Refresh',
       save: 'Save'
     },
+    profile_image: 'Avatar',
     edit_profile: 'Edit Profile',
     input: {
       autocomplete: {

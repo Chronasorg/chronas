@@ -137,6 +137,7 @@ class Account extends PureComponent {
         <SimpleForm style={{ }}>
           <DisabledInput source='username' />
           <TextInput source='name' />
+          <TextInput source='avatar' type='aor.profile_image' />
           <TextInput source='education' />
           <TextInput source='email' type='email' label='resources.users.fields.email' validation={{ email: true }} options={{ fullWidth: true }} style={{ width: 544 }} />
           <TextInput source='website' type='url' />

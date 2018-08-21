@@ -5,7 +5,7 @@ import { properties } from '../../../properties'
 
 export default (type, params) => {
   if (type === AUTH_LOGIN) {
-    const { username, password, email, first_name, last_name, education, website, authType } = params;
+    const { username, avatar, password, email, first_name, last_name, education, website, authType } = params
     if (authType === AUTH_LOGIN) {
       const request = new Request(properties.chronasApiHost + '/auth/login', {
         method: 'POST',
@@ -25,6 +25,7 @@ export default (type, params) => {
           // TODO: breadcrumb last login delta
           const decodedToken = decodeJwt(token)
           localStorage.setItem('chs_token', token)
+          localStorage.setItem('chs_avatar', decodedToken.avatar)
           localStorage.setItem('chs_username', decodedToken.username)
           localStorage.setItem('chs_userid', decodedToken.id)
           localStorage.setItem('chs_privilege', decodedToken.privilege)
@@ -50,6 +51,7 @@ export default (type, params) => {
           setToken(token)
           const decodedToken = decodeJwt(token)
           localStorage.setItem('chs_token', token)
+          localStorage.setItem('chs_avatar', decodedToken.avatar)
           localStorage.setItem('chs_username', decodedToken.username)
           localStorage.setItem('chs_userid', decodedToken.id)
           localStorage.setItem('chs_privilege', decodedToken.privilege)
@@ -61,6 +63,7 @@ export default (type, params) => {
   if (type === AUTH_LOGOUT) {
     localStorage.removeItem('chs_token')
     localStorage.removeItem('chs_username')
+    localStorage.removeItem('chs_avatar')
     localStorage.removeItem('chs_privilege')
     localStorage.removeItem('chs_id')
     return Promise.resolve();
@@ -70,6 +73,7 @@ export default (type, params) => {
     const { status } = params;
     if (status === 401 || status === 403) {
       localStorage.removeItem('chs_token')
+      localStorage.removeItem('chs_avatar')
       localStorage.removeItem('chs_username')
       localStorage.removeItem('chs_privilege')
       localStorage.removeItem('chs_id')

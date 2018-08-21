@@ -13,6 +13,7 @@ import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
+import Avatar from 'material-ui/Avatar'
 import SVG from 'react-inlinesvg'
 import { Link } from 'react-router-dom'
 import pure from 'recompose/pure'
@@ -86,6 +87,7 @@ class Menu extends PureComponent {
     const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, hasDashboard, onMenuTap, resources, theme, translate } = this.props;
     const isLoggedIn = userDetails.token !== ''
     const username = localStorage.getItem('chs_username')
+    const customAvatar = userDetails.avatar || localStorage.getItem('chs_avatar')
 
     return <div style={styles.main}>
       <div style={styles.topMenu} className="topMenuItems">
@@ -203,8 +205,10 @@ class Menu extends PureComponent {
               onClick={onMenuTap}
               iconStyle={{color: themes[theme].foreColors[0]}}
               >
-              <AccountIcon
-              hoverColor={chronasMainColor}/>
+                { customAvatar ? <Avatar
+                  size={24}
+                  src={customAvatar} /> : <AccountIcon
+              hoverColor={chronasMainColor}/> }
               </IconButton>
             </div>
             ) : null
