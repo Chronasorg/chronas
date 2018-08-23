@@ -15,105 +15,105 @@ const iconHeight = 127
 
 const iconMapping = {
   them: {
-    'marker-1': {
+    '1': {
       'x': 0,
       'y': 0,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-2': {
+    'r': {
       'x': iconWidth,
       'y': 0,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-3': {
+    'p': {
       'x': 2 * iconWidth,
       'y': 0,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-4': {
+    'e': {
       'x': 3 * iconWidth,
       'y': 0,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-5': {
+    'a': {
       'x': 0,
       'y': iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-6': {
+    '6': {
       'x': iconWidth,
       'y': iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-7': {
+    's': {
       'x': 2 * iconWidth,
       'y': iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-8': {
+    'op': {
       'x': 3 * iconWidth,
       'y': iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-9': {
+    '9': {
       'x': 0,
       'y': 2 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-10': {
+    'at': {
       'x': iconWidth,
       'y': 2 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-20': {
+    'm': {
       'x': 2 * iconWidth,
       'y': 2 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-30': {
+    '12': {
       'x': 3 * iconWidth,
       'y': 2 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-40': {
+    'ar': {
       'x': 0,
       'y': 3 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-50': {
+    'b': {
       'x': iconWidth,
       'y': 3 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-60': {
+    'si': {
       'x': 2 * iconWidth,
       'y': 3 * iconHeight,
       'width': iconWidth,
@@ -127,21 +127,305 @@ const iconMapping = {
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-80': {
+    'ca': {
       'x': 0,
       'y': 4 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-90': {
+    '18': {
       'x': iconWidth,
       'y': 4 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-100': {
+    'ai': {
+      'x': 2 * iconWidth,
+      'y': 4 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    'o': {
+      'x': 3 * iconWidth,
+      'y': 4 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    }
+  },
+  abst: {
+    '1': {
+      'x': 0,
+      'y': 0,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'r': {
+      'x': iconWidthModern,
+      'y': 0,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'p': {
+      'x': 2 * iconWidthModern,
+      'y': 0,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'e': {
+      'x': 3 * iconWidthModern,
+      'y': 0,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'a': {
+      'x': 0,
+      'y': iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    '6': {
+      'x': iconWidthModern,
+      'y': iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    's': {
+      'x': 2 * iconWidthModern,
+      'y': iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'op': {
+      'x': 3 * iconWidthModern,
+      'y': iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    '9': {
+      'x': 0,
+      'y': 2 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'at': {
+      'x': iconWidthModern,
+      'y': 2 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'm': {
+      'x': 2 * iconWidthModern,
+      'y': 2 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    '12': {
+      'x': 3 * iconWidthModern,
+      'y': 2 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'ar': {
+      'x': 0,
+      'y': 3 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'b': {
+      'x': iconWidthModern,
+      'y': 3 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'si': {
+      'x': 2 * iconWidthModern,
+      'y': 3 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    '16': {
+      'x': 3 * iconWidthModern,
+      'y': 3 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'ca': {
+      'x': 0,
+      'y': 4 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    '18': {
+      'x': iconWidthModern,
+      'y': 4 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'ai': {
+      'x': 2 * iconWidthModern,
+      'y': 4 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'o': {
+      'x': 3 * iconWidthModern,
+      'y': 4 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    }
+  },
+  cluster: {
+    '1': {
+      'x': 0,
+      'y': 0,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '2': {
+      'x': iconWidth,
+      'y': 0,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '3': {
+      'x': 2 * iconWidth,
+      'y': 0,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '4': {
+      'x': 3 * iconWidth,
+      'y': 0,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '5': {
+      'x': 0,
+      'y': iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '6': {
+      'x': iconWidth,
+      'y': iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '7': {
+      'x': 2 * iconWidth,
+      'y': iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '8': {
+      'x': 3 * iconWidth,
+      'y': iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '9': {
+      'x': 0,
+      'y': 2 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '10': {
+      'x': iconWidth,
+      'y': 2 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '20': {
+      'x': 2 * iconWidth,
+      'y': 2 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '30': {
+      'x': 3 * iconWidth,
+      'y': 2 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '40': {
+      'x': 0,
+      'y': 3 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '50': {
+      'x': iconWidth,
+      'y': 3 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '60': {
+      'x': 2 * iconWidth,
+      'y': 3 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '70': {
+      'x': 3 * iconWidth,
+      'y': 3 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '80': {
+      'x': 0,
+      'y': 4 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '90': {
+      'x': iconWidth,
+      'y': 4 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
+    '100': {
       'x': 2 * iconWidth,
       'y': 4 * iconHeight,
       'width': iconWidth,
@@ -155,148 +439,6 @@ const iconMapping = {
       'height': iconHeight,
       'anchorY': iconHeight
     }
-  },
-  abst: {
-    'marker-1': {
-      'x': 0,
-      'y': 0,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-2': {
-      'x': iconWidthModern,
-      'y': 0,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-3': {
-      'x': 2 * iconWidthModern,
-      'y': 0,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-4': {
-      'x': 3 * iconWidthModern,
-      'y': 0,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-5': {
-      'x': 0,
-      'y': iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-6': {
-      'x': iconWidthModern,
-      'y': iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-7': {
-      'x': 2 * iconWidthModern,
-      'y': iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-8': {
-      'x': 3 * iconWidthModern,
-      'y': iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-9': {
-      'x': 0,
-      'y': 2 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-10': {
-      'x': iconWidthModern,
-      'y': 2 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-20': {
-      'x': 2 * iconWidthModern,
-      'y': 2 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-30': {
-      'x': 3 * iconWidthModern,
-      'y': 2 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-40': {
-      'x': 0,
-      'y': 3 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-50': {
-      'x': iconWidthModern,
-      'y': 3 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-60': {
-      'x': 2 * iconWidthModern,
-      'y': 3 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-70': {
-      'x': 3 * iconWidthModern,
-      'y': 3 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-80': {
-      'x': 0,
-      'y': 4 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-90': {
-      'x': iconWidthModern,
-      'y': 4 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker-100': {
-      'x': 2 * iconWidthModern,
-      'y': 4 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    },
-    'marker': {
-      'x': 3 * iconWidthModern,
-      'y': 4 * iconHeightModern,
-      'width': iconWidthModern,
-      'height': iconHeightModern,
-      'anchorY': iconHeightModern
-    }
   }
 }
 
@@ -308,12 +450,12 @@ function getIconName (size) {
     return ''
   }
   if (size < 10) {
-    return `marker-${size}`
+    return `${size}`
   }
   if (size < 100) {
-    return `marker-${Math.floor(size / 10)}0`
+    return `${Math.floor(size / 10)}0`
   }
-  return 'marker-100'
+  return '100'
 }
 
 function getIconSize (size) {
@@ -367,8 +509,8 @@ export default class DeckGLOverlay extends Component {
 
   componentDidMount () {
     const { markerData, viewport, sizeScale, showCluster } = this.props
-    this._getMarker( {...{markerData: markerData.filter(el => el.subtype !== 'cities')}, sizeScale, viewport, showCluster}) // .filter(el => el.subtype !== 'cities')
-    this._getTexts( {...{markerData: markerData.filter(el => el.subtype === 'cities')}, viewport, showCluster})
+    this._getMarker( {...{markerData: markerData.filter(el => el.subtype !== 'c')}, sizeScale, viewport, showCluster})
+    this._getTexts( {...{markerData: markerData.filter(el => el.subtype === 'c')}, viewport, showCluster})
   }
 
   componentWillReceiveProps (nextProps) {
@@ -392,13 +534,13 @@ export default class DeckGLOverlay extends Component {
       viewport.height !== oldViewport.height) {
 
 
-      const nextIconMarker = nextProps.markerData/*.filter(el => el.subtype !== 'cities')*/
-      const nextTextMarker = nextProps.markerData.filter(el => el.subtype === 'cities')
-      const iconMarker = markerData/*.filter(el => el.subtype !== 'cities')*/
-      const textMarker = markerData.filter(el => el.subtype === 'cities')
+      const nextIconMarker = nextProps.markerData
+      const nextTextMarker = nextProps.markerData.filter(el => el.subtype === 'c')
+      const iconMarker = markerData
+      const textMarker = markerData.filter(el => el.subtype === 'c')
 
       if (this.props.showCluster !== showCluster || nextIconMarker.length !== iconMarker.length) {
-        this.setState({ marker: this._getMarker({ ...{markerData: nextIconMarker}, sizeScale, viewport, showCluster}) })
+        this.setState({ marker: this._getMarker({ ...{markerData: nextIconMarker.filter(el => el.subtype !== 'c')}, sizeScale, viewport, showCluster}) })
       }
       if (nextTextMarker.length !== textMarker.length) {
         this.setState({ texts: this._getTexts({ ...{markerData: nextTextMarker}, viewport}) })
@@ -518,11 +660,11 @@ export default class DeckGLOverlay extends Component {
     tree.load(markerData)
 
     if (showCluster) {
-      const sizeScale = properties.markerSize * Math.min(Math.pow(1.5, viewport.zoom - 10), 1) * window.devicePixelRatio
+      const sizeScale = 20 * properties.markerSize * Math.min(Math.pow(1.5, viewport.zoom - 10), 1) * window.devicePixelRatio
       for (let z = 0; z <= 20; z++) {
         const radius = sizeScale / Math.sqrt(2) / Math.pow(2, z)
 
-        markerData.filter(el => el.subtype !== 'cities').forEach(p => {
+        markerData.filter(el => el.subtype !== 'c').forEach(p => {
           if (p.zoomLevels[z] === undefined) {
             // this point does not belong to a cluster
             const { x, y } = p
@@ -647,8 +789,8 @@ export default class DeckGLOverlay extends Component {
         getLabel: d => d.name,
         onMarkerClick: onMarkerClick,
         getPosition: d => d.coo,
-        minFontSize: 30,
-        maxFontSize: 35
+        minFontSize: 20,
+        maxFontSize: 25
       }))
 
       layers.push(new ScatterplotLayer({
@@ -675,15 +817,16 @@ export default class DeckGLOverlay extends Component {
         autoHighlight: true,
         highlightColor: RGBAtoArray(theme.highlightColors[0]),
         data: marker,
+        opacity: 0.4,
         pickable: true,
         iconAtlas: showCluster
           ? ('/images/' + markerTheme + '-cluster-atlas.png')
           : ('/images/' + markerTheme + '-atlas.png'),
-        iconMapping: iconMapping[markerTheme.substr(0, 4)],
+        iconMapping:  iconMapping[(showCluster ? 'cluster' : markerTheme.substr(0, 4))],
         sizeScale: properties.markerSize * size * window.devicePixelRatio,
         getPosition: d => d.coo,
-        getIcon: d => (d.subtype === 'cities') ? 'marker-10' : (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'), // should be d.subtype (or type)
-        getSize: d => (d.subtype === 'cities') ? 4 : 6 /*(showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 10)*/,
+        getIcon: d => (showCluster ? (d.zoomLevels[z] && d.zoomLevels[z].icon) : d.subtype), // should be d.subtype (or type)
+        getSize: d => showCluster ? (d.zoomLevels[z] && d.zoomLevels[z].size * 20) : 6,
         onHover: e => onHover(e),
         onClick: onMarkerClick,
         updateTriggers: {
@@ -693,17 +836,17 @@ export default class DeckGLOverlay extends Component {
       }))
     }
 
-    if (texts && texts.length > 0) {
-      layers.push(new TagmapLayer({
-        id: 'cities-layer',
-        data: texts,
-        getWeight: x => 50,//*normalize(x.pop) ||*/ Math.random()*100,
-        getLabel: d => d.name,
-        getPosition: d => d.coo,
-        minFontSize: 24,
-        maxFontSize: 32 * 2 - 14
-      }))
-    }
+    // if (texts && texts.length > 0) {
+    //   layers.push(new TagmapLayer({
+    //     id: 'c-layer',
+    //     data: texts,
+    //     getWeight: x => 50,//*normalize(x.pop) ||*/ Math.random()*100,
+    //     getLabel: d => d.name,
+    //     getPosition: d => d.coo,
+    //     minFontSize: 24,
+    //     maxFontSize: 32 * 2 - 14
+    //   }))
+    // }
 
     if (arcs && arcs.length > 0) {
       layers.push(new ArcLayer({

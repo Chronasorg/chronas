@@ -74,6 +74,7 @@ class Map extends Component {
       mapTimelineContainerClass: 'mapTimeline',
       year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
       data: null,
+      expanded: false,
       markerData: [],
       geoData: [],
       epics: [],
@@ -1301,16 +1302,16 @@ class Map extends Component {
                   activeStep={-1}
                   orientation='vertical'
                   style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
-                  {content.map(({ name, year, wiki, type }, i) => {
+                  {content.map(({ name, year, wiki, _id, type, subtype }, i) => {
                     return (<Step key={i} style={styles.stepContainer}>
                       <StepButton
                         iconContainerStyle={{ background:  'inherit' }}
                         icon={<span style={styles.stepLabel}>{year}</span>}
                         onClick={() => {
                           delete content[i].zoomLevels
-                          selectMarkerItem(content[i].wiki, content[i])
+                          selectMarkerItem(content[i].wiki || content[i]._id, content[i])
                           history.push('/article')
-                          this.setState({  expanded: false, hoverInfo: null })
+                          this.setState({ expanded: false, hoverInfo: null })
                         }}>
                         <div style={{
                           overflow: 'hidden',
@@ -1322,7 +1323,7 @@ class Map extends Component {
                           top: '16px',
                           fontSize: '15px'
                         }}>
-                          {name || wiki}
+                          {name || wiki || _id}
                         </div>
                         <div style={{
                           overflow: 'hidden',
@@ -1334,7 +1335,7 @@ class Map extends Component {
                           top: '32px',
                           fontSize: '12px'
                         }}>
-                          {type}
+                          {subtype || type}
                         </div>
                       </StepButton>
                     </Step>

@@ -44,7 +44,23 @@ const styles = {
   },
 };
 
-const allMarkers = ['Politicians', 'Battles', 'Cities']
+const allMarkers = [
+  ['ar','Artifacts'],
+  ['b','Battles -> Battles'],
+  ['si','Battles -> Sieges'],
+  ['c','Cities -> Cities'],
+  ['ca','Cities -> Castles'],
+  ['m','People -> Military'],
+  ['p','People -> Politicians'],
+  ['e','People -> Explorers'],
+  ['s','People -> Scientists'],
+  ['a','People -> Artists'],
+  ['r','People -> Religious'],
+  ['at','People -> Athletes'],
+  ['op','People -> Unclassified'],
+  ['ai','Other -> Area Info'],
+  ['o','Other -> Unknown']
+]
 
 const allEpics = ['War', 'Battle', 'Campaign', 'Exploration', 'Siege', 'Voyage', 'Other Epic']
 
@@ -133,11 +149,11 @@ class LayerContent extends Component {
         {allMarkers.map(id =>
           <RaisedButton
             style={styles.button}
-            label={id}
-            key={id}
-            primary={activeMarkers.indexOf(id.toLowerCase()) > -1}
+            label={id[1]}
+            key={id[0]}
+            primary={activeMarkers.indexOf(id[0].toLowerCase()) > -1}
             onClick={() => {
-              toggleMarker(id.toLowerCase())
+              toggleMarker(id[0])
             }}/>)}
         {activeMarkers}
         <br/>
