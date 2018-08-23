@@ -120,7 +120,7 @@ const iconMapping = {
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'marker-70': {
+    'capital': {
       'x': 3 * iconWidth,
       'y': 3 * iconHeight,
       'width': iconWidth,
@@ -591,6 +591,44 @@ export default class DeckGLOverlay extends Component {
   //   return true
   // }
 
+  /*
+
+    typeToDescriptedType: {
+    'ae|r': '[Area Entity] Ruler',
+    // 'ae|capital': '[Area Entity] Capital',
+    'ae|c': '[Area Entity] Culture',
+    'ae|re': '[Area Entity] Religion',
+    'ae|reg': '[Area Entity] General Religion',
+    'a': '[Podcast & Audio]',
+    'e': '[Epic]',
+    't': '[External Article or Primary Source]',
+    'h': '[HTML or Text]',
+    'i|a': '[Image] Artefact',
+    'i|b': '[Image] Battle',
+    'i|c': '[Image] City & Building',
+    'i|p': '[Image] Person',
+    'i|m': '[Image] Other',
+    'ps': '[Primary Source]',
+    'v': '[Video]',
+    'w|ar': '[Wiki Article] Artifacts',
+    'w|b': '[Wiki Article] Battles -> Battles',
+    'w|si': '[Wiki Article] Battles -> Sieges',
+    'w|c': '[Wiki Article] Cities -> Cities',
+    'w|ca': '[Wiki Article] Cities -> Castles',
+    'w|m': '[Wiki Article] People -> Military',
+    'w|p': '[Wiki Article] People -> Politicians',
+    'w|e': '[Wiki Article] People -> Explorers',
+    'w|s': '[Wiki Article] People -> Scientists',
+    'w|a': '[Wiki Article] People -> Artists',
+    'w|r': '[Wiki Article] People -> Religious',
+    'w|at': '[Wiki Article] People -> Athletes',
+    'w|op': '[Wiki Article] People -> Unclassified',
+    'w|ai': '[Wiki Article] Other -> Area Info',
+    'w|o': '[Wiki Article] Other -> Unknown',
+    'o': 'Other'
+
+   */
+
   render () {
     const { viewport, strokeWidth, showCluster, geoData, setTooltip, onHover, markerTheme, theme, onMarkerClick } = this.props
     const { animatedFeature, arcs, marker, texts /* geo */ } = this.state
@@ -629,7 +667,7 @@ export default class DeckGLOverlay extends Component {
       layers.push(new TagmapLayer({
         id: 'cities-layer',
         data: texts,
-        getWeight: x => /*normalize(x.pop) ||*/ Math.random()*100,
+        getWeight: x => 50,//*normalize(x.pop) ||*/ Math.random()*100,
         getLabel: d => d.name,
         getPosition: d => d.coo,
         minFontSize: 24,
