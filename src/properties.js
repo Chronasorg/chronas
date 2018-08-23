@@ -83,7 +83,7 @@ export const properties = {
     { name: 'Themed', id: 'themed' },
     { name: 'Themed (Painted)', id: 'themed-painted' }
   ],
-  markerSize: 500,
+  markerSize: 200,
   YOUTUBEOPTS: {
     height: '100%',
     width: '100%',

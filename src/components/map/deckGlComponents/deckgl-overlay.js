@@ -3,7 +3,7 @@ import { scaleQuantile } from 'd3-scale'
 import { rgb } from 'd3-color'
 import { easeCubic } from 'd3-ease'
 import rbush from 'rbush'
-import DeckGL, { WebMercatorViewport, IconLayer, PathLayer, GeoJsonLayer, TextLayer, ArcLayer } from 'deck.gl'
+import DeckGL, { WebMercatorViewport, IconLayer, ScatterplotLayer, PathLayer, GeoJsonLayer, TextLayer, ArcLayer } from 'deck.gl'
 const Arc = require('arc')
 import TagmapLayer from './tagmap-layer'
 import { properties, RGBAtoArray } from '../../../properties'
@@ -14,7 +14,7 @@ const iconWidth = 135
 const iconHeight = 127
 
 const iconMapping = {
-  abst: {
+  them: {
     'marker-1': {
       'x': 0,
       'y': 0,
@@ -156,7 +156,7 @@ const iconMapping = {
       'anchorY': iconHeight
     }
   },
-  mode: {
+  abst: {
     'marker-1': {
       'x': 0,
       'y': 0,
@@ -367,7 +367,7 @@ export default class DeckGLOverlay extends Component {
 
   componentDidMount () {
     const { markerData, viewport, sizeScale, showCluster } = this.props
-    this._getMarker( {...{markerData: markerData}, sizeScale, viewport, showCluster}) // .filter(el => el.subtype !== 'cities')
+    this._getMarker( {...{markerData: markerData.filter(el => el.subtype !== 'cities')}, sizeScale, viewport, showCluster}) // .filter(el => el.subtype !== 'cities')
     this._getTexts( {...{markerData: markerData.filter(el => el.subtype === 'cities')}, viewport, showCluster})
   }
 
@@ -518,7 +518,7 @@ export default class DeckGLOverlay extends Component {
     tree.load(markerData)
 
     if (showCluster) {
-      const sizeScale = properties.markerSize *  Math.min(Math.pow(1.5, viewport.zoom - 10), 1) * window.devicePixelRatio
+      const sizeScale = properties.markerSize * Math.min(Math.pow(1.5, viewport.zoom - 10), 1) * window.devicePixelRatio
       for (let z = 0; z <= 20; z++) {
         const radius = sizeScale / Math.sqrt(2) / Math.pow(2, z)
 
@@ -601,6 +601,36 @@ export default class DeckGLOverlay extends Component {
     // console.debug("remder iconlayer with data", iconData)
     const layers = []
 
+    if (texts && texts.length > 0) {
+      layers.push(new TagmapLayer({
+        id: 'cities-labels',
+        data: texts,
+        // getWeight: x => /*normalize(x.pop) ||*/ Math.random() * 100,
+        getLabel: d => d.name,
+        onMarkerClick: onMarkerClick,
+        getPosition: d => d.coo,
+        minFontSize: 30,
+        maxFontSize: 35
+      }))
+
+      layers.push(new ScatterplotLayer({
+        id: 'cities-dots',
+        data: texts.filter(el => !el.capital),
+        outline: true,
+        // radiusScale: 30,
+        opacity: 0.6,
+        strokeWidth: 3,
+        autoHighlight: true,
+        highlightColor: RGBAtoArray(theme.highlightColors[0]),
+        getPosition: d => d.coo,
+        pickable: true,
+        onClick: onMarkerClick,
+        getColor: [50, 50, 50, 200], // d => (d[2] === 1 ? maleColor : femaleColor),
+        radiusMinPixels: 3,
+        radiusMaxPixels: 3,
+      }))
+    }
+
     if (marker && marker.length > 0) {
       layers.push(new IconLayer({
         id: 'icon',
@@ -614,7 +644,7 @@ export default class DeckGLOverlay extends Component {
         iconMapping: iconMapping[markerTheme.substr(0, 4)],
         sizeScale: properties.markerSize * size * window.devicePixelRatio,
         getPosition: d => d.coo,
-        getIcon: d => (d.subtype === 'cities') ? 'marker-10' : (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'),
+        getIcon: d => (d.subtype === 'cities') ? 'marker-10' : (showCluster ? d.zoomLevels[z] && d.zoomLevels[z].icon : 'marker'), // should be d.subtype (or type)
         getSize: d => (d.subtype === 'cities') ? 4 : 6 /*(showCluster ? d.zoomLevels[z] && d.zoomLevels[z].size : 10)*/,
         onHover: e => onHover(e),
         onClick: onMarkerClick,
@@ -622,18 +652,6 @@ export default class DeckGLOverlay extends Component {
           getIcon: updateTrigger,
           getSize: updateTrigger
         }
-      }))
-    }
-
-    if (texts && texts.length > 0) {
-      layers.push(new TagmapLayer({
-        id: 'cities-layer',
-        data: texts,
-        getWeight: x => /*normalize(x.pop) ||*/ Math.random()*100,
-        getLabel: d => d.name,
-        getPosition: d => d.coo,
-        minFontSize: 24,
-        maxFontSize: 32 * 2 - 14
       }))
     }
 

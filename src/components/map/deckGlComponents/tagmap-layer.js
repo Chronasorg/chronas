@@ -9,6 +9,7 @@ const TEXTCOLOR = [
 
 const defaultProps = {
   getLabel: x => x.label,
+  onMarkerClick: () => {},
   getWeight: x => x.weight || 1,
   getPosition: x => x.position,
   minFontSize: 14,
@@ -111,16 +112,20 @@ export default class TagmapLayer extends CompositeLayer {
 
   renderLayers() {
     const {tags} = this.state;
+    const { onMarkerClick } = this.props;
 
     return [
       new TextLayer({
         id: 'tagmap-layer',
         data: tags,
         fontFamily: 'Cinzel, serif',
+        getAlignmentBaseline: 'bottom',
+        onClick: onMarkerClick,
         getText: d => d.label,
         getPosition: d => d.position,
         getColor: d => TEXTCOLOR,
-        getSize: d => d.height
+        getSize: d => d.height,
+        pickable: true,
       })
     ];
   }
