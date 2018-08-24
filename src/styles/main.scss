@@ -362,6 +362,10 @@ button:focus {
 }
 
 .mapHoverTooltip.interactive {
+  width: 340px;
+  max-height: 496px;
+  overflow: hidden;
+
   .mapboxgl-popup-content {
     cursor: pointer !important;
     pointer-events: all !important;

@@ -7,7 +7,7 @@ import Dialog from 'material-ui/Dialog'
 import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconSearch from 'material-ui/svg-icons/action/search'
 import FlatButton from 'material-ui/FlatButton'
-import TextField from 'material-ui/TextField';
+import TextField from 'material-ui/TextField'
 import IconArrowUp from 'material-ui/svg-icons/navigation/expand-less'
 import IconArrowDown from 'material-ui/svg-icons/navigation/expand-more'
 import { setYear } from './actionReducers'

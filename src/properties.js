@@ -1,3 +1,29 @@
+export const markerIdNameArray = [
+  ['ar', 'Artifacts'],
+  ['b', 'Battles -> Battles'],
+  ['si', 'Battles -> Sieges'],
+  ['c', 'Cities -> Cities'],
+  ['ca', 'Cities -> Castles'],
+  ['m', 'People -> Military'],
+  ['p', 'People -> Politicians'],
+  ['e', 'People -> Explorers'],
+  ['s', 'People -> Scientists'],
+  ['a', 'People -> Artists'],
+  ['r', 'People -> Religious'],
+  ['at', 'People -> Athletes'],
+  ['op', 'People -> Unclassified'],
+  ['ai', 'Other -> Area Info'],
+  ['o', 'Other -> Unknown']
+]
+
+const arrayToObject = (array) =>
+  array.reduce((obj, item) => {
+    obj[item[0]] = item[1]
+    return obj
+  }, {})
+
+export const markerIdNameObject = arrayToObject(markerIdNameArray)
+
 export const properties = {
   // defines the zoom level to toggle provinces
   areaColorLayers: ['ruler', 'religion', 'religionGeneral', 'culture', 'population'],

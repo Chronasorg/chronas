@@ -9,6 +9,12 @@ import {
   Stepper,
   StepButton,
 } from 'material-ui/Stepper'
+import CloseIcon from 'material-ui/svg-icons/content/clear'
+import IconMenu from 'material-ui/IconMenu'
+import TextField from 'material-ui/TextField'
+import MenuItem from 'material-ui/MenuItem'
+import ContentFilter from 'material-ui/svg-icons/content/filter-list'
+import IconButton from 'material-ui/IconButton'
 import axios from 'axios'
 import { easeCubic } from 'd3-ease'
 import WebMercatorViewport from 'viewport-mercator-project'
@@ -23,7 +29,7 @@ import {
   TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectEpicItem, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
-import { properties, themes } from '../../properties'
+import { markerIdNameObject, markerIdNameArray, properties, themes } from '../../properties'
 import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
@@ -64,15 +70,20 @@ const styles = {
   }
 }
 
+const defaultFilters = markerIdNameArray.map(el => el[0])
+
 class Map extends Component {
   constructor (props) {
     super(props)
     this._onMarkerClick = this._onMarkerClick.bind(this)
     this._onDeckHover = this._onDeckHover.bind(this)
     this.state = {
+      categories: markerIdNameArray,
+      filtered: defaultFilters,
       mapStyle: defaultMapStyle,
       mapTimelineContainerClass: 'mapTimeline',
       year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
+      searchMarkerText: '',
       data: null,
       expanded: false,
       markerData: [],
@@ -1228,7 +1239,7 @@ class Map extends Component {
 
     if ((((layerClicked || {}).object || {}).zoomLevels || []).length > 0) {
       // cluster on
-      this.setState({ expanded: true })
+      this.setState({ expanded: true, filtered: defaultFilters, searchMarkerText: '' })
       return
     }
 
@@ -1288,21 +1299,52 @@ class Map extends Component {
     if (layerClicked.object) history.push('/article')
   }
 
+  handleChangeFilter = (event, value) => {
+    this.setState({
+      filtered: value,
+    })
+  }
+
+  /*
+                <IconButton touch key={'close'} containerElement={<Link to='/' />}>
+                  <CloseIcon />
+                </IconButton>
+   */
   _renderPopup () {
     const { selectMarkerItem, history } = this.props
-    const { hoverInfo, popupInfo, expanded } = this.state
+    const { categories, filtered , hoverInfo, popupInfo, expanded, searchMarkerText } = this.state
     if (hoverInfo) {
       const content = (hoverInfo.feature || [])
       if (Array.isArray(content)) {
         if (expanded) {
           return (
             <Popup className='mapHoverTooltip interactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
-              <div className='county-info' onMouseLeave={() => this.setState({ expanded: false, hoverInfo: null })}>
-                <Stepper linear={false}
-                  activeStep={-1}
-                  orientation='vertical'
-                  style={{ float: 'left', width: '100%', background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
-                  {content.map(({ name, year, wiki, _id, type, subtype }, i) => {
+              <div className='county-info' onMouseLeave={() => {/*this.setState({ expanded: false, hoverInfo: null })*/} } >
+                <div style={styles.rootMenu}>
+                  <TextField
+                    style={{ width: 200}}
+                    hintText="Search"
+                    value={searchMarkerText}
+                    floatingLabelText="Search Markers"
+                    onChange={(event, newValue) => this.setState({searchMarkerText: newValue})}
+                  />
+                  <IconMenu
+                    style={{ float: 'right'}}
+                    iconButtonElement={<IconButton tooltip='Close'><CloseIcon /></IconButton>}
+                    onClick={() => this.setState({ expanded: false, hoverInfo: null })} />
+                  <IconMenu
+                    iconButtonElement={<IconButton tooltip='Filter'><ContentFilter /></IconButton>}
+                    onChange={this.handleChangeFilter}
+                    value={filtered}
+                    style={{ float: 'right'}}
+                    multiple={true}
+                  >
+                    {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category[0]} primaryText={category[1]} disabled={!content.some(linkedItem => linkedItem.subtype === category[0])} />)}
+                  </IconMenu>
+                </div>
+                <Stepper linear={false} connector={null} activeStep={-1} orientation='vertical'
+                  style={{ float: 'left', width: '100%', maxHeight: 400, background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset', overflow: 'auto' }}>
+                  {content.filter(linkedItem => (filtered.includes(linkedItem.subtype)) && ((linkedItem.name + linkedItem.year).indexOf(searchMarkerText) > -1 || searchMarkerText === '')).map(({ name, year, wiki, _id, type, subtype }, i) => {
                     return (<Step key={i} style={styles.stepContainer}>
                       <StepButton
                         iconContainerStyle={{ background:  'inherit' }}
@@ -1335,7 +1377,7 @@ class Map extends Component {
                           top: '32px',
                           fontSize: '12px'
                         }}>
-                          {subtype || type}
+                          {markerIdNameObject[subtype] || markerIdNameObject[type]}
                         </div>
                       </StepButton>
                     </Step>

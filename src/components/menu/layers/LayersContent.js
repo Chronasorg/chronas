@@ -22,7 +22,7 @@ import {
   changeColor as changeColorAction,
   toggleMarker as toggleMarkerAction,
   toggleEpic as toggleEpicAction } from './actionReducers'
-import { properties, themes } from '../../../properties'
+import { markerIdNameArray, properties, themes } from '../../../properties'
 
 const styles = {
   listIcon: {
@@ -43,24 +43,6 @@ const styles = {
     boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset'
   },
 };
-
-const allMarkers = [
-  ['ar','Artifacts'],
-  ['b','Battles -> Battles'],
-  ['si','Battles -> Sieges'],
-  ['c','Cities -> Cities'],
-  ['ca','Cities -> Castles'],
-  ['m','People -> Military'],
-  ['p','People -> Politicians'],
-  ['e','People -> Explorers'],
-  ['s','People -> Scientists'],
-  ['a','People -> Artists'],
-  ['r','People -> Religious'],
-  ['at','People -> Athletes'],
-  ['op','People -> Unclassified'],
-  ['ai','Other -> Area Info'],
-  ['o','Other -> Unknown']
-]
 
 const allEpics = ['War', 'Battle', 'Campaign', 'Exploration', 'Siege', 'Voyage', 'Other Epic']
 
@@ -146,7 +128,7 @@ class LayerContent extends Component {
         <RaisedButton style={styles.button} label="Cluster Markers" primary={mapStyles.clusterMarkers}
                       onClick={() => setClusterMarkers(!mapStyles.clusterMarkers)}/>
         <br/>
-        {allMarkers.map(id =>
+        {markerIdNameArray.map(id =>
           <RaisedButton
             style={styles.button}
             label={id[1]}

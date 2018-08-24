@@ -826,7 +826,7 @@ export default class DeckGLOverlay extends Component {
         sizeScale: properties.markerSize * size * window.devicePixelRatio,
         getPosition: d => d.coo,
         getIcon: d => (showCluster ? (d.zoomLevels[z] && d.zoomLevels[z].icon) : d.subtype), // should be d.subtype (or type)
-        getSize: d => showCluster ? (d.zoomLevels[z] && d.zoomLevels[z].size * 20) : 6,
+        getSize: d => showCluster ? (d.zoomLevels[z] && d.zoomLevels[z].size * 15) : 4,
         onHover: e => onHover(e),
         onClick: onMarkerClick,
         updateTriggers: {
