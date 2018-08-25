@@ -64,7 +64,7 @@ class Configuration extends PureComponent {
                   <ToolbarTitle style={{ ...styles.label, color: themes[theme].foreColors[0] }} text={translate('pos.configuration')} />
                 </ToolbarGroup>
                 <ToolbarGroup>
-                  <IconButton iconStyle={{ ...styles.label, color: themes[theme].foreColors[0] }} touch={true} key={'close'} containerElement={<Link to="/" />}>
+                  <IconButton touch={true} key={'close'} containerElement={<Link to="/" />}>
                     <CloseIcon />
                   </IconButton>
                 </ToolbarGroup>

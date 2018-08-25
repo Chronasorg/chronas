@@ -20,9 +20,19 @@ import Checkbox from 'material-ui/Checkbox';
 import Toggle from 'material-ui/Toggle';
 import ActionGrade from 'material-ui/svg-icons/action/grade';
 import MarkerIcon from 'material-ui/svg-icons/maps/place';
+import LockOpenIcon from 'material-ui/svg-icons/action/lock-open';
+import LockClosedIcon from 'material-ui/svg-icons/action/lock';
 import ContentInbox from 'material-ui/svg-icons/content/inbox';
 import ContentDrafts from 'material-ui/svg-icons/content/drafts';
 import ContentSend from 'material-ui/svg-icons/content/send';
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table';
 import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actionReducers'
 import {
   changeBasemap as changeBasemapAction,
@@ -34,7 +44,7 @@ import {
   changeColor as changeColorAction,
   toggleMarker as toggleMarkerAction,
   toggleEpic as toggleEpicAction } from './actionReducers'
-import { markerIdNameArray, properties, themes } from '../../../properties'
+import { iconMapping, markerIdNameArray, properties, themes } from '../../../properties'
 
 const styles = {
   listIcon: {
@@ -43,6 +53,8 @@ const styles = {
   listItem: {
     paddingLeft: 0
   },
+  firstColumn: { paddingLeft: 8, width: 86 },
+  toggleColumn: { width: 42, minWidth: 42 },
   main: {
     display: 'flex',
     flexDirection: 'column',
@@ -66,6 +78,7 @@ class LayerContent extends Component {
     super(props)
     this.state = {
       basemapId: 0,
+      locked: true,
       selectedBasemap: "watercolor",
     }
   }
@@ -77,9 +90,10 @@ class LayerContent extends Component {
 
   // TODO: FEATURE: ADD + SELECT, SEARCH EPIC
 
-  render() {
-    const {basemapId} = this.state
+  render () {
+    const { basemapId, locked } = this.state
     const {activeArea, setPopOpacity, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic, theme} = this.props
+
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
           <List>
@@ -96,38 +110,168 @@ class LayerContent extends Component {
               />
             </DropDownMenu>
           </List>
+        <Subheader>Area</Subheader>
+        <Table
+          selectable={false}
+          style={{ width: 180 }}
+          bodyStyle={{overflow: 'initial'}}
+          wrapperStyle={{overflow: 'initial'}}
+          className="areaTable"
+        >
+          <TableHeader
+            displaySelectAll={false}
+            adjustForCheckbox={false} >
+            <TableRow style={{ height: 0 }}>
+              <TableHeaderColumn style={{ ...styles.firstColumn, height: 0 }} ></TableHeaderColumn>
+              <TableHeaderColumn style={{
+                top: -8,
+                left: 0, height: 0
+              }}>Area<Checkbox
+                onCheck={() => { this.setState({ locked: !locked }) }}
+                style={{
+                  position: 'absolute',
+                  left: 55,
+                  top: 6 }}
+                checked={locked}
+                checkedIcon={<LockClosedIcon />}
+                uncheckedIcon={<LockOpenIcon />}
+                label=""
+              /></TableHeaderColumn>
+              <TableHeaderColumn style={{
+                left: 7,
+                top: -8, height: 0
+              }}>Label</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+          <TableBody
+            displayRowCheckbox={false}>
+            <TableRow>
+              <TableRowColumn style={ styles.firstColumn } >Ruler</TableRowColumn>
+              <TableRowColumn>
+                <RaisedButton primary={activeArea.color === 'ruler'}
+                              onClick={() => locked ? setAreaColorLabel('ruler', 'ruler') : changeColor('ruler')}
+                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+              </TableRowColumn>
+              <TableRowColumn>
+                { !locked && <RaisedButton primary={activeArea.label === 'ruler'}
+                                           onClick={() => changeLabel('ruler')}
+                                           style={ styles.toggleColumn } /> }
+              </TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn style={ styles.firstColumn } >Culture</TableRowColumn>
+              <TableRowColumn>
+                <RaisedButton primary={activeArea.color === 'culture'}
+                              onClick={() => locked ? setAreaColorLabel('culture', 'culture') : changeColor('culture')}
+                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+              </TableRowColumn>
+              <TableRowColumn>
+                { !locked && <RaisedButton primary={activeArea.label === 'culture'}
+                                           onClick={() => changeLabel('culture')} style={ styles.toggleColumn } /> }
+              </TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn style={ styles.firstColumn } >Religion</TableRowColumn>
+              <TableRowColumn>
+                <RaisedButton primary={activeArea.color === 'religion'}
+                              onClick={() => locked ? setAreaColorLabel('religion', 'religion') : changeColor('religion')}
+                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+              </TableRowColumn>
+              <TableRowColumn>
+                { !locked && <RaisedButton primary={activeArea.label === 'religion'}
+                                           onClick={() => changeLabel('religion')} style={ styles.toggleColumn } /> }
+              </TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn style={ styles.firstColumn } >Religion Gen.</TableRowColumn>
+              <TableRowColumn>
+                <RaisedButton primary={activeArea.color === 'religionGeneral'}
+                              onClick={() => locked ? setAreaColorLabel('religionGeneral', 'religionGeneral') : changeColor('religionGeneral')}
+                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+              </TableRowColumn>
+              <TableRowColumn>
+                { !locked && <RaisedButton primary={activeArea.label === 'religionGeneral'}
+                                           onClick={() => changeLabel('religionGeneral')}  style={ styles.toggleColumn } /> }
+              </TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn style={ styles.firstColumn } >Population</TableRowColumn>
+              <TableRowColumn>
+                <RaisedButton primary={activeArea.color === 'population'}
+                              onClick={() => changeColor('population')}
+                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+              </TableRowColumn>
+              <TableRowColumn>
+              </TableRowColumn>
+            </TableRow>
+          </TableBody>
+        </Table>
           <Divider />
           <List>
+            <Subheader>Markers & Epics</Subheader>
             <ListItem
               primaryText="Markers"
               leftIcon={<MarkerIcon />}
               initiallyOpen={true}
               primaryTogglesNestedList={true}
-              nestedItems={markerIdNameArray.map(id =>
-                  <ListItem value={id[0]}
+              nestedItems={markerIdNameArray.map(id => {
+                const cofficient = 40 / 169
+                const backgroundPosition = 'url(/images/abstract-atlas.png) -' + (Math.round((iconMapping['abst'][id[0]] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping['abst'][id[0]] || {}).y * cofficient)) + 'px'
+                const backgroundSize = '121px 200px'
+                //((iconMapping['abst'][id[0]] || {}).width) + 'px ' + ((iconMapping['abst'][id[0]] || {}).height) + 'px'
+                console.debug(backgroundPosition)
+
+
+                return <ListItem value={id[0]}
                             key={id[0]}
                             onClick={() => { toggleMarker(id[0]) }}
+                            innerDivStyle={{ padding: 0 }}
                             primaryText={<div className="listAvatar"><img style={{
-                              opacity: activeMarkers.includes(id[0]) ? 1 : 0.5,
-                              width: 40,
+                              width: 30,
                               height: 40,
-                              background: 'url(/images/abstract-atlas.png) 0 0'}} src="/images/abstract-atlas.png" /> {id[2]}</div>}
-                  />)}
+                              background: backgroundPosition,
+                              backgroundSize: backgroundSize,
+                              opacity: activeMarkers.includes(id[0]) ? 1 : 0.2
+                            }} src="/images/transparent.png" /> {id[2]}</div>}
+                  />})}
             />
-            {/*{markerIdNameArray.map(id =>*/}
-              {/*<ListItem value={id[0]}*/}
-                        {/*key={id[0]}*/}
-                        {/*primaryText={<div><img style={{*/}
-                          {/*width: 46,*/}
-                          {/*height: 44,*/}
-                          {/*background: 'url(/images/abstract-atlas.png) 0 0'}} src="/images/abstract-atlas.png" /> {id[1]}</div>}*/}
-                        {/*label={*/}
-                          {/*<ListItem style={ styles.listItem }*/}
-                          {/*>Markers</ListItem>}*/}
-              {/*/>)}*/}
           </List><Divider />
         <List>
-          <Subheader>General</Subheader>
+          <ListItem
+            primaryText="Epics"
+            leftIcon={<MarkerIcon />}
+            initiallyOpen={true}
+            primaryTogglesNestedList={true}
+            nestedItems={allEpics.map(id => {
+              // const cofficient = 40 / 169
+              // const backgroundPosition = 'url(/images/abstract-atlas.png) -' + (Math.round((iconMapping['abst'][id[0]] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping['abst'][id[0]] || {}).y * cofficient)) + 'px'
+              // const backgroundSize = '121px 200px'
+              // //((iconMapping['abst'][id[0]] || {}).width) + 'px ' + ((iconMapping['abst'][id[0]] || {}).height) + 'px'
+              // console.debug(backgroundPosition)
+
+              return <ListItem value={id}
+                               key={id}
+                               onClick={() => { toggleEpic(id.toLowerCase()) }}
+                               innerDivStyle={{ padding: 0 }}
+                               primaryText={<div className="listAvatar" style={{
+                                 opacity: activeEpics.indexOf(id.toLowerCase()) > -1 ? 1 : 0.2
+                               }} ><img style={{
+                                 width: 30,
+                                 height: 40,
+                                 opacity: activeEpics.indexOf(id.toLowerCase()) > -1 ? 1 : 0.2
+                               }} src="/images/transparent.png" /> {id}</div>}
+              />})}
+          />
+        </List>
+
+        <List>
+          <Subheader>Advanced</Subheader>
+          <ListItem
+            leftCheckbox={<Checkbox
+              onCheck={() => setClusterMarkers(!mapStyles.clusterMarkers)}
+              checked={mapStyles.clusterMarkers} />}
+            primaryText="Cluster Marker"
+          />
           <ListItem
             leftCheckbox={<Checkbox onCheck={() => setProvinceBorders(!mapStyles.showProvinceBorders)} checked={mapStyles.showProvinceBorders} />}
             primaryText="Show Provinces"
@@ -138,106 +282,16 @@ class LayerContent extends Component {
           />
         </List>
         <Divider />
-        <h4>Area</h4>
-        Both:
-        <RaisedButton style={styles.button} label="Ruler"
-                      primary={activeArea.label === 'ruler' && activeArea.color === 'ruler'}
-                      onClick={() => setAreaColorLabel('ruler', 'ruler')}/>
-        <RaisedButton style={styles.button} label="Religion"
-                      primary={activeArea.label === 'religion' && activeArea.color === 'religion'}
-                      onClick={() => setAreaColorLabel('religion', 'religion')}/>
-        <RaisedButton style={styles.button} label="ReligionGeneral"
-                      primary={activeArea.label === 'religionGeneral' && activeArea.color === 'religionGeneral'}
-                      onClick={() => setAreaColorLabel('religionGeneral', 'religionGeneral')}/>
-        <RaisedButton style={styles.button} label="Culture"
-                      primary={activeArea.label === 'culture' && activeArea.color === 'culture'}
-                      onClick={() => setAreaColorLabel('culture', 'culture')}/>
-        <RaisedButton style={styles.button} label="Population"
-                      primary={activeArea.label === '' && activeArea.color === 'population'}
-                      onClick={() => setAreaColorLabel('population', 'none')}/>
-        {JSON.stringify(activeArea.year)}
-        Label:
-        <RaisedButton style={styles.button} label="Ruler" primary={activeArea.label === 'ruler'}
-                      onClick={() => changeLabel('ruler')}/>
-        <RaisedButton style={styles.button} label="Religion" primary={activeArea.label === 'religion'}
-                      onClick={() => changeLabel('religion')}/>
-        <RaisedButton style={styles.button} label="ReligionGeneral" primary={activeArea.label === 'religionGeneral'}
-                      onClick={() => changeLabel('religionGeneral')}/>
-        <RaisedButton style={styles.button} label="Culture" primary={activeArea.label === 'culture'}
-                      onClick={() => changeLabel('culture')}/>
-        <RaisedButton style={styles.button} label="None" primary={activeArea.label === 'none'}
-                      onClick={() => changeLabel('none')}/>
-        {activeArea.label}
-        Color:
-        <RaisedButton style={styles.button} label="Ruler" primary={activeArea.color === 'ruler'}
-                      onClick={() => changeColor('ruler')}/>
-        <RaisedButton style={styles.button} label="Religion" primary={activeArea.color === 'religion'}
-                      onClick={() => changeColor('religion')}/>
-        <RaisedButton style={styles.button} label="ReligionGeneral" primary={activeArea.color === 'religionGeneral'}
-                      onClick={() => changeColor('religionGeneral')}/>
-        <RaisedButton style={styles.button} label="Culture" primary={activeArea.color === 'culture'}
-                      onClick={() => changeColor('culture')}/>
-        <RaisedButton style={styles.button} label="population" primary={activeArea.color === 'population'}
-                      onClick={() => changeColor('population')}/>np
-        {activeArea.color}
-        <br/>
-        <h4>Marker</h4>
-        <RaisedButton style={styles.button} label="Cluster Markers" primary={mapStyles.clusterMarkers}
-                      onClick={() => setClusterMarkers(!mapStyles.clusterMarkers)}/>
-        <br/>
-
-
-        {/*<Menu multiple={true} className="dropdownAvatarMenu" selectedMenuItemStyle={{ paddingLeft: 0 }} value={activeMarkers.join(',')} onChange={ (event, index, value) => { toggleMarker(_.xor(activeMarkers, value)[0]) }} openImmediately={false}>*/}
-          {/*{markerIdNameArray.map(id =>*/}
-            {/*<MenuItem value={id[0]}*/}
-                      {/*key={id[0]}*/}
-                      {/*primaryText={<div><img style={{*/}
-                        {/*width: 46,*/}
-                        {/*height: 44,*/}
-                        {/*background: 'url(/images/abstract-atlas.png) 0 0'}} src="/images/abstract-atlas.png" /> {id[1]}</div>}*/}
-                      {/*label={*/}
-                        {/*<ListItem style={ styles.listItem }*/}
-                        {/*>Markers</ListItem>}*/}
-            {/*/>)}*/}
-          {/*<MenuItem*/}
-            {/*primaryText="Show"*/}
-            {/*rightIcon={<ArrowDropRight />}*/}
-            {/*menuItems={markerIdNameArray.map(id =>*/}
-              {/*<MenuItem value={id[0]}*/}
-                        {/*key={"Show" + id[0]}*/}
-                        {/*primaryText={<div><img style={{*/}
-                          {/*width: 46,*/}
-                          {/*height: 44,*/}
-                          {/*background: 'url(/images/abstract-atlas.png) 0 0'}} src="/images/abstract-atlas.png" /> {id[1]}</div>}*/}
-                        {/*label={*/}
-                          {/*<ListItem style={ styles.listItem }*/}
-                          {/*>Markers</ListItem>}*/}
-              {/*/>)}*/}
-          {/*/>*/}
-        {/*</Menu>*/}
-
-        {/*{markerIdNameArray.map(id =>*/}
+        {/*{allEpics.map(id =>*/}
           {/*<RaisedButton*/}
             {/*style={styles.button}*/}
-            {/*label={id[1]}*/}
-            {/*key={id[0]}*/}
-            {/*primary={activeMarkers.indexOf(id[0].toLowerCase()) > -1}*/}
+            {/*label={id}*/}
+            {/*key={id}*/}
+            {/*primary={activeEpics.indexOf(id.toLowerCase()) > -1}*/}
             {/*onClick={() => {*/}
-              {/*toggleMarker(id[0])*/}
+              {/*toggleEpic(id.toLowerCase())*/}
             {/*}}/>)}*/}
-        {/*{activeMarkers}*/}
-        <br/>
-        <h4>Epics</h4>
-        {allEpics.map(id =>
-          <RaisedButton
-            style={styles.button}
-            label={id}
-            key={id}
-            primary={activeEpics.indexOf(id.toLowerCase()) > -1}
-            onClick={() => {
-              toggleEpic(id.toLowerCase())
-            }}/>)}
-        {activeEpics}
+        {/*{activeEpics}*/}
       </div>
     )
   }
