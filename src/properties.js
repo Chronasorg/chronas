@@ -1,19 +1,19 @@
 export const markerIdNameArray = [
-  ['ar', 'Artifacts'],
-  ['b', 'Battles -> Battles'],
-  ['si', 'Battles -> Sieges'],
-  ['c', 'Cities -> Cities'],
-  ['ca', 'Cities -> Castles'],
-  ['m', 'People -> Military'],
-  ['p', 'People -> Politicians'],
-  ['e', 'People -> Explorers'],
-  ['s', 'People -> Scientists'],
-  ['a', 'People -> Artists'],
-  ['r', 'People -> Religious'],
-  ['at', 'People -> Athletes'],
-  ['op', 'People -> Unclassified'],
-  ['ai', 'Other -> Area Info'],
-  ['o', 'Other -> Unknown']
+  ['ar', 'Artifacts', 'Artifacts', 'Artifacts'],
+  ['b', 'Battles -> Battles', 'Battles', 'Battles'],
+  ['si', 'Battles -> Sieges', 'Sieges', 'Battles'],
+  ['c', 'Cities -> Cities', 'Cities', 'Cities'],
+  ['ca', 'Cities -> Castles', 'Castles', 'Cities'],
+  ['m', 'People -> Military', 'Military', 'People'],
+  ['p', 'People -> Politicians', 'Politicians', 'People'],
+  ['e', 'People -> Explorers', 'Explorers', 'People'],
+  ['s', 'People -> Scientists', 'Scientists', 'People'],
+  ['a', 'People -> Artists', 'Artists', 'People'],
+  ['r', 'People -> Religious', 'Religious', 'People'],
+  ['at', 'People -> Athletes', 'Athletes', 'People'],
+  ['op', 'People -> Unclassified', 'Unclassified', 'People'],
+  ['ai', 'Other -> Area Info', 'Area Info', 'Other'],
+  ['o', 'Other -> Unknown', 'Artifacts', 'Other']
 ]
 
 const arrayToObject = (array) =>

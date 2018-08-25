@@ -252,7 +252,7 @@ class App extends Component {
     } = this.state
 
     console.error('!!! rendering App component !!! ' + theme)
-    console.debug(customTheme, defaultTheme)
+    // console.debug(customTheme, defaultTheme)
     customTheme.fontFamily = 'inherit'
 
     customTheme.palette.primary1Color = themes[theme].foreColors[0]
@@ -272,6 +272,7 @@ class App extends Component {
 
     const muiTheme = getMuiTheme(customTheme) // customTheme
 
+    // console.debug(JSON.stringify(muiTheme))
     if (!prefixedStyles.main) {
       // do this once because user agent never changes
       const prefix = autoprefixer(muiTheme)
@@ -300,7 +301,7 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
-                  {!isStatic && <LoadingBar theme={theme} />}
+                  {/*{!isStatic && <LoadingBar theme={theme} />}*/}
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     {isLoading && !isStatic && <LoadingPage />}
                     {!isLoading && createElement(Map, { history: history, isLoading: isLoading })}

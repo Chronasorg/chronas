@@ -3,14 +3,26 @@ import React, {Component} from 'react'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
+import _ from 'lodash'
 import Avatar from 'material-ui/Avatar'
 import { Card, CardText } from 'material-ui/Card'
-import ListItem from 'material-ui/List/ListItem'
 import DropDownMenu from 'material-ui/DropDownMenu'
+import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
 import RaisedButton from 'material-ui/RaisedButton'
 import Download from 'material-ui/svg-icons/file/file-download'
+import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import { translate, defaultTheme } from 'admin-on-rest'
+import {List, ListItem} from 'material-ui/List';
+import Subheader from 'material-ui/Subheader';
+import Divider from 'material-ui/Divider';
+import Checkbox from 'material-ui/Checkbox';
+import Toggle from 'material-ui/Toggle';
+import ActionGrade from 'material-ui/svg-icons/action/grade';
+import MarkerIcon from 'material-ui/svg-icons/maps/place';
+import ContentInbox from 'material-ui/svg-icons/content/inbox';
+import ContentDrafts from 'material-ui/svg-icons/content/drafts';
+import ContentSend from 'material-ui/svg-icons/content/send';
 import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actionReducers'
 import {
   changeBasemap as changeBasemapAction,
@@ -27,6 +39,9 @@ import { markerIdNameArray, properties, themes } from '../../../properties'
 const styles = {
   listIcon: {
     margin: 5
+  },
+  listItem: {
+    paddingLeft: 0
   },
   main: {
     display: 'flex',
@@ -67,21 +82,63 @@ class LayerContent extends Component {
     const {activeArea, setPopOpacity, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic, theme} = this.props
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
-        <DropDownMenu selectedMenuItemStyle={{ paddingLeft: 0 }} value={this.state.selectedBasemap} onChange={this.handleChange} openImmediately={false}>
-          <MenuItem value="watercolor" primaryText="Watercolor" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" style={styles.listIcon} />} label={<ListItem leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+          <List>
+            <Subheader>General</Subheader>
+            <DropDownMenu className="dropdownAvatarMenu" selectedMenuItemStyle={{ paddingLeft: 0 }} value={this.state.selectedBasemap} onChange={this.handleChange} openImmediately={false}>
+              <MenuItem value="watercolor" primaryText="Watercolor" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
+                        label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+              />
+              <MenuItem value="topographic" primaryText="Topographic" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
+                        label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+              />
+              <MenuItem value="none" primaryText="None" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
+                        label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+              />
+            </DropDownMenu>
+          </List>
+          <Divider />
+          <List>
+            <ListItem
+              primaryText="Markers"
+              leftIcon={<MarkerIcon />}
+              initiallyOpen={true}
+              primaryTogglesNestedList={true}
+              nestedItems={markerIdNameArray.map(id =>
+                  <ListItem value={id[0]}
+                            key={id[0]}
+                            onClick={() => { toggleMarker(id[0]) }}
+                            primaryText={<div className="listAvatar"><img style={{
+                              opacity: activeMarkers.includes(id[0]) ? 1 : 0.5,
+                              width: 40,
+                              height: 40,
+                              background: 'url(/images/abstract-atlas.png) 0 0'}} src="/images/abstract-atlas.png" /> {id[2]}</div>}
+                  />)}
+            />
+            {/*{markerIdNameArray.map(id =>*/}
+              {/*<ListItem value={id[0]}*/}
+                        {/*key={id[0]}*/}
+                        {/*primaryText={<div><img style={{*/}
+                          {/*width: 46,*/}
+                          {/*height: 44,*/}
+                          {/*background: 'url(/images/abstract-atlas.png) 0 0'}} src="/images/abstract-atlas.png" /> {id[1]}</div>}*/}
+                        {/*label={*/}
+                          {/*<ListItem style={ styles.listItem }*/}
+                          {/*>Markers</ListItem>}*/}
+              {/*/>)}*/}
+          </List><Divider />
+        <List>
+          <Subheader>General</Subheader>
+          <ListItem
+            leftCheckbox={<Checkbox onCheck={() => setProvinceBorders(!mapStyles.showProvinceBorders)} checked={mapStyles.showProvinceBorders} />}
+            primaryText="Show Provinces"
           />
-          <MenuItem value="topographic" primaryText="Topographic" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" style={styles.listIcon} />} label={<ListItem leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+          <ListItem
+            leftCheckbox={<Checkbox onCheck={() => setPopOpacity(!mapStyles.popOpacity)} checked={mapStyles.popOpacity} />}
+            primaryText="Opacity by Population"
           />
-          <MenuItem value="none" primaryText="None" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" style={styles.listIcon} />} label={<ListItem leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
-          />
-        </DropDownMenu>
-        <br/>
-        <RaisedButton style={styles.button} label="Show Provinces" primary={mapStyles.showProvinceBorders} onClick={() => setProvinceBorders(!mapStyles.showProvinceBorders)}/>
-        <br/>
+        </List>
+        <Divider />
         <h4>Area</h4>
-        Population Opacity:
-        <RaisedButton style={styles.button} label="PopOpacity" primary={mapStyles.popOpacity}
-                      onClick={() => setPopOpacity(!mapStyles.popOpacity)}/>
         Both:
         <RaisedButton style={styles.button} label="Ruler"
                       primary={activeArea.label === 'ruler' && activeArea.color === 'ruler'}
@@ -128,16 +185,47 @@ class LayerContent extends Component {
         <RaisedButton style={styles.button} label="Cluster Markers" primary={mapStyles.clusterMarkers}
                       onClick={() => setClusterMarkers(!mapStyles.clusterMarkers)}/>
         <br/>
-        {markerIdNameArray.map(id =>
-          <RaisedButton
-            style={styles.button}
-            label={id[1]}
-            key={id[0]}
-            primary={activeMarkers.indexOf(id[0].toLowerCase()) > -1}
-            onClick={() => {
-              toggleMarker(id[0])
-            }}/>)}
-        {activeMarkers}
+
+
+        {/*<Menu multiple={true} className="dropdownAvatarMenu" selectedMenuItemStyle={{ paddingLeft: 0 }} value={activeMarkers.join(',')} onChange={ (event, index, value) => { toggleMarker(_.xor(activeMarkers, value)[0]) }} openImmediately={false}>*/}
+          {/*{markerIdNameArray.map(id =>*/}
+            {/*<MenuItem value={id[0]}*/}
+                      {/*key={id[0]}*/}
+                      {/*primaryText={<div><img style={{*/}
+                        {/*width: 46,*/}
+                        {/*height: 44,*/}
+                        {/*background: 'url(/images/abstract-atlas.png) 0 0'}} src="/images/abstract-atlas.png" /> {id[1]}</div>}*/}
+                      {/*label={*/}
+                        {/*<ListItem style={ styles.listItem }*/}
+                        {/*>Markers</ListItem>}*/}
+            {/*/>)}*/}
+          {/*<MenuItem*/}
+            {/*primaryText="Show"*/}
+            {/*rightIcon={<ArrowDropRight />}*/}
+            {/*menuItems={markerIdNameArray.map(id =>*/}
+              {/*<MenuItem value={id[0]}*/}
+                        {/*key={"Show" + id[0]}*/}
+                        {/*primaryText={<div><img style={{*/}
+                          {/*width: 46,*/}
+                          {/*height: 44,*/}
+                          {/*background: 'url(/images/abstract-atlas.png) 0 0'}} src="/images/abstract-atlas.png" /> {id[1]}</div>}*/}
+                        {/*label={*/}
+                          {/*<ListItem style={ styles.listItem }*/}
+                          {/*>Markers</ListItem>}*/}
+              {/*/>)}*/}
+          {/*/>*/}
+        {/*</Menu>*/}
+
+        {/*{markerIdNameArray.map(id =>*/}
+          {/*<RaisedButton*/}
+            {/*style={styles.button}*/}
+            {/*label={id[1]}*/}
+            {/*key={id[0]}*/}
+            {/*primary={activeMarkers.indexOf(id[0].toLowerCase()) > -1}*/}
+            {/*onClick={() => {*/}
+              {/*toggleMarker(id[0])*/}
+            {/*}}/>)}*/}
+        {/*{activeMarkers}*/}
         <br/>
         <h4>Epics</h4>
         {allEpics.map(id =>

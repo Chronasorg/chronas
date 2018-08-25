@@ -1317,31 +1317,33 @@ class Map extends Component {
       const content = (hoverInfo.feature || [])
       if (Array.isArray(content)) {
         if (expanded) {
+          const menuRow = <div style={styles.rootMenu}>
+            <TextField
+              style={{ width: 200}}
+              hintText="Search"
+              value={searchMarkerText}
+              floatingLabelText="Search Markers"
+              onChange={(event, newValue) => this.setState({searchMarkerText: newValue})}
+            />
+            <IconMenu
+              style={{ float: 'right'}}
+              iconButtonElement={<IconButton tooltip='Close'><CloseIcon /></IconButton>}
+              onClick={() => this.setState({ expanded: false, hoverInfo: null })} />
+            <IconMenu
+              iconButtonElement={<IconButton tooltip='Filter'><ContentFilter /></IconButton>}
+              onChange={this.handleChangeFilter}
+              // value={filtered}
+              style={{ float: 'right'}}
+              multiple={true}
+            >
+              {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category[0]} primaryText={category[1]} disabled={!content.some(linkedItem => linkedItem.subtype === category[0])} />)}
+            </IconMenu>
+          </div>
+
           return (
             <Popup className='mapHoverTooltip interactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
               <div className='county-info' onMouseLeave={() => {/*this.setState({ expanded: false, hoverInfo: null })*/} } >
-                <div style={styles.rootMenu}>
-                  <TextField
-                    style={{ width: 200}}
-                    hintText="Search"
-                    value={searchMarkerText}
-                    floatingLabelText="Search Markers"
-                    onChange={(event, newValue) => this.setState({searchMarkerText: newValue})}
-                  />
-                  <IconMenu
-                    style={{ float: 'right'}}
-                    iconButtonElement={<IconButton tooltip='Close'><CloseIcon /></IconButton>}
-                    onClick={() => this.setState({ expanded: false, hoverInfo: null })} />
-                  <IconMenu
-                    iconButtonElement={<IconButton tooltip='Filter'><ContentFilter /></IconButton>}
-                    onChange={this.handleChangeFilter}
-                    value={filtered}
-                    style={{ float: 'right'}}
-                    multiple={true}
-                  >
-                    {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category[0]} primaryText={category[1]} disabled={!content.some(linkedItem => linkedItem.subtype === category[0])} />)}
-                  </IconMenu>
-                </div>
+                { menuRow }
                 <Stepper linear={false} connector={null} activeStep={-1} orientation='vertical'
                   style={{ float: 'left', width: '100%', maxHeight: 400, background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset', overflow: 'auto' }}>
                   {content.filter(linkedItem => (filtered.includes(linkedItem.subtype)) && ((linkedItem.name + linkedItem.year).indexOf(searchMarkerText) > -1 || searchMarkerText === '')).map(({ name, year, wiki, _id, type, subtype }, i) => {
