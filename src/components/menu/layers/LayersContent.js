@@ -11,20 +11,21 @@ import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
 import RaisedButton from 'material-ui/RaisedButton'
 import Download from 'material-ui/svg-icons/file/file-download'
-import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
+import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right'
 import { translate, defaultTheme } from 'admin-on-rest'
-import {List, ListItem} from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
-import Divider from 'material-ui/Divider';
-import Checkbox from 'material-ui/Checkbox';
-import Toggle from 'material-ui/Toggle';
-import ActionGrade from 'material-ui/svg-icons/action/grade';
-import MarkerIcon from 'material-ui/svg-icons/maps/place';
-import LockOpenIcon from 'material-ui/svg-icons/action/lock-open';
-import LockClosedIcon from 'material-ui/svg-icons/action/lock';
-import ContentInbox from 'material-ui/svg-icons/content/inbox';
-import ContentDrafts from 'material-ui/svg-icons/content/drafts';
-import ContentSend from 'material-ui/svg-icons/content/send';
+import {List, ListItem} from 'material-ui/List'
+import Subheader from 'material-ui/Subheader'
+import Divider from 'material-ui/Divider'
+import Checkbox from 'material-ui/Checkbox'
+import RadioButton from 'material-ui/RadioButton'
+import Toggle from 'material-ui/Toggle'
+import ActionGrade from 'material-ui/svg-icons/action/grade'
+import MarkerIcon from 'material-ui/svg-icons/maps/place'
+import LockOpenIcon from 'material-ui/svg-icons/action/lock-open'
+import LockClosedIcon from 'material-ui/svg-icons/action/lock'
+import ContentInbox from 'material-ui/svg-icons/content/inbox'
+import ContentDrafts from 'material-ui/svg-icons/content/drafts'
+import ContentSend from 'material-ui/svg-icons/content/send'
 import {
   Table,
   TableBody,
@@ -46,9 +47,13 @@ import {
   toggleEpic as toggleEpicAction } from './actionReducers'
 import { iconMapping, markerIdNameArray, properties, themes } from '../../../properties'
 
+const colorArray = ['ruler','culture','religion','religionGeneral','population']
 const styles = {
   listIcon: {
     margin: 5
+  },
+  areaIcon: {
+
   },
   listItem: {
     paddingLeft: 0
@@ -112,17 +117,24 @@ class LayerContent extends Component {
           </List>
         <Subheader>Area</Subheader>
         <Table
-          selectable={false}
+          selectable={this.state.locked}
+          onRowSelection={(val) => {
+            if (!this.state.locked) return
+            const selectedDim = colorArray[val[0]];
+            if (selectedDim !== 'population') setAreaColorLabel(selectedDim, selectedDim)
+            else changeColor(selectedDim)
+          } }
           style={{ width: 180 }}
           bodyStyle={{overflow: 'initial'}}
           wrapperStyle={{overflow: 'initial'}}
           className="areaTable"
         >
           <TableHeader
+            style={{ border: 0 }}
             displaySelectAll={false}
             adjustForCheckbox={false} >
-            <TableRow style={{ height: 0 }}>
-              <TableHeaderColumn style={{ ...styles.firstColumn, height: 0 }} ></TableHeaderColumn>
+            <TableRow style={{ border: 0, height: 0 }}>
+              <TableHeaderColumn style={{ ...styles.firstColumn, width: 76, height: 0 }} ></TableHeaderColumn>
               <TableHeaderColumn style={{
                 top: -8,
                 left: 0, height: 0
@@ -130,8 +142,8 @@ class LayerContent extends Component {
                 onCheck={() => { this.setState({ locked: !locked }) }}
                 style={{
                   position: 'absolute',
-                  left: 55,
-                  top: 6 }}
+                  left: 57,
+                  top: -2 }}
                 checked={locked}
                 checkedIcon={<LockClosedIcon />}
                 uncheckedIcon={<LockOpenIcon />}
@@ -148,58 +160,97 @@ class LayerContent extends Component {
             <TableRow>
               <TableRowColumn style={ styles.firstColumn } >Ruler</TableRowColumn>
               <TableRowColumn>
-                <RaisedButton primary={activeArea.color === 'ruler'}
-                              onClick={() => locked ? setAreaColorLabel('ruler', 'ruler') : changeColor('ruler')}
-                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+                <RadioButton
+                  label=""
+                  checked={activeArea.color === 'ruler'}
+                  onCheck={() => { if (!locked) changeColor('ruler')}}
+                  style={{ ...styles.toggleColumn, minWidth: 42, width: 42 }}
+                  iconStyle={ styles.areaIcon }
+                />
               </TableRowColumn>
               <TableRowColumn>
-                { !locked && <RaisedButton primary={activeArea.label === 'ruler'}
-                                           onClick={() => changeLabel('ruler')}
-                                           style={ styles.toggleColumn } /> }
+                <RadioButton
+                  label=""
+                  checked={activeArea.label === 'ruler'}
+                  onCheck={() => { if (!locked) changeLabel('ruler')}}
+                  style={{ ...styles.toggleColumn, minWidth: 42, width: 42 }}
+                  iconStyle={ styles.areaIcon }
+                />
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn style={ styles.firstColumn } >Culture</TableRowColumn>
               <TableRowColumn>
-                <RaisedButton primary={activeArea.color === 'culture'}
-                              onClick={() => locked ? setAreaColorLabel('culture', 'culture') : changeColor('culture')}
-                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+                <RadioButton
+                  label=""
+                  checked={activeArea.color === 'culture'}
+                  onCheck={() => { if (!locked) changeColor('culture')}}
+                  style={{ ...styles.toggleColumn, minWidth: 42, width: 42 }}
+                  iconStyle={ styles.areaIcon }
+                />
               </TableRowColumn>
               <TableRowColumn>
-                { !locked && <RaisedButton primary={activeArea.label === 'culture'}
-                                           onClick={() => changeLabel('culture')} style={ styles.toggleColumn } /> }
+                <RadioButton
+                  label=""
+                  checked={activeArea.label === 'culture'}
+                  onCheck={() => { if (!locked) changeLabel('culture')}}
+                  style={{ ...styles.toggleColumn, minWidth: 42, width: 42 }}
+                  iconStyle={ styles.areaIcon }
+                />
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn style={ styles.firstColumn } >Religion</TableRowColumn>
               <TableRowColumn>
-                <RaisedButton primary={activeArea.color === 'religion'}
-                              onClick={() => locked ? setAreaColorLabel('religion', 'religion') : changeColor('religion')}
-                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+                <RadioButton
+                  label=""
+                  checked={activeArea.color === 'religion'}
+                  onCheck={() => { if (!locked) changeColor('religion')}}
+                  style={{ ...styles.toggleColumn, minWidth: 42, width: 42 }}
+                  iconStyle={ styles.areaIcon }
+                />
               </TableRowColumn>
               <TableRowColumn>
-                { !locked && <RaisedButton primary={activeArea.label === 'religion'}
-                                           onClick={() => changeLabel('religion')} style={ styles.toggleColumn } /> }
+                <RadioButton
+                  label=""
+                  checked={activeArea.label === 'religion'}
+                  onCheck={() => { if (!locked) changeLabel('religion')}}
+                  style={{ ...styles.toggleColumn, minWidth: 42, width: 42 }}
+                  iconStyle={ styles.areaIcon }
+                />
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn style={ styles.firstColumn } >Religion Gen.</TableRowColumn>
               <TableRowColumn>
-                <RaisedButton primary={activeArea.color === 'religionGeneral'}
-                              onClick={() => locked ? setAreaColorLabel('religionGeneral', 'religionGeneral') : changeColor('religionGeneral')}
-                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+                <RadioButton
+                  label=""
+                  checked={activeArea.color === 'religionGeneral'}
+                  onCheck={() => { if (!locked) changeColor('religionGeneral')}}
+                  style={{ ...styles.toggleColumn, minWidth: 42, width: 42 }}
+                  iconStyle={ styles.areaIcon }
+                />
               </TableRowColumn>
               <TableRowColumn>
-                { !locked && <RaisedButton primary={activeArea.label === 'religionGeneral'}
-                                           onClick={() => changeLabel('religionGeneral')}  style={ styles.toggleColumn } /> }
+                <RadioButton
+                  label=""
+                  checked={activeArea.label === 'religionGeneral'}
+                  onCheck={() => { if (!locked) changeLabel('religionGeneral')}}
+                  style={{ ...styles.toggleColumn, minWidth: 42, width: 42 }}
+                  iconStyle={ styles.areaIcon }
+                />
               </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn style={ styles.firstColumn } >Population</TableRowColumn>
               <TableRowColumn>
-                <RaisedButton primary={activeArea.color === 'population'}
-                              onClick={() => changeColor('population')}
-                              style={{ ...styles.toggleColumn, minWidth: (locked ? 88 : 42), width: (locked ? 88 : 42)}} />
+                <RadioButton
+                  label=""
+                  checked={activeArea.color === 'population'}
+                  onCheck={() => { if (!locked) changeColor('population')}}
+                  style={{ ...styles.toggleColumn, minWidth: 42, width: 42 }}
+                  iconStyle={ styles.areaIcon }
+                />
               </TableRowColumn>
               <TableRowColumn>
               </TableRowColumn>

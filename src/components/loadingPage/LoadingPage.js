@@ -23,7 +23,10 @@ const backgroundByYear = [
     description: '1627–1628: Siege of La Rochelle (Kingdom of France)' },
   { year: 218,
     image: 'https://upload.wikimedia.org/wikipedia/commons/3/33/The_Roses_of_Heliogabalus.jpg',
-    description: '203-222: Elagabalus, Roman emperor from' }
+    description: '203-222: Elagabalus, Roman emperor from' },
+  { year: 1832,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Le_Pont-Neuf_et_la_Cit%C3%A9_Paris_1832%2C_Giuseppe_Canella%2C_Mus%C3%A9e_Carnavalet_-_Flickr.jpg/1280px-Le_Pont-Neuf_et_la_Cit%C3%A9_Paris_1832%2C_Giuseppe_Canella%2C_Mus%C3%A9e_Carnavalet_-_Flickr.jpg',
+    description: '1832: Pont Neuf bridge in Paris' }
 ]
 
 const styles = {
