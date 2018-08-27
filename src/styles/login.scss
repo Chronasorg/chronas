@@ -1,4 +1,5 @@
-/*! normalize.css v3.0.1 | MIT License | git.io/normalize */
+/*
+!*! normalize.css v3.0.1 | MIT License | git.io/normalize *!
 @import url('https://fonts.googleapis.com/css?family=Cinzel&subset=latin-ext');
 
 html {
@@ -1235,12 +1236,12 @@ legend {
   border-bottom: 1px solid #e5e5e5
 }
 
-label {
+!*label {
   display: inline-block;
   max-width: 100%;
   margin-bottom: 5px;
   font-weight: bold
-}
+}*!
 
 input[type="search"] {
   -webkit-box-sizing: border-box;
@@ -1359,12 +1360,12 @@ input[type="date"].input-lg, input[type="time"].input-lg, input[type="datetime-l
   margin-bottom: 10px
 }
 
-.radio label, .checkbox label {
-  padding-left: 20px;
-  margin-bottom: 0;
-  font-weight: normal;
-  cursor: pointer
-}
+//.radio label, .checkbox label {
+//  padding-left: 20px;
+//  margin-bottom: 0;
+//  font-weight: normal;
+//  cursor: pointer
+//}
 
 .radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
   float: left;
@@ -5057,9 +5058,9 @@ textarea {
   padding-top: 6px
 }
 
-.radio-inline, .checkbox-inline, .radio label, .checkbox label {
-  font-weight: 300
-}
+//.radio-inline, .checkbox-inline, .radio label, .checkbox label {
+//  font-weight: 300
+//}
 
 @font-face {
   font-family: 'EntypoRegular';
@@ -9023,3 +9024,4 @@ a:hover {
   padding-left: 1.2em;
   outline: none !important
 }
+*/
