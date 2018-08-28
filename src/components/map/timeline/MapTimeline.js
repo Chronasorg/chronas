@@ -15,8 +15,8 @@ import { selectEpicItem, TYPE_EPIC } from '../actionReducers'
 import Timeline from 'react-visjs-timeline'
 import './mapTimeline.scss'
 import { chronasMainColor } from '../../../styles/chronasColors'
-import {red400} from "material-ui/styles/colors";
-import utilsQuery from "../utils/query";
+import { red400 } from 'material-ui/styles/colors'
+import utilsQuery from '../utils/query'
 
 const start = '-000200-01-05',
   min = '-002000-01-01T00:00:00.000Z',
@@ -263,7 +263,7 @@ class MapTimeline extends Component {
   _onClickTimeline = (event) => {
     const { selectEpicItem, groupItems, setYear } = this.props
 
-    if (event.event.target.className === "currentYearLabel") {
+    if (event.event.target.className === 'currentYearLabel') {
       // open input
       return
     }
@@ -333,7 +333,7 @@ class MapTimeline extends Component {
     const { timelineOptions, timelineHeight, yearDialogVisible, customTimes } = this.state
     const { groupItems, selectedYear, setYear } = this.props
 
-    console.debug("rendering maptimeline")
+    console.debug('rendering maptimeline')
 
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
@@ -341,36 +341,36 @@ class MapTimeline extends Component {
     return (
       <div>
         <Dialog open={yearDialogVisible}
-                autoDetectWindowHeight={false}
-                modal={false}
+          autoDetectWindowHeight={false}
+          modal={false}
           // onRequestClose={this.handleClose}
-                contentClassName={(!yearDialogVisible) ? '' : 'classReveal dialogBackgroundHack'}
-                contentStyle={styles.discoverDialogStyle}
-                bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
-                actionsContainerStyle={{ backgroundColor: red400 }}
-                overlayStyle={styles.overlayStyle}
-                style={{ backgroundColor: 'transparent', overflow: 'auto' }}
-                titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
-                autoScrollBodyContent={false}>
-          <div className="searchForm search-form-kettle">
-            <button className="searchForm__close" onClick={() => this._toggleYearDialog(false)}>
+          contentClassName={(!yearDialogVisible) ? '' : 'classReveal dialogBackgroundHack'}
+          contentStyle={styles.discoverDialogStyle}
+          bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
+          actionsContainerStyle={{ backgroundColor: red400 }}
+          overlayStyle={styles.overlayStyle}
+          style={{ backgroundColor: 'transparent', overflow: 'auto' }}
+          titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
+          autoScrollBodyContent={false}>
+          <div className='searchForm search-form-kettle'>
+            <button className='searchForm__close' onClick={() => this._toggleYearDialog(false)}>
               <IconClose color='rgb(255,255,255)' style={{
                 height: '48px',
-                width: '48px'}} />
+                width: '48px' }} />
             </button>
             <form onSubmit={(e, val) => {
-              e.preventDefault();
-              setYear(this.state.inputYear);
-              this._toggleYearDialog(false);
-            }} className="searchForm__form">
-              <button type="submit" className="searchForm__icon">
+              e.preventDefault()
+              setYear(this.state.inputYear)
+              this._toggleYearDialog(false)
+            }} className='searchForm__form'>
+              <button type='submit' className='searchForm__icon'>
                 <IconSearch color='rgb(255,255,255)' style={{
                   height: '32px',
                   width: '32px',
                   marginLeft: '2em'
                 }} />
               </button>
-              <input className="searchForm__input mt_color--white" placeholder="Year" autocomplete="off" title="search" type="number"  min="-2000" max="2000" step="1" name="y" onChange={(e) => this.setState({inputYear: +e.target.value})}></input>
+              <input className='searchForm__input mt_color--white' placeholder='Year' autoComplete='off' title='search' type='number' min='-2000' max='2000' step='1' name='y' onChange={(e) => this.setState({ inputYear: +e.target.value })} />
             </form>
           </div>
         </Dialog>
@@ -386,7 +386,7 @@ class MapTimeline extends Component {
           clickHandler={this._onClickTimeline}
         />
         <Portal node={document && document.querySelector('.vis-custom-time.selectedYear')}>
-          <button className='currentYearLabel' title='click to select exact year' onClick={(event) => { event.stopPropagation(); this._toggleYearDialog(true); } }>
+          <button className='currentYearLabel' title='click to select exact year' onClick={(event) => { event.stopPropagation(); this._toggleYearDialog(true) }}>
             {selectedYear}
           </button>
         </Portal>
@@ -394,7 +394,6 @@ class MapTimeline extends Component {
     )
   }
 }
-
 
 const enhance = compose(
   connect(state => ({
@@ -407,7 +406,3 @@ const enhance = compose(
 )
 
 export default enhance(MapTimeline)
-/*<form action="https://www-s.nationalgeographic.com/search" className="searchForm__form">
-  <button type="submit" className="searchForm__icon">SEARCHICON</button>
-  <input className="searchForm__input mt_color--white" placeholder="Search" autocomplete="off" title="search" type="text" name="q"></input>
-</form>*/

@@ -16,6 +16,14 @@ export const markerIdNameArray = [
   ['o', 'Other -> Unknown', 'Artifacts', 'Other']
 ]
 
+export const epicIdNameArray = [
+    ['bio', 'Biography', 'rgba(0, 128, 0, 0.5)'],
+    ['c', 'Conflicts', 'rgba(255, 165, 0, 0.5)'],
+    ['e', 'Exploration', 'rgba(0, 0, 255, 0.5)'],
+    ['w', 'War', 'rgba(214, 0, 0, 0.5)'],
+    ['o', 'Other Epic', 'rgba(255, 255, 255, 0.5)']
+]
+
 const iconWidthModern = 128
 const iconHeightModern = 169
 const iconWidth = 135
@@ -457,6 +465,8 @@ const arrayToObject = (array) =>
   }, {})
 
 export const markerIdNameObject = arrayToObject(markerIdNameArray)
+
+export const epicIdNameObject = arrayToObject(epicIdNameArray)
 
 export const properties = {
   // defines the zoom level to toggle provinces

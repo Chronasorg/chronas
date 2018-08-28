@@ -25,6 +25,10 @@ body {
   top: -20px;
 }
 
+.vis-item {
+  border-width: 0px !important;
+}
+
 .vis-panel.vis-center {
   top: 4px !important;
 }
@@ -33,10 +37,26 @@ body {
   top: -20px !important;
 }
 
-.timelineItem_wars {
-  height: 20px;
+.vis-item {
+  &.timelineItem_war {
+    background: rgba(214, 0, 0, 0.5);
+  }
+  &.timelineItem_w {
+    background: rgba(214, 0, 0, 0.5);
+  }
+  &.timelineItem_bio {
+    background: rgba(0, 128, 0, 0.5);
+  }
+  &.timelineItem_c {
+    background: rgba(255, 165, 0, 0.5);
+  }
+  &.timelineItem_e {
+    background: rgba(0, 0, 255, 0.5);
+  }
+  &.timelineItem_o {
+    background: rgba(255, 255, 255, 0.5);
+  }
 }
-
 .classReveal {
   opacity: 1 !important;
   &.modalMenu > div > div{
@@ -464,6 +484,7 @@ svg.LoadingCircle_rotate {
 
 .dropdownAvatarMenu > div > div {
   padding-left: 0 !important;
+  border: 0 !important;
 }
 
 .listAvatar{
@@ -495,3 +516,4 @@ svg.LoadingCircle_rotate {
     overflow: initial !important;
   }
 }
+

@@ -47,11 +47,12 @@ import {
   changeColor as changeColorAction,
   toggleMarker as toggleMarkerAction,
   toggleEpic as toggleEpicAction } from './actionReducers'
-import { iconMapping, markerIdNameArray, properties, themes } from '../../../properties'
+import { iconMapping, markerIdNameArray, epicIdNameArray, themes } from '../../../properties'
 
 const colorArray = ['ruler','culture','religion','religionGeneral','population']
 const styles = {
   link: {
+    opacity: 0.3,
     left: 14
   },
   customHeightColumn: {
@@ -91,8 +92,6 @@ const styles = {
   },
 };
 
-const allEpics = ['War', 'Battle', 'Campaign', 'Exploration', 'Siege', 'Voyage', 'Other Epic']
-
 class LayerContent extends Component {
   constructor(props) {
     super(props)
@@ -126,17 +125,7 @@ class LayerContent extends Component {
           nestedItems={[<ListItem
                              disabled={true}
                              innerDivStyle={{ padding: 0, marginLeft: 0 }}
-                             primaryText={<div><DropDownMenu className="dropdownAvatarMenu" selectedMenuItemStyle={{ paddingLeft: 0 }} value={this.state.selectedBasemap} onChange={this.handleChange} openImmediately={false}>
-                               <MenuItem value="watercolor" primaryText="Watercolor" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
-                                         label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
-                               />
-                               <MenuItem value="topographic" primaryText="Topographic" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
-                                         label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
-                               />
-                               <MenuItem value="none" primaryText="None" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
-                                         label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
-                               />
-                             </DropDownMenu>
+                             primaryText={<div style={{ paddingBottom: 12, paddingTop: 0 }}>
                                <Table
                                  selectable={this.state.locked}
                                  onRowSelection={(val) => {
@@ -145,7 +134,7 @@ class LayerContent extends Component {
                                    if (selectedDim !== 'population') setAreaColorLabel(selectedDim, selectedDim)
                                    else changeColor(selectedDim)
                                  } }
-                                 style={{ width: '100%', marginBottom: -10, background: 'inherit' }}
+                                 style={{ width: '100%', background: 'inherit' }}
                                  bodyStyle={{overflow: 'initial'}}
                                  wrapperStyle={{overflow: 'initial'}}
                                  className="areaTable"
@@ -333,25 +322,37 @@ class LayerContent extends Component {
             leftIcon={<EpicIcon />}
             initiallyOpen={false}
             primaryTogglesNestedList={true}
-            nestedItems={allEpics.map(id => {
-              return <ListItem value={id}
-                               key={id}
-                               onClick={() => { toggleEpic(id.toLowerCase()) }}
+            nestedItems={epicIdNameArray.map(id => {
+              return <ListItem value={id[0]}
+                               key={id[0]}
+                               onClick={() => { toggleEpic(id[0]) }}
                                innerDivStyle={{ padding: 0 }}
                                primaryText={<div className="listAvatar" style={{
-                                 opacity: activeEpics.indexOf(id.toLowerCase()) > -1 ? 1 : 0.2
+                                 opacity: activeEpics.includes(id[0]) ? 1 : 0.2
                                }} ><img style={{
-                                 borderRadius: '50%',
+                                 borderRadius: '0%',
                                  marginRight: '1em',
+                                 background: id[2],
                                  height: 30,
                                  width: 30,
-                                 opacity: activeEpics.indexOf(id.toLowerCase()) > -1 ? 1 : 0.2
-                               }} src="/images/transparent.png" /> {id}</div>}
+                                 opacity: activeEpics.includes(id[0]) ? 1 : 0.4
+                               }} src="/images/transparent.png" /> {id[1]}</div>}
               />})}
           />
         </List>
         <List style={{ ...styles.listStyle, background: themes[theme].backColors[0] }}>
           <Subheader>Advanced</Subheader>
+          <DropDownMenu className="dropdownAvatarMenu" selectedMenuItemStyle={{ paddingLeft: 0 }} value={this.state.selectedBasemap} onChange={this.handleChange} openImmediately={false}>
+            <MenuItem value="watercolor" primaryText="Watercolor" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
+                      label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+            />
+            <MenuItem value="topographic" primaryText="Topographic" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
+                      label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+            />
+            <MenuItem value="none" primaryText="None" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
+                      label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+            />
+          </DropDownMenu>
           <ListItem primaryText="Cluster Marker"
                     rightToggle={<Toggle onToggle={() => setClusterMarkers(!mapStyles.clusterMarkers)} />}
                     open={mapStyles.clusterMarkers} />

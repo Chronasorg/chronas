@@ -24,8 +24,8 @@ import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '
 import { LinkedList, LinkedCreate, LinkedEdit, LinkedDelete, LinkedIcon } from '../restricted/linked'
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
-import SelectField from 'material-ui/SelectField';
-import MenuItem from 'material-ui/MenuItem';
+import SelectField from 'material-ui/SelectField'
+import MenuItem from 'material-ui/MenuItem'
 import { BottomNavigation } from 'material-ui/BottomNavigation'
 import Paper from 'material-ui/Paper'
 import IconLocationOn from 'material-ui/svg-icons/communication/location-on'
@@ -182,7 +182,6 @@ const menuIndexByLocation = {
 }
 
 class RightDrawerRoutes extends PureComponent {
-
   constructor (props) {
     super(props)
     this._setPartOfItems = this._setPartOfItems.bind(this)
@@ -334,12 +333,11 @@ class RightDrawerRoutes extends PureComponent {
       this.setState({ linkSetup: newLinkKey })
 
       if (newLinkKey) {
-        const newArr1 = newLinkKey.split("||")
+        const newArr1 = newLinkKey.split('||')
 
         axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0])
           .then((res) => {
             if (res.status === 200) {
-
               const linkedItemResult = res.data
               const linkedItemData = this.state.linkedItemData
 
@@ -355,7 +353,7 @@ class RightDrawerRoutes extends PureComponent {
                 linkedItemData.linkedMedia.push(el.properties.w + '||' + el.properties.t)
                   // linkedItemData.linkedContent.push({ name: (el.properties.w  + '(' + el.properties.t + ')'), id: el.properties.w })
               })
-//linkedItemKey1
+// linkedItemKey1
               linkedItemData.linkedItemKey1 = newLinkKey
               linkedItemData.linkedItemKey1choice = [{ id: newLinkKey, name: newLinkKey }]
 
@@ -377,8 +375,8 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
 
-  setMetadataEntity = (metadataEntity) => {
-    if (this.state.metadataType === 'e' && metadataEntity !== this.state.metadataEntity) {
+  setMetadataEntity = (metadataEntity, isEpic) => {
+    if ((this.state.metadataType === 'e' || isEpic) && metadataEntity !== this.state.metadataEntity) {
       axios.get(properties.chronasApiHost + '/metadata/' + metadataEntity)
         .then(response => {
           const rawDefault = response.data
@@ -389,7 +387,7 @@ class RightDrawerRoutes extends PureComponent {
             'subtype': rawDefault.subtype,
             'start': rawDefault.data.start,
             'end': rawDefault.data.end,
-            'participants': [{ 'participantTeam': [{ 'name': '_kingdom_of_nri' }, { 'name': '_Zhili_clique' }] }, { 'participantTeam': [{ 'name': '_kingdom_of_nri' }] }],
+            'participants': rawDefault.data.participants.map(pTeam => { return { 'participantTeam': pTeam.map(pParticipant => { return { 'name': pParticipant/*, 'value': pParticipant */} }) } }),
             'coo': rawDefault.coo,
             'partOf': rawDefault.partOf,
             'poster': rawDefault.poster
@@ -446,11 +444,11 @@ class RightDrawerRoutes extends PureComponent {
         const offsetTop = e.clientY
         const minHeight = +document.body.offsetHeight * 0.24
         const maxHeight = +document.body.offsetHeight - 160
-        const stateToUpdate = { newMarkerWidth: offsetRight, newMarkerPartOfWidth: offsetRight-80 }
+        const stateToUpdate = { newMarkerWidth: offsetRight, newMarkerPartOfWidth: offsetRight - 80 }
 
         if (offsetTop > minHeight && offsetTop < maxHeight) {
           stateToUpdate.newMarkerHeight = offsetTop
-          stateToUpdate.newMarkerPartOfHeight = offsetTop+20
+          stateToUpdate.newMarkerPartOfHeight = offsetTop + 20
         }
         this.setState(stateToUpdate)
       }
@@ -498,24 +496,22 @@ class RightDrawerRoutes extends PureComponent {
     if (
       (!(nextProps.selectedItem.type === TYPE_EPIC &&
         selectedItem.type === TYPE_EPIC) &&
-        (nextProps.selectedItem.wiki !== selectedItem.wiki || nextProps.selectedItem.value !== selectedItem.value || nextProps.activeArea.color !==  activeArea.color )) // don't load twice with type_epic
+        (nextProps.selectedItem.wiki !== selectedItem.wiki || nextProps.selectedItem.value !== selectedItem.value || nextProps.activeArea.color !== activeArea.color)) // don't load twice with type_epic
     ) {
       this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
     }
     if (location.pathname !== nextProps.location.pathname) {
-
-      if (nextProps.location.pathname === "/mod/links" && nextProps.selectedItem) {
+      if (nextProps.location.pathname === '/mod/links' && nextProps.selectedItem) {
         let prefilledId = ''
         if (nextProps.selectedItem.type === TYPE_AREA) {
           const activeAreaDim = (nextProps.activeArea.color === 'population') ? 'capital' : nextProps.activeArea.color
           const activeprovinceValue = utils.getAreaDimKey(metadata, nextProps.activeArea, nextProps.selectedItem)
           prefilledId = activeprovinceValue + '||ae|' + activeAreaDim
         } else {
-          prefilledId = ((nextProps.selectedItem.type === TYPE_EPIC) ? 'e_' : '') + nextProps.selectedItem.wiki + "||" + (nextProps.selectedItem.value.type ||  nextProps.selectedItem.type)
+          prefilledId = ((nextProps.selectedItem.type === TYPE_EPIC) ? 'e_' : '') + nextProps.selectedItem.wiki + '||' + (nextProps.selectedItem.value.type || nextProps.selectedItem.type)
         }
         this.ensureLoadLinkedItem(prefilledId, true) // adopt to new standard
-      } else if (location.pathname === "/mod/links")  {
-
+      } else if (location.pathname === '/mod/links') {
         this.setState({ linkedItemData: {} })
       }
 
@@ -567,7 +563,7 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   _setPartOfItems (items) {
-    this.setState({ partOfEntities: items})
+    this.setState({ partOfEntities: items })
   }
 
   _openPartOf (el) {
@@ -884,17 +880,17 @@ class RightDrawerRoutes extends PureComponent {
           </Card>
             { partOfEntities && partOfEntities.length !== 0 && <div style={{ ...styles.partOfDiv, width: this.state.newMarkerPartOfWidth, top: this.state.newMarkerPartOfHeight }}>
               <CardActions style={{ textAlign: 'center' }}>
-            { (partOfEntities.length === 1) ? <FlatButton
-              style={{ color: '#fff' }}
-              backgroundColor='rgb(255, 64, 129)'
-              hoverColor='#8AA62F'
-              onClick={() => this._openPartOf(partOfEntities[0])}
-              label={'Part of ' + ((partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()} /> :
-              <SelectField
+                { (partOfEntities.length === 1) ? <FlatButton
+                  style={{ color: '#fff' }}
+                  backgroundColor='rgb(255, 64, 129)'
+                  hoverColor='#8AA62F'
+                  onClick={() => this._openPartOf(partOfEntities[0])}
+                  label={'Part of ' + ((partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()} />
+              : <SelectField
                 floatingLabelText={translate('pos.related_item')}
                 hintText={translate('pos.related_item')}
-                value={ null }
-                onChange={ (event, index, value) => { this._openPartOf(value) } }
+                value={null}
+                onChange={(event, index, value) => { this._openPartOf(value) }}
               >
                 { partOfEntities.map((el) => {
                   return <MenuItem value={el} primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
@@ -1041,6 +1037,8 @@ class RightDrawerRoutes extends PureComponent {
               selectedItem,
               activeArea,
               metadata,
+              setModDataLng,
+              setModDataLat,
               contentType: this.state.contentType,
               contentChoice: this.state.contentChoice,
               metadataType: this.state.metadataType,
@@ -1060,8 +1058,8 @@ class RightDrawerRoutes extends PureComponent {
               selectedYear,
               setModDataLng,
               setModDataLat,
-              actOnRootTypeChange: this.actOnRootTypeChange}
-          } else if (resourceKey === TYPE_LINKED) {
+              actOnRootTypeChange: this.actOnRootTypeChange }
+          } else if (resourceKey === TYPE_LINKED || resourceKey === TYPE_EPIC) {
             finalProps = {
               ...commonProps,
               selectedItem,

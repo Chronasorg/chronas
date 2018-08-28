@@ -35,6 +35,7 @@ import ModButton from '../../restricted/shared/buttons/ModButton'
 import utils from '../../map/utils/general'
 import ColorInput from 'aor-color-input'
 import AutocompleteDisallowInput from '../../restricted/shared/inputs/AutocompleteDisallowInput'
+import { epicIdNameArray } from '../../../properties'
 
 export const ModMetaAdd = (props) => {
   const { metadata } = props
@@ -89,23 +90,14 @@ export const ModMetaAdd = (props) => {
     { id: 'meta_other', name: 'Other' }
   ]
 
-  const choicesEpicSubtypes = [
-    { id: 'war', name: 'War' },
-    { id: 'battle', name: 'Battle' },
-    { id: 'siege', name: 'Siege' },
-    { id: 'campaign', name: 'Campaign' },
-    { id: 'exploration', name: 'Exploration' },
-    { id: 'voyage', name: 'Voyage' },
-    { id: 'biography', name: 'Biography' },
-    { id: 'other', name: 'Other Epic' }
-  ]
+  const choicesEpicSubtypes = epicIdNameArray.map(el => { return { id: el[0], name: el[1] } })
 
   const choicesType = [
     { id: 'ruler', name: 'Ruler' },
     { id: 'culture', name: 'Culture' },
     { id: 'religion', name: 'Religion' },
     { id: 'religionGeneral', name: 'Religion (General)' },
-    { id: 'capital', name: 'Capital' },
+    // { id: 'capital', name: 'Capital' },
     { id: 'province', name: 'Province' },
     { id: 'e', name: 'Epic' },
   ]
@@ -135,10 +127,10 @@ export const ModMetaAdd = (props) => {
 
   const typeInputs = {
     'e':
-  <MetaForm  validate={validateValueInput} {...props} redirect='create' >
+  <MetaForm validate={validateValueInput} {...props} redirect='create' >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-    <TextInput validate={required} type='url' source='poster' label='resources.areas.fields.poster' />
+    <TextInput type='url' source='poster' label='resources.areas.fields.poster' />
     <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' />
     <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' />
     <TextInput type='number' source='end' label='resources.areas.fields.end' />
@@ -158,7 +150,7 @@ export const ModMetaAdd = (props) => {
     <TextInput type='text' source='partOf' label='resources.areas.fields.partOf' />
   </MetaForm>,
     'ruler':
-  <MetaForm  validate={validateValueInput} {...props} >
+  <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput source='name' choices={choicesRuler} label='resources.areas.fields.display_name' />
     <ColorInput validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
@@ -166,7 +158,7 @@ export const ModMetaAdd = (props) => {
     <TextInput validate={required} type='text' source='icon' label='resources.areas.fields.text' />
   </MetaForm>,
     'religion':
-  <MetaForm  validate={validateValueInput} {...props} >
+  <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput validate={required} source='name' choices={choicesReligion} label='resources.areas.fields.display_name' />
     <AutocompleteInput validate={required} source='parentname' choices={choicesReligionGeneral} label='resources.areas.fields.main_religion_name' />
@@ -175,7 +167,7 @@ export const ModMetaAdd = (props) => {
     <TextInput validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
     'religionGeneral':
-  <MetaForm  validate={validateValueInput} {...props} >
+  <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput validate={required} source='name' choices={choicesReligionGeneral} label='resources.areas.fields.display_name' />
     <ColorInput validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
@@ -183,7 +175,7 @@ export const ModMetaAdd = (props) => {
     <TextInput validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
     'culture':
-  <MetaForm  validate={validateValueInput} {...props} >
+  <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput validate={required} source='name' choices={choicesCulture} label='resources.areas.fields.display_name' />
     <ColorInput validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
@@ -191,14 +183,14 @@ export const ModMetaAdd = (props) => {
     <TextInput validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
     'capital':
-  <MetaForm  validate={validateValueInput} {...props} >
+  <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput validate={required} source='name' choices={choicesCapital} label='resources.areas.fields.display_name' />
     <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
     <TextInput validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
     'default':
-  <MetaForm  validate={validateValueInput} {...props} >
+  <MetaForm validate={validateValueInput} {...props} >
     <SelectInput source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <span>select type of metadata from above dropdown</span>
   </MetaForm>

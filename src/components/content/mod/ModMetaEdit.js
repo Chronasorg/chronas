@@ -34,18 +34,25 @@ import MetaForm from '../../restricted/shared/forms/MetaForm'
 import ModButton from '../../restricted/shared/buttons/ModButton'
 import utils from '../../map/utils/general'
 import ColorInput from 'aor-color-input'
+import { TYPE_AREA, TYPE_EPIC, TYPE_MARKER } from '../../map/actionReducers'
+import { epicIdNameArray } from '../../../properties'
 
 export const ModMetaEdit = (props) => {
-  const { metadata, routeNotYetSetup } = props
+  const { metadata, routeNotYetSetup, selectedItem } = props
 
-  if (routeNotYetSetup() && props.activeArea.color && (!props.metadataType || props.metadataType !== props.activeArea.color)) {
-    props.setMetadataType(props.activeArea.color)
-  }
+  let newEntity = ((props.activeArea.data || {})[props.selectedItem.value] || [])[utils.activeAreaDataAccessor(props.activeArea.color)]
 
-  const newEntity = ((props.activeArea.data || {})[props.selectedItem.value] || [])[utils.activeAreaDataAccessor(props.activeArea.color)]
+  if (routeNotYetSetup()) {
+    if (selectedItem.type === TYPE_EPIC) {
+      props.setMetadataType('e')
+      newEntity = ((props.selectedItem || {}).data || {}).id
+    } else if (props.activeArea.color && (!props.metadataType || props.metadataType !== props.activeArea.color)) {
+      props.setMetadataType(props.activeArea.color)
+    }
 
-  if (routeNotYetSetup() && newEntity && props.selectedItem.value && (!props.metadataEntity || props.metadataEntity !== newEntity)) {
-    props.setMetadataEntity(newEntity)
+    if (newEntity && props.selectedItem.value && (!props.metadataEntity || props.metadataEntity !== newEntity)) {
+      props.setMetadataEntity(newEntity, selectedItem.type === TYPE_EPIC)
+    }
   }
 
   const defaultValues = {
@@ -108,15 +115,7 @@ export const ModMetaEdit = (props) => {
     { id: 'meta_other', name: 'Other' }
   ]
 
-  const choicesEpicSubtypes = [
-    { id: 'war', name: 'War' },
-    { id: 'battle', name: 'Battle' },
-    { id: 'siege', name: 'Siege' },
-    { id: 'campaign', name: 'Campaign' },
-    { id: 'voyage', name: 'Voyage' },
-    { id: 'biography', name: 'Biography' },
-    { id: 'other', name: 'Other Epic' }
-  ]
+  const choicesEpicSubtypes = epicIdNameArray.map(el => { return { id: el[0], name: el[1] } })
 
   const choicesType = [
     { id: 'ruler', name: 'Ruler' },
@@ -162,7 +161,7 @@ export const ModMetaEdit = (props) => {
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteInput source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.display_name" />
     {(props.metadataEntity !== '') ? <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' /> : null}
-    {(props.metadataEntity !== '') ? <TextInput validate={required} type='url' source='poster' label='resources.areas.fields.poster' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput type='url' source='poster' label='resources.areas.fields.poster' /> : null}
     {(props.metadataEntity !== '') ? <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' /> : null}
     {(props.metadataEntity !== '') ? <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' /> : null}
     {(props.metadataEntity !== '') ? <TextInput type='number' source='end' label='resources.areas.fields.end' /> : null}
@@ -227,7 +226,7 @@ export const ModMetaEdit = (props) => {
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesCapital} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
 
-        {(props.metadataEntity !== '') ? <TextInput type="url"  source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'province':
@@ -235,7 +234,7 @@ export const ModMetaEdit = (props) => {
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput source="select" choices={choicesProvince} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
 
-        {(props.metadataEntity !== '') ? <TextInput type="url"  source="url" label="resources.areas.fields.province_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.province_url" defaultValue={defaultValues.dataUrl} /> : null}
         {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'default':

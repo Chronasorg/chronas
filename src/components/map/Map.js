@@ -34,7 +34,6 @@ import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCount
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
 import Timeline from './timeline/MapTimeline'
-import BasicInfo from './markers/basic-info'
 import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
 const turf = require('@turf/turf')
@@ -103,7 +102,6 @@ class Map extends Component {
       hoveredItems: [],
       activatedTooltip: true,
       hoverInfo: null,
-      popupInfo: null
     }
   }
 
@@ -977,7 +975,7 @@ class Map extends Component {
             const endYear = el.data.end
             return {
               start: new Date(new Date(0, 1, 1).setFullYear(+el.data.start)),
-              className: 'timelineItem_' + subtype,
+              className: 'timelineItem_' + el.subtype,
               editable: false,
               subtype: el.subtype,
               end: endYear ? new Date(new Date(0, 1, 1).setFullYear(+endYear)) : undefined,
@@ -1312,7 +1310,7 @@ class Map extends Component {
    */
   _renderPopup () {
     const { selectMarkerItem, history } = this.props
-    const { categories, filtered , hoverInfo, popupInfo, expanded, searchMarkerText } = this.state
+    const { categories, filtered , hoverInfo, expanded, searchMarkerText } = this.state
     if (hoverInfo) {
       const content = (hoverInfo.feature || [])
       if (Array.isArray(content)) {
@@ -1413,32 +1411,21 @@ class Map extends Component {
         </Popup>
       )
     }
-    if (popupInfo) {
-      return (
-        <Popup tipSize={5}
-          anchor='top'
-          longitude={popupInfo.longitude}
-          latitude={popupInfo.latitude}
-          onClose={() => this.setState({ popupInfo: null })} >
-          <BasicInfo info={popupInfo} />
-        </Popup>
-      )
-    }
     return null
   }
 
   render () {
     const { epics, markerData, geoData, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
-    const { modActive, menuDrawerOpen, rightDrawerOpen, history, theme, mapStyles, markerTheme, contentIndex } = this.props
+    const { modActive, menuDrawerOpen, rightDrawerOpen, history, theme, mapStyles, markerTheme, selectedItem, contentIndex } = this.props
 
     let leftOffset = isStatic ? 0 : (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.24
 
-    let modMarker = ((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') ? <Marker
+    let modMarker = (((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') || ((selectedItem || {}).type === TYPE_EPIC && (((selectedItem.value || {}).data || {}).data || {}).coo )) ? <Marker
       captureClick={false}
       captureDrag={false}
-      latitude={modActive.data[1]}
-      longitude={modActive.data[0]}
+      latitude={((modActive || {}).data || {})[1] || ((((selectedItem.value || {}).data || {}).data || {}).coo || {})[1]}
+      longitude={((modActive || {}).data || {})[0] || ((((selectedItem.value || {}).data || {}).data || {}).coo || {})[0]}
       offsetLeft={0}
       offsetTop={0}>
       <BasicPin size={40} />
