@@ -86,7 +86,8 @@ const styles = {
     overflowX: 'hidden',
     justifyContent: 'flex-start',
     height: '100%',
-    padding: '18px 14px',
+    padding: '18px 0px',
+    paddingLeft: '7px',
     background: 'white',
     boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset'
   },
@@ -340,7 +341,7 @@ class LayerContent extends Component {
               />})}
           />
         </List>
-        <List style={{ ...styles.listStyle, background: themes[theme].backColors[0] }}>
+        <List style={{ ...styles.listStyle, background: themes[theme].backColors[0], borderBottom: '1px solid rgb(217, 217, 217)' }}>
           <Subheader>Advanced</Subheader>
           <DropDownMenu className="dropdownAvatarMenu" selectedMenuItemStyle={{ paddingLeft: 0 }} value={this.state.selectedBasemap} onChange={this.handleChange} openImmediately={false}>
             <MenuItem value="watercolor" primaryText="Watercolor" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}

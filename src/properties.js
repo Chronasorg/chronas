@@ -569,6 +569,7 @@ export const themes = {
     backColors: ['#ababab',
       '#cfcfcf',
       '#cfcfcf'],
+    borderColors: ['rgba(200,200,200,100)'],
     highlightColors: ['rgba(255,204,0,200)'],
     gradientColors: ['linear-gradient(180deg,#fff 0,#F2F2F2)'],
     className: 'defaultTheme'
@@ -580,6 +581,7 @@ export const themes = {
     backColors: ['#ffffff',
       '#F2F2F2',
       '#cbcbcb'],
+    borderColors: ['rgba(200,200,200,100)'],
     highlightColors: ['rgba(255,204,0,200)'],
     gradientColors: ['linear-gradient(180deg,#fff 0,#F2F2F2)'],
     className: 'lightTheme'
@@ -591,6 +593,7 @@ export const themes = {
     backColors: ['#333',
       '#171717',
       '#000'],
+    borderColors: ['rgba(200,200,200,100)'],
     highlightColors: ['rgba(255,204,0,200)'],
     gradientColors: ['linear-gradient(180deg,#333 0,#000)'],
     className: 'darkTheme'
@@ -602,6 +605,7 @@ export const themes = {
     backColors: ['#011c31',
       '#451c2e',
       '#451c2e'],
+    borderColors: ['rgba(200,200,200,100)'],
     highlightColors: ['rgba(69,28,46,200)'],
     gradientColors: ['linear-gradient(180deg,#011c31 0,#451c2e)'],
     className: 'lutherTheme'

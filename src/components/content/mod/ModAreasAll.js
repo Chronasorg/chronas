@@ -32,6 +32,7 @@ import { Link } from 'react-router-dom'
 import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import Subheader from 'material-ui/Subheader';
+import AssignAddEditNavigation from '../../restricted/shared/AssignAddEditNavigation'
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import AreaForm from '../../restricted/shared/forms/AreaForm'
 import utils from "../../map/utils/general"
@@ -61,7 +62,8 @@ export const ModAreasAll = (props) => {
   const validateValueInput = (values) => {
     const errors = {}
 
-    if (values.ruler === defaultValues.dataRuler &&
+    if (JSON.stringify(values.provinces) === JSON.stringify(defaultValues.provinces) &&
+      values.ruler === defaultValues.dataRuler &&
       values.culture === defaultValues.dataCulture &&
       values.religion === defaultValues.dataReligion &&
       values.capital === defaultValues.dataCapital &&
@@ -77,7 +79,10 @@ export const ModAreasAll = (props) => {
     return errors
   }
 
-  return <Create title='Modify area mapping' {...props}>
+  return <div>
+    <AssignAddEditNavigation pathname={props.location.pathname} />
+    <Divider/>
+    <Create title='Assign Area' {...props}>
       <AreaForm validate={validateValueInput} {...props} >
           <Subheader>Provinces</Subheader>
           <SelectArrayInput onChange={(val,v) => { props.setModData(v) }} validation={required} elStyle={{width: '60%', minWidth: '300px'}} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.province_list" />
@@ -95,5 +100,6 @@ export const ModAreasAll = (props) => {
           <NumberInput validation={required} source="start" defaultValue={defaultValues.yearStart} label="resources.areas.fields.startYear" />
           <NumberInput source="end" defaultValue={defaultValues.yearEnd} label="resources.areas.fields.endYear" />
     </AreaForm>
-  </Create>
+    </Create>
+  </div>
 };

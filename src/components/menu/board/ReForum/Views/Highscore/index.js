@@ -47,9 +47,48 @@ class Highscore extends Component {
               <span className='FeedBox_title'>{opinionBoxTitle}</span>
             </div>
             <div className='FeedBox_discussions'>
+              <div className='Opinion_container'>
+                <div className='Opinion_infoContainer'>
+                  <div className='Opinion_avatar' style={{
+                    textAlign: 'center',
+                    width: 20,
+                    height: 'inherit',
+                    display: '-ms-flexbox',
+                    marginLeft: -22,
+                    flex: 1,
+                    display: 'block', }} >Rank</div>
+                  <div className='Opinion_userInfo'>
+                    { 'User' }
+                  </div>
+                  <div className='Opinion_userInfo'>joined</div>
+                  <div className='Opinion_userInfo'>
+                    { `Logins` }
+                  </div>
+                  <div className='Opinion_userInfo'>
+                    { `Additions` }
+                  </div>
+                  <div className='Opinion_userInfo'>
+                    { `Edits` }
+                  </div>
+                  <div className='Opinion_userInfo'>
+                    { `Deletions` }
+                  </div>
+                  <div className='Opinion_userInfo'>
+                    { `Mistakes` }
+                  </div>
+                  <div className='Opinion_userInfo'>
+                    { `Linked` }
+                  </div>
+                  <div className='Opinion_userInfo'>
+                    { `Votes` }
+                  </div>
+                  <div className='Opinion_userInfo'>
+                    { `Karma` }
+                  </div>
+                </div>
+              </div>
+
               { highscoreData && highscoreData.map((user, index) => {
-
-
                 const finalAvatarUrl = user.avatar ? <img className='Opinion_avatar' src={user.avatar} alt={`${name} avatar`} /> : <AccountIcon className='Opinion_avatar' />
 
                 return (
@@ -60,30 +99,30 @@ class Highscore extends Component {
                       <div className='Opinion_userInfo'>
                         { <Link to={`/community/user/${user.username || user.name}`} className='Opinion_name'>{user.username || user.name}</Link> }
                       </div>
-                      <div className='Opinion_userInfo'>joined { Moment(user.createdAt).from(Moment()) }</div>
+                      <div className='Opinion_userInfo'>{ Moment(user.createdAt).from(Moment()) }</div>
                       <div className='Opinion_userInfo'>
-                        { `Logins: ${user.loginCount}` }
+                        { `${user.loginCount}` }
                       </div>
                       <div className='Opinion_userInfo'>
-                        { `Additions: ${user.count_created}` }
+                        { `${user.count_created}` }
                       </div>
                       <div className='Opinion_userInfo'>
-                        { `Edits: ${user.count_updated}` }
+                        { `${user.count_updated}` }
                       </div>
                       <div className='Opinion_userInfo'>
-                        { `Deletions: ${user.count_deleted}` }
+                        { `${user.count_deleted}` }
                       </div>
                       <div className='Opinion_userInfo'>
-                        { `Mistakes: ${user.count_mistakes}` }
+                        { `${user.count_mistakes}` }
                       </div>
                       <div className='Opinion_userInfo'>
-                        { `Linked: ${user.count_linked}` }
+                        { `${user.count_linked}` }
                       </div>
                       <div className='Opinion_userInfo'>
-                        { `Votes: ${user.count_voted}` }
+                        { `${user.count_voted}` }
                       </div>
                       <div className='Opinion_userInfo'>
-                        { `Karma: ${user.karma}` }
+                        { `${user.karma}` }
                       </div>
                     </div>
                   </div>

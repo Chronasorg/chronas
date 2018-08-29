@@ -82,6 +82,7 @@ export default {
       fields: {
         province_list: 'Click on provinces to selecect/ deselect',
         display_name: 'Display Name',
+        search_name: 'Search By Name',
         main_ruler_name: 'Main Ruler Name',
         color: 'Area Color',
         main_religion_name: 'Main Religion Name',

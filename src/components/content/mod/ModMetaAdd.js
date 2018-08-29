@@ -29,6 +29,8 @@ import {
   minLength
 } from 'admin-on-rest'
 import { EmbeddedArrayInput } from 'aor-embedded-array'
+import Divider from 'material-ui/Divider'
+import AssignAddEditNavigation from '../../restricted/shared/AssignAddEditNavigation'
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import MetaForm from '../../restricted/shared/forms/MetaForm'
 import ModButton from '../../restricted/shared/buttons/ModButton'
@@ -99,7 +101,7 @@ export const ModMetaAdd = (props) => {
     { id: 'religionGeneral', name: 'Religion (General)' },
     // { id: 'capital', name: 'Capital' },
     { id: 'province', name: 'Province' },
-    { id: 'e', name: 'Epic' },
+    // { id: 'e', name: 'Epic' },
   ]
 
   const validateValueInput = (values) => {
@@ -196,7 +198,11 @@ export const ModMetaAdd = (props) => {
   </MetaForm>
   }
 
-  return <Create {...props}>
-    {typeInputs[props.metadataType] || typeInputs['default']}
-  </Create>
+  return <div>
+    <AssignAddEditNavigation pathname={props.location.pathname} />
+    <Divider/>
+    <Create title={'Add Area Entity'} {...props}>
+      {typeInputs[props.metadataType] || typeInputs['default']}
+    </Create>
+  </div>
 }

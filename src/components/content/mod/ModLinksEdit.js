@@ -1,4 +1,3 @@
-
 import React from 'react'
 import {
   translate,
@@ -35,6 +34,7 @@ import Divider from 'material-ui/Divider'
 import Subheader from 'material-ui/Subheader'
 import { EmbeddedArrayInput } from 'aor-embedded-array'
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
+import AddEditLinkNavigation from '../../restricted/shared/AddEditLinkNavigation'
 import SelectArrayInput from '../../restricted/shared/inputs/SelectArrayInput'
 import LinksForm from '../../restricted/shared/forms/LinksForm'
 import ModButton from '../../restricted/shared/buttons/ModButton'
@@ -52,7 +52,10 @@ const CustomToolbar = props => <Toolbar {...props}>
 </Toolbar>
 
 export const ModLinksEdit = (props) => {
-  return <Create {...props}>
+  return  <div>
+    <AddEditLinkNavigation pathname={props.location.pathname} />
+    <Divider/>
+    <Create {...props}>
     <LinksForm {...props}  toolbar={<CustomToolbar />} redirect='create' defaultValue={props.linkedItemData}>
       <Subheader>Item to link</Subheader>
       <AutocompleteInput setLinkedItemData={props.setLinkedItemData}
@@ -82,5 +85,5 @@ export const ModLinksEdit = (props) => {
         onSearchChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, "linkedItemKey2choice") }}
         onChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}} source="linkedContent" label="resources.areas.fields.province_list" />
     </LinksForm>
-  </Create>
+    </Create></div>
 }

@@ -1421,11 +1421,13 @@ class Map extends Component {
     let leftOffset = isStatic ? 0 : (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.24
 
-    let modMarker = (((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') || ((selectedItem || {}).type === TYPE_EPIC && (((selectedItem.value || {}).data || {}).data || {}).coo )) ? <Marker
+    let modMarker = (
+      ((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined')
+      || ((selectedItem || {}).type === TYPE_EPIC && ((selectedItem.data || {}).data || {}).coo && ((selectedItem.data || {}).data || {}).coo.length > 0 )) ? <Marker
       captureClick={false}
       captureDrag={false}
-      latitude={((modActive || {}).data || {})[1] || ((((selectedItem.value || {}).data || {}).data || {}).coo || {})[1]}
-      longitude={((modActive || {}).data || {})[0] || ((((selectedItem.value || {}).data || {}).data || {}).coo || {})[0]}
+      latitude={((modActive || {}).data || {})[1] || (((selectedItem.data || {}).data || {}).coo || {})[1]}
+      longitude={((modActive || {}).data || {})[0] || (((selectedItem.data || {}).data || {}).coo || {})[0]}
       offsetLeft={0}
       offsetTop={0}>
       <BasicPin size={40} />

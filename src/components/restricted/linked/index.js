@@ -30,12 +30,9 @@ import {
     required,
     minLength
 } from 'admin-on-rest'
-import IconLocationOn from 'material-ui/svg-icons/communication/location-on'
-import AddIcon from 'material-ui/svg-icons/content/add'
-import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
-import { Link } from 'react-router-dom'
-import { BottomNavigation } from 'material-ui/BottomNavigation'
-import BottomNavigationItem from '../../overwrites/BottomNavigationItem'
+
+import AddEditLinkNavigation from '../../restricted/shared/AddEditLinkNavigation'
+import Divider from 'material-ui/Divider'
 import Icon from 'material-ui/svg-icons/social/person'
 import EditButton from '../shared/buttons/EditButton'
 import DeleteButton from '../shared/buttons/DeleteButton'
@@ -126,25 +123,8 @@ export const LinkedEdit = (props) => {
 
 
   return <div>
-    <BottomNavigation
-      // style={styles.articleHeader}
-      // onChange={this.handleChange}
-      selectedIndex={props.location.pathname === '/mod/linked/create' ? 0 : 1}>
-      <BottomNavigationItem
-        className='bottomNavigationItem'
-        containerElement={<Link to='/mod/linked/create' />}
-        label='Add'
-        icon={<AddIcon />}
-        // onClick={() => { this.select(4) }}
-      />
-      <BottomNavigationItem
-        className='bottomNavigationItem'
-        containerElement={<Link to='/mod/linked' />}
-        label='Edit'
-        icon={<EditIcon />}
-        // onClick={() => { this.select(5) }}
-      />
-    </BottomNavigation>
+    <AddEditLinkNavigation pathname={props.location.pathname} />
+    <Divider/>
     <Create title={'Edit Article'} {...props}>
     <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
       <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
@@ -197,25 +177,8 @@ export const LinkedCreate = (props) => {
   }
 
   return <div>
-    <BottomNavigation
-      // style={styles.articleHeader}
-      // onChange={this.handleChange}
-      selectedIndex={props.location.pathname === '/mod/linked/create' ? 0 : 1}>
-      <BottomNavigationItem
-        className='bottomNavigationItem'
-        containerElement={<Link to='/mod/linked/create' />}
-        label='Add'
-        icon={<AddIcon />}
-        // onClick={() => { this.select(4) }}
-      />
-      <BottomNavigationItem
-        className='bottomNavigationItem'
-        containerElement={<Link to='/mod/linked' />}
-        label='Edit'
-        icon={<EditIcon />}
-        // onClick={() => { this.select(5) }}
-      />
-    </BottomNavigation>
+    <AddEditLinkNavigation pathname={props.location.pathname} />
+    <Divider/>
     <Create title={'Add Article'} {...props}>
     <LinkedForm validate={validateWikiProps} redirect='' history={props.history}>
       <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} validate={required} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.subtype' />

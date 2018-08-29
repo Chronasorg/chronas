@@ -172,13 +172,13 @@ const resources = {
 
 const menuIndexByLocation = {
   '/mod/markers/create': 0,
+  '/mod/markers': 0,
   '/mod/linked/create': 0,
-  '/mod/markers': 1,
-  '/mod/linked': 1,
-  '/mod/metadata/create': 2,
-  '/mod/metadata': 3,
-  '/mod/areas': 4,
-  '/mod/links': 5,
+  '/mod/linked': 0,
+  '/mod/links': 0,
+  '/mod/metadata/create': 1,
+  '/mod/metadata': 1,
+  '/mod/areas': 1,
 }
 
 class RightDrawerRoutes extends PureComponent {
@@ -613,33 +613,17 @@ class RightDrawerRoutes extends PureComponent {
             themeBackColors={themes[theme].backColors[1]}
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/markers/create' />}
-            label='Articles'
+            label='Markers & Media'
             icon={nearbyIcon}
             // onClick={() => this.select(0)}
           />
           <BottomNavigationItem
             themeBackColors={themes[theme].backColors[1]}
             className='bottomNavigationItem'
-            containerElement={<Link to='/mod/metadata/create' />}
-            label='Area Entity'
-            icon={nearbyIcon}
-            // onClick={() => { this.select(2) }}
-          />
-          <BottomNavigationItem
-            themeBackColors={themes[theme].backColors[1]}
-            className='bottomNavigationItem'
             containerElement={<Link to='/mod/areas' />}
-            label='Assign Area'
+            label='Area'
             icon={nearbyIcon}
             // onClick={() => { this.select(4) }}
-          />
-          <BottomNavigationItem
-            themeBackColors={themes[theme].backColors[1]}
-            className='bottomNavigationItem'
-            containerElement={<Link to='/mod/links' />}
-            label='Link Articles'
-            icon={nearbyIcon}
-            // onClick={() => { this.select(5) }}
           />
         </BottomNavigation>
       }
