@@ -3,6 +3,7 @@ import React, { createElement, PureComponent } from 'react'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import AppBar from 'material-ui/AppBar'
+import Avatar from 'material-ui/Avatar'
 import Drawer from 'material-ui/Drawer'
 import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton'
@@ -42,6 +43,7 @@ import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
   selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, selectAreaItem, selectMarkerItem
 } from '../map/actionReducers'
+import { RulerIcon } from '../map/assets/placeholderIcons'
 import { ModHome } from './mod/ModHome'
 import {
   setModData as setModDataAction,
@@ -158,7 +160,6 @@ const selectedIndexObject = {
   'ruler': 1,
   'culture': 2,
   'religion': 3,
-  'population': 4,
 }
 
 const resources = {
@@ -710,7 +711,6 @@ class RightDrawerRoutes extends PureComponent {
       }
     }
 
-    const populationName = entityPop + ' [' + parseInt(entityPop / totalPop * 1000) / 10 + '%]'
     const modUrl = '/mod/' + selectedItem.type
 
     const articleHeader = <AppBar
@@ -752,7 +752,7 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Ruler'
-              avatar={this._getFullIconURL(entityMeta.ruler.icon)}
+              avatar={<Avatar color={themes[theme].foreColors[0]} icon={<RulerIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
             />}
           />
           <BottomNavigationItem
@@ -786,23 +786,6 @@ class RightDrawerRoutes extends PureComponent {
               subtitle='Religion'
               avatar={this._getFullIconURL(entityMeta.religion.icon)}
             />}
-          />
-          <BottomNavigationItem
-            themeBackColors={themes[theme].backColors[1]}
-            onClick={() => {
-              setWikiId(selectedItem.value)
-              changeColor('population')
-            }}
-            className='bottomNavigationItem'
-            icon={<CardHeader
-              title={populationName}
-              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
-              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
-              style={styles.cardHeader.style}
-              subtitle='Population'
-              avatar={this._getFullIconURL(entityMeta.religionGeneral.icon)}
-            />}
-            // onClick={() => this.select(0)}
           />
         </BottomNavigation> : null
       }
