@@ -19,8 +19,8 @@ import { red400 } from 'material-ui/styles/colors'
 import utilsQuery from '../utils/query'
 
 const start = '-000200-01-05',
-  min = '-002000-01-01T00:00:00.000Z',
-  max = '2017-01-01'
+  min = '-002500-01-01T00:00:00.000Z',
+  max = '2500-01-01'
 
 const SMALLTIMELINEHEIGHT = 120
 const BIGTIMELINEHEIGHT = 400
@@ -281,12 +281,14 @@ class MapTimeline extends Component {
       setYear(clickedYear)
     }
 
-    this.setState({
-      customTimes: {
-        selectedYear: event.time
-      },
-      // ready: false
-    })
+    const selectedYear = event.time.getFullYear()
+    if (selectedYear < 2001 && selectedYear > -2001) {
+      this.setState({
+        customTimes: {
+          selectedYear: new Date(new Date(0, 1, 1).setFullYear(selectedYear)).toISOString()
+        }
+      })
+    }
   };
 
   componentWillReceiveProps = (nextProps) => {

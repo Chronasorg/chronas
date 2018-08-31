@@ -15,16 +15,20 @@ import TextField from 'material-ui/TextField'
 import MenuItem from 'material-ui/MenuItem'
 import ContentFilter from 'material-ui/svg-icons/content/filter-list'
 import IconButton from 'material-ui/IconButton'
+import Avatar from 'material-ui/Avatar'
+import Chip from 'material-ui/Chip'
 import axios from 'axios'
 import { easeCubic } from 'd3-ease'
-import WebMercatorViewport from 'viewport-mercator-project'
-import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import { fromJS } from 'immutable'
 import _ from 'lodash'
 import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
+import WebMercatorViewport from 'viewport-mercator-project'
+import { setYear } from './timeline/actionReducers'
+import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import DeckGLOverlay from './deckGlComponents/deckgl-overlay.js'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import { setModData as setModDataAction, setModToUpdate, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
+import { RulerIcon, CultureIcon, ReligionIcon, ReligionGeneralIcon, ProvinceIcon } from './assets/placeholderIcons'
 import {
   TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectEpicItem, selectAreaItem as selectAreaItemAction,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
@@ -40,7 +44,7 @@ const turf = require('@turf/turf')
 const FLYTOANIMATIONDURATION = 2000
 const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A'
 
-const isStatic = utilsQuery.getURLParameter('isStatic') === "true"
+const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
 
 // defines fill-opacity when Population Opacity is switched on
 const opacityPopBounds = [0.3, 0.8]
@@ -53,6 +57,8 @@ const getRandomInt = (min, max) => {
 let animationInterval = -1
 
 const styles = {
+  chip: {
+  },
   stepLabel: {
     fontWeight: 'bold',
     background: '#9e9e9e',
@@ -1039,14 +1045,20 @@ class Map extends Component {
   }
 
   _changeYear = (year) => {
+    const { activeArea, activeMarkers, changeAreaData, selectedItem, setYear } = this.props
     // TODO: reset selected marker pools
+    if (year > 2000) {
+      return setYear(2000)
+    } else if (year < -2000) {
+      return setYear(-2000)
+    }
 
-    this._addGeoJson(TYPE_MARKER, this.props.activeMarkers, false, year)
+    this._addGeoJson(TYPE_MARKER, activeMarkers, false, year)
     axios.get(properties.chronasApiHost + '/areas/' + year)
       .then((areaDefsRequest) => {
-        this.props.changeAreaData(areaDefsRequest.data)
+        changeAreaData(areaDefsRequest.data)
         this._simulateYearChange(areaDefsRequest.data)
-        this._changeArea(areaDefsRequest.data, this.props.activeArea.label, this.props.activeArea.color, this.props.selectedItem.value)
+        this._changeArea(areaDefsRequest.data, activeArea.label, activeArea.color, selectedItem.value)
         utilsQuery.updateQueryStringParameter('year', year)
       })
   }
@@ -1309,38 +1321,38 @@ class Map extends Component {
                 </IconButton>
    */
   _renderPopup () {
-    const { selectMarkerItem, history } = this.props
-    const { categories, filtered , hoverInfo, expanded, searchMarkerText } = this.state
+    const { activeArea, metadata, selectMarkerItem, history, theme } = this.props
+    const { categories, filtered, hoverInfo, expanded, searchMarkerText } = this.state
     if (hoverInfo) {
       const content = (hoverInfo.feature || [])
       if (Array.isArray(content)) {
         if (expanded) {
           const menuRow = <div style={styles.rootMenu}>
             <TextField
-              style={{ width: 200}}
-              hintText="Search"
+              style={{ width: 200 }}
+              hintText='Search'
               value={searchMarkerText}
-              floatingLabelText="Search Markers"
-              onChange={(event, newValue) => this.setState({searchMarkerText: newValue})}
+              floatingLabelText='Search Markers'
+              onChange={(event, newValue) => this.setState({ searchMarkerText: newValue })}
             />
             <IconMenu
-              style={{ float: 'right'}}
-              iconButtonElement={<IconButton tooltip='Close'><CloseIcon /></IconButton>}
+              style={{ float: 'right' }}
+              iconButtonElement={<IconButton tooltip='Close'><CloseIcon hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
               onClick={() => this.setState({ expanded: false, hoverInfo: null })} />
             <IconMenu
-              iconButtonElement={<IconButton tooltip='Filter'><ContentFilter /></IconButton>}
+              iconButtonElement={<IconButton tooltip='Filter'><ContentFilter hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
               onChange={this.handleChangeFilter}
               // value={filtered}
-              style={{ float: 'right'}}
-              multiple={true}
+              style={{ float: 'right' }}
+              multiple
             >
-              {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category[0]} primaryText={category[1]} disabled={!content.some(linkedItem => linkedItem.subtype === category[0])} />)}
+              {categories.map((category, i) => <MenuItem key={'categoriesMenuItem' + i} value={category[0]} primaryText={category[1]} disabled={!content.some(linkedItem => linkedItem.subtype === category[0])} />)}
             </IconMenu>
           </div>
 
           return (
             <Popup className='mapHoverTooltip interactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
-              <div className='county-info' onMouseLeave={() => {/*this.setState({ expanded: false, hoverInfo: null })*/} } >
+              <div className='county-info' onMouseLeave={() => { /* this.setState({ expanded: false, hoverInfo: null }) */ }} >
                 { menuRow }
                 <Stepper linear={false} connector={null} activeStep={-1} orientation='vertical'
                   style={{ float: 'left', width: '100%', maxHeight: 400, background: '#eceff2', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset', overflow: 'auto' }}>
@@ -1405,11 +1417,86 @@ class Map extends Component {
         )
       }
 
-      return (
-        <Popup className='mapHoverTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
-          <div className='county-info'>{JSON.stringify(hoverInfo)}</div>
-        </Popup>
-      )
+      const properties = (hoverInfo || {}).feature
+      if (properties) {
+        const selectedValues = {
+          'r': metadata.ruler[properties.r] || [],
+          'c': metadata.culture[properties.c] || [],
+          'e': metadata.religion[properties.e] || [],
+          'g': metadata.religionGeneral[properties.g] || [],
+          'p': metadata.province[properties.name] || []
+        }
+
+        // TODO: only color if selected
+        return (
+          <Popup className='dimsTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
+            <div className='county-info'>
+              <Chip
+                className='chipAvatar'
+                labelColor={'rgba(0, 0, 0, 0.87)'}
+                backgroundColor={(activeArea.color === 'ruler') ? (selectedValues['r'][1] || themes[theme].backColors[0]) : themes[theme].backColors[0]}
+                // style={{ border: (activeArea.color === 'ruler') ? ('2px solid ' + themes[theme].highlightColors[0]) : 'none' }}
+              >
+                <Avatar color={themes[theme].backColors[0]}
+                        backgroundColor={themes[theme].foreColors[0]}
+                        {...(selectedValues['r'][3] ? {src: selectedValues['r'][3]} : {icon: <RulerIcon viewBox={'0 0 64 64'} />})}
+                />
+                {selectedValues['r'][0]}
+              </Chip>
+              <Chip
+                className='chipAvatar'
+                labelColor={'rgba(0, 0, 0, 0.87)'}
+                backgroundColor={(activeArea.color === 'culture') ? (selectedValues['c'][1] || themes[theme].backColors[0]) : themes[theme].backColors[0]}
+                // style={{ border: (activeArea.color === 'culture') ? ('2px solid ' + themes[theme].highlightColors[0]) : 'none' }}
+              >
+                <Avatar color={themes[theme].backColors[0]}
+                        backgroundColor={themes[theme].foreColors[0]}
+                        {...(selectedValues['c'][3] ? {src: selectedValues['c'][3]} : {icon: <CultureIcon viewBox={'0 0 64 64'} />})}
+                />
+                {selectedValues['c'][0]}
+              </Chip>
+              <Chip
+                className='chipAvatar'
+                labelColor={'rgba(0, 0, 0, 0.87)'}
+                backgroundColor={(activeArea.color === 'religion') ? (selectedValues['e'][1] || themes[theme].backColors[0]) : themes[theme].backColors[0]}
+                // style={{ border: (activeArea.color === 'religion') ? ('2px solid ' + themes[theme].highlightColors[0]) : 'none' }}
+              >
+                <Avatar color={themes[theme].backColors[0]}
+                        backgroundColor={themes[theme].foreColors[0]}
+                        {...(selectedValues['e'][4] ? {src: selectedValues['e'][4]} : {icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} />})}
+                />
+                {selectedValues['e'][0]}
+              </Chip>
+              <Chip
+                className='chipAvatar'
+                labelColor={'rgba(0, 0, 0, 0.87)'}
+                backgroundColor={(activeArea.color === 'religionGeneral') ? (selectedValues['g'][1] || themes[theme].backColors[0]) : themes[theme].backColors[0]}
+                // style={{ border: (activeArea.color === 'religionGeneral') ? ('2px solid ' + themes[theme].highlightColors[0]) : 'none' }}
+              >
+                <Avatar color={themes[theme].backColors[0]}
+                        backgroundColor={themes[theme].foreColors[0]}
+                        {...(selectedValues['g'][3] ? {src: selectedValues['g'][3]} : {icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} />})}
+                />
+                {selectedValues['g'][0]}
+              </Chip>
+              <Chip
+                className='chipAvatar'
+                labelColor={'rgba(0, 0, 0, 0.87)'}
+                backgroundColor={themes[theme].backColors[0]}
+                style={styles.chip}
+              >
+                <Avatar color={themes[theme].backColors[0]}
+                        backgroundColor={themes[theme].foreColors[0]}
+                        {...(selectedValues['p'][1] ? {src: selectedValues['p'][1]} : {icon: <ProvinceIcon viewBox={'0 0 64 64'} />})}
+                />
+                {selectedValues['p'][0]} ({properties.p > 1000000 ? (properties.p/1000000 + " M") : (properties.p > 1000 ? (properties.p/1000 + " k") : properties.p)})
+              </Chip>
+            </div>
+          </Popup>
+        )
+      } else {
+        return null
+      }
     }
     return null
   }
@@ -1419,19 +1506,19 @@ class Map extends Component {
     const { modActive, menuDrawerOpen, rightDrawerOpen, history, theme, mapStyles, markerTheme, selectedItem, contentIndex } = this.props
 
     let leftOffset = isStatic ? 0 : (menuDrawerOpen) ? 156 : 56
-    if (rightDrawerOpen) leftOffset -= viewport.width * 0.24
+    if (rightDrawerOpen) leftOffset -= viewport.width * 0.25
 
     let modMarker = (
-      ((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined')
-      || ((selectedItem || {}).type === TYPE_EPIC && ((selectedItem.data || {}).data || {}).coo && ((selectedItem.data || {}).data || {}).coo.length > 0 )) ? <Marker
-      captureClick={false}
-      captureDrag={false}
-      latitude={((modActive || {}).data || {})[1] || (((selectedItem.data || {}).data || {}).coo || {})[1]}
-      longitude={((modActive || {}).data || {})[0] || (((selectedItem.data || {}).data || {}).coo || {})[0]}
-      offsetLeft={0}
-      offsetTop={0}>
-      <BasicPin size={40} />
-    </Marker> : null
+      ((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') ||
+      ((selectedItem || {}).type === TYPE_EPIC && ((selectedItem.data || {}).data || {}).coo && ((selectedItem.data || {}).data || {}).coo.length > 0)) ? <Marker
+        captureClick={false}
+        captureDrag={false}
+        latitude={((modActive || {}).data || {})[1] || (((selectedItem.data || {}).data || {}).coo || {})[1]}
+        longitude={((modActive || {}).data || {})[0] || (((selectedItem.data || {}).data || {}).coo || {})[0]}
+        offsetLeft={0}
+        offsetTop={0}>
+        <BasicPin size={40} />
+      </Marker> : null
 
     return (
       <div style={{
@@ -1523,6 +1610,7 @@ const enhance = compose(
     setModToUpdate,
     selectEpicItem,
     selectMarkerItem : selectMarkerItemAction,
+    setYear,
     setModData: setModDataAction,
     removeModData: removeModDataAction,
     addModData: addModDataAction,

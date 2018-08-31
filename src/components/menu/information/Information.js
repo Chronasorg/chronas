@@ -90,10 +90,10 @@ class Information extends PureComponent {
               </ToolbarGroup>
               <ToolbarGroup>
                 <IconButton touch key={'back'} onClick={() => this.props.history.goBack()}>
-                  <IconBack />
+                  <IconBack hoverColor={themes[theme].highlightColors[0]}  />
                 </IconButton>
                 <IconButton touch key={'close'} containerElement={<Link to='/' />}>
-                  <CloseIcon />
+                  <CloseIcon hoverColor={themes[theme].highlightColors[0]} />
                 </IconButton>
               </ToolbarGroup>
             </Toolbar>

@@ -43,7 +43,7 @@ import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
   selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, selectAreaItem, selectMarkerItem
 } from '../map/actionReducers'
-import { RulerIcon, CultureIcon, ReligionIcon, ReligionGeneralIcon } from '../map/assets/placeholderIcons'
+import { RulerIcon, CultureIcon, ReligionIcon, ReligionGeneralIcon, ProvinceIcon } from '../map/assets/placeholderIcons'
 import { ModHome } from './mod/ModHome'
 import {
   setModData as setModDataAction,
@@ -70,6 +70,7 @@ const defaultIcons = {
 
 const styles = {
   articleHeader: {
+    width: 'calc(100$ - 140px)',
     height: '56px',
     overflow: 'hidden'
   },
@@ -736,7 +737,7 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Summary'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<RulerIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<ProvinceIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
             />}
           />
           <BottomNavigationItem
@@ -784,23 +785,23 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Religion'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<ReligionGeneralIcon viewBox={'0 0 200 168'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
             />}
           />
         </BottomNavigation> : null
       }
       iconElementRight={
         <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
-            containerElement={<Link to={modUrl} />}><IconEdit />
+          <IconButton style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+            containerElement={<Link to={modUrl} />}><IconEdit hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+          <IconButton style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleBack()}>
-            <IconBack />
+            <IconBack hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
           <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleClose()}>
-            <IconClose />
+            <IconClose hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
         </div>
       }

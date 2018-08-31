@@ -65,7 +65,7 @@ class Configuration extends PureComponent {
                 </ToolbarGroup>
                 <ToolbarGroup>
                   <IconButton touch={true} key={'close'} containerElement={<Link to="/" />}>
-                    <CloseIcon />
+                    <CloseIcon hoverColor={themes[theme].highlightColors[0]} />
                   </IconButton>
                 </ToolbarGroup>
               </Toolbar>

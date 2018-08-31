@@ -118,7 +118,7 @@
 
 .currentYearLabel {
   background: none;
-  text-shadow: 1px 1px 0 #fff;
+  text-shadow: 0.03em 0 4px white, 0.03em 0 4px white, 0.03em 0 4px white, 0.03em 0 4px white;
   border: 0;
   font-size: 24px;
   cursor: text;
@@ -207,4 +207,43 @@
   font-size: 60px;
   line-height: 1.167;
   letter-spacing: 4px;
+}
+
+.dimsTooltip {
+  transform: translate(0%, -50%) !important;
+  margin-left: 1em;
+
+  .mapboxgl-popup-content {
+    opacity: 0.8;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    text-shadow: 0.03em 0 6px white, 0.03em 0 6px white, 0.03em 0 6px white, 0.03em 0 6px white;
+    //top: 90px;
+    //left: 50%;
+    //margin-top: 40px;
+    //position: relative;
+  }
+  .mapboxgl-popup-tip {
+    display: none
+  }
+
+  .chipAvatar {
+   > div {
+     height: 24px !important;
+     width: 24px !important;
+   }
+  }
+
+  img {
+    height: 24px !important;
+    width: 24px !important;
+    object-fit: cover;
+  }
+
+  span {
+    height: 24px !important;
+    font-weight: bolder !important;
+    line-height: 24px !important;
+  }
 }

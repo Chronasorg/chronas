@@ -25,7 +25,7 @@ import GridTile from '../../overwrites/GridTile'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
 import { selectLinkedItem, selectMarkerItem } from '../../map/actionReducers'
-import { getYoutubeId, properties } from '../../../properties'
+import {getYoutubeId, properties, themes} from '../../../properties'
 
 const imgButton = { width: 20, height: 20 }
 const styles = {
@@ -178,21 +178,21 @@ const styles = {
     bottom: '10%'
   },
   selectedImageTitle: {
-    fontWeight: 400,
+    fontWeight: 600,
     fontSize: '3.125em',
     margin: '.4em 0',
     lineHeight: '1.3',
     textAlign: 'left',
     color: '#fff',
     fontFamily: "'Cinzel', serif",
-    textShadow: '1px 1px 1px black',
+    textShadow: '0.03em 0 6px black, 0.03em 0 6px black, 0.03em 0 6px black, 0.03em 0 6px black',
     padding: 0
   },
   selectedImageDescription: {
-    textShadow: '1px 1px 1px black',
+    textShadow: '0.03em 0 6px black, 0.03em 0 6px black, 0.03em 0 6px black, 0.03em 0 6px black',
     textAlign: 'left',
     fontSize: '1em',
-    fontWeight: 400,
+    fontWeight: 600,
     color: 'rgba(255,255,255,0.87)',
     lineHeight: 1.5,
     margin: 0,
@@ -495,7 +495,7 @@ class Discover extends PureComponent {
   }
 
   render () {
-    const { selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility } = this.props
+    const { selectedYear, translate, rightDrawerOpen, theme, setRightDrawerVisibility } = this.props
     const { slidesData, selectedImage, slideIndex, tileData, tabDataKeys } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
 
@@ -518,7 +518,7 @@ class Discover extends PureComponent {
           tooltipPosition='center-left'
           tooltip={translate('pos.upvote')}
           iconStyle={styles.iconButton}
-        ><IconThumbUp color={upvoteColor} />
+        ><IconThumbUp hoverColor={themes[theme].highlightColors[0]} color={upvoteColor} />
         </IconButton>
         <IconButton
           onClick={() => this._handleDownvote(id, stateData[0])}
@@ -526,7 +526,7 @@ class Discover extends PureComponent {
           iconStyle={styles.iconButton}
           tooltipPosition='center-left'
           tooltip={translate('pos.downvote')}
-        ><IconThumbDown color={downvoteColor} /></IconButton>
+        ><IconThumbDown hoverColor={themes[theme].highlightColors[0]} color={downvoteColor} /></IconButton>
         <div style={styles.scoreLabel}>{ score} </div>
         {(stateData[2] === 'audios' || stateData[2] === 'articles' || stateData[2] === 'ps' || stateData[2] === 'videos') ? <IconButton
           style={styles.sourceButton}
@@ -537,7 +537,7 @@ class Discover extends PureComponent {
           <FloatingActionButton
             mini
             backgroundColor='#aaaaaaba'
-          ><IconOutbound color='white' style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
+          ><IconOutbound hoverColor={themes[theme].highlightColors[0]} color='white' style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
           </FloatingActionButton >
         </IconButton> : null }
         <FloatingActionButton
@@ -545,7 +545,7 @@ class Discover extends PureComponent {
           onClick={() => this._handleEdit(id, stateData[0])}
           backgroundColor='#aaaaaaba'
           style={styles.editButton}
-        ><IconEdit color='white' />
+        ><IconEdit hoverColor={themes[theme].highlightColors[0]} color='white' />
         </FloatingActionButton >
       </div>
     }
@@ -754,6 +754,7 @@ class Discover extends PureComponent {
                 tooltipPosition='bottom-center'
                 tooltip={hasWiki ? translate('pos.discover_component.hasNoArticle') : translate('pos.discover_component.openArticle')}>
                 <RaisedButton
+                  hoverColor={themes[theme].highlightColors[0]}
                   disabled={hasWiki}
                   label='Open Article'
                   primary
@@ -766,6 +767,7 @@ class Discover extends PureComponent {
                 tooltipPosition='bottom-center'
                 tooltip={hasWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
                 <RaisedButton
+                  hoverColor={themes[theme].highlightColors[0]}
                   disabled={hasSource}
                   label='Open Source'
                   primary
@@ -778,6 +780,7 @@ class Discover extends PureComponent {
                 tooltipPosition='bottom-center'
                 tooltip={translate('pos.discover_component.edit')}>
                 <RaisedButton
+                  hoverColor={themes[theme].highlightColors[0]}
                   label='Edit'
                   primary
                   onClick={() => this._handleEdit(selectedImage.source)} />

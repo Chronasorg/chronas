@@ -153,15 +153,14 @@ class ArticleIframe extends React.Component {
       style: styles.fullscreenButton
     }
     const modMenu = <div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : (isProvince) ? { ...styles.actionButtonContainer, top: 378 } : styles.actionButtonContainer } >
-      <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} containerElement={<Link to={modUrl}/>}>
-        <IconEdit hoverColor={chronasMainColor} />
+      <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} containerElement={<Link to={modUrl}/>}>
+        <IconEdit style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton>
-      <IconButton {...iconEnterFullscreen}>
-        <FullscreenEnterIcon
-          hoverColor={chronasMainColor} />
+      <IconButton style={{ width: 32 }} {...iconEnterFullscreen}>
+        <FullscreenEnterIcon style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton>
-      { !(isEntity || isProvince) && <IconButton iconStyle={{textAlign: 'right', fontSize: '12px', color: grey600}} onClick={() => this._handleClose()}>
-        <IconClose hoverColor={chronasMainColor} />
+      { !(isEntity || isProvince) && <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._handleClose()}>
+        <IconClose style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton> }
     </div>
 
@@ -198,7 +197,7 @@ class ArticleIframe extends React.Component {
             key={'close'}
             onClick={this._exitFullscreen}
           >
-            <CloseIcon color={'white'} />
+            <CloseIcon hoverColor={themes[theme].highlightColors[0]} color={'white'} />
           </FloatingActionButton >
           }
         </Dialog>

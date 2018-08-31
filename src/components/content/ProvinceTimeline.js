@@ -4,8 +4,8 @@ import Timeline from 'react-visjs-timeline'
 import ArticleIframe from './ArticleIframe'
 
 const start = '0000-01-01',
-  min = '-002000-01-01T00:00:00.000Z',
-  max = '2017-01-01'
+  min = '-002500-01-01T00:00:00.000Z',
+  max = '2500-01-01'
 
 const styles = {
   stepLabel: {

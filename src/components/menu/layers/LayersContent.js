@@ -158,7 +158,9 @@ class LayerContent extends Component {
                                          paddingLeft: 2
                                        }}> <Checkbox
                                        onCheck={() => { this.setState({ locked: !locked }) }}
-                                       style={{/*
+                                       style={{
+                                         left: -3
+                                         /*
                   position: 'absolute',
                   left: 57,
                   top: -2*/ }}

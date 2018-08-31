@@ -284,9 +284,12 @@ button:focus {
   background: #cbcdce7a !important
 }
 
-.articleHeader > div {
-  width: 100%;
-  margin-top: 0 !important
+.articleHeader {
+  width: calc(100% - 78px);
+  > div {
+    width: 100%;
+    margin-top: 0 !important
+  }
 }
 
 .influenceChart {
