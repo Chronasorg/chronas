@@ -43,7 +43,7 @@ import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
   selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, selectAreaItem, selectMarkerItem
 } from '../map/actionReducers'
-import { RulerIcon } from '../map/assets/placeholderIcons'
+import { RulerIcon, CultureIcon, ReligionIcon, ReligionGeneralIcon } from '../map/assets/placeholderIcons'
 import { ModHome } from './mod/ModHome'
 import {
   setModData as setModDataAction,
@@ -736,7 +736,7 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Summary'
-              avatar={this._getFullIconURL(entityMeta.province.icon)}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<RulerIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
             />}
           />
           <BottomNavigationItem
@@ -752,7 +752,7 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Ruler'
-              avatar={<Avatar color={themes[theme].foreColors[0]} icon={<RulerIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<RulerIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
             />}
           />
           <BottomNavigationItem
@@ -768,7 +768,7 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Culture'
-              avatar={this._getFullIconURL(entityMeta.culture.icon)}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<CultureIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
             />}
           />
           <BottomNavigationItem
@@ -784,7 +784,7 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Religion'
-              avatar={this._getFullIconURL(entityMeta.religion.icon)}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<ReligionGeneralIcon viewBox={'0 0 200 168'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
             />}
           />
         </BottomNavigation> : null

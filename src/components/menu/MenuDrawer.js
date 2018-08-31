@@ -46,7 +46,7 @@ class MenuDrawer extends PureComponent {
                 >LAYERS</span>
               }
               showMenuIconButton={false}
-              style={{ backgroundColor: themes[theme].backColors[0] }}
+              style={{ backgroundColor: themes[theme].backColors[0], boxShadow: 'rgba(0, 0, 0, 0.4) 3px 6px 6px -3px' }}
               iconElementRight={
                 <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }} onClick={() => this.handleClose()}>
                   <FontIcon style={{ color: themes[theme].foreColors[0] }} className="fa fa-chevron-left"/>

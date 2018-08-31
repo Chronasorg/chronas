@@ -19,7 +19,7 @@ import Checkbox from 'material-ui/Checkbox'
 import RadioButton from 'material-ui/RadioButton'
 import Toggle from 'material-ui/Toggle'
 import ActionGrade from 'material-ui/svg-icons/action/grade'
-import AreaIcon from 'material-ui/svg-icons/maps/layers'
+import AreaIcon from 'material-ui/svg-icons/maps/map'
 import MarkerIcon from 'material-ui/svg-icons/maps/place'
 import EpicIcon from 'material-ui/svg-icons/image/burst-mode'
 import LockOpenIcon from 'material-ui/svg-icons/action/lock-open'
@@ -86,7 +86,7 @@ const styles = {
     overflowX: 'hidden',
     justifyContent: 'flex-start',
     height: '100%',
-    padding: '18px 0px',
+    padding: '0px 0px',
     paddingLeft: '7px',
     background: 'white',
     boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset'
