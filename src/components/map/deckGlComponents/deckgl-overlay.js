@@ -383,7 +383,7 @@ export default class DeckGLOverlay extends Component {
         autoHighlight: true,
         highlightColor: RGBAtoArray(theme.highlightColors[0]),
         data: marker,
-        opacity: 0.4,
+        opacity: 0.8,
         pickable: true,
         iconAtlas: showCluster
           ? ('/images/' + markerTheme + '-cluster-atlas.png')

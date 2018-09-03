@@ -19,7 +19,7 @@ import { LoadingCircle } from '../global/LoadingCircle'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import utilsQuery from "../map/utils/query";
 import { themes } from '../../properties'
-import {selectLinkedItem, TYPE_AREA, TYPE_MARKER, TYPE_LINKED, WIKI_PROVINCE_TIMELINE} from "../map/actionReducers";
+import { setData, selectMarkerItem, selectLinkedItem, TYPE_AREA, TYPE_MARKER, TYPE_LINKED, WIKI_PROVINCE_TIMELINE } from "../map/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "./actionReducers";
 import {resetModActive, setFullModActive} from "../restricted/shared/buttons/actionReducers";
 
@@ -133,16 +133,45 @@ class ArticleIframe extends React.Component {
     }
   }
 
+  _goToMod = (modUrl, isProvince) => {
+    const { selectedItem, setData, setMetadataType, selectedTypeId, selectLinkedItem, selectMarkerItem, history } = this.props
+
+    const epicContentItem = ((selectedItem.data || {}).content || [])[(selectedItem.data || {}).contentIndex || 0]
+
+    if (isProvince) {
+      setData({ id: selectedTypeId.id })
+      setMetadataType(selectedTypeId.type)
+    } else if (epicContentItem) {
+      if (epicContentItem.isMarker) {
+        selectMarkerItem(epicContentItem.wiki, {
+          "_id": epicContentItem.wiki,
+          "name": epicContentItem.name,
+          "type": epicContentItem.type,
+          "year": epicContentItem.date,
+          "coo": (epicContentItem.geometry || {}).coordinates
+        })
+      } else if (!epicContentItem.isMarker) {
+        // selectLinkedItem(epicContentItem.wiki)
+        // setData({ id: epicContentItem.wiki })
+      }
+      // setMetadataType(selectedTypeId.type)
+    }
+    history.push(modUrl)
+  }
+
   render () {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
     const { hasChart, selectedItem, selectedWiki, theme, isEntity, customStyle } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
+    const epicContentItem = ((selectedItem.data || {}).content || [])[(selectedItem.data || {}).contentIndex || 0]
     const isMedia = selectedItem.type === TYPE_LINKED
     const isArea = selectedItem.type === TYPE_AREA
     const isProvince = selectedItem.wiki === WIKI_PROVINCE_TIMELINE
     const noWiki = (!selectedItem || !selectedWiki || selectedWiki === -1)
-    const modUrl = isMarker ?  '/mod/markers' : '/mod/metadata'
+    const modUrl = epicContentItem
+      ? (epicContentItem.isMarker ? '/mod/markers' : '/mod/metadata')
+      : (isMarker ?  '/mod/markers' : '/mod/metadata')
 
     const iconEnterFullscreen = {
       key: 'random',
@@ -152,14 +181,14 @@ class ArticleIframe extends React.Component {
       onClick: () => this._enterFullscreen(),
       style: styles.fullscreenButton
     }
-    const modMenu = <div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : (isProvince) ? { ...styles.actionButtonContainer, top: 378 } : styles.actionButtonContainer } >
-      <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} containerElement={<Link to={modUrl}/>}>
+    const modMenu = <div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : (isProvince) ? { ...styles.actionButtonContainer, top: 332 } : styles.actionButtonContainer } >
+      <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._goToMod(modUrl, isProvince)} >
         <IconEdit style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton>
-      <IconButton style={{ width: 32 }} {...iconEnterFullscreen}>
+      <IconButton {...iconEnterFullscreen} style={{ width: !(isEntity || isProvince) ? 32 : 'inherit' }} >
         <FullscreenEnterIcon style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton>
-      { !(isEntity || isProvince) && <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._handleClose()}>
+      { !(isEntity || isProvince) && <IconButton style={{  }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._handleClose()}>
         <IconClose style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton> }
     </div>
@@ -214,6 +243,9 @@ const enhance = compose(
     theme: state.theme,
   }), {
     setRightDrawerVisibility,
+    setData,
+    selectMarkerItem,
+    selectLinkedItem
   }),
   pure,
   translate,

@@ -78,6 +78,8 @@ class Configuration extends PureComponent {
                             onClick={() => changeTheme('dark')} />
               <RaisedButton style={styles.button} label={translate('pos.theme.luther')} primary={theme === 'luther'}
                             onClick={() => changeTheme('luther')} />
+              {/*<RaisedButton style={styles.button} label={translate('pos.theme.golden')} primary={theme === 'golden'}*/}
+                            {/*onClick={() => changeTheme('golden')} />*/}
             </CardText>
             <CardText>
               <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.language')}</div>

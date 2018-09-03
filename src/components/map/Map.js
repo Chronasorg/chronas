@@ -1329,25 +1329,25 @@ class Map extends Component {
         if (expanded) {
           const menuRow = <div style={styles.rootMenu}>
             <TextField
-              style={{ width: 200 }}
+              style={{ width: 160, marginRight: 20, marginTop: -16 /*, height: 48 */}}
               hintText='Search'
               value={searchMarkerText}
               floatingLabelText='Search Markers'
               onChange={(event, newValue) => this.setState({ searchMarkerText: newValue })}
             />
             <IconMenu
-              style={{ float: 'right' }}
-              iconButtonElement={<IconButton tooltip='Close'><CloseIcon hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
-              onClick={() => this.setState({ expanded: false, hoverInfo: null })} />
-            <IconMenu
               iconButtonElement={<IconButton tooltip='Filter'><ContentFilter hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
               onChange={this.handleChangeFilter}
               // value={filtered}
-              style={{ float: 'right' }}
+              style={{ top: -16 /*float: 'right'*/ }}
               multiple
             >
               {categories.map((category, i) => <MenuItem key={'categoriesMenuItem' + i} value={category[0]} primaryText={category[1]} disabled={!content.some(linkedItem => linkedItem.subtype === category[0])} />)}
             </IconMenu>
+            <IconMenu
+              style={{ top: -16 /*float: 'right'*/ }}
+              iconButtonElement={<IconButton tooltip='Close'><CloseIcon hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+              onClick={() => this.setState({ expanded: false, hoverInfo: null })} />
           </div>
 
           return (

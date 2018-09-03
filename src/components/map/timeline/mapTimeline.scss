@@ -9,6 +9,13 @@
 }
 
 .ProvinceTimeline {
+  > div {
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-top: -2em;
+    margin-bottom: -2em;
+  }
+
   .vis-timeline {
     visibility: visible !important;
     border: none;

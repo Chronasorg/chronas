@@ -309,7 +309,7 @@ class Content extends Component {
 
   render () {
     const { activeContentMenuItem, hasQuestions, sunburstData, iframeLoading, selectedWiki, linkedItems } = this.state
-    const { activeArea, deselectItem, selectedItem, rulerEntity, provinceEntity, selectedYear, theme, metadata, newWidth, history } = this.props
+    const { activeArea, deselectItem, selectedItem, rulerEntity, provinceEntity, selectedYear, setMetadataType, theme, metadata, newWidth, history } = this.props
 
     const finalLinkedItems = (linkedItems || {}).id ? linkedItems : ((selectedItem.data || {}).data || {}).data || { media: [], content: [], id: '' }
     const shouldLoad = (iframeLoading || selectedWiki === null)
@@ -362,7 +362,7 @@ class Content extends Component {
           sunburstData={sunburstData}
           linkedItems={finalLinkedItems} />
         : provinceTimelineOpen
-          ? <ProvinceTimeline deselectItem={deselectItem} selectedItem={selectedItem} metadata={metadata} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
+          ? <ProvinceTimeline deselectItem={deselectItem} history={history} selectedItem={selectedItem} metadata={metadata} setMetadataType={setMetadataType} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
           : <div style={{ height: '100%' }}>
               <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } qName={ selectedWiki || '' } />
               <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems.media} selectedYear={selectedYear} qName={ selectedWiki || '' } />

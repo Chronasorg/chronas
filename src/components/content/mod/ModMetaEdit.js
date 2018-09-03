@@ -45,14 +45,14 @@ export const ModMetaEdit = (props) => {
   let newEntity = ((props.activeArea.data || {})[props.selectedItem.value] || [])[utils.activeAreaDataAccessor(props.activeArea.color)]
 
   if (routeNotYetSetup()) {
-    if (selectedItem.type === TYPE_EPIC) {
-      props.setMetadataType('e')
+    if (selectedItem.type === TYPE_EPIC || selectedItem.wiki === "WIKI_PROVINCE_TIMELINE") {
+      if (selectedItem.wiki !== "WIKI_PROVINCE_TIMELINE") props.setMetadataType('e')
       newEntity = ((props.selectedItem || {}).data || {}).id
     } else if (props.activeArea.color && (!props.metadataType || props.metadataType !== props.activeArea.color)) {
       props.setMetadataType(props.activeArea.color)
     }
 
-    if (newEntity && props.selectedItem.value && (!props.metadataEntity || props.metadataEntity !== newEntity)) {
+    if (newEntity && props.selectedItem.value && ((!props.metadataEntity || props.metadataEntity !== newEntity) || props.metadataEntity !== newEntity)) {
       props.setMetadataEntity(newEntity, selectedItem.type === TYPE_EPIC)
     }
   }

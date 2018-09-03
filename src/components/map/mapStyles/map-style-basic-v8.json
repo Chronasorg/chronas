@@ -81,7 +81,7 @@
     {
       "id": "basemap",
       "type": "raster",
-      "source": "watercolor",
+      "source": "topographic",
       "paint": {
         "raster-saturation": 0
       }

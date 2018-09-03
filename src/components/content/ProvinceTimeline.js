@@ -51,6 +51,7 @@ const styles = {
 class ProvinceTimeline extends React.Component {
   state = {
     selectedWiki: null,
+    selectedTypeId: undefined,
     stepIndex: 0,
     timelineOptions: {
       width: '100%',
@@ -84,9 +85,12 @@ class ProvinceTimeline extends React.Component {
   }
 
   _onClickTimeline = (props, event) => {
-    const wikiId = (props.group === 'capital') ? this.props.metadata[props.group][props.item.split("||")[2]] : this.props.metadata[props.group][props.item.split("||")[2]][2]
+    // if (!props.item) return
+    const dimId = props.item.split('||')[2]
+    const wikiId = (props.group === 'capital') ? this.props.metadata[props.group][dimId] : this.props.metadata[props.group][dimId][2]
     this.setState({
-      selectedWiki: wikiId
+      selectedWiki: wikiId,
+      selectedTypeId: { type: props.group, id: dimId }
     })
   };
 
@@ -94,18 +98,18 @@ class ProvinceTimeline extends React.Component {
     const { provinceEntity, metadata } = this.props
 
     const toSelect = metadata.province[nextProps.provinceEntity.id]
-    const newWiki = (typeof toSelect === "object") ? toSelect[0] : toSelect
+    const newWiki = (typeof toSelect === 'object') ? toSelect[0] : toSelect
 
     if (this.state.selectedWiki !== newWiki) {
       this.setState({
-        selectedWiki: (typeof toSelect === "object") ? toSelect[0] : toSelect
+        selectedWiki: (typeof toSelect === 'object') ? toSelect[0] : toSelect
       })
     }
   }
 
   render () {
-    const { timelineOptions, selectedWiki } = this.state
-    const { activeArea, history, selectedItem, selectedYear, provinceEntity, metadata, deselectItem } = this.props
+    const { timelineOptions, selectedWiki, selectedTypeId } = this.state
+    const { activeArea, history, selectedItem, selectedYear, setMetadataType, provinceEntity, metadata, deselectItem } = this.props
     const contentStyle = {
       padding: '8px 0px 0px 8px',
       height: '100%',
@@ -116,23 +120,31 @@ class ProvinceTimeline extends React.Component {
 
     const groups = [{
       id: 'ruler',
-      content: 'Ruler'},{
+      content: 'Ruler'
+    },
+    {
       id: 'religion',
-      content: 'Religion'},{
+      content: 'Religion'
+    },
+    {
       id: 'religionGeneral',
-      content: 'Religion General'},{
+      content: 'Religion General'
+    },
+    {
       id: 'culture',
-      content: 'Culture'},{
+      content: 'Culture'
+    },
+    {
       id: 'capital',
-      content: 'Capital'}
-      ]
+      content: 'Capital'
+    }
+    ]
 
     const items = []
 
     Object.keys(provinceEntityData).forEach((key) => {
       provinceEntityData[key].forEach((item, index, array) => {
-        if (key !== 'population')
-        {
+        if (key !== 'population') {
           const startYear = +Object.keys(item)[0],
             endYear = (index === array.length - 1) ? 2000 : +Object.keys(array[index + 1])[0],
             dimKey = Object.values(item)[0],
@@ -147,7 +159,7 @@ class ProvinceTimeline extends React.Component {
             start: new Date(new Date(0, 1, 1).setFullYear(startYear)),
             end: new Date(new Date(0, 1, 1).setFullYear(endYear)),  // end is optional
             content: itemTitle,
-            id: key + "||" + index + "||" + dimKey,
+            id: key + '||' + index + '||' + dimKey,
             group: key,
             type: 'range',
             style: (key === 'capital') ? '' : 'background: ' + (metadata[key][dimKey] || {})[1],
@@ -158,7 +170,7 @@ class ProvinceTimeline extends React.Component {
     })
 
     return (
-      <div className="ProvinceTimeline" style={{ width: '100%', height: '100%', overflow: 'auto', display: 'inline-table' }}>
+      <div className='ProvinceTimeline' style={{ width: '100%', height: '100%', overflow: 'auto', display: 'inline-table' }}>
         <Timeline
           options={timelineOptions}
           customTimes={new Date(new Date(0, 1, 1).setFullYear(+selectedYear))}
@@ -167,7 +179,7 @@ class ProvinceTimeline extends React.Component {
           clickHandler={this._onClickTimeline.bind(this)}
         />
         <div style={contentStyle}>
-          <ArticleIframe history={history} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki } selectedItem={ selectedItem } deselectItem={deselectItem} />
+          <ArticleIframe history={history} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki} selectedTypeId={selectedTypeId} selectedItem={selectedItem} setMetadataType={setMetadataType} provinceType={''} deselectItem={deselectItem} />
         </div>
       </div>
     )

@@ -314,7 +314,7 @@ class RightDrawerRoutes extends PureComponent {
   routeNotYetSetup = () => {
     const { activeArea, location, selectedItem } = this.props
     const oldrouteKey = this.state.routeKey
-    const newrouteKey = location.pathname + activeArea.color + selectedItem.value
+    const newrouteKey = location.pathname + activeArea.color + selectedItem.value + ((selectedItem || {}).data || {}).id
 
     if (oldrouteKey === newrouteKey) {
       return false
@@ -931,6 +931,7 @@ class RightDrawerRoutes extends PureComponent {
               metadata,
               rulerEntity,
               provinceEntity,
+              setMetadataType: this.setMetadataType,
               selectedYear,
               newWidth,
               setPartOfItems: this._setPartOfItems,

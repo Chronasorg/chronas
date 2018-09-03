@@ -28,9 +28,10 @@ body {
 .vis-item {
   border-width: 0px !important;
 }
-
-.vis-panel.vis-center {
-  top: 4px !important;
+.mapTimeline {
+  .vis-panel.vis-center {
+    top: 4px !important;
+  }
 }
 
 .vis-selected {

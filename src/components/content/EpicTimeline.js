@@ -23,7 +23,7 @@ import {
 } from '../map/actionReducers'
 import InfluenceChart from './Charts/ChartArea'
 import ArticleIframe from './ArticleIframe'
-import { getYoutubeId, themes, properties } from '../../properties'
+import { getYoutubeId, itemTypeToName, themes, properties } from '../../properties'
 
 /**
  * Non-linear steppers allow users to enter a multi-step flow at any point.
@@ -56,9 +56,10 @@ const styles = {
     fontWeight: 'bold',
     background: '#9e9e9e',
     padding: ' 5px',
+    marginLeft: '-8px',
     borderRadius: '15px',
     color: 'white',
-    marginLeft: '-5px',
+    // marginLeft: '-5px',
     // whiteSpace: 'nowrap'
   },
   stepContainer: {
@@ -491,7 +492,7 @@ class EpicTimeline extends React.Component {
                     textOverflow: 'ellipsis',
                     position: 'absolute',
                     width: '20$',
-                    left: '60px',
+                    left: '50px',
                     top: '16px',
                     fontSize: '15px',
                     color: themes[theme].foreColors[0]
@@ -504,12 +505,12 @@ class EpicTimeline extends React.Component {
                     textOverflow: 'ellipsis',
                     position: 'absolute',
                     width: '20$',
-                    left: '60px',
+                    left: '50px',
                     top: '32px',
                     fontSize: '12px',
                     color: themes[theme].foreColors[1]
                   }}>
-                    {epicContent.type}
+                    {itemTypeToName[epicContent.type]}
                   </div>
 
                 </StepButton>

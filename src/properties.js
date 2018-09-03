@@ -1,3 +1,9 @@
+const arrayToObject = (array) =>
+  array.reduce((obj, item) => {
+    obj[item[0]] = item[1]
+    return obj
+  }, {})
+
 export const markerIdNameArray = [
   ['ar', 'Artifacts', 'Artifacts', 'Artifacts'],
   ['b', 'Battles -> Battles', 'Battles', 'Battles'],
@@ -17,12 +23,14 @@ export const markerIdNameArray = [
 ]
 
 export const epicIdNameArray = [
-    ['bio', 'Biography', 'rgba(0, 128, 0, 0.5)'],
-    ['c', 'Conflicts', 'rgba(255, 165, 0, 0.5)'],
-    ['e', 'Exploration', 'rgba(0, 0, 255, 0.5)'],
-    ['w', 'War', 'rgba(214, 0, 0, 0.5)'],
-    ['o', 'Other Epic', 'rgba(255, 255, 255, 0.5)']
+    ['ebio', 'Biography', 'rgba(0, 128, 0, 0.5)'],
+    ['ec', 'Conflicts', 'rgba(255, 165, 0, 0.5)'],
+    ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)'],
+    ['ew', 'War', 'rgba(214, 0, 0, 0.5)'],
+    ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)']
 ]
+
+export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray))
 
 const iconWidthModern = 128
 const iconHeightModern = 169
@@ -458,12 +466,6 @@ export const iconMapping = {
   }
 }
 
-const arrayToObject = (array) =>
-  array.reduce((obj, item) => {
-    obj[item[0]] = item[1]
-    return obj
-  }, {})
-
 export const markerIdNameObject = arrayToObject(markerIdNameArray)
 
 export const epicIdNameObject = arrayToObject(epicIdNameArray)
@@ -551,7 +553,7 @@ export const properties = {
     { name: 'Themed', id: 'themed' },
     { name: 'Themed (Painted)', id: 'themed-painted' }
   ],
-  markerSize: 200,
+  markerSize: 100,
   YOUTUBEOPTS: {
     height: '100%',
     width: '100%',
@@ -609,7 +611,19 @@ export const themes = {
     highlightColors: ['rgba(69,28,46,200)'],
     gradientColors: ['linear-gradient(180deg,#011c31 0,#451c2e)'],
     className: 'lutherTheme'
-  }
+  },
+  // golden: {
+  //   foreColors: ['#a69867',
+  //     '#000',
+  //     '#e9caab'],
+  //   backColors: ['#3a2931',
+  //     '#F2F2F2',
+  //     '#451c2e'],
+  //   borderColors: ['rgba(200,200,200,100)'],
+  //   highlightColors: ['rgba(166,152,103,255)'],
+  //   gradientColors: ['linear-gradient(180deg,#3a2931 0,#3e2931)', 'linear-gradient(180deg,#a3886e 0,#967757)'],
+  //   className: 'goldenTheme'
+  // }
 }
 
 export const RGBAtoArray = (str) => {
