@@ -78,6 +78,13 @@ export default {
     welcome: 'Welcome',
   },
   resources: {
+    links: {
+      fields : {
+        source: 'Source article receiving links',
+        media_list: 'Items to appear in the media section',
+        content_list: 'Items to appear in the left content list section',
+      }
+    },
     areas: {
       fields: {
         province_list: 'Click on provinces to selecect/ deselect',

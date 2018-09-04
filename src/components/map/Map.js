@@ -1510,11 +1510,16 @@ class Map extends Component {
 
     let modMarker = (
       ((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') ||
-      ((selectedItem || {}).type === TYPE_EPIC && ((selectedItem.data || {}).data || {}).coo && ((selectedItem.data || {}).data || {}).coo.length > 0)) ? <Marker
+      ((selectedItem || {}).type === TYPE_LINKED && ((selectedItem.value || {}).coo || []).length > 0) ||
+      ((selectedItem || {}).type === TYPE_EPIC && (((selectedItem.data || {}).data || {}).coo || []).length > 0)) ? <Marker
         captureClick={false}
         captureDrag={false}
-        latitude={((modActive || {}).data || {})[1] || (((selectedItem.data || {}).data || {}).coo || {})[1]}
-        longitude={((modActive || {}).data || {})[0] || (((selectedItem.data || {}).data || {}).coo || {})[0]}
+        latitude={((modActive || {}).data || {})[1] ||
+        (((selectedItem.data || {}).data || {}).coo || {})[1] ||
+        ((selectedItem.value || {}).coo || {})[1]}
+        longitude={((modActive || {}).data || {})[0] ||
+        (((selectedItem.data || {}).data || {}).coo || {})[0] ||
+        ((selectedItem.value || {}).coo || {})[0]}
         offsetLeft={0}
         offsetTop={0}>
         <BasicPin size={40} />

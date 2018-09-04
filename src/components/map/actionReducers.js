@@ -55,12 +55,12 @@ export const selectEpicItem = (wiki, year) => ({
   payload: [wiki, year],
 })
 
-export const selectLinkedItem = (value) => ({
+export const selectLinkedItem = (wiki, value = wiki) => ({
   type: SET_LINKED_ITEM,
-  payload: [value, value],
+  payload: [wiki, value],
 })
 
-export const selectMarkerItem = (wiki, value) => ({
+export const selectMarkerItem = (wiki, value = wiki) => ({
   type: SET_MARKER_ITEM,
   payload: [wiki, value],
 })

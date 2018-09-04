@@ -101,7 +101,7 @@ export const ModMetaAdd = (props) => {
     { id: 'religionGeneral', name: 'Religion (General)' },
     // { id: 'capital', name: 'Capital' },
     { id: 'province', name: 'Province' },
-    // { id: 'e', name: 'Epic' },
+    { id: 'e', name: 'Epic' },
   ]
 
   const validateValueInput = (values) => {
@@ -131,65 +131,65 @@ export const ModMetaAdd = (props) => {
     'e':
   <MetaForm validate={validateValueInput} {...props} redirect='create' >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-    <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-    <TextInput type='url' source='poster' label='resources.areas.fields.poster' />
-    <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' />
-    <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' />
-    <TextInput type='number' source='end' label='resources.areas.fields.end' />
-    <EmbeddedArrayInput source='participants'>
-      <EmbeddedArrayInput source='participantTeam'>
-        <AutocompleteInput source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
+    <TextInput options={{ fullWidth: true }} type='url' source='poster' label='resources.areas.fields.poster' />
+    <AutocompleteInput options={{ fullWidth: true }} validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='number' source='start' label='resources.areas.fields.start' />
+    <TextInput options={{ fullWidth: true }} type='number' source='end' label='resources.areas.fields.end' />
+    <EmbeddedArrayInput options={{ fullWidth: true }} source='participants'>
+      <EmbeddedArrayInput options={{ fullWidth: true }} source='participantTeam'>
+        <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
       </EmbeddedArrayInput>
     </EmbeddedArrayInput>
     <EmbeddedArrayInput validate={required} source='content' label='Content (shows up in left content column, if it doesnt exist yet, you can create _media/ others_ and _markers_ to be added here)'>
       <SelectInput validate={required} source='contentType' choices={contentType} onChange={(val, v) => { props.setContentType(v) }} defaultValue={props.contentType} />
-      <AutocompleteInput validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { console.debug(val); return props.setSearchSnippet(val) }} />
+      <AutocompleteInput options={{ fullWidth: true }} validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { console.debug(val); return props.setSearchSnippet(val) }} />
     </EmbeddedArrayInput>
-    <TextInput type='text' source='title' label='resources.areas.fields.title' />
-    <ModButton modType='marker' />
-    <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
-    <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
-    <TextInput type='text' source='partOf' label='resources.areas.fields.partOf' />
+    <TextInput options={{ fullWidth: true }} type='text' source='title' label='resources.areas.fields.title' />
+    <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
+    <NumberInput style={{ width: '30%', float: 'left' }} options={{ fullWidth: true }} onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
+    <NumberInput style={{ width: '30%', float: 'right' }} options={{ fullWidth: true }} onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
+    <TextInput options={{ fullWidth: true }} type='text' source='partOf' label='resources.areas.fields.partOf' />
   </MetaForm>,
     'ruler':
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-    <AutocompleteDisallowInput source='name' choices={choicesRuler} label='resources.areas.fields.display_name' />
-    <ColorInput validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
-    <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-    <TextInput validate={required} type='text' source='icon' label='resources.areas.fields.text' />
+    <AutocompleteDisallowInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.display_name' />
+    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='text' source='icon' label='resources.areas.fields.text' />
   </MetaForm>,
     'religion':
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-    <AutocompleteDisallowInput validate={required} source='name' choices={choicesReligion} label='resources.areas.fields.display_name' />
-    <AutocompleteInput validate={required} source='parentname' choices={choicesReligionGeneral} label='resources.areas.fields.main_religion_name' />
-    <ColorInput validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
-    <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-    <TextInput validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
+    <AutocompleteDisallowInput options={{ fullWidth: true }} validate={required} source='name' choices={choicesReligion} label='resources.areas.fields.display_name' />
+    <AutocompleteInput options={{ fullWidth: true }} validate={required} source='parentname' choices={choicesReligionGeneral} label='resources.areas.fields.main_religion_name' />
+    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
     'religionGeneral':
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-    <AutocompleteDisallowInput validate={required} source='name' choices={choicesReligionGeneral} label='resources.areas.fields.display_name' />
-    <ColorInput validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
-    <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-    <TextInput validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
+    <AutocompleteDisallowInput options={{ fullWidth: true }} validate={required} source='name' choices={choicesReligionGeneral} label='resources.areas.fields.display_name' />
+    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
     'culture':
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-    <AutocompleteDisallowInput validate={required} source='name' choices={choicesCulture} label='resources.areas.fields.display_name' />
-    <ColorInput validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
-    <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-    <TextInput validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
+    <AutocompleteDisallowInput options={{ fullWidth: true }} validate={required} source='name' choices={choicesCulture} label='resources.areas.fields.display_name' />
+    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='resources.areas.fields.color' picker='Compact' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
     'capital':
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-    <AutocompleteDisallowInput validate={required} source='name' choices={choicesCapital} label='resources.areas.fields.display_name' />
-    <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-    <TextInput validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
+    <AutocompleteDisallowInput options={{ fullWidth: true }} validate={required} source='name' choices={choicesCapital} label='resources.areas.fields.display_name' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
     'default':
   <MetaForm validate={validateValueInput} {...props} >

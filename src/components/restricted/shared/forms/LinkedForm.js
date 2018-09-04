@@ -37,23 +37,31 @@ export class LinkedForm extends Component {
         if (values.onlyEpicContent !== initialValues.onlyEpicContent) bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
         if (values.year !== initialValues.year) bodyToSend.year = values.year
         if (values.subtype !== initialValues.subtype) bodyToSend.subtype = values.subtype
-        if (values.coo && !values.coo.every( e => initialValues.coo.includes(e) )) bodyToSend.coo = values.coo
+        if (values.coo && !values.coo.every( e => (initialValues.coo || []).includes(e) )) bodyToSend.coo = values.coo
         if (values.wiki !== initialValues.wiki) bodyToSend.wiki = values.wiki
 
         // any data changed?
         if (values.description !== initialValues.description ||
-          values.source !== initialValues.source) {
+          values.source !== initialValues.source ||
+          values.content !== initialValues.content ||
+          values.poster !== initialValues.poster ||
+          values.geojson !== initialValues.geojson ||
+          values.end !== initialValues.end ||
+          JSON.stringify(values.participants || {}) !== JSON.stringify(initialValues.participants || {})) {
           bodyToSend.data = {
             title: initialValues.description,
             source: initialValues.source,
             poster: initialValues.poster,
             content: initialValues.content,
-            geojson: initialValues.geojson
+            geojson: initialValues.geojson,
+            start: initialValues.year,
+            end: initialValues.end,
+            participants: (values.participants || []).map(el => el.participantTeam.map(el2 => el2.name))
           }
           if (values.source !== initialValues.source) bodyToSend.data.source = values.source
           if (values.poster !== initialValues.poster) bodyToSend.data.poster = values.poster
           if (values.description !== initialValues.description) bodyToSend.data.title = values.description
-          if (values.content !== initialValues.content) bodyToSend.data.content = values.content
+          if (values.end !== initialValues.end) bodyToSend.data.end = values.end
           if (values.geojson && values.geojson !== initialValues.geojson) bodyToSend.data.geojson = JSON.parse(values.geojson)
         }
         // attempt post marker if wiki + lat long + year available and wiki new
@@ -68,15 +76,16 @@ export class LinkedForm extends Component {
         if (values.wiki) bodyToSend.wiki = values.wiki
         if (values.coo) bodyToSend.coo = values.coo
 
-        // any data changed?
-        if (values.description || values.source || values.poster) {
-          bodyToSend.data = {
-            title: values.description,
-            source: values.source,
-            poster: values.poster,
-            content: values.content,
-            geojson: geojson
-          }
+        // have data?
+        bodyToSend.data = {
+          title: values.description,
+          source: values.source,
+          poster: values.poster,
+          content: values.content,
+          geojson: geojson,
+          start: values.year,
+          end: values.end,
+          participants: (values.participants || []).map(el => el.participantTeam.map(el2 => el2.name))
         }
       }
 

@@ -55,15 +55,14 @@ export const ModLinksEdit = (props) => {
   return  <div>
     <AddEditLinkNavigation pathname={props.location.pathname} />
     <Divider/>
-    <Create {...props}>
+    <Create title={'Link Articles and Media'} {...props}>
     <LinksForm {...props}  toolbar={<CustomToolbar />} redirect='create' defaultValue={props.linkedItemData}>
-      <Subheader>Item to link</Subheader>
       <AutocompleteInput setLinkedItemData={props.setLinkedItemData}
                          elStyle={{ width: '100%' }}
                          validate={required}
                          source='linkedItemKey1'
                          choices={props.linkedItemData.linkedItemKey1choice}
-                         label='resources.areas.fields.participant'
+                         label='resources.links.fields.source'
                          onSearchChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType1, "linkedItemKey1choice" ) }}
                          onChange={(val) => { return props.ensureLoadLinkedItem(props.linkedItemData.linkedItemKey1 ) }}
       />
@@ -75,7 +74,7 @@ export const ModLinksEdit = (props) => {
         onSearchChange={(val) => {return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, "linkedItemKey2choice", false) }}
         onChange={(val) => {  console.debug('onChange!!', val, props); return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}}
 
-        source="linkedMedia" label="resources.areas.fields.province_list" />
+        source="linkedMedia" label="resources.links.fields.media_list" />
       <Divider />
       <h3>Link to content section</h3>
       <SelectArrayInput
@@ -83,7 +82,7 @@ export const ModLinksEdit = (props) => {
         linkedItemData={props.linkedItemData}
         choices={props.linkedItemData.linkedItemKey2choice}
         onSearchChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, "linkedItemKey2choice") }}
-        onChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}} source="linkedContent" label="resources.areas.fields.province_list" />
+        onChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}} source="linkedContent" label="resources.links.fields.content_list" />
     </LinksForm>
     </Create></div>
 }

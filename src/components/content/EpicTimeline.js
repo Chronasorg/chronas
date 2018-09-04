@@ -428,6 +428,8 @@ class EpicTimeline extends React.Component {
 
     if (((nextProps.epicData && nextProps.epicData.id && rulerSetup !== nextProps.epicData.id) || nextLinkedId !== prevLinkedId) && nextProps.selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
       this._setUpInfluenceDataAndMediaAndLinkedContent(nextProps.epicData, nextProps.linkedItems, nextProps.isEntity)
+    } else if (epicData.id === nextProps.epicData.id && (rulerProps || {})[2] !== (nextProps.rulerProps || {})[2]) {
+      this.forceUpdate()
     }
   }
 

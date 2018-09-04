@@ -161,78 +161,78 @@ export const ModMetaEdit = (props) => {
     'e':
   <MetaForm  validate={validateValueInput} {...props} redirect='edit' defaultValue={props.defaultEpicValues}>
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-    <AutocompleteInput source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.display_name" />
-    {(props.metadataEntity !== '') ? <TextInput validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' /> : null}
-    {(props.metadataEntity !== '') ? <TextInput type='url' source='poster' label='resources.areas.fields.poster' /> : null}
-    {(props.metadataEntity !== '') ? <AutocompleteInput validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' /> : null}
-    {(props.metadataEntity !== '') ? <TextInput validate={required} type='number' source='start' label='resources.areas.fields.start' /> : null}
-    {(props.metadataEntity !== '') ? <TextInput type='number' source='end' label='resources.areas.fields.end' /> : null}
-    {(props.metadataEntity !== '') ? <EmbeddedArrayInput source='participants'>
-      <EmbeddedArrayInput source='participantTeam'>
-        <AutocompleteInput source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
+    <AutocompleteInput options={{ fullWidth: true }} source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.display_name" />
+    {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type='url' source='poster' label='resources.areas.fields.poster' /> : null}
+    {(props.metadataEntity !== '') ? <AutocompleteInput options={{ fullWidth: true }} validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} validate={required} type='number' source='start' label='resources.areas.fields.start' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type='number' source='end' label='resources.areas.fields.end' /> : null}
+    {(props.metadataEntity !== '') ? <EmbeddedArrayInput options={{ fullWidth: true }} source='participants'>
+      <EmbeddedArrayInput options={{ fullWidth: true }} source='participantTeam'>
+        <AutocompleteInput  options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
       </EmbeddedArrayInput>
     </EmbeddedArrayInput> : null}
     {(props.metadataEntity !== '') ? <EmbeddedArrayInput validate={required} source='content' label='Content (shows up in left content column, if it doesnt exist yet, you can create _media/ others_ and _markers_ to be added here)'>
       <SelectInput validate={required} source='contentType' choices={contentType} onChange={(val, v) => { props.setContentType(v) }} defaultValue={props.contentType} />
-      <AutocompleteInput validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { return props.setSearchSnippet(val) }} />
+      <AutocompleteInput options={{ fullWidth: true }} validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { return props.setSearchSnippet(val) }} />
     </EmbeddedArrayInput> : null}
-    {(props.metadataEntity !== '') ? <TextInput type='text' source='title' label='resources.areas.fields.title' /> : null}
-    {(props.metadataEntity !== '') ? <ModButton modType='marker' /> : null}
-    {(props.metadataEntity !== '') ? <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' /> : null}
-    {(props.metadataEntity !== '') ? <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' /> : null}
-    {(props.metadataEntity !== '') ? <TextInput type='text' source='partOf' label='resources.areas.fields.partOf' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type='text' source='title' label='resources.areas.fields.title' /> : null}
+    {(props.metadataEntity !== '') ? <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' /> : null}
+    {(props.metadataEntity !== '') ? <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' /> : null}
+    {(props.metadataEntity !== '') ? <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' /> : null}
+    {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type='text' source='partOf' label='resources.areas.fields.partOf' /> : null}
   </MetaForm>,
     'ruler':
       <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <h4 className='modal-title' style={{ margin: '0 auto' }}>Which entity do you like to modify?</h4>
-        <AutocompleteInput  source="select" choices={choicesRuler} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.search_name" />
-        {(props.metadataEntity !== '') ? <TextInput errorText='will be changed' source="name" label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues.dataName } /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl } /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
+        <AutocompleteInput options={{ fullWidth: true }} source="select" choices={choicesRuler} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.search_name" />
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} errorText='will be changed' source="name" label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues.dataName } /> : null}
+        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl } /> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'religion':
       <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <AutocompleteInput source="select" choices={choicesReligion} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
-        {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
-        {(props.metadataEntity !== '') ? <AutocompleteInput source="parentname" choices={choicesReligionGeneral} label="resources.areas.fields.main_religion_name" defaultValue={defaultValues.dataParentname} /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
+        <AutocompleteInput options={{ fullWidth: true }} source="select" choices={choicesReligion} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
+        {(props.metadataEntity !== '') ? <AutocompleteInput options={{ fullWidth: true }} source="parentname" choices={choicesReligionGeneral} label="resources.areas.fields.main_religion_name" defaultValue={defaultValues.dataParentname} /> : null}
+        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'religionGeneral':
       <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <AutocompleteInput source="select" choices={choicesReligionGeneral} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
-        {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
+        <AutocompleteInput options={{ fullWidth: true }} source="select" choices={choicesReligionGeneral} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
+        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'culture':
       <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <AutocompleteInput source="select" choices={choicesCulture} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
-        {(props.metadataEntity !== '') ? <TextInput source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact" /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
+        <AutocompleteInput options={{ fullWidth: true }} source="select" choices={choicesCulture} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
+        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact" /> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'capital':
       <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <AutocompleteInput source="select" choices={choicesCapital} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
+        <AutocompleteInput options={{ fullWidth: true }} source="select" choices={choicesCapital} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'province':
       <MetaForm  validate={validateValueInput} {...props} >
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-        <AutocompleteInput source="select" choices={choicesProvince} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="url" label="resources.areas.fields.province_url" defaultValue={defaultValues.dataUrl} /> : null}
-        {(props.metadataEntity !== '') ? <TextInput type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
+        <AutocompleteInput options={{ fullWidth: true }}  source="select" choices={choicesProvince} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.province_url" defaultValue={defaultValues.dataUrl} /> : null}
+        {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
     'default':
       <MetaForm  validate={validateValueInput} {...props} >

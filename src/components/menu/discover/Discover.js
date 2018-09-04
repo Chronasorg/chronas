@@ -203,7 +203,7 @@ class Discover extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      selectedImage: { src: '', year: '', title: '', wiki: '', source: '' },
+      selectedImage: { src: '', year: '', title: '', wiki: '', source: '', fullData: {} },
       slideIndex: 0,
       currentYearLoaded: 3000,
       hiddenElement: true,
@@ -250,7 +250,7 @@ class Discover extends PureComponent {
   }
 
   handleImageClose = () => {
-    this.setState({ selectedImage: { src: '', year: '', title: '', wiki: '', source: '' } })
+    this.setState({ selectedImage: { src: '', year: '', title: '', wiki: '', source: '', fullData: {} } })
   }
 
   componentDidMount = () => {
@@ -289,7 +289,7 @@ class Discover extends PureComponent {
 
         // SLIDERS
         const tileData = this.state.tileData
-        allImages.forEach((imageItem, i) => {
+        allImages.sort((a, b) => (+b.score || 0) - (+a.score || 0)).forEach((imageItem, i) => {
           if (i < 10) {
             newSlideData.push({
               original: imageItem._id,
@@ -301,6 +301,7 @@ class Discover extends PureComponent {
               originalTitle: imageItem.year,
               thumbnailTitle: imageItem.year,
               score: imageItem.score,
+              fullData: imageItem
             })
           }
         })
@@ -320,9 +321,10 @@ class Discover extends PureComponent {
               subtitle: imageItem.year,
               coo: imageItem.coo,
               score: imageItem.score,
+              fullData: imageItem
             })
           })
-          tileData[categoryObj[0]] = newTilesData
+          tileData[categoryObj[0]] = newTilesData.sort((a, b) => (+b.score || 0) - (+a.score || 0))
         })
 
         // EPICS
@@ -338,11 +340,13 @@ class Discover extends PureComponent {
             subtitle: epicItem.year,
             score: epicItem.score,
             wiki: epicItem.wiki,
+            fullData: epicItem
           }
-          tileData["tilesHighlightData"].push(epicTile)
           newEpicData.push(epicTile)
         })
-        tileData["tilesEpicsData"] = newEpicData
+
+        tileData["tilesHighlightData"] = newEpicData.sort((a, b) => (+b.score || 0) - (+a.score || 0)).slice(0, 5).concat([].concat(...Object.values(tileData)).sort((a, b) => (+b.score || 0) - (+a.score || 0)).slice(0, 5))
+        tileData["tilesEpicsData"] = newEpicData.sort((a, b) => (+b.score || 0) - (+a.score || 0))
 
         this.setState({
           slidesData: newSlideData,
@@ -462,7 +466,8 @@ class Discover extends PureComponent {
 
   _handleEdit = (id, dataKey = false) => {
     const selectedItem = (dataKey) ? this.state.tileData[dataKey].filter(el => (el.src === decodeURIComponent(id)))[0] : this.state.selectedImage
-    this.props.selectLinkedItem(selectedItem)
+    this.props.selectLinkedItem(selectedItem, { ...selectedItem, ...selectedItem.fullData
+      , participants: (((selectedItem.fullData || {}).data || {}).participants || []).map((pT) => { return { 'participantTeam': pT.map((pp) => { return {'name': pp}}) }})})
     this.props.history.push('/mod/linked')
   }
 
@@ -471,12 +476,11 @@ class Discover extends PureComponent {
   }
 
   _handleOpenSource = (source) => {
-    console.debug('_handleOpenSource', source)
     window.open(source, '_blank').focus()
   }
 
   _handleOpenArticle = (selectedImage) => {
-    this.props.selectLinkedItem(selectedImage.wiki)
+    this.props.selectLinkedItem(selectedImage.wiki, selectedImage.fullData)
     this.props.history.push('/article')
   }
 
@@ -605,7 +609,8 @@ class Discover extends PureComponent {
                 year: selectedSlide.originalTitle,
                 title: selectedSlide.description,
                 wiki: selectedSlide.wiki,
-                source: selectedSlide.source
+                source: selectedSlide.source,
+                fullData: selectedSlide.fullData
               } })
             }}
           />
@@ -666,7 +671,8 @@ class Discover extends PureComponent {
                             year: tile.subtitle,
                             title: tile.title,
                             wiki: tile.wiki,
-                            source: tile.source
+                            source: tile.source,
+                            fullData: tile.fullData
                           } })
                         }}
                           />
@@ -686,6 +692,17 @@ class Discover extends PureComponent {
                         cols={((j + 3) % 4 < 2) ? 1 : 2} titleHeight={128}
                         rows={2}
                       >
+                        <h1 style={{
+                          position: 'absolute',
+                          left: '0px',
+                          right: '0px',
+                          top: '0px',
+                          margin: '0.3em',
+                          color: 'white',
+                          fontWeight: 'bolder',
+                          fontSize: '3em',
+                          textShadow: '0.03em 0 4px #000, 0.03em 0 4px #000, 0.03em 0 4px #000, 0.03em 0 4px #000'
+                        }}>EPIC</h1>
                         <img src={tile.poster || 'https://getbento.imgix.net/accounts/06ec34f15b98e80d7eae5ee58fe27c32/media/accounts/media/xVCzw16XRnyz5jliBzyr_EPIC_Colour.jpg'}
                              onError={() => this._removeTile(tabKey[0], tile.src)}
                              onClick={() => {
@@ -695,7 +712,8 @@ class Discover extends PureComponent {
                                    year: tile.subtitle,
                                    title: tile.title,
                                    wiki: tile.wiki,
-                                   source: tile.source
+                                   source: tile.source,
+                                   fullData: tile.fullData
                                  } })
                              }}
                         />
@@ -737,7 +755,7 @@ class Discover extends PureComponent {
           contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', maxWidth: 'calc(100% - 64px)' }}
           bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
           actionsContainerStyle={{ backgroundColor: red400 }}
-          style={{ backgroundColor: 'transparent', overflow: 'auto' }}
+          style={{ backgroundColor: 'transparent', overflow: 'hidden' }}
           titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
           autoScrollBodyContent={false}
           open={(selectedImage.src !== '')}

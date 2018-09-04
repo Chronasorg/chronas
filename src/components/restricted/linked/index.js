@@ -30,7 +30,7 @@ import {
     required,
     minLength
 } from 'admin-on-rest'
-
+import { EmbeddedArrayInput } from 'aor-embedded-array'
 import AddEditLinkNavigation from '../../restricted/shared/AddEditLinkNavigation'
 import Divider from 'material-ui/Divider'
 import Icon from 'material-ui/svg-icons/social/person'
@@ -121,24 +121,39 @@ export const LinkedEdit = (props) => {
     return errors
   }
 
+  const isEpic = props.contentTypeRaw === 'e'
+
+  if (!isEpic && ((props.selectedItem.value || {})._id || "").substr(0, 2) === "e_") {
+    props.actOnRootTypeChange("e")
+  }
+
+  const choicesRuler = Object.keys(props.metadata['ruler']).map((rulerId) => {
+    return { id: rulerId, name: props.metadata['ruler'][rulerId][0]}
+  }) || {}
 
   return <div>
     <AddEditLinkNavigation pathname={props.location.pathname} />
-    <Divider/>
+    <Divider />
     <Create title={'Edit Article'} {...props}>
-    <LinkedForm validate={validateWikiProps} history={props.history} redirect='edit'>
-      <SelectInput  onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
+    <LinkedForm validate={validateWikiProps} defaultValue={props.selectedItem.value} history={props.history} redirect='edit'>
+      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
+      {isEpic && <EmbeddedArrayInput options={{ fullWidth: true }} source='participants'>
+        <EmbeddedArrayInput options={{ fullWidth: true }} source='participantTeam'>
+          <AutocompleteInput  options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
+        </EmbeddedArrayInput>
+      </EmbeddedArrayInput> }
       <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || (props.selectedItem.value.data || {}).title || ''} />
       <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={props.selectedItem.value.content || (props.selectedItem.value.data || {}).content || ''} />
       <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />
       <LongTextInput source='poster' label='resources.linked.fields.poster' type='url' defaultValue={(props.selectedItem.value.data || {}).poster || ''} />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
       <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
-      <NumberInput validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle} source='year' label='resources.linked.fields.year' type='number' />
-      <ModButton modType='marker' />
-      <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} source='coo[0]' label='resources.markers.fields.lat' />
-      <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} source='coo[1]' label='resources.markers.fields.lng' />
+      <NumberInput style={ isEpic ? { width: '50%', float: 'left' } : {}} validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle} source='year' label='resources.linked.fields.year' type='number' />
+      { isEpic && <NumberInput style={{ width: '50%', float: 'right' }} source="end" defaultValue={props.selectedItem.value.data.end || props.selectedItem.value.year || props.selectedItem.value.subtitle} label="resources.areas.fields.endYear" /> }
+      <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
+      <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} source='coo[0]' label='resources.markers.fields.lat' />
+      <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} source='coo[1]' label='resources.markers.fields.lng' />
       <LongTextInput source='geojson' label='resources.linked.fields.geojson' defaultValue={props.selectedItem.value.geojson || ''} />
       <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
       <DeleteButton id={encodeURIComponent(props.selectedItem.value.src)} {...props} />
@@ -173,6 +188,7 @@ export const LinkedCreate = (props) => {
     if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
       errors.wiki = ['This URL must to be a full Wikipedia URL']
     }
+
     return errors
   }
 
@@ -190,9 +206,9 @@ export const LinkedCreate = (props) => {
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' />
       <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
       <NumberInput validate={required} defaultValue={props.selectedYear || ''} source='year' label='resources.linked.fields.year' type='number' />
-      <ModButton modType='marker' />
-      <NumberInput onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
-      <NumberInput onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
+      <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
+      <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />
+      <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
       <LongTextInput source='geojson' label='resources.linked.fields.geojson' />
       <BooleanInput label="resources.linked.fields.onlyEpicContent" source="onlyEpicContent" defaultValue={false} />
     </LinkedForm>

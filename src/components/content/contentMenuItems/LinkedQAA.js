@@ -2,7 +2,6 @@ import React, {createElement} from 'react'
 import { Sunburst, LabelSeries, Treemap, } from 'react-vis'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
-import {selectLinkedItem, selectMarkerItem} from '../../map/actionReducers'
 import Divider from 'material-ui/Divider'
 import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
@@ -336,7 +335,6 @@ const enhance = compose(
   }), {
     toggleRightDrawer: toggleRightDrawerAction,
     setFullModActive,
-    selectLinkedItem,
     resetModActive,
     showNotification,
   }),

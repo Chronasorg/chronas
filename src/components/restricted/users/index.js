@@ -25,14 +25,7 @@ import {
   required,minLength
 } from 'admin-on-rest';
 import Icon from 'material-ui/svg-icons/social/person';
-// import Edit from '../shared/crudComponents/Edit';
 import EditButton from '../shared/buttons/EditButton';
-// import Delete from '../shared/buttons/EditButton';
-import NbItemsField from '../shared/commands/NbItemsField';
-import ProductReferenceField from '../products/ProductReferenceField';
-import StarRatingField from '../reviews/StarRatingField';
-import FullNameField from './FullNameField';
-import SegmentsField from './SegmentsField';
 import SegmentsInput from './SegmentsInput';
 import { chronasMainColor } from '../../../styles/chronasColors'
 

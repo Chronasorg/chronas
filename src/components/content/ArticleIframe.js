@@ -170,7 +170,7 @@ class ArticleIframe extends React.Component {
     const isProvince = selectedItem.wiki === WIKI_PROVINCE_TIMELINE
     const noWiki = (!selectedItem || !selectedWiki || selectedWiki === -1)
     const modUrl = epicContentItem
-      ? (epicContentItem.isMarker ? '/mod/markers' : '/mod/metadata')
+      ? (epicContentItem.isMarker ? '/mod/markers' : '/mod/links')
       : (isMarker ?  '/mod/markers' : '/mod/metadata')
 
     const iconEnterFullscreen = {

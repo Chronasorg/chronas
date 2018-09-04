@@ -196,6 +196,7 @@ class RightDrawerRoutes extends PureComponent {
       linkedItemData: {},
       isFetchingSearch: false,
       contentChoice: [],
+      contentTypeRaw: false,
       defaultEpicValues: {},
       isResizing: false,
       lastDownX: 0,
@@ -240,6 +241,7 @@ class RightDrawerRoutes extends PureComponent {
 
   actOnRootTypeChange = (contentTypeRaw) => {
     const { location, history } = this.props
+    this.setState({ contentTypeRaw })
     const contentType = (contentTypeRaw.substr(0, 2) === 'w|') ? 'markers' : 'metadata'
     if (contentType === 'markers' && location.pathname.indexOf(contentType) === -1 && location.pathname.indexOf('/mod') !== -1) {
       history.push(location.pathname.replace('linked', 'markers'))
@@ -389,7 +391,7 @@ class RightDrawerRoutes extends PureComponent {
             'subtype': rawDefault.subtype,
             'start': rawDefault.data.start,
             'end': rawDefault.data.end,
-            'participants': rawDefault.data.participants.map(pTeam => { return { 'participantTeam': pTeam.map(pParticipant => { return { 'name': pParticipant/*, 'value': pParticipant */} }) } }),
+            'participants': ((rawDefault.data || {}).participants || []).map(pTeam => { return { 'participantTeam': pTeam.map(pParticipant => { return { 'name': pParticipant/*, 'value': pParticipant */} }) } }),
             'coo': rawDefault.coo,
             'partOf': rawDefault.partOf,
             'poster': rawDefault.poster
@@ -595,7 +597,7 @@ class RightDrawerRoutes extends PureComponent {
       selectedYear, selectedItem, activeArea, setAreaColorLabel, location,
       setModData, setModDataLng, setModDataLat, history, metadata, changeColor, translate
     } = this.props
-    const { newWidth, newMarkerWidth, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, provinceEntity, partOfEntities } = this.state
+    const { newWidth, newMarkerWidth, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, contentTypeRaw, provinceEntity, partOfEntities } = this.state
 
     if ((typeof selectedItem.wiki === 'undefined')) return null
 
@@ -1035,6 +1037,8 @@ class RightDrawerRoutes extends PureComponent {
               selectedYear,
               setModDataLng,
               setModDataLat,
+              contentTypeRaw,
+              metadata,
               actOnRootTypeChange: this.actOnRootTypeChange,
               resource: 'metadata',
               history

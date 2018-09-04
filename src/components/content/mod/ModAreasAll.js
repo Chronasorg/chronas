@@ -85,20 +85,18 @@ export const ModAreasAll = (props) => {
     <Create title='Assign Area' {...props}>
       <AreaForm validate={validateValueInput} {...props} >
           <Subheader>Provinces</Subheader>
-          <SelectArrayInput onChange={(val,v) => { props.setModData(v) }} validation={required} elStyle={{width: '60%', minWidth: '300px'}} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.province_list" />
-          <Divider />
+          <SelectArrayInput options={{ fullWidth: true }} onChange={(val,v) => { props.setModData(v) }} validation={required} elStyle={{width: '60%', minWidth: '300px'}} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.province_list" />
           <Subheader>Data</Subheader>
         {/*<TextInput source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />*/}
-          <AutocompleteInput source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />
-          <TextInput source="culture" defaultValue={defaultValues.dataCulture} label="resources.areas.fields.culture" />
+          <AutocompleteInput options={{ fullWidth: true }} source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />
+          <TextInput options={{ fullWidth: true }} source="culture" defaultValue={defaultValues.dataCulture} label="resources.areas.fields.culture" />
         {/*<TextInput source="religion" choices={choicesReligion} label="resources.areas.fields.religion" defaultValue={defaultValues.dataReligion} />*/}
-          <AutocompleteInput source="religion" choices={choicesReligion} label="resources.areas.fields.religion" defaultValue={defaultValues.dataReligion} />
-          <TextInput source="capital" defaultValue={defaultValues.dataCapital} label="resources.areas.fields.capital" />
-          <NumberInput source="population" defaultValue={+defaultValues.dataPopulation} label="resources.areas.fields.population" />
-          <Divider />
+          <AutocompleteInput options={{ fullWidth: true }} source="religion" choices={choicesReligion} label="resources.areas.fields.religion" defaultValue={defaultValues.dataReligion} />
+          <TextInput options={{ fullWidth: true }} source="capital" defaultValue={defaultValues.dataCapital} label="resources.areas.fields.capital" />
+          <NumberInput options={{ fullWidth: true }} source="population" defaultValue={+defaultValues.dataPopulation} label="resources.areas.fields.population" />
           <Subheader>Year Range</Subheader>
-          <NumberInput validation={required} source="start" defaultValue={defaultValues.yearStart} label="resources.areas.fields.startYear" />
-          <NumberInput source="end" defaultValue={defaultValues.yearEnd} label="resources.areas.fields.endYear" />
+          <NumberInput style={{ width: '50%', float: 'left' }} validation={required} source="start" defaultValue={defaultValues.yearStart} label="resources.areas.fields.startYear" />
+          <NumberInput style={{ width: '50%', float: 'right' }} source="end" defaultValue={defaultValues.yearEnd} label="resources.areas.fields.endYear" />
     </AreaForm>
     </Create>
   </div>
