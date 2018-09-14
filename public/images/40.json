@@ -1,0 +1,144 @@
+{
+  "id": "40",
+  "name": "gCOD Gust Wind Speed",
+  "type": "OBSERVATION",
+  "wkt": "EPSG:4326",
+  "updateFrequency": 900,
+  "active": "true",
+  "fileregex": "^GRID\\.GCOD\\.[a-zA-Z0-9]*\\.[a-zA-Z0-9]*\\.[a-zA-Z0-9]*\\.GLOBAL@4KM.GUSTSPD.ZSFC@10M.GRB2.*",
+  "interpolation": "NEAREST_NEIGHBOUR",
+  "ncml": "",
+  "variables": {
+    "Windspeedgustsurface": {
+      "id": "Windspeedgustsurface",
+      "meta": {
+        "label": "Windspeedgustsurface",
+        "attributes": {
+          "Grib2_Level_Type": "Ground or water surface",
+          "Grib2_Parameter_Discipline": "Meteorological products",
+          "coordinates": "time ",
+          "Grib_Variable_Id": "VAR_0-2-22_L1",
+          "description": "Wind speed (gust)",
+          "Grib2_Parameter_Name": "Wind speed (gust)",
+          "units": "m/s",
+          "Grib2_Parameter_Category": "Momentum",
+          "Grib2_Generating_Process_Type": "Analysis",
+          "long_name": "Wind speed (gust) @ Ground or water surface"
+        },
+        "dimensions": [
+          "t",
+          "geox",
+          "geoy"
+        ],
+        "dimension": {
+          "t": {
+            "id": "t",
+            "primary": true,
+            "type": "long",
+            "unit": "time in epoch",
+            "geoDim": "t",
+            "length": "1",
+            "min": "1",
+            "max": "1"
+          },
+          "geox": {
+            "id": "geox",
+            "geoDim": "geox",
+            "length": 8192,
+            "min": "-180.02197265252425",
+            "max": "179.977966304868"
+          },
+          "geoy": {
+            "id": "geoy",
+            "geoDim": "geoy",
+            "length": 4096,
+            "min": "-90.02198565230411",
+            "max": "90.02197802290958"
+          }
+        },
+        "tilesets": [
+          "Native",
+          "Web Mercator"
+        ],
+        "tileset": {
+          "Native": {
+            "name": "Native",
+            "crs": "EPSG:4326",
+            "tile": {
+              "w": 256,
+              "h": 256
+            },
+            "tiles": [
+              {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 16,
+                "lod": -1
+              }
+            ]
+          },
+          "Web Mercator": {
+            "name": "Web Mercator",
+            "crs": "EPSG:3857",
+            "tile": {
+              "w": 256,
+              "h": 256
+            },
+            "tiles": [
+              {
+                "x": 0,
+                "y": 0,
+                "width": 1,
+                "height": 1,
+                "lod": 0
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "width": 2,
+                "height": 2,
+                "lod": 1
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "width": 4,
+                "height": 4,
+                "lod": 2
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "width": 8,
+                "height": 8,
+                "lod": 3
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "width": 16,
+                "height": 16,
+                "lod": 4
+              },
+              {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 32,
+                "lod": 5
+              }
+            ]
+          }
+        },
+        "ttl": 7200,
+        "updateFrequency": 900
+      },
+      "units": "m/s",
+      "sampleThreshold": 18
+    }
+  },
+  "numberOfSlots": 8,
+  "productType": "RASTER",
+  "description": "Gridded Currents on Demand: Current maximum (gust) wind speed in meters per second (m/s): 4-km resolution, refreshed every 15 minutes"
+}
