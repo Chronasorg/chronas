@@ -138,10 +138,11 @@ export const LinkedEdit = (props) => {
     <LinkedForm validate={validateWikiProps} defaultValue={props.selectedItem.value} history={props.history} redirect='edit'>
       <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
       <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
-      {isEpic && <EmbeddedArrayInput options={{ fullWidth: true }} source='participants'>
-        <EmbeddedArrayInput options={{ fullWidth: true }} source='participantTeam'>
-          <AutocompleteInput  options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
-        </EmbeddedArrayInput>
+      {isEpic && <EmbeddedArrayInput options={{ fullWidth: true }} source='attacker'>
+        <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.attacker' />
+      </EmbeddedArrayInput> }
+      {isEpic && <EmbeddedArrayInput options={{ fullWidth: true }} source='defender'>
+        <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.defender' />
       </EmbeddedArrayInput> }
       <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || (props.selectedItem.value.data || {}).title || ''} />
       <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={props.selectedItem.value.content || (props.selectedItem.value.data || {}).content || ''} />

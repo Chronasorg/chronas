@@ -660,36 +660,36 @@ class RightDrawerRoutes extends PureComponent {
     if (activeArea.color === 'ruler') {
       Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
-        totalPop += currPop
+        totalPop += +currPop
         if ((activeArea.data[key] || {})[0] === rulerId) entityPop += currPop
       })
     } else if (activeArea.color === 'culture') {
       Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
-        totalPop += currPop
+        totalPop += +currPop
         if ((activeArea.data[key] || {})[1] === cultureId) entityPop += currPop
       })
     } else if (activeArea.color === 'religion') {
       Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
-        totalPop += currPop
+        totalPop += +currPop
         if ((activeArea.data[key] || {})[2] === religionId) entityPop += currPop
       })
     } else if (activeArea.color === 'religionGeneral') {
-      const religionGeneralId = metadata['religion'][religionId][3]
+      const religionGeneralId = (metadata['religion'][religionId] || {})[3]
       Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
-        totalPop += currPop
+        totalPop += +currPop
         if ((metadata['religion'][(activeArea.data[key] || {})[2]] || {})[3] === religionGeneralId) entityPop += currPop
       })
     }
 
     const entityObject = {
-      ruler: metadata['ruler'][rulerId],
+      ruler: (metadata['ruler'][rulerId] || []),
       religion: (metadata['religion'][religionId] || {}),
-      religionGeneral: metadata['religionGeneral'][metadata['religion'][religionId][3]] || {},
+      religionGeneral: metadata['religionGeneral'][(metadata['religion'][religionId] || [])[3]] || {},
       culture: (metadata['culture'][cultureId] || {}),
-      capital: ((metadata['capital'][(activeArea.data[selectedProvince] || {})[3]]) || {}),
+      // capital: ((metadata['capital'][(activeArea.data[selectedProvince] || {})[3]]) || {}),
       province: (metadata['province'][selectedProvince] || {}),
     }
     const entityMeta = {
@@ -706,9 +706,9 @@ class RightDrawerRoutes extends PureComponent {
       culture: {
         name: entityObject.culture[0] || 'n/a', icon: entityObject.culture[3] || defaultIcons.culture
       },
-      capital: {
-        name: entityObject.capital[0] || 'n/a', icon: entityObject.capital[1] || defaultIcons.capital
-      },
+      // capital: {
+      //   name: entityObject.capital[0] || 'n/a', icon: entityObject.capital[1] || defaultIcons.capital
+      // },
       province: {
         name: entityObject.province[0] || 'n/a', icon: entityObject.province[1] || defaultIcons.province
       }
@@ -755,7 +755,8 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Ruler'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<RulerIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
+                              {...(entityMeta.ruler.icon ? (entityMeta.ruler.icon[0] === '/' ? { src: entityMeta.ruler.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.ruler.icon)) }) : { icon: <RulerIcon viewBox={'0 0 64 64'} /> })}  />}
             />}
           />
           <BottomNavigationItem
@@ -771,7 +772,9 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Culture'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<CultureIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
+
+                              {...(entityMeta.culture.icon ? (entityMeta.culture.icon[0] === '/' ? { src: entityMeta.culture.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.culture.icon)) }) : { icon: <CultureIcon viewBox={'0 0 64 64'} /> })}  />}
             />}
           />
           <BottomNavigationItem
@@ -787,7 +790,12 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Religion'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
+
+                              {...(entityMeta.religionGeneral.icon ? (entityMeta.religionGeneral.icon[0] === '/' ? {src: entityMeta.religionGeneral.icon} : {src: this._getFullIconURL(decodeURIComponent(entityMeta.religionGeneral.icon))}) : {
+                                icon: <ReligionGeneralIcon style={{height: 32, width: 32, margin: 0}}
+                                                           viewBox={'0 0 200 168'}/>
+                              })}  />}
             />}
           />
         </BottomNavigation> : null

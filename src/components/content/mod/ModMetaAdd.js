@@ -60,9 +60,9 @@ export const ModMetaAdd = (props) => {
     return { id: cultureId, name: metadata['culture'][cultureId][0] }
   }) || {}
 
-  const choicesCapital = Object.keys(metadata['capital']).map((capitalId) => {
-    return { id: capitalId, name: metadata['capital'][capitalId][0] }
-  }) || {}
+  // const choicesCapital = Object.keys(metadata['capital']).map((capitalId) => {
+  //   return { id: capitalId, name: metadata['capital'][capitalId][0] }
+  // }) || {}
 
   const choicesProvince = Object.keys(metadata['province']).map((capitalId) => {
     return { id: capitalId, name: metadata['province'][capitalId][0] }
@@ -101,7 +101,7 @@ export const ModMetaAdd = (props) => {
     { id: 'religionGeneral', name: 'Religion (General)' },
     // { id: 'capital', name: 'Capital' },
     { id: 'province', name: 'Province' },
-    { id: 'e', name: 'Epic' },
+    // { id: 'e', name: 'Epic' },
   ]
 
   const validateValueInput = (values) => {
@@ -136,10 +136,11 @@ export const ModMetaAdd = (props) => {
     <AutocompleteInput options={{ fullWidth: true }} validate={required} type='text' choices={choicesEpicSubtypes} source='subtype' label='resources.areas.fields.subtype' />
     <TextInput options={{ fullWidth: true }} validate={required} type='number' source='start' label='resources.areas.fields.start' />
     <TextInput options={{ fullWidth: true }} type='number' source='end' label='resources.areas.fields.end' />
-    <EmbeddedArrayInput options={{ fullWidth: true }} source='participants'>
-      <EmbeddedArrayInput options={{ fullWidth: true }} source='participantTeam'>
-        <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.participant' />
-      </EmbeddedArrayInput>
+    <EmbeddedArrayInput options={{ fullWidth: true }} source='attacker'>
+      <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.attacker' />
+    </EmbeddedArrayInput>
+    <EmbeddedArrayInput options={{ fullWidth: true }} source='defender'>
+      <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.defender' />
     </EmbeddedArrayInput>
     <EmbeddedArrayInput validate={required} source='content' label='Content (shows up in left content column, if it doesnt exist yet, you can create _media/ others_ and _markers_ to be added here)'>
       <SelectInput validate={required} source='contentType' choices={contentType} onChange={(val, v) => { props.setContentType(v) }} defaultValue={props.contentType} />
@@ -187,7 +188,7 @@ export const ModMetaAdd = (props) => {
     'capital':
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
-    <AutocompleteDisallowInput options={{ fullWidth: true }} validate={required} source='name' choices={choicesCapital} label='resources.areas.fields.display_name' />
+    {/*<AutocompleteDisallowInput options={{ fullWidth: true }} validate={required} source='name' choices={choicesCapital} label='resources.areas.fields.display_name' />*/}
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,

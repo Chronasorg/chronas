@@ -25,7 +25,7 @@ export default (type, params) => {
           // TODO: breadcrumb last login delta
           const decodedToken = decodeJwt(token)
           localStorage.setItem('chs_token', token)
-          localStorage.setItem('chs_avatar', decodedToken.avatar)
+          if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
           localStorage.setItem('chs_username', decodedToken.username)
           localStorage.setItem('chs_userid', decodedToken.id)
           localStorage.setItem('chs_privilege', decodedToken.privilege)
@@ -51,7 +51,7 @@ export default (type, params) => {
           setToken(token)
           const decodedToken = decodeJwt(token)
           localStorage.setItem('chs_token', token)
-          localStorage.setItem('chs_avatar', decodedToken.avatar)
+          if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
           localStorage.setItem('chs_username', decodedToken.username)
           localStorage.setItem('chs_userid', decodedToken.id)
           localStorage.setItem('chs_privilege', decodedToken.privilege)

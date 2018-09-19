@@ -119,8 +119,8 @@ class App extends Component {
           type: (utilsQuery.getURLParameter('type') || ''),
           value: (utilsQuery.getURLParameter('value') || ''),
         }
-        const selectedMarker = (utilsQuery.getURLParameter('markers') || '')
-        const selectedEpics = (utilsQuery.getURLParameter('epics') || '')
+        const selectedMarker = (utilsQuery.getURLParameter('markers') || 'c')
+        const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ew')
 
         setYear(selectedYear)
         if (selectedMarker !== '') setMarker(selectedMarker.split(','))
@@ -216,7 +216,7 @@ class App extends Component {
       console.debug('decodedToken',decodedToken)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
-      localStorage.setItem('chs_avatar', decodedToken.avatar)
+      if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       localStorage.setItem('chs_token', token)
       window.history.pushState(null, null, (target ? (target + '/') : '') + queryString.stringify(parsedQuery) || '/')
     } else {
@@ -227,7 +227,7 @@ class App extends Component {
       const decodedToken = decodeJwt(token)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
-      localStorage.setItem('chs_avatar', decodedToken.avatar)
+      if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       localStorage.setItem('chs_token', token)
       setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar)
     }

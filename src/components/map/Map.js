@@ -9,6 +9,7 @@ import {
   Stepper,
   StepButton,
 } from 'material-ui/Stepper'
+import Snackbar from 'material-ui/Snackbar'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import IconMenu from 'material-ui/IconMenu'
 import TextField from 'material-ui/TextField'
@@ -43,6 +44,7 @@ import utils from './utils/general'
 const turf = require('@turf/turf')
 const FLYTOANIMATIONDURATION = 2000
 const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A'
+const flagHost = 'https://upload.wikimedia.org/wikipedia/commons/thumb/'
 
 const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
 
@@ -72,10 +74,39 @@ const styles = {
     // whiteSpace: 'nowrap',
     // textOverflow: 'ellipsis',
     // overflow: 'hidden'
+  },
+  yearNotificationBody: { backgroundColor: 'transparent',
+    pointerEvents: 'none',
+    width: 105,
+    maxWidth: 105,
+    minWidth: 105,
+    padding: '0px 12px',
+    textAlign: 'center' },
+  yearNotificationContent: { backgroundColor: 'transparent', marginTop: -54,
+    fontSize: 28, pointerEvents: 'none' },
+  yearNotification: {
+    top: 0,
+    zIndex: 100000,
+    bottom: 'auto',
+    left: (window.innerWidth - 105) / 2,
+    width: 105,
+    height: 134,
+    border: 'medium none',
+    visibility: 'visibile',
+    color: '#fff',
+    paddingTop: '60px',
+    textShadow: 'none',
   }
 }
 
 const defaultFilters = markerIdNameArray.map(el => el[0])
+
+const messageYearNotification = (year, isBC, foreColor) => <div><span style={{
+  fontSize: 14,
+  color: foreColor,
+  opacity: 1,
+  position: 'relative',
+  top: 24}}>{isBC ? 'BC' : 'AD'}</span><br /><span>{year}</span></div>
 
 class Map extends Component {
   constructor (props) {
@@ -90,6 +121,7 @@ class Map extends Component {
       year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
       searchMarkerText: '',
       data: null,
+      showYear: true,
       expanded: false,
       markerData: [],
       geoData: [],
@@ -109,6 +141,10 @@ class Map extends Component {
       activatedTooltip: true,
       hoverInfo: null,
     }
+  }
+
+  _getFullIconURL (iconPath) {
+    return 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + iconPath + '/40px-' + iconPath.substr(iconPath.lastIndexOf('/') + 1) + ((iconPath.toLowerCase().indexOf('svg') > -1) ? '.PNG' : '')
   }
 
   componentDidMount = () => {
@@ -964,9 +1000,9 @@ class Map extends Component {
           //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
           // this.setState({ mapStyle })
           if (newYear) {
-            this.setState({ markerData: features.data })
+            this.setState({ markerData: features.data.filter(p => p.coo) })
           } else {
-            this.setState({ markerData: this.state.markerData.concat(features.data) })
+            this.setState({ markerData: this.state.markerData.concat(features.data.filter(p => p.coo)) })
           }
         })
     }
@@ -1060,6 +1096,7 @@ class Map extends Component {
         this._simulateYearChange(areaDefsRequest.data)
         this._changeArea(areaDefsRequest.data, activeArea.label, activeArea.color, selectedItem.value)
         utilsQuery.updateQueryStringParameter('year', year)
+        this.setState({ showYear: true })
       })
   }
 
@@ -1339,13 +1376,13 @@ class Map extends Component {
               iconButtonElement={<IconButton tooltip='Filter'><ContentFilter hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
               onChange={this.handleChangeFilter}
               // value={filtered}
-              style={{ top: -16 /*float: 'right'*/ }}
+              style={{ top: -16 /* float: 'right' */ }}
               multiple
             >
               {categories.map((category, i) => <MenuItem key={'categoriesMenuItem' + i} value={category[0]} primaryText={category[1]} disabled={!content.some(linkedItem => linkedItem.subtype === category[0])} />)}
             </IconMenu>
             <IconMenu
-              style={{ top: -16 /*float: 'right'*/ }}
+              style={{ top: -16 /* float: 'right' */ }}
               iconButtonElement={<IconButton tooltip='Close'><CloseIcon hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
               onClick={() => this.setState({ expanded: false, hoverInfo: null })} />
           </div>
@@ -1428,6 +1465,7 @@ class Map extends Component {
         }
 
         // TODO: only color if selected
+        console.debug(((selectedValues['r'] || {})[3] || {})[0])
         return (
           <Popup className='dimsTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
             <div className='county-info'>
@@ -1438,8 +1476,8 @@ class Map extends Component {
                 // style={{ border: (activeArea.color === 'ruler') ? ('2px solid ' + themes[theme].highlightColors[0]) : 'none' }}
               >
                 <Avatar color={themes[theme].backColors[0]}
-                        backgroundColor={themes[theme].foreColors[0]}
-                        {...(selectedValues['r'][3] ? {src: selectedValues['r'][3]} : {icon: <RulerIcon viewBox={'0 0 64 64'} />})}
+                  backgroundColor={themes[theme].foreColors[0]}
+                  {...(selectedValues['r'][3] ? (selectedValues['r'][3][0] === '/' ? { src: selectedValues['r'][3] } : { src: this._getFullIconURL(decodeURIComponent(selectedValues['r'][3])) }) : { icon: <RulerIcon viewBox={'0 0 64 64'} /> })}
                 />
                 {selectedValues['r'][0]}
               </Chip>
@@ -1450,8 +1488,8 @@ class Map extends Component {
                 // style={{ border: (activeArea.color === 'culture') ? ('2px solid ' + themes[theme].highlightColors[0]) : 'none' }}
               >
                 <Avatar color={themes[theme].backColors[0]}
-                        backgroundColor={themes[theme].foreColors[0]}
-                        {...(selectedValues['c'][3] ? {src: selectedValues['c'][3]} : {icon: <CultureIcon viewBox={'0 0 64 64'} />})}
+                  backgroundColor={themes[theme].foreColors[0]}
+                        {...(selectedValues['c'][3] ? (selectedValues['c'][3][0] === '/' ? { src: selectedValues['c'][3] } : { src: this._getFullIconURL(decodeURIComponent(selectedValues['c'][3])) }) : { icon: <CultureIcon viewBox={'0 0 64 64'} /> })}
                 />
                 {selectedValues['c'][0]}
               </Chip>
@@ -1462,8 +1500,8 @@ class Map extends Component {
                 // style={{ border: (activeArea.color === 'religion') ? ('2px solid ' + themes[theme].highlightColors[0]) : 'none' }}
               >
                 <Avatar color={themes[theme].backColors[0]}
-                        backgroundColor={themes[theme].foreColors[0]}
-                        {...(selectedValues['e'][4] ? {src: selectedValues['e'][4]} : {icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} />})}
+                  backgroundColor={themes[theme].foreColors[0]}
+                        {...(selectedValues['e'][4] ? (selectedValues['e'][4][0] === '/' ? { src: selectedValues['e'][4] } : { src: this._getFullIconURL(decodeURIComponent(selectedValues['e'][4])) }) : { icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} /> })}
                 />
                 {selectedValues['e'][0]}
               </Chip>
@@ -1474,8 +1512,8 @@ class Map extends Component {
                 // style={{ border: (activeArea.color === 'religionGeneral') ? ('2px solid ' + themes[theme].highlightColors[0]) : 'none' }}
               >
                 <Avatar color={themes[theme].backColors[0]}
-                        backgroundColor={themes[theme].foreColors[0]}
-                        {...(selectedValues['g'][3] ? {src: selectedValues['g'][3]} : {icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} />})}
+                  backgroundColor={themes[theme].foreColors[0]}
+                        {...(selectedValues['g'][3] ? (selectedValues['g'][3][0] === '/' ? { src: selectedValues['g'][3] } : { src: this._getFullIconURL(decodeURIComponent(selectedValues['g'][3])) }) : { icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} /> })}
                 />
                 {selectedValues['g'][0]}
               </Chip>
@@ -1486,10 +1524,10 @@ class Map extends Component {
                 style={styles.chip}
               >
                 <Avatar color={themes[theme].backColors[0]}
-                        backgroundColor={themes[theme].foreColors[0]}
-                        {...(selectedValues['p'][1] ? {src: selectedValues['p'][1]} : {icon: <ProvinceIcon viewBox={'0 0 64 64'} />})}
+                  backgroundColor={themes[theme].foreColors[0]}
+                  {...({ icon: <ProvinceIcon viewBox={'0 0 64 64'} /> })}
                 />
-                {selectedValues['p'][0]} ({properties.p > 1000000 ? (properties.p/1000000 + " M") : (properties.p > 1000 ? (properties.p/1000 + " k") : properties.p)})
+                {selectedValues['p']} ({properties.p > 1000000 ? (properties.p / 1000000 + ' M') : (properties.p > 1000 ? (properties.p / 1000 + ' k') : properties.p)})
               </Chip>
             </div>
           </Popup>
@@ -1503,7 +1541,7 @@ class Map extends Component {
 
   render () {
     const { epics, markerData, geoData, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
-    const { modActive, menuDrawerOpen, rightDrawerOpen, history, theme, mapStyles, markerTheme, selectedItem, contentIndex } = this.props
+    const { modActive, menuDrawerOpen, rightDrawerOpen, history, theme, mapStyles, markerTheme, selectedItem, selectedYear, contentIndex } = this.props
 
     let leftOffset = isStatic ? 0 : (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.25
@@ -1535,6 +1573,18 @@ class Map extends Component {
         overflow: 'hidden',
         transition: 'left 300ms cubic-bezier(0.4, 0, 0.2, 1), right 300ms cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
+        <Snackbar
+          open={true}//this.state.showYear}
+          message={messageYearNotification(selectedYear,(selectedYear<1),themes[theme].foreColors[2])}
+          contentStyle={ styles.yearNotificationContent }
+          bodyStyle={ styles.yearNotificationBody}
+          style={{ ...styles.yearNotification,
+            background: theme === 'dark' ? 'url(/images/year-dark.png) no-repeat scroll center top transparent' : 'url(/images/year-light.png) no-repeat scroll center top transparent',
+            transform: this.state.showYear
+            ? 'translate3d(0, 0, 0)' : 'translate3d(0, -150px, 0)' }}
+          autoHideDuration={1000}
+          onRequestClose={() => this.setState({ showYear: false })}
+        />
         <MapGL
           style={{
             transition: 'filter 300ms cubic-bezier(0.4, 0, 0.2, 1)',
@@ -1561,6 +1611,7 @@ class Map extends Component {
             viewport={viewport}
             updateLine={this._updateLine}
             geoData={geoData}
+            selectedYear={selectedYear}
             markerData={markerData}
             markerTheme={markerTheme}
             arcData={arcData}

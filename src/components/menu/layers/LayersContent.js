@@ -305,7 +305,7 @@ class LayerContent extends Component {
                 const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 200px' : '127px 150px'
                 //((iconMapping['abst'][id[0]] || {}).width) + 'px ' + ((iconMapping['abst'][id[0]] || {}).height) + 'px'
                 return <ListItem value={id[0]}
-                            style={{ display: (id[0] === 'c' ? 'none' : 'inherit') }}
+                            // style={{ display: (id[0] === 'c' ? 'none' : 'inherit') }}
                             key={id[0]}
                             onClick={() => { toggleMarker(id[0]) }}
                             innerDivStyle={{ padding: 0 }}

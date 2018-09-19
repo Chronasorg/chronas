@@ -467,10 +467,10 @@ const utils = {
             metadata.provinces.features[i].properties.nameLabel = metadata['ruler'][tmpRul][0]
           }
           else if (this.activeTextFeat === "religion" && metadata['religion'][tmpRel]) {
-            metadata.provinces.features[i].properties.nameLabel = metadata['religion'][tmpRel][0]
+            metadata.provinces.features[i].properties.nameLabel = (metadata['religion'][tmpRel] || {})[0]
           }
           else if (this.activeTextFeat === "religionGeneral" && metadata['religionGeneral'][tmpRelGen]) {
-            metadata.provinces.features[i].properties.nameLabel = metadata['religionGeneral'][tmpRelGen][0]
+            metadata.provinces.features[i].properties.nameLabel = (metadata['religionGeneral'][tmpRelGen] || {})[0]
           }
           else if (this.activeTextFeat === "culture" && metadata['culture'][tmpCul]) {
             metadata.provinces.features[i].properties.nameLabel = metadata['culture'][tmpCul][0]

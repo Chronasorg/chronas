@@ -78,6 +78,11 @@ class Menu extends PureComponent {
 
   handleLogout = () => {
     const { logout, showNotification } = this.props;
+    localStorage.removeItem('chs_token')
+    localStorage.removeItem('chs_username')
+    localStorage.removeItem('chs_avatar')
+    localStorage.removeItem('chs_privilege')
+    localStorage.removeItem('chs_id')
     showNotification("auth.logged_out")
     logout()
   }
@@ -207,8 +212,12 @@ class Menu extends PureComponent {
               >
                 { customAvatar ? <Avatar
                   size={24}
-                  src={customAvatar} /> : <AccountIcon
-              hoverColor={chronasMainColor}/> }
+                  src={customAvatar} /> : <Avatar
+                  style={{ fontSize: 16 }}
+                  size={24}
+                  color={{color: themes[theme].backColors[0]}}
+                  src={customAvatar}>{(username || " ").substr(0, 1).toUpperCase()}</Avatar>/*  <AccountIcon
+              hoverColor={chronasMainColor}/>*/ }
               </IconButton>
             </div>
             ) : null

@@ -94785,8 +94785,8 @@ export const data = {
         "properties": {
           "color": "#6e895a"
           ,
-          "name": "Nanticoke",
-          "wikiUrl": "Nanticoke"
+          "name": "Balears",
+          "wikiUrl": "Balearic_Islands"
         },
         "geometry": {
           "type": "Polygon",
