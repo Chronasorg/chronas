@@ -9,7 +9,7 @@ import {
   Stepper,
   StepButton,
 } from 'material-ui/Stepper'
-import Snackbar from 'material-ui/Snackbar'
+import Snackbar from '../overwrites/SnackbarNoAwayClick'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import IconMenu from 'material-ui/IconMenu'
 import TextField from 'material-ui/TextField'
@@ -88,7 +88,7 @@ const styles = {
     top: 0,
     zIndex: 100000,
     bottom: 'auto',
-    left: (window.innerWidth - 105) / 2,
+    left: 'calc(50% - 20px)',
     width: 105,
     height: 134,
     border: 'medium none',
@@ -479,7 +479,6 @@ class Map extends Component {
         let dataPool = this.state.mapStyle
           .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.n !== 'undefined')
 
-        console.debug('data pool: ', dataPool)
         const randomItem = dataPool[getRandomInt(0, dataPool.length - 1)]
         const provinceId = randomItem.properties.name
         if (history.location.pathname.indexOf('article') === -1) history.push('/article')
@@ -1465,7 +1464,6 @@ class Map extends Component {
         }
 
         // TODO: only color if selected
-        console.debug(((selectedValues['r'] || {})[3] || {})[0])
         return (
           <Popup className='dimsTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
             <div className='county-info'>
@@ -1574,15 +1572,16 @@ class Map extends Component {
         transition: 'left 300ms cubic-bezier(0.4, 0, 0.2, 1), right 300ms cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
         <Snackbar
-          open={true}//this.state.showYear}
+          selectedYear={selectedYear}
+          open={!rightDrawerOpen}//this.state.showYear}
           message={messageYearNotification(selectedYear,(selectedYear<1),themes[theme].foreColors[2])}
           contentStyle={ styles.yearNotificationContent }
           bodyStyle={ styles.yearNotificationBody}
           style={{ ...styles.yearNotification,
             background: theme === 'dark' ? 'url(/images/year-dark.png) no-repeat scroll center top transparent' : 'url(/images/year-light.png) no-repeat scroll center top transparent',
-            transform: this.state.showYear
+            transform: (this.state.showYear && !rightDrawerOpen)
             ? 'translate3d(0, 0, 0)' : 'translate3d(0, -150px, 0)' }}
-          autoHideDuration={1000}
+          autoHideDuration={2000}
           onRequestClose={() => this.setState({ showYear: false })}
         />
         <MapGL

@@ -21,7 +21,7 @@ class MenuDrawer extends PureComponent {
   }
 
   componentWillUnmount = () => {
-    console.debug('we are going down')
+    // console.debug('we are going down')
   }
 
   render() {

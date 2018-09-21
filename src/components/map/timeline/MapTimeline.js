@@ -335,7 +335,7 @@ class MapTimeline extends Component {
     const { timelineOptions, timelineHeight, yearDialogVisible, customTimes } = this.state
     const { groupItems, selectedYear, setYear } = this.props
 
-    console.debug('rendering maptimeline')
+    // console.debug('rendering maptimeline')
 
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228

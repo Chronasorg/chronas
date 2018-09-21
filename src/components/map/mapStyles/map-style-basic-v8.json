@@ -11,7 +11,7 @@
     "topographic": {
       "type": "raster",
       "tiles": [
-        "http://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}"
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}"
       ],
       "tileSize": 256
     },
