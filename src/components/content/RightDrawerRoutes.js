@@ -24,8 +24,8 @@ import { ModMetaEdit } from './mod/ModMetaEdit'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
 import { LinkedList, LinkedCreate, LinkedEdit, LinkedDelete, LinkedIcon } from '../restricted/linked'
 import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
 import SelectField from 'material-ui/SelectField'
+import FlatButton from 'material-ui/FlatButton'
 import MenuItem from 'material-ui/MenuItem'
 import { BottomNavigation } from 'material-ui/BottomNavigation'
 import Paper from 'material-ui/Paper'
@@ -41,7 +41,7 @@ import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIco
 import { setRightDrawerVisibility } from './actionReducers'
 import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
-  selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, selectAreaItem, selectMarkerItem
+  selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, selectAreaItem, selectEpicItem, selectMarkerItem
 } from '../map/actionReducers'
 import { RulerIcon, CultureIcon, ReligionIcon, ReligionGeneralIcon, ProvinceIcon } from '../map/assets/placeholderIcons'
 import { ModHome } from './mod/ModHome'
@@ -55,7 +55,7 @@ import { changeColor, setAreaColorLabel } from '../menu/layers/actionReducers'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../styles/chronasColors'
 import utils from '../map/utils/general'
-import { properties, themes } from '../../properties'
+import { properties, epicIdNameArray, themes } from '../../properties'
 
 const nearbyIcon = <EditIcon />
 
@@ -283,7 +283,7 @@ class RightDrawerRoutes extends PureComponent {
     if (searchText.length > 2) {
       if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
         this.setState({ isFetchingSearch: new Date().getTime() })
-        axios.get(properties.chronasApiHost + '/markers?both=true&search=' + searchText + '&includeMarkers=' + includeMarkers)
+        axios.get(properties.chronasApiHost + '/markers?both=true&search=' + searchText + '&includeMarkers=' + includeMarkers + '&count=' + 100)
           .then(response => {
             if (stateItem) {
               const newlinkedItemData = this.state.linkedItemData
@@ -339,7 +339,7 @@ class RightDrawerRoutes extends PureComponent {
       if (newLinkKey) {
         const newArr1 = newLinkKey.split('||')
 
-        axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0])
+        axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + window.encodeURIComponent(((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0]))
           .then((res) => {
             if (res.status === 200) {
               const linkedItemResult = res.data
@@ -350,12 +350,12 @@ class RightDrawerRoutes extends PureComponent {
 
               linkedItemResult['map'].forEach((el) => {
                 linkedItemData.linkedContent.push(el.properties.w + '||' + el.properties.t)
-                  // linkedItemData.linkedMedia.push({ name: (el.properties.w  + '(' + el.properties.t + ')'), id: el.properties.w })
+                // linkedItemData.linkedMedia.push({ name: (el.properties.w  + '(' + el.properties.t + ')'), id: el.properties.w })
               })
 
               linkedItemResult.media.forEach((el) => {
                 linkedItemData.linkedMedia.push(el.properties.w + '||' + el.properties.t)
-                  // linkedItemData.linkedContent.push({ name: (el.properties.w  + '(' + el.properties.t + ')'), id: el.properties.w })
+                // linkedItemData.linkedContent.push({ name: (el.properties.w  + '(' + el.properties.t + ')'), id: el.properties.w })
               })
 // linkedItemKey1
               linkedItemData.linkedItemKey1 = newLinkKey
@@ -391,7 +391,7 @@ class RightDrawerRoutes extends PureComponent {
             'subtype': rawDefault.subtype,
             'start': rawDefault.data.start,
             'end': rawDefault.data.end,
-            'participants': ((rawDefault.data || {}).participants || []).map(pTeam => { return { 'participantTeam': pTeam.map(pParticipant => { return { 'name': pParticipant/*, 'value': pParticipant */} }) } }),
+            'participants': ((rawDefault.data || {}).participants || []).map(pTeam => { return { 'participantTeam': pTeam.map(pParticipant => { return { 'name': pParticipant/*, 'value': pParticipant */ } }) } }),
             'coo': rawDefault.coo,
             'partOf': rawDefault.partOf,
             'poster': rawDefault.poster
@@ -477,6 +477,14 @@ class RightDrawerRoutes extends PureComponent {
               rulerEntity: {
                 id: activeRulDim,
                 data: newRulerEntity.data.data
+              }
+            })
+          })
+          .catch((err) => {
+            this.setState({
+              rulerEntity: {
+                'id': null,
+                'data': null
               }
             })
           })
@@ -567,13 +575,18 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   _setPartOfItems (items) {
-    this.setState({ partOfEntities: items })
+    const { selectedItem } = this.props
+    const potentialPartOfItem = (selectedItem.value || {}).partOf
+    const partOfEntity = items.find(el => (el.properties || {}).id === potentialPartOfItem)
+
+    this.setState({ partOfEntities: partOfEntity ? [partOfEntity] : items })
   }
 
   _openPartOf (el) {
     console.debug(el)
-    const { activeArea, changeColor, selectAreaItem, selectLinkedItem, history } = this.props
+    const { activeArea, changeColor, selectAreaItem, selectEpicItem, selectMarkerItem, selectLinkedItem, setAreaColorLabel, history } = this.props
 
+    const cType = ((el || {}).properties || {}).ct
     const aeId = ((el || {}).properties || {}).aeId
     if (aeId) {
       const [ ae, colorToSelect, rulerToHold ] = aeId.split('|')
@@ -585,8 +598,17 @@ class RightDrawerRoutes extends PureComponent {
           changeColor(colorToSelect)
         }
       }
-    } else {
-      selectLinkedItem(el.properties.w)
+    } else if (epicIdNameArray.map(el => el[0]).includes(((el || {}).properties || {}).t)) {
+      if (activeArea.color !== 'ruler') {
+        setAreaColorLabel('ruler', 'ruler')
+      }
+      selectEpicItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).y/*, fullData*/)
+      // selectEpicItem(fullData.wiki, +(fullData.year || selectedYear))
+    } else if (cType === 'marker') {
+      selectMarkerItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).w)
+    }
+    else {
+      selectLinkedItem(((el || {}).properties || {}).w)
     }
     history.push('/article')
   }
@@ -694,23 +716,23 @@ class RightDrawerRoutes extends PureComponent {
     }
     const entityMeta = {
       ruler: {
-        name: entityObject.ruler[0] || 'n/a', icon: entityObject.ruler[3] || defaultIcons.ruler
+        name: entityObject.ruler[0] || 'n/a', icon: entityObject.ruler[3]
       },
       religion: {
-        name: entityObject.religion[0] || 'n/a', icon: entityObject.religion[4] || defaultIcons.religion
+        name: entityObject.religion[0] || 'n/a', icon: entityObject.religion[4]
       },
       religionGeneral: {
         name: entityObject.religionGeneral[0] || 'n/a',
-        icon: entityObject.religionGeneral[3] || defaultIcons.religionGeneral
+        icon: entityObject.religionGeneral[3]
       },
       culture: {
-        name: entityObject.culture[0] || 'n/a', icon: entityObject.culture[3] || defaultIcons.culture
+        name: entityObject.culture[0] || 'n/a', icon: entityObject.culture[3]
       },
       // capital: {
       //   name: entityObject.capital[0] || 'n/a', icon: entityObject.capital[1] || defaultIcons.capital
       // },
       province: {
-        name: entityObject.province[0] || 'n/a', icon: entityObject.province[1] || defaultIcons.province
+        name: entityObject.province[0] || 'n/a', icon: entityObject.province[1]
       }
     }
 
@@ -720,7 +742,8 @@ class RightDrawerRoutes extends PureComponent {
       className='articleHeader'
       style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
       iconElementLeft={
-        (selectedItem.type === TYPE_AREA) ? <BottomNavigation
+        (selectedItem.type === TYPE_AREA) ?
+          <BottomNavigation
           style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
           onChange={this.handleChange}
           selectedIndex={(selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
@@ -739,7 +762,7 @@ class RightDrawerRoutes extends PureComponent {
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Summary'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<ProvinceIcon viewBox={'0 0 64 64'} />} />/*this._getFullIconURL(entityMeta.ruler.icon)*/}
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<ProvinceIcon viewBox={'0 0 64 64'} />} />/* this._getFullIconURL(entityMeta.ruler.icon) */}
             />}
           />
           <BottomNavigationItem
@@ -756,7 +779,7 @@ class RightDrawerRoutes extends PureComponent {
               style={styles.cardHeader.style}
               subtitle='Ruler'
               avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
-                              {...(entityMeta.ruler.icon ? (entityMeta.ruler.icon[0] === '/' ? { src: entityMeta.ruler.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.ruler.icon)) }) : { icon: <RulerIcon viewBox={'0 0 64 64'} /> })}  />}
+                {...(entityMeta.ruler.icon ? (entityMeta.ruler.icon[0] === '/' ? { src: entityMeta.ruler.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.ruler.icon)) }) : { icon: <RulerIcon viewBox={'0 0 64 64'} /> })} />}
             />}
           />
           <BottomNavigationItem
@@ -774,7 +797,7 @@ class RightDrawerRoutes extends PureComponent {
               subtitle='Culture'
               avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
 
-                              {...(entityMeta.culture.icon ? (entityMeta.culture.icon[0] === '/' ? { src: entityMeta.culture.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.culture.icon)) }) : { icon: <CultureIcon viewBox={'0 0 64 64'} /> })}  />}
+                {...(entityMeta.culture.icon ? (entityMeta.culture.icon[0] === '/' ? { src: entityMeta.culture.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.culture.icon)) }) : { icon: <CultureIcon viewBox={'0 0 64 64'} /> })} />}
             />}
           />
           <BottomNavigationItem
@@ -785,17 +808,36 @@ class RightDrawerRoutes extends PureComponent {
             }}
             className='bottomNavigationItem'
             icon={<CardHeader
-              title={entityMeta.religion.name + ' [' + entityMeta.religionGeneral.name + ']'}
+              title={entityMeta.religion.name /* + ' [' + entityMeta.religionGeneral.name + ']' */}
               subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
               titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
               style={styles.cardHeader.style}
               subtitle='Religion'
               avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
-
-                              {...(entityMeta.religionGeneral.icon ? (entityMeta.religionGeneral.icon[0] === '/' ? {src: entityMeta.religionGeneral.icon} : {src: this._getFullIconURL(decodeURIComponent(entityMeta.religionGeneral.icon))}) : {
-                                icon: <ReligionGeneralIcon style={{height: 32, width: 32, margin: 0}}
-                                                           viewBox={'0 0 200 168'}/>
-                              })}  />}
+                {...(entityMeta.religion.icon ? (entityMeta.religion.icon[0] === '/' ? { src: entityMeta.religion.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.religion.icon)) }) : {
+                  icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
+                    viewBox={'0 0 200 168'} />
+                })} />}
+            />}
+          />
+          <BottomNavigationItem
+            themeBackColors={themes[theme].backColors[1]}
+            onClick={() => {
+              setWikiId(selectedItem.value)
+              setAreaColorLabel('religionGeneral', 'religionGeneral')
+            }}
+            className='bottomNavigationItem'
+            icon={<CardHeader
+              title={entityMeta.religionGeneral.name}
+              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
+              style={styles.cardHeader.style}
+              subtitle='General Religion'
+              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
+                {...(entityMeta.religionGeneral.icon ? (entityMeta.religionGeneral.icon[0] === '/' ? { src: entityMeta.religionGeneral.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.religionGeneral.icon)) }) : {
+                  icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
+                    viewBox={'0 0 200 168'} />
+                })} />}
             />}
           />
         </BottomNavigation> : null
@@ -815,8 +857,8 @@ class RightDrawerRoutes extends PureComponent {
           </IconButton>
         </div>
       }
-    />
-    /* <Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'article' }}>  TODO: do pathname dynamicaly*!/ */
+        />
+        /* <Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'article' }}>  TODO: do pathname dynamicaly*!/ */
 
     const CoreContent = (headerComponent, component, route, commonProps, routeProps) => (
       <Responsive
@@ -856,25 +898,26 @@ class RightDrawerRoutes extends PureComponent {
               })}
             </div>
           </Card>
-            { partOfEntities && partOfEntities.length !== 0 && <div style={{ ...styles.partOfDiv, width: this.state.newMarkerPartOfWidth, top: this.state.newMarkerPartOfHeight }}>
+            { partOfEntities && partOfEntities.length !== 0 && <div style={{ ...styles.partOfDiv, background: themes[theme].backColors[0], width: this.state.newMarkerPartOfWidth, top: this.state.newMarkerPartOfHeight }}>
               <CardActions style={{ textAlign: 'center' }}>
                 { (partOfEntities.length === 1) ? <FlatButton
-                  style={{ color: '#fff' }}
-                  backgroundColor='rgb(255, 64, 129)'
-                  hoverColor='#8AA62F'
+                  // style={{ color: '#fff' }}
+                  // backgroundColor='rgb(255, 64, 129)'
+                  hoverColor={themes[theme].highlightColors[0]}//'#8AA62F'
                   onClick={() => this._openPartOf(partOfEntities[0])}
-                  label={'Part of ' + ((partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()} />
-              : <SelectField
-                floatingLabelText={translate('pos.related_item')}
-                hintText={translate('pos.related_item')}
-                value={null}
-                onChange={(event, index, value) => { this._openPartOf(value) }}
-              >
-                { partOfEntities.map((el) => {
-                  return <MenuItem value={el} primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
-                })}
-              </SelectField>
-              }
+                  labelStyle={{paddingLeft: 0, paddingRight: 0}}
+                  label={<div style={{paddingLeft: 14, paddingRight: 14}}>Part Of <span style={{paddingLeft: 0, paddingRight: 0, fontWeight: 'bolder'}}>{((partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase() }</span></div>} />
+                  : <SelectField
+                    floatingLabelText={translate('pos.related_item')}
+                    hintText={translate('pos.related_item')}
+                    value={null}
+                    onChange={(event, index, value) => { this._openPartOf(value) }}
+                  >
+                    { partOfEntities.map((el) => {
+                      return <MenuItem value={el} primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                    })}
+                  </SelectField>
+                }
               </CardActions>
             </div>}
           </div> : <Drawer
@@ -909,15 +952,15 @@ class RightDrawerRoutes extends PureComponent {
             </div>
           </Drawer>
         }
-      />
-    )
+        />
+        )
 
     const unrestrictPage = (headerComponent, component, route, commonProps) => {
       const UnrestrictedPage = routeProps => (
         <div>
           { CoreContent(headerComponent, component, route, commonProps, routeProps) }
         </div>
-      )
+        )
       return UnrestrictedPage
     }
 
@@ -926,7 +969,7 @@ class RightDrawerRoutes extends PureComponent {
         <Restricted location={{ pathname: 'mod/areas' }} authParams={{ foo: 'bar' }} {...routeProps}>
           { CoreContent(headerComponent, component, route, commonProps, routeProps) }
         </Restricted>
-      )
+        )
       return RestrictedPage
     }
 
@@ -937,7 +980,7 @@ class RightDrawerRoutes extends PureComponent {
             exact
             path={'/article'}
             render={unrestrictPage(articleHeader, Content, '', {
-              // setPartOfEntities,
+          // setPartOfEntities,
               metadata,
               rulerEntity,
               provinceEntity,
@@ -947,12 +990,12 @@ class RightDrawerRoutes extends PureComponent {
               setPartOfItems: this._setPartOfItems,
               history
             })}
-          />
+        />
           <Route
             exact
             path={'/mod'}
             render={restrictPage(modHeader, ModHome)}
-          />
+        />
           <Route
             exact
             path={'/mod/links'}
@@ -968,9 +1011,9 @@ class RightDrawerRoutes extends PureComponent {
               selectedItem,
               setModData,
               newWidth,
-              // linkSetup: '',
-              // prefilledLinked: false,
-              // ensureLoadLinkedItem
+          // linkSetup: '',
+          // prefilledLinked: false,
+          // ensureLoadLinkedItem
               linkedItemData: this.state.linkedItemData,
               updateID: this.state.updateID,
               contentChoice: this.state.contentChoice,
@@ -983,7 +1026,7 @@ class RightDrawerRoutes extends PureComponent {
               redirect: 'create',
               history
             })}
-          />
+        />
         </Switch>
         {resourceList.map((resourceKey) => {
           const commonProps = {
@@ -1033,6 +1076,7 @@ class RightDrawerRoutes extends PureComponent {
             }
           } else if (resourceKey === TYPE_MARKER) {
             finalProps = { ...commonProps,
+              metadata,
               selectedItem,
               selectedYear,
               setModDataLng,
@@ -1057,34 +1101,34 @@ class RightDrawerRoutes extends PureComponent {
 
           return (<Switch key={'rightDrawer_' + resourceKey} style={{ zIndex: 20000 }}>
             {resources[resourceKey].create && (
-              <Route
-                exact
-                path={'/mod/' + resourceKey + '/create'}
-                render={restrictPage(modHeader, resources[resourceKey].create, 'create', {
-                  ...finalProps,
-                  redirect: 'create'
-                })}
+            <Route
+              exact
+              path={'/mod/' + resourceKey + '/create'}
+              render={restrictPage(modHeader, resources[resourceKey].create, 'create', {
+                ...finalProps,
+                redirect: 'create'
+              })}
               />
             )}
             {resources[resourceKey].edit && (
-              <Route
-                exact
-                path={'/mod/' + resourceKey}
-                render={restrictPage(modHeader, resources[resourceKey].edit, 'edit', finalProps)}
+            <Route
+              exact
+              path={'/mod/' + resourceKey}
+              render={restrictPage(modHeader, resources[resourceKey].edit, 'edit', finalProps)}
               />
             )}
             {resources[resourceKey].show && (
-              <Route
-                exact
-                path={'/mod/' + resourceKey + '/:id/show'}
-                render={restrictPage(modHeader, resources[resourceKey].show, 'show', finalProps)}
+            <Route
+              exact
+              path={'/mod/' + resourceKey + '/:id/show'}
+              render={restrictPage(modHeader, resources[resourceKey].show, 'show', finalProps)}
               />
             )}
             {resources[resourceKey].remove && (
-              <Route
-                exact
-                path={'/mod/' + resourceKey + '/:id/delete'}
-                render={restrictPage(modHeader, resources[resourceKey].remove, 'delete', finalProps)}
+            <Route
+              exact
+              path={'/mod/' + resourceKey + '/:id/delete'}
+              render={restrictPage(modHeader, resources[resourceKey].remove, 'delete', finalProps)}
               />
             )}
           </Switch>)
@@ -1111,6 +1155,7 @@ const enhance = compose(
       setAreaColorLabel,
       changeColor,
       setWikiId,
+      selectEpicItem,
       selectValue,
       selectAreaItem,
       deselectItem: deselectItemAction,
@@ -1124,6 +1169,6 @@ const enhance = compose(
     }),
   pure,
   translate,
-)
+  )
 
 export default enhance(RightDrawerRoutes)

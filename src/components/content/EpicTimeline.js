@@ -9,21 +9,29 @@ import FlatButton from 'material-ui/FlatButton'
 import { red400 } from 'material-ui/styles/colors'
 import pure from 'recompose/pure'
 import compose from 'recompose/compose'
+import Avatar from 'material-ui/Avatar'
 import Dialog from 'material-ui/Dialog'
 import { GridList, GridTile } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
+import FloatingActionButton from 'material-ui/FloatingActionButton'
 import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
+import IconOpenEpic from 'material-ui/svg-icons/action/open-in-browser'
 import ChartSunburst from './Charts/ChartSunburst'
 import LinkedGallery from './contentMenuItems/LinkedGallery'
 import LinkedQAA from './contentMenuItems/LinkedQAA'
-import { setYear  as setYearAction} from '../map/timeline/actionReducers'
+import { RulerIcon } from '../map/assets/placeholderIcons'
+import { changeColor, setAreaColorLabel } from '../menu/layers/actionReducers'
+import { setYear as setYearAction } from '../map/timeline/actionReducers'
 import {
-  selectValue, setData, deselectItem, setEpicContentIndex, TYPE_AREA, WIKI_PROVINCE_TIMELINE,
-  selectLinkedItem
+  selectAreaItem, selectValue, setData, deselectItem,
+  setEpicContentIndex, TYPE_AREA, WIKI_PROVINCE_TIMELINE,
+  selectLinkedItem, selectEpicItem, TYPE_EPIC
 } from '../map/actionReducers'
 import InfluenceChart from './Charts/ChartArea'
 import ArticleIframe from './ArticleIframe'
-import { getYoutubeId, itemTypeToName, themes, properties } from '../../properties'
+import { getYoutubeId, epicIdNameArray, aeIdNameArray, getFullIconURL, itemTypeToName, themes, properties } from '../../properties'
+import utilsQuery from "../map/utils/query";
+import utils from "../map/utils/general";
 
 /**
  * Non-linear steppers allow users to enter a multi-step flow at any point.
@@ -40,7 +48,7 @@ const styles = {
     backgroundColor: 'transparent',
     paddingRight: '1em',
     width: 'inherit',
-    height: 'inherit',
+    height: 'inherit'
   },
   selectedIMG: {
     height: 'auto',
@@ -179,16 +187,22 @@ class EpicTimeline extends React.Component {
 
   handleNext = (newYear) => {
     const { stepIndex } = this.state
-    this.setState({ stepIndex: stepIndex + 1, selectedWiki: false})
-    this.props.setEpicContentIndex(stepIndex + 1)
-    if (!isNaN(newYear)) this.props.setYear(+newYear)
+    if ((this.props.selectedItem || {}).type === TYPE_AREA) {
+      this.setState({ stepIndex: stepIndex + 1, selectedWiki: false})
+      if (!isNaN(newYear)) this.props.setYear(+newYear)
+    } else {
+      this.props.setEpicContentIndex(stepIndex + 1)
+    }
   };
 
   handlePrev = (newYear) => {
     const { stepIndex } = this.state
-    this.setState({ stepIndex: stepIndex - 1, selectedWiki: false})
-    this.props.setEpicContentIndex(stepIndex - 1)
-    if (!isNaN(newYear)) this.props.setYear(+newYear)
+    if ((this.props.selectedItem || {}).type === TYPE_AREA) {
+      this.setState({ stepIndex: stepIndex - 1, selectedWiki: false})
+      if (!isNaN(newYear)) this.props.setYear(+newYear)
+    } else {
+      this.props.setEpicContentIndex(stepIndex - 1)
+    }
   };
 
   getStepContent (stepIndex) {
@@ -202,7 +216,13 @@ class EpicTimeline extends React.Component {
     if (isMarker) {
       const wikiUrl = selectedIndexItem.wiki || ((epicData || {}).data || {}).wiki || (rulerProps || {})[2] || -1
       return  <ArticleIframe history={history} hasChart={ hasChart } isEntity={ this.props.isEntity } deselectItem={deselectItem} selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} selectedWiki={ selectedWiki || wikiUrl} />
-    } else {
+    }
+    else if (itemType === "ew") {
+      // add hyperlink here
+      const wikiUrl = selectedIndexItem.wiki || ((epicData || {}).data || {}).wiki || (rulerProps || {})[2] || -1
+      return  <ArticleIframe history={history} hasChart={ hasChart } isEntity={ this.props.isEntity } deselectItem={deselectItem} selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} selectedWiki={ selectedWiki || wikiUrl} />
+    }
+    else {
       if (itemType === 'html') {
         const content = selectedIndexItem.content
         return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
@@ -213,7 +233,7 @@ class EpicTimeline extends React.Component {
         padding={1}
         cols={1}
         style={{ ...styles.gridList, background: 'rgb(23, 23, 23)' }}
-      >{(itemType !== 'videos' && itemType !== 'audios' && itemType !== 'ps' && itemType !== 'articles')
+      >{(itemType !== 'v' && itemType !== 'audios' && itemType !== 'ps' && itemType !== 'articles')
         ? <GridTile
           key={selectedIndexItem.wiki}
           style={{border: '0px solid black', cursor: 'pointer', pointerEvents: 'none'}}
@@ -252,7 +272,7 @@ class EpicTimeline extends React.Component {
             cols={1}
             rows={1}
           >
-            <img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
+            <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Sachsenspiegel.jpg/614px-Sachsenspiegel.jpg'
               style={styles.imageItem}
               onClick={() => { this.setState({ selectedImage: {
                 src: selectedIndexItem.wiki,
@@ -292,14 +312,42 @@ class EpicTimeline extends React.Component {
   }
 
   _selectMainArticle = () => {
-    this.setState({ stepIndex: -1 })
-    this.props.setEpicContentIndex(-1)
+    if ((this.props.selectedItem || {}).type === TYPE_AREA) {
+      this.setState({ stepIndex: -1 })
+    } else {
+      this.props.setEpicContentIndex(-1)
+    }
   }
 
-  _selectStepButton = (index, newYear) => {
-    this.setState({stepIndex: index, selectedWiki: false})
-    this.props.setEpicContentIndex(index)
-    if (!isNaN(newYear)) this.props.setYear(+newYear)
+  _selectStepButton = (index, newYear, openOwn, event) => {
+    if (openOwn) {
+      if (event.stopPropagation) event.stopPropagation()
+      const { activeArea, changeColor, selectEpicItem, selectAreaItem, selectedYear } = this.props
+      const { epicLinkedArticles } = this.state
+      const selectedArticle = epicLinkedArticles[index]
+      const aeId = selectedArticle.aeId
+
+      if (epicIdNameArray.map(el => el[0]).includes(selectedArticle.type)) {
+        selectEpicItem(selectedArticle.wiki, +newYear || selectedYear)
+      } else if (aeId) {
+        const [ ae, colorToSelect, rulerToHold ] = aeId.split('|')
+        const nextData = activeArea.data
+        const provinceWithOldRuler = Object.keys(nextData).find(key => nextData[key][utils.activeAreaDataAccessor(colorToSelect)] === rulerToHold) // TODO: go on here
+        if (provinceWithOldRuler) {
+          selectAreaItem(provinceWithOldRuler, provinceWithOldRuler)
+          if (colorToSelect !== activeArea.color) {
+            changeColor(colorToSelect)
+          }
+        }
+      }
+    } else {
+      if ((this.props.selectedItem || {}).type === TYPE_AREA) {
+        this.setState({stepIndex: index, selectedWiki: false})
+        if (!isNaN(newYear)) this.props.setYear(+newYear)
+      } else {
+        this.props.setEpicContentIndex(index)
+      }
+    }
   }
 
   setYearWrapper = (newYear) => {
@@ -348,16 +396,16 @@ class EpicTimeline extends React.Component {
 
     const linkedMediaItems = (linkedItems.media || epicMeta.media || []).map((imageItem) => {
       return {
-        src: imageItem._id || imageItem.wiki || ((imageItem || {}).properties || {}).w,
+        src: imageItem._id || ((imageItem || {}).properties || {}).id || ((imageItem || {}).properties || {}).w || imageItem.src || imageItem.wiki || ((imageItem || {}).properties || {}).w,
         wiki: imageItem.wiki || imageItem.properties.w,
         title: imageItem.name || imageItem.title || (imageItem.data || {}).title || ((imageItem || {}).properties || {}).n,
         subtype: imageItem.subtype || imageItem.properties.t,
-        source: imageItem.source || (imageItem.data || {}).source || ((imageItem || {}).properties || {}).s,
+        source: imageItem.source || (imageItem.data || {}).source || ((imageItem || {}).properties || {}).src,
         subtitle: imageItem.subtitle || imageItem.year || ((imageItem || {}).properties || {}).n,
-        score: imageItem.score || ((imageItem || {}).properties || {}).s,
-        date: imageItem.year || ((imageItem || {}).properties || {}).y
+        score: ((imageItem || {}).properties || {}).s || imageItem.score,
+        date:  ((imageItem || {}).properties || {}).y || imageItem.year
       }
-    })
+    }).sort((a, b) => (+b.score || 0) - (+a.score || 0))
 
     let entityContentData
     if (isEntity) {
@@ -380,12 +428,15 @@ class EpicTimeline extends React.Component {
         "wiki": (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
         "content": (!linkedItem.properties) ? (linkedItem.content || linkedItem.name) : (linkedItem.properties.c || linkedItem.properties.n),
         "type": (!linkedItem.properties) ? linkedItem.type : linkedItem.properties.t,
-        "source": (!linkedItem.properties) ? false : linkedItem.properties.s,
+        "aeId": (linkedItem.properties || {}).aeId,
+        "source": (!linkedItem.properties) ? false : linkedItem.properties.src,
+        "score": (!linkedItem.properties) ? false : linkedItem.properties.s,
         "isMarker": (!linkedItem.properties) ? true : (linkedItem.properties.ct === "marker"),
         "date": ((!linkedItem.properties) ? linkedItem.date : linkedItem.properties.y),
-        "geometry": linkedItem.geometry
+        "geometry": linkedItem.geometry,
+        "icon":  (linkedItem.properties || {}).i
       }}).filter((el) => el["name"] !== "null").sort((a, b) => {
-      return +(a.date || 0) - +(b.date || 0)
+      return +(a.date || -5000) - +(b.date || -5000)
     })
 
     this.setState({
@@ -421,15 +472,21 @@ class EpicTimeline extends React.Component {
 
   componentWillReceiveProps = (nextProps) => {
     const { rulerSetup } = this.state
-    const { selectedItem, epicData, linkedItems, rulerProps, isEntity } = this.props
+    const { selectedItem, contentIndex, epicData, linkedItems, rulerProps, isEntity } = this.props
 
     const nextLinkedId = nextProps.linkedItems.id
     const prevLinkedId = linkedItems.id
+
 
     if (((nextProps.epicData && nextProps.epicData.id && rulerSetup !== nextProps.epicData.id) || nextLinkedId !== prevLinkedId) && nextProps.selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
       this._setUpInfluenceDataAndMediaAndLinkedContent(nextProps.epicData, nextProps.linkedItems, nextProps.isEntity)
     } else if (epicData.id === nextProps.epicData.id && (rulerProps || {})[2] !== (nextProps.rulerProps || {})[2]) {
       this.forceUpdate()
+    } else if(nextProps.selectedItem.type === TYPE_EPIC && nextProps.contentIndex !== contentIndex) {
+      this.setState({stepIndex: nextProps.contentIndex, selectedWiki: false})
+      const newYear = (((((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || [])[nextProps.contentIndex] || {}).properties || {}).y
+
+      if (!isNaN(newYear)) this.props.setYear(+newYear)
     }
   }
 
@@ -486,7 +543,16 @@ class EpicTimeline extends React.Component {
             {epicLinkedArticles.map((epicContent, i) => (
               <Step key={i} style={ styles.stepContainer}>
                 <StepButton
-                  icon={<span style={{...styles.stepLabel, color: themes[theme].foreColors[0], background: (( (+(epicLinkedArticles[i].date) <= +selectedYear) && (+selectedYear < +((epicLinkedArticles[i+1] || {}).date || 2000)) ) ? themes[theme].highlightColors[0] : themes[theme].backColors[0]) }}>{epicLinkedArticles[i].date}</span>}
+                  icon={
+                    (epicLinkedArticles[i].type.substr(0,2) === "ae") ?
+                    <Avatar size={30}
+                            style={{ marginLeft: -3 }}
+                            color={themes[theme].backColors[0]}
+                            backgroundColor={themes[theme].foreColors[0]}
+                            {...(epicLinkedArticles[i].icon ? (epicLinkedArticles[i].icon[0] === '/' ? { src: epicLinkedArticles[i].icon } : { src: getFullIconURL(decodeURIComponent(epicLinkedArticles[i].icon)) }) : { icon: <RulerIcon viewBox={'0 0 64 64'} /> })}
+                    /> :
+                    <span style={{...styles.stepLabel, color: themes[theme].foreColors[0], background: (( (+(epicLinkedArticles[i].date) <= +selectedYear) && (+selectedYear < +((epicLinkedArticles[i+1] || {}).date || 2000)) ) ? themes[theme].highlightColors[0] : themes[theme].backColors[0]) }}>{epicLinkedArticles[i].date}</span>
+                  }
                   onClick={() => { console.debug(i, epicLinkedArticles[i].date); this._selectStepButton(i, epicLinkedArticles[i].date) }}>
                   <div style={{
                     overflow: 'hidden',
@@ -514,7 +580,19 @@ class EpicTimeline extends React.Component {
                   }}>
                     {itemTypeToName[epicContent.type]}
                   </div>
-
+                  { epicIdNameArray.concat(aeIdNameArray).map(el => el[0]).includes(epicContent.type) &&
+                  <FlatButton
+                    onClick={(event) => this._selectStepButton(i, epicLinkedArticles[i].date, true, event) }
+                    style={{height: 30, minWidth: 36, zIndex: 100, top: 28, right: 0, position: 'absolute'}}
+                    iconStyle={{height: 20, width: 20}}
+                    // style={{...styles.buttonOpenArticle, zIndex: 1000, padding: 0, position: 'absolute', top: 15 }}
+                    tooltipPosition="bottom-left"
+                    tooltip={translate('pos.openEpic')}
+                    icon={<IconOpenEpic color={themes[theme].highlightColors[0]}
+                                    style={{height: 30}}
+                                    // style={{ float: 'right'/*, padding: '4px'*/, paddingLeft: 0, marginLeft: 10 }}
+                      />}>
+                  </FlatButton>}
                 </StepButton>
               </Step>
             ))}
@@ -603,13 +681,18 @@ class EpicTimeline extends React.Component {
 const enhance = compose(
   connect(state => ({
     selectedItem: state.selectedItem,
+    contentIndex: ((state.selectedItem || {}).data || {}).contentIndex,
+    activeArea: state.activeArea,
     theme: state.theme,
   }), {
+    changeColor,
     deselectItem,
     setData,
+    selectAreaItem,
     setYear: setYearAction,
     selectValue,
     selectLinkedItem,
+    selectEpicItem,
     setEpicContentIndex
   }),
   pure,

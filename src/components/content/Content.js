@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import Badge from 'material-ui/Badge'
 
+import Badge from 'material-ui/Badge'
 import Paper from 'material-ui/Paper'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
@@ -33,7 +33,7 @@ import EpicTimeline from './EpicTimeline'
 import ProvinceTimeline from './ProvinceTimeline'
 import { properties, themes } from '../../properties'
 
-const MOVIETYPES = ['videos']
+const MOVIETYPES = ['v']
 const IMAGETYPES = ['people', 'battle', 'artefacts', 'cities', 'misc']
 const AUDIOTYPES = ['audios']
 
@@ -254,7 +254,7 @@ class Content extends Component {
 
       // look for linked linked items based on wiki
       // ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0])
-      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + linkId)
+      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + window.encodeURIComponent(linkId))
         .then((linkedItemResult) => {
           if (linkedItemResult.status === 200) {
             const linkedItems = {
@@ -266,16 +266,17 @@ class Content extends Component {
             const res = linkedItemResult.data
             res.media.forEach((imageItem) => {
               linkedItems.media.push({
-                src: imageItem._id || imageItem.properties.w,
+                src: ((imageItem || {}).properties || {}).id || imageItem._id || imageItem.properties.w,
                 wiki: imageItem.wiki || imageItem.properties.w,
                 title: imageItem.name || (imageItem.data || {}).title || imageItem.properties.n,
                 subtype: imageItem.subtype || imageItem.properties.t,
-                source: (imageItem.data || {}).source || imageItem.properties.s,
+                source: (imageItem.data || {}).source || imageItem.properties.src,
                 subtitle: imageItem.year || imageItem.properties.n,
                 score: imageItem.score || imageItem.properties.s,
               })
             })
-            linkedItems.content = res.map
+            linkedItems.content = res.map.sort((a, b) => (+b.score || 0) - (+a.score || 0))
+            linkedItems.media = linkedItems.media.sort((a, b) => (+b.score || 0) - (+a.score || 0))
 
             showNotification(linkedItems.media.length + ' linked media item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
 
@@ -320,6 +321,7 @@ class Content extends Component {
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED
+    const linkedCount = (finalLinkedItems.media || []).length
     const hasLinkedImage = (finalLinkedItems.media || []).some(lI => IMAGETYPES.includes(lI.subtype))
     const hasLinkedMovie = (finalLinkedItems.media || []).some(lI => MOVIETYPES.includes(lI.subtype))
     const hasLinkedAudio = (finalLinkedItems.media || []).some(lI => AUDIOTYPES.includes(lI.subtype))
@@ -333,16 +335,30 @@ class Content extends Component {
             { entityTimelineOpen && <Divider style={{ backgroundColor: themes[theme].backColors[2] }} /> }
             <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
               <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0 }} >
-                <div>
+                <Badge
+                  badgeContent={linkedCount}
+                  primary={true}
+                  badgeStyle={{ top: -22, fontWeight: 'bolder', right: 10, opacity: (linkedCount > 0) ? 1 : 0.5 }}
+                ><div style={{ position: 'absolute',
+                  top: -12,
+                  left: -9 }}>
                   <ContentImage hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer1, fill: (hasLinkedImage ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
                   <ContentMovie hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer2, fill: (hasLinkedMovie ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
                   <ContentAudio hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer3, fill: (hasLinkedAudio ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
                   <ContentLink hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer4, fill: (hasLinkedOther ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
-                </div>
+                </div></Badge>
               </IconButton>
             } />
             { entityTimelineOpen && <Divider style={{ backgroundColor: themes[theme].backColors[2] }} /> }
-            <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'qaa') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('qaa')} leftIcon={<QAAIcon hoverColor={themes[theme].highlightColors[0]} style={{...styles.qaaIcon, fill: (hasQuestions ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} /> } />
+            <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'qaa') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('qaa')} leftIcon={
+              <Badge
+                style={{ top: -18, margin: 0, left: 10 }}
+                badgeStyle={{ left: 28, fontWeight: 'bolder', top: 13, opacity: (hasQuestions > 0) ? 1 : 0.5 }}
+              badgeContent={hasQuestions || 0}
+              primary={true}
+            >
+              <QAAIcon hoverColor={themes[theme].highlightColors[0]} style={{...styles.qaaIcon, fill: (hasQuestions ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
+            </Badge> } />
           </Menu>
         </Paper>
       </div>}
