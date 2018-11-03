@@ -7,9 +7,12 @@ import Dialog from 'material-ui/Dialog'
 import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconSearch from 'material-ui/svg-icons/action/search'
 import FlatButton from 'material-ui/FlatButton'
+import FloatingActionButton from 'material-ui/FloatingActionButton'
+import IconButton from 'material-ui/IconButton'
 import TextField from 'material-ui/TextField'
 import IconArrowUp from 'material-ui/svg-icons/navigation/expand-less'
 import IconArrowDown from 'material-ui/svg-icons/navigation/expand-more'
+import IconReset from 'material-ui/svg-icons/av/replay'
 import { setYear } from './actionReducers'
 import { selectEpicItem, TYPE_EPIC } from '../actionReducers'
 import Timeline from 'react-visjs-timeline'
@@ -17,8 +20,11 @@ import './mapTimeline.scss'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
 import utilsQuery from '../utils/query'
+import {themes} from "../../../properties";
+import {tooltip} from "../../../styles/chronasStyleComponents";
+import {translate} from "admin-on-rest";
 
-const start = '-000200-01-05',
+const start = '-000550-01-05',
   min = '-002500-01-01T00:00:00.000Z',
   max = '2500-01-01'
 
@@ -30,7 +36,7 @@ const timelineGroups = [{
   content: 'Wars',
   title: 'EpicS',
   className: 'timelineGroup_wars',
-  subgroupStack: false
+  subgroupStack: false,
 }]
 
 const styles = {
@@ -203,14 +209,15 @@ const styles = {
     margin: 0,
   },
   buttonExpand: {
-    color: chronasMainColor,
-    width: '60px',
+    // width: '60px',
     position: 'fixed',
     bottom: 0,
-    left: 'calc(50% - 30px)',
+    left: 4,//'calc(50% - 30px)',
     zIndex: 10,
   }
 }
+
+let freeToChange = true
 
 class MapTimeline extends Component {
   constructor (props) {
@@ -218,10 +225,19 @@ class MapTimeline extends Component {
     this._onClickTimeline = this._onClickTimeline.bind(this)
 
     this.state = {
+      isReset: true,
       yearDialogVisible: false,
-      timelineHeight: 120,
+      timelineHeight: 140,
       inputYear: '',
       timelineOptions: {
+
+        // visibleFrameTemplate: function(item) {
+        //   if (item.visibleFrameTemplate) {
+        //     return item.visibleFrameTemplate;
+        //   }
+        //   var percentage = item.value * 100 + '%';
+        //   return '<div class="progress-wrapper"><div class="progress" style="width:' + percentage + '"></div><label class="progress-label">' + percentage + '<label></div>';
+        // },
         width: '100%',
         zoomMin: 315360000000,
         min: min,
@@ -232,6 +248,7 @@ class MapTimeline extends Component {
         showCurrentTime: false
           // showMajorLabels: false
       },
+      // animation: { duration: 1000, easingFunction: 'linear' },
       customTimes: {
         selectedYear: new Date(new Date(0, 1, 1).setFullYear(+this.props.selectedYear)).toISOString()
       },
@@ -274,26 +291,29 @@ class MapTimeline extends Component {
     if (selectedItemId) {
       const selectedItem = groupItems.filter(el => el.id === selectedItemId)[0]
       const selectedItemDate = selectedItem.start.getFullYear()
-      selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear)
-      utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
-      utilsQuery.updateQueryStringParameter('value', selectedItem.wiki)
+      selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear, selectedItem.id)
+      // utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
+      // utilsQuery.updateQueryStringParameter('value', selectedItem.wiki)
     } else {
       setYear(clickedYear)
-    }
-
-    const selectedYear = event.time.getFullYear()
-    if (selectedYear < 2001 && selectedYear > -2001) {
-      this.setState({
-        customTimes: {
-          selectedYear: new Date(new Date(0, 1, 1).setFullYear(selectedYear)).toISOString()
-        }
-      })
+      const selectedYear = event.time.getFullYear()
+      if (selectedYear < 2001 && selectedYear > -2001) {
+        this.setState({
+          customTimes: {
+            selectedYear: new Date(new Date(0, 1, 1).setFullYear(selectedYear)).toISOString()
+          }
+        })
+      }
     }
   };
 
   componentWillReceiveProps = (nextProps) => {
-    const { groupItems, selectedYear, selectEpicItem } = this.props
+    const { selectedItemType, groupItems, selectedYear, selectEpicItem } = this.props
     const { customTimes } = this.state
+
+    if (nextProps.selectedItemType !== selectedItemType && selectedItemType === TYPE_EPIC) {
+      this.refs.timeline.$el.setSelection()
+    }
 
     /** Acting on store changes **/
     if (nextProps.selectedYear !== selectedYear && new Date(customTimes.selectedYear).getFullYear() !== nextProps.selectedYear) {
@@ -314,6 +334,9 @@ class MapTimeline extends Component {
 
   _toggleTimelineHeight = () => {
     const { timelineHeight, timelineOptions } = this.state
+    // timelineOptions.start = '500-01-01'
+    // timelineOptions.end = '510-01-01'
+
     if (timelineHeight !== SMALLTIMELINEHEIGHT) {
       timelineOptions.stack = false
       this.setState({
@@ -331,9 +354,15 @@ class MapTimeline extends Component {
 
   _toggleYearDialog = (isVisible) => this.setState({ yearDialogVisible: isVisible })
 
+  _flyTo = (s,e,doReset,optId) => {
+    if (optId) { setTimeout(() => { this.refs.timeline.$el.setSelection(optId) }, 2000) }
+    setTimeout(() => { this.refs.timeline.$el.setWindow(s,e); setTimeout(() => {this.setState({isReset: doReset})},1000)}, 10)
+    // this.refs.timeline.$el.setWindow('1050-04-01', '2050-04-01')
+  }
+
   render () {
-    const { timelineOptions, timelineHeight, yearDialogVisible, customTimes } = this.state
-    const { groupItems, selectedYear, setYear } = this.props
+    const { timelineOptions, timelineHeight, yearDialogVisible, isReset, customTimes } = this.state
+    const { groupItems, selectedYear, setYear, theme, translate } = this.props
 
     // console.debug('rendering maptimeline')
 
@@ -341,7 +370,7 @@ class MapTimeline extends Component {
     if (this.props.rightDrawerOpen) leftOffset -= 228
 
     return (
-      <div>
+      <div className={timelineHeight === BIGTIMELINEHEIGHT ? 'extendedTimeline' : ''}>
         <Dialog open={yearDialogVisible}
           autoDetectWindowHeight={false}
           modal={false}
@@ -376,16 +405,69 @@ class MapTimeline extends Component {
             </form>
           </div>
         </Dialog>
-        <FlatButton
-          onClick={() => this._toggleTimelineHeight()} style={styles.buttonExpand}
-          icon={(timelineHeight === SMALLTIMELINEHEIGHT) ? <IconArrowUp /> : <IconArrowDown />}
-        />
+
+
+        <IconButton
+          key={'expand'}
+          style={{
+            zIndex: 1,
+            width: 48,
+            height: 48,
+            bottom: 52,
+            left: 64,
+            position: 'fixed'
+          }}
+          tooltipPosition="bottom-right"
+          tooltip={translate('pos.timeline.expand')}
+          tooltipStyles={tooltip}
+          onClick={() => this._toggleTimelineHeight()}
+          iconStyle={{color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%'}}
+        >
+          {(timelineHeight === SMALLTIMELINEHEIGHT) ? <IconArrowUp hoverColor={themes[theme].highlightColors[0]} /> : <IconArrowDown hoverColor={themes[theme].highlightColors[0]} />}
+        </IconButton>
+
+        <IconButton
+          key={'reset'}
+          style={{
+            zIndex: 1,
+            width: 48,
+            height: 48,
+            bottom: 24,
+            left: 64,
+            position: 'fixed'
+          }}
+          disabled={isReset}
+          className={'mapTimelineIcons'}
+          tooltipPosition="bottom-right"
+          tooltip={translate('pos.timeline.reset')}
+          tooltipStyles={tooltip}
+          onClick={() => { this._flyTo(start, '2050-04-01', true) }}
+          iconStyle={{color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%', padding: 2}}
+        >
+          <IconReset hoverColor={themes[theme].highlightColors[0]} />
+        </IconButton>
+
         <Timeline
+          ref="timeline"
           options={{ ...timelineOptions, height: timelineHeight }}
           groups={timelineGroups}
           items={groupItems}
           customTimes={customTimes}
-          clickHandler={this._onClickTimeline}
+          selectHandler={(items) => {
+            const toFind = items.items[0]
+            // console.debug(toFind,this.props.groupItems[0].id)
+            const selectedItem = this.props.groupItems.find((el) => el.id === toFind);
+            if (selectedItem) {
+              let s = new Date(selectedItem.start)
+              let e =  new Date(selectedItem.end)
+              s.setFullYear(s.getFullYear() - 100)
+              e.setFullYear(e.getFullYear() + 100)
+              this._flyTo(s, e, false, toFind)
+            }
+          }}
+          rangechangeHandler={() => {if (freeToChange) freeToChange=false }}
+          rangechangedHandler={() => { this.setState({isReset: false}); setTimeout(() => {freeToChange=true}, 200)}}
+          clickHandler={(event) => { if (freeToChange) this._onClickTimeline(event) }}
         />
         <Portal node={document && document.querySelector('.vis-custom-time.selectedYear')}>
           <button className='currentYearLabel' title='click to select exact year' onClick={(event) => { event.stopPropagation(); this._toggleYearDialog(true) }}>
@@ -400,11 +482,13 @@ class MapTimeline extends Component {
 const enhance = compose(
   connect(state => ({
     theme: state.theme,
+    selectedItemType: (state.selectedItem || {}).type,
     selectedYear: state.selectedYear,
   }), {
     setYear,
     selectEpicItem
-  })
+  }),
+translate
 )
 
 export default enhance(MapTimeline)

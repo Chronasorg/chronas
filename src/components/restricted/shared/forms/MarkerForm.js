@@ -26,6 +26,11 @@ export class MarkerForm extends Component {
       const { setModType, showNotification, history } = this.props
       const token = localStorage.getItem('chs_token')
 
+      if (values.capital) {
+        values.capital = values.capital.map((el) => {
+          return [el.capitalStart, el.capitalEnd, el.capitalOwner]
+        })
+      }
       const wikiURL = values.wiki
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
       if (wikiIndex > -1) values.wiki = wikiURL.substring(wikiIndex + 20, wikiURL.length)

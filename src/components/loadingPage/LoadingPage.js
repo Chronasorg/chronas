@@ -3,7 +3,13 @@ import mainLogo from '../../../public/images/logoChronasWhite.png'
 import utilsQuery from '../map/utils/query'
 
 const backgroundByYear = [
-  { year: -2000,
+  { year: -1300,
+    image: 'http://i.imgur.com/a1xHn0e.jpg',
+    description: '13th century BC: Pi-Ramesses, the new capital that was built on an island in the midst of the Nile\'s easternmost branch by Pharaoh Ramesses II Egypt' },
+  { year: -479,
+    image: 'https://i.redd.it/h5juk4rg56w01.jpg',
+    description: '479 BC: Greeks storm the Persian encampment at the Battle of Mycale by Peter Dennis' },
+  { year: -1300,
     image: 'https://upload.wikimedia.org/wikipedia/commons/4/40/Egyptian_chess_players.jpg',
     description: 'Egyptian chess players' },
   { year: -620,
@@ -18,6 +24,9 @@ const backgroundByYear = [
   { year: 450,
     image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Alma-Tadema_The_Education_of_the_Children_of_Clovis.jpg/1280px-Alma-Tadema_The_Education_of_the_Children_of_Clovis.jpg',
     description: '450-511: Education of the Children of Clovis' },
+  { year: 1582,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Surikov_Pokoreniye_Sibiri_Yermakom.jpg/1280px-Surikov_Pokoreniye_Sibiri_Yermakom.jpg',
+    description: '1582: Battle of Chuvash Cape' },
   { year: 1627,
     image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Siege_of_La_Rochelle_1881_Henri_Motte.png/1280px-Siege_of_La_Rochelle_1881_Henri_Motte.png',
     description: '1627–1628: Siege of La Rochelle (Kingdom of France)' },

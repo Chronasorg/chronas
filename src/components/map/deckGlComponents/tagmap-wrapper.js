@@ -32,7 +32,7 @@ export default class TagMapWrapper {
     this.textSizes = {};
     data.forEach(d => {
       const label = getLabel(d);
-      this.textSizes[label] = this.ctx.measureText(label).width;
+      this.textSizes[label] = 100//this.ctx.measureText(label).width;
     });
 
     this.tagMap = new TagMap();
@@ -62,7 +62,7 @@ export default class TagMapWrapper {
       tagList,
       minFontSize,
       maxFontSize,
-      maxNumOfTags: 150,
+      maxNumOfTags: 1000,
       sizeMeasurer: this.measureText
     });
 

@@ -89,7 +89,7 @@
     {
       "id": "provinces",
       "type": "fill",
-      "minzoom": 5,
+      "minzoom": 7,
       "source": "provinces",
       "paint": {
         "fill-color": {
@@ -105,7 +105,7 @@
     {
       "id": "ruler",
       "type": "fill",
-      "maxzoom": 5,
+      "maxzoom": 7,
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -119,7 +119,7 @@
     {
       "id": "religion",
       "type": "fill",
-      "maxzoom": 5,
+      "maxzoom": 7,
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -133,7 +133,7 @@
     {
       "id": "religionGeneral",
       "type": "fill",
-      "maxzoom": 5,
+      "maxzoom": 7,
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -147,7 +147,7 @@
     {
       "id": "culture",
       "type": "fill",
-      "maxzoom": 5,
+      "maxzoom": 7,
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -161,7 +161,7 @@
     {
       "id": "population",
       "type": "fill",
-      "maxzoom": 5,
+      "maxzoom": 7,
       "source": "provinces",
       "layout": {
         "visibility": "none"
@@ -175,8 +175,6 @@
       "id": "area-outlines",
       "type": "line",
       "source": "area-outlines",
-      "layout": {
-      },
       "paint": {
         "line-width": 0
       }
@@ -281,18 +279,6 @@
         "text-font": ["Cinzel Bold"],
         "text-size": 12
       }
-    },
-    {
-      "id": "markers",
-      "type": "circle",
-      "source": "markers",
-      "paint": {
-        "circle-color": "#11b4da",
-        "circle-radius": 44,
-        "circle-stroke-width": 1,
-        "circle-stroke-color": "#fff"
-      },
-      "interactive": true
     },
     {
       "id": "epicroute",

@@ -101,6 +101,7 @@ class ProvinceTimeline extends React.Component {
     const newWiki = (typeof toSelect === 'object') ? toSelect[0] : toSelect
 
     if (this.state.selectedWiki !== newWiki) {
+      localStorage.setItem('chs_dyk_province', true)
       this.setState({
         selectedWiki: (typeof toSelect === 'object') ? toSelect[0] : toSelect
       })
@@ -155,7 +156,7 @@ class ProvinceTimeline extends React.Component {
           }
 
           items.push({
-            className: 'entityTimelineItem',
+            className: 'provinceTimelineItem',
             start: new Date(new Date(0, 1, 1).setFullYear(startYear)),
             end: new Date(new Date(0, 1, 1).setFullYear(endYear)),  // end is optional
             content: itemTitle,

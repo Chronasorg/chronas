@@ -9,7 +9,7 @@ import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import { setModType } from '../buttons/actionReducers'
 import { TYPE_MARKER } from '../../../map/actionReducers'
-import { properties } from '../../../../properties'
+import { properties, epicIdNameArray } from '../../../../properties'
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
 const formStyle = {
@@ -22,50 +22,94 @@ const formStyle = {
 export class LinkedForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const { setModType, showNotification, initialValues, history } = this.props
+      const {setModType, showNotification, initialValues, history} = this.props
       const token = localStorage.getItem('chs_token')
       const wikiURL = values.wiki
 
       if (values.wiki !== initialValues.wiki && typeof wikiURL !== 'undefined') {
         const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
-        if (wikiIndex > -1) values.wiki = wikiURL.substring(wikiIndex + 20, wikiURL.length)
+        if (wikiIndex > -1) values.wiki = wikiURL.substr(wikiIndex + 20)
       }
 
-      const bodyToSend = {}
-      if (redirect === 'edit') {
-        // updating linked metadata
-        if (values.onlyEpicContent !== initialValues.onlyEpicContent) bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
-        if (values.year !== initialValues.year) bodyToSend.year = values.year
-        if (values.subtype !== initialValues.subtype) bodyToSend.subtype = values.subtype
-        if (values.coo && !values.coo.every( e => (initialValues.coo || []).includes(e) )) bodyToSend.coo = values.coo
-        if (values.wiki !== initialValues.wiki) bodyToSend.wiki = values.wiki
+      const isEpic = epicIdNameArray.map(el => el[0]).includes(values.subtype)
 
-        // any data changed?
-        if (values.description !== initialValues.description ||
-          values.source !== initialValues.source ||
-          values.content !== initialValues.content ||
-          values.poster !== initialValues.poster ||
-          values.geojson !== initialValues.geojson ||
-          values.end !== initialValues.end ||
-          JSON.stringify(values.participants || {}) !== JSON.stringify(initialValues.participants || {})) {
-          bodyToSend.data = {
-            title: initialValues.description,
-            source: initialValues.source,
-            poster: initialValues.poster,
-            content: initialValues.content,
-            geojson: initialValues.geojson,
-            start: initialValues.year,
-            end: initialValues.end,
-            participants: (values.participants || []).map(el => el.participantTeam.map(el2 => el2.name))
+      let bodyToSend = {}
+      if (redirect === 'edit') {
+        if (isEpic) {
+          bodyToSend = {
+            "data": {
+              "title": values.description,
+              "wiki": values.wiki,
+              "start": values.year,
+              "end": values.end,
+              "poster": values.poster,
+              "participants": [
+                values.attacker.map(el => el.name),
+                values.defender.map(el => el.name),
+              ]
+            },
+            "wiki": values.wiki,
+            "subtype": values.subtype,
+            "year": values.year,
+            "type": "e"
           }
-          if (values.source !== initialValues.source) bodyToSend.data.source = values.source
-          if (values.poster !== initialValues.poster) bodyToSend.data.poster = values.poster
-          if (values.description !== initialValues.description) bodyToSend.data.title = values.description
-          if (values.end !== initialValues.end) bodyToSend.data.end = values.end
-          if (values.geojson && values.geojson !== initialValues.geojson) bodyToSend.data.geojson = JSON.parse(values.geojson)
+        }
+        else {
+          // updating linked metadata
+          if (values.onlyEpicContent !== initialValues.onlyEpicContent) bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
+          if (values.year !== initialValues.year) bodyToSend.year = values.year
+          if (values.subtype !== initialValues.subtype) bodyToSend.subtype = values.subtype
+          if (values.coo && !values.coo.every(e => (initialValues.coo || []).includes(e))) bodyToSend.coo = values.coo
+          if (values.wiki !== initialValues.wiki) bodyToSend.wiki = values.wiki
+
+          // any data changed?
+          if (values.description !== initialValues.description ||
+            values.source !== initialValues.source ||
+            values.content !== initialValues.content ||
+            values.poster !== initialValues.poster ||
+            values.geojson !== initialValues.geojson ||
+            values.end !== initialValues.end ||
+            JSON.stringify(values.participants || {}) !== JSON.stringify(initialValues.participants || {})) {
+            bodyToSend.data = {
+              title: initialValues.description,
+              source: initialValues.source,
+              poster: initialValues.poster,
+              content: initialValues.content,
+              geojson: initialValues.geojson,
+              start: initialValues.year,
+              end: initialValues.end,
+            }
+            if (values.source !== initialValues.source) bodyToSend.data.source = values.source
+            if (values.poster !== initialValues.poster) bodyToSend.data.poster = values.poster
+            if (values.description !== initialValues.description) bodyToSend.data.title = values.description
+            if (values.end !== initialValues.end) bodyToSend.data.end = values.end
+            if (values.geojson && values.geojson !== initialValues.geojson) bodyToSend.data.geojson = JSON.parse(values.geojson)
+          }
         }
         // attempt post marker if wiki + lat long + year available and wiki new
-      } else {
+      }
+      else {
+        if (isEpic) {
+          bodyToSend = {
+            "_id": "e_" + decodeURIComponent(values.wiki).replace(/ /g, "_"),
+            "data": {
+              "title": values.description,
+              "wiki": values.wiki,
+              "start": values.year,
+              "end": values.end,
+              "poster": values.poster,
+              "participants": [
+                values.attacker.map(el => el.name),
+                values.defender.map(el => el.name),
+              ]
+            },
+            "wiki": values.wiki,
+            "subtype": values.subtype,
+            "year": values.year,
+            "type": "e"
+          }
+        }
+        else {
         bodyToSend._id = (values.subtype !== 'html') ? values.src : (values.src + '_' + new Date().getTime().toString())
         bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
         // adding linked metadata
@@ -88,6 +132,7 @@ export class LinkedForm extends Component {
           participants: (values.participants || []).map(el => el.participantTeam.map(el2 => el2.name))
         }
       }
+    }
 
       const metadataItem = encodeURIComponent(values.src)
       fetch(properties.chronasApiHost + '/metadata/' + ((redirect === 'edit') ? metadataItem : ''), {

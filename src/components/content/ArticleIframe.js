@@ -12,14 +12,18 @@ import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import FullscreenEnterIcon from 'material-ui/svg-icons/navigation/fullscreen'
+import Toggle from 'material-ui/Toggle'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import {chronasMainColor, grey600} from '../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
 import { LoadingCircle } from '../global/LoadingCircle'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import utilsQuery from "../map/utils/query";
-import { themes } from '../../properties'
-import { setData, selectMarkerItem, selectLinkedItem, TYPE_AREA, TYPE_MARKER, TYPE_LINKED, WIKI_PROVINCE_TIMELINE } from "../map/actionReducers";
+import {epicIdNameArray, themes} from '../../properties'
+import {
+  setData, selectMarkerItem, selectLinkedItem, TYPE_AREA, TYPE_EPIC, TYPE_MARKER, TYPE_LINKED,
+  WIKI_PROVINCE_TIMELINE, selectEpicItem
+} from "../map/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "./actionReducers";
 import {resetModActive, setFullModActive} from "../restricted/shared/buttons/actionReducers";
 
@@ -134,44 +138,64 @@ class ArticleIframe extends React.Component {
   }
 
   _goToMod = (modUrl, isProvince) => {
-    const { selectedItem, setData, setMetadataType, selectedTypeId, selectLinkedItem, selectMarkerItem, history } = this.props
+    const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
 
-    const epicContentItem = ((selectedItem.data || {}).content || [])[(selectedItem.data || {}).contentIndex || 0]
+    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== "undefined"
+    const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
+
+    let fModUrl = modUrl
 
     if (isProvince) {
       setData({ id: selectedTypeId.id })
       setMetadataType(selectedTypeId.type)
     } else if (epicContentItem) {
-      if (epicContentItem.isMarker) {
-        selectMarkerItem(epicContentItem.wiki, {
-          "_id": epicContentItem.wiki,
-          "name": epicContentItem.name,
-          "type": epicContentItem.type,
-          "year": epicContentItem.date,
+      if (((epicContentItem || {}).properties || {}).ct === 'marker') {
+        fModUrl = '/mod/markers'
+        selectMarkerItem(((epicContentItem || {}).properties || {}).w, {
+          "_id": ((epicContentItem || {}).properties || {}).w,
+          "name": ((epicContentItem || {}).properties || {}).n,
+          "type": ((epicContentItem || {}).properties || {}).t,
+          "year": ((epicContentItem || {}).properties || {}).y,
           "coo": (epicContentItem.geometry || {}).coordinates
         })
-      } else if (!epicContentItem.isMarker) {
+      } else if (((epicContentItem || {}).properties || {}).ct === 'metadata') {
+        // setMetadataEntity(((epicContentItem || {}).properties || {}).id, true)
+
+        selectEpicItem('modOnly', +selectedYear, ((epicContentItem || {}).properties || {}).id)
+
+        if (epicIdNameArray.map(el => el[0]).includes(((epicContentItem || {}).properties || {}).t)) fModUrl = '/mod/linked'
         // selectLinkedItem(epicContentItem.wiki)
         // setData({ id: epicContentItem.wiki })
+
+      } else if (((epicContentItem || {}).properties || {}).ct === 'area' && ((epicContentItem || {}).properties || {}).aeId) {
+        const [ ae, colorToSelect, rulerToHold ] = ((epicContentItem || {}).properties || {}).aeId.split('|')
+        selectAreaItemWrapper(rulerToHold, colorToSelect)
+        fModUrl = '/mod/metadata'
       }
       // setMetadataType(selectedTypeId.type)
     }
-    history.push(modUrl)
+    history.push(fModUrl)
   }
 
   render () {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
-    const { hasChart, selectedItem, selectedWiki, theme, isEntity, customStyle } = this.props
+    const { hasChart, selectedItem, selectedWiki, theme, isEntity, customStyle, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
-    const epicContentItem = ((selectedItem.data || {}).content || [])[(selectedItem.data || {}).contentIndex || 0]
+    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== "undefined"
+    const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
     const isMedia = selectedItem.type === TYPE_LINKED
     const isArea = selectedItem.type === TYPE_AREA
+    const isEpic = selectedItem.type === TYPE_EPIC
     const isProvince = selectedItem.wiki === WIKI_PROVINCE_TIMELINE
     const noWiki = (!selectedItem || !selectedWiki || selectedWiki === -1)
-    const modUrl = epicContentItem
-      ? (epicContentItem.isMarker ? '/mod/markers' : '/mod/links')
+    const modUrl = isEpic || isArea
+      ? (((epicContentItem || {}).properties || {}).ct === "marker" ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
       : (isMarker ?  '/mod/markers' : '/mod/metadata')
+
+      // epicContentItem
+      // ? (epicContentItem.ct === "marker" ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
+      // : (isMarker ?  '/mod/markers' : '/mod/metadata')
 
     const iconEnterFullscreen = {
       key: 'random',
@@ -182,24 +206,39 @@ class ArticleIframe extends React.Component {
       style: styles.fullscreenButton
     }
     const modMenu = <div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : (isProvince) ? { ...styles.actionButtonContainer, top: 332 } : styles.actionButtonContainer } >
+      { toggleYearByArticle && <Toggle
+        label='Set year by article'
+        disabled={toggleYearByArticleDisabled}
+        onToggle={toggleYearByArticle}
+        defaultToggled={yearByArticleValue}
+        style={{
+          width: 'inherit',
+          display: 'inline-block',
+          position: 'relative',
+          top: 5
+        }}
+      /> }
       <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._goToMod(modUrl, isProvince)} >
         <IconEdit style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton>
       <IconButton {...iconEnterFullscreen} style={{ width: !(isEntity || isProvince) ? 32 : 'inherit' }} >
         <FullscreenEnterIcon style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton>
+      { !(isEntity || isProvince) && <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}}  onClick={() => this.props.history.goBack()} >
+        <IconBack style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
+      </IconButton> }
       { !(isEntity || isProvince) && <IconButton style={{  }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._handleClose()}>
         <IconClose style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton> }
     </div>
 
-    if (noWiki) { return <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
-      <span>No Wiki found for <b>{JSON.stringify((selectedItem || {}).value || "n/a")}</b>. Consider adding one <Link to={modUrl}>here</Link></span>
-      { modMenu }
-    </div> // LoadingCompass
-    }
+    // if (noWiki) { return <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
+    //   <span>No Wiki found for <b>{JSON.stringify((selectedItem || {}).value || "n/a")}</b>. Consider adding one <Link to={modUrl}>here</Link></span>
+    //   { modMenu }
+    // </div> // LoadingCompass
+    // }
 
-    const shouldLoad = (iframeLoading || selectedWiki === null || +selectedWiki === -1)
+    const shouldLoad = (noWiki || iframeLoading || selectedWiki === null || +selectedWiki === -1)
 
     return (
       <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
@@ -241,9 +280,11 @@ class ArticleIframe extends React.Component {
 const enhance = compose(
   connect(state => ({
     theme: state.theme,
+    selectedYear: state.selectedYear,
   }), {
     setRightDrawerVisibility,
     setData,
+    selectEpicItem,
     selectMarkerItem,
     selectLinkedItem
   }),

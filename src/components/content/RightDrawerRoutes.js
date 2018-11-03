@@ -11,7 +11,7 @@ import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import axios from 'axios'
-import { Restricted, translate } from 'admin-on-rest'
+import {Restricted, showNotification, translate} from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { grey600, grey400, chronasDark } from '../../styles/chronasColors'
 import Responsive from '../menu/Responsive'
@@ -41,8 +41,9 @@ import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIco
 import { setRightDrawerVisibility } from './actionReducers'
 import {
   TYPE_AREA, TYPE_MARKER, WIKI_RULER_TIMELINE, WIKI_PROVINCE_TIMELINE, setWikiId,
-  selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, selectAreaItem, selectEpicItem, selectMarkerItem
+  selectValue, deselectItem as deselectItemAction, TYPE_LINKED, TYPE_EPIC, selectLinkedItem, setFullItem, selectAreaItem, selectEpicItem, selectMarkerItem
 } from '../map/actionReducers'
+import { setYear } from '../map/timeline/actionReducers'
 import { RulerIcon, CultureIcon, ReligionIcon, ReligionGeneralIcon, ProvinceIcon } from '../map/assets/placeholderIcons'
 import { ModHome } from './mod/ModHome'
 import {
@@ -186,13 +187,12 @@ const menuIndexByLocation = {
 class RightDrawerRoutes extends PureComponent {
   constructor (props) {
     super(props)
-    this._setPartOfItems = this._setPartOfItems.bind(this)
+    // this._setPartOfItems = this._setPartOfItems.bind(this)
     this._openPartOf = this._openPartOf.bind(this)
     this.state = {
       contentType: '',
       searchText: '',
       updateID: 0,
-      partOfEntities: [],
       linkedItemData: {},
       isFetchingSearch: false,
       contentChoice: [],
@@ -316,7 +316,7 @@ class RightDrawerRoutes extends PureComponent {
   routeNotYetSetup = () => {
     const { activeArea, location, selectedItem } = this.props
     const oldrouteKey = this.state.routeKey
-    const newrouteKey = location.pathname + activeArea.color + selectedItem.value + ((selectedItem || {}).data || {}).id
+    const newrouteKey = location.pathname + activeArea.color + selectedItem.value + (((selectedItem || {}).data || {}).id || '')
 
     if (oldrouteKey === newrouteKey) {
       return false
@@ -368,7 +368,7 @@ class RightDrawerRoutes extends PureComponent {
                 linkedItemData
               })
             } else {
-              showNotification('No linked items found yet')
+              this.props.showNotification('No linked items found yet')
             }
           })
       } else {
@@ -505,6 +505,8 @@ class RightDrawerRoutes extends PureComponent {
   componentWillReceiveProps (nextProps) {
     // TODO: this gets called too much!
     const { activeArea, location, metadata, selectedItem } = this.props
+
+    console.debug('componentWillReceiveProps   RightDrawerRoutes')
     if (
       (!(nextProps.selectedItem.type === TYPE_EPIC &&
         selectedItem.type === TYPE_EPIC) &&
@@ -520,7 +522,7 @@ class RightDrawerRoutes extends PureComponent {
           const activeprovinceValue = utils.getAreaDimKey(metadata, nextProps.activeArea, nextProps.selectedItem)
           prefilledId = activeprovinceValue + '||ae|' + activeAreaDim
         } else {
-          prefilledId = ((nextProps.selectedItem.type === TYPE_EPIC) ? 'e_' : '') + nextProps.selectedItem.wiki + '||' + (nextProps.selectedItem.value.type || nextProps.selectedItem.type)
+          prefilledId = ((nextProps.selectedItem.type === TYPE_EPIC) ? nextProps.selectedItem.value : nextProps.selectedItem.wiki) + '||' + (nextProps.selectedItem.value.type || nextProps.selectedItem.type)
         }
         this.ensureLoadLinkedItem(prefilledId, true) // adopt to new standard
       } else if (location.pathname === '/mod/links') {
@@ -574,17 +576,8 @@ class RightDrawerRoutes extends PureComponent {
     return 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + iconPath + '/100px-' + iconPath.substr(iconPath.lastIndexOf('/') + 1) + ((iconPath.toLowerCase().indexOf('svg') > -1) ? '.PNG' : '')
   }
 
-  _setPartOfItems (items) {
-    const { selectedItem } = this.props
-    const potentialPartOfItem = (selectedItem.value || {}).partOf
-    const partOfEntity = items.find(el => (el.properties || {}).id === potentialPartOfItem)
-
-    this.setState({ partOfEntities: partOfEntity ? [partOfEntity] : items })
-  }
-
   _openPartOf (el) {
-    console.debug(el)
-    const { activeArea, changeColor, selectAreaItem, selectEpicItem, selectMarkerItem, selectLinkedItem, setAreaColorLabel, history } = this.props
+    const { activeArea, changeColor, selectAreaItem, selectedItem, setYear, setFullItem, selectEpicItem, selectMarkerItem, selectLinkedItem, setAreaColorLabel, showNotification, history } = this.props
 
     const cType = ((el || {}).properties || {}).ct
     const aeId = ((el || {}).properties || {}).aeId
@@ -597,14 +590,45 @@ class RightDrawerRoutes extends PureComponent {
         if (colorToSelect !== activeArea.color) {
           changeColor(colorToSelect)
         }
+      } else {
+        axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + rulerToHold)
+          .then(influenceData => {
+            const fullInfluenceData = (((influenceData || {}).data || {}).data || {}).influence
+            const fullObj = fullInfluenceData[Math.floor(fullInfluenceData.length / 2)]
+            if (fullObj) {
+              const selectedYear = +Object.keys(fullObj)[0]
+              setYear(selectedYear)
+              axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
+                .then((areaDefsRequest) => {
+                  const nextData = areaDefsRequest.data
+                  const provinceWithOldRuler2 = Object.keys(nextData).find(key => nextData[key][0] === rulerToHold)
+                  if (provinceWithOldRuler2) {
+                    selectAreaItem(((el || {}).properties || {}).w, provinceWithOldRuler2)
+                  }
+                })
+              // setFullItem(selectedItem.wiki, rulerToHold, TYPE_AREA, { newEntity: rulerToHold })
+              // setYear(selectedYear)
+            } else {
+              // no province found with that ruler, check aggregate and go to that land
+              selectMarkerItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).w)
+              showNotification('No province of ' + ((el || {}).properties || {}).n + ' found in the current year: only opening article.')
+            }
+          })
+          .catch((e) => {
+            // no province found with that ruler, check aggregate and go to that land
+            selectMarkerItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).w)
+            showNotification('No province of ' + ((el || {}).properties || {}).n + ' found in the current year: only opening article.')
+          })
       }
-    } else if (epicIdNameArray.map(el => el[0]).includes(((el || {}).properties || {}).t)) {
+    }
+    else if (epicIdNameArray.map(el => el[0]).includes(((el || {}).properties || {}).t)) {
       if (activeArea.color !== 'ruler') {
         setAreaColorLabel('ruler', 'ruler')
       }
-      selectEpicItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).y/*, fullData*/)
+      selectEpicItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).y, ((el || {}).properties || {}).id/*, fullData */)
       // selectEpicItem(fullData.wiki, +(fullData.year || selectedYear))
-    } else if (cType === 'marker') {
+    }
+    else if (cType === 'marker') {
       selectMarkerItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).w)
     }
     else {
@@ -614,12 +638,13 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   render () {
+    console.debug('render()   RightDrawerRoutes')
     const {
       options, setWikiId, setRightDrawerVisibility, theme,
       selectedYear, selectedItem, activeArea, setAreaColorLabel, location,
       setModData, setModDataLng, setModDataLat, history, metadata, changeColor, translate
     } = this.props
-    const { newWidth, newMarkerWidth, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, contentTypeRaw, provinceEntity, partOfEntities } = this.state
+    const { newWidth, newMarkerWidth, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, contentTypeRaw, provinceEntity } = this.state
 
     if ((typeof selectedItem.wiki === 'undefined')) return null
 
@@ -742,105 +767,105 @@ class RightDrawerRoutes extends PureComponent {
       className='articleHeader'
       style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
       iconElementLeft={
-        (selectedItem.type === TYPE_AREA) ?
-          <BottomNavigation
-          style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
-          onChange={this.handleChange}
-          selectedIndex={(selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
+        (selectedItem.type === TYPE_AREA)
+          ? <BottomNavigation
+            style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
+            onChange={this.handleChange}
+            selectedIndex={(selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
             ? 0
             : selectedIndexObject[activeArea.color]}>
-          <BottomNavigationItem
-            themeBackColors={themes[theme].backColors[1]}
-            onClick={() => {
-              setWikiId(WIKI_PROVINCE_TIMELINE)
-              setAreaColorLabel('ruler', 'ruler')
-            }}
-            className='bottomNavigationItem'
-            icon={<CardHeader
-              title={selectedProvince}
-              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
-              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
-              style={styles.cardHeader.style}
-              subtitle='Summary'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<ProvinceIcon viewBox={'0 0 64 64'} />} />/* this._getFullIconURL(entityMeta.ruler.icon) */}
+            <BottomNavigationItem
+              themeBackColors={themes[theme].backColors[1]}
+              onClick={() => {
+                setWikiId(WIKI_PROVINCE_TIMELINE)
+                setAreaColorLabel('ruler', 'ruler')
+              }}
+              className='bottomNavigationItem'
+              icon={<CardHeader
+                title={selectedProvince}
+                subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+                titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
+                style={styles.cardHeader.style}
+                subtitle='Summary'
+                avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]} icon={<ProvinceIcon viewBox={'0 0 64 64'} />} />/* this._getFullIconURL(entityMeta.ruler.icon) */}
             />}
           />
-          <BottomNavigationItem
-            themeBackColors={themes[theme].backColors[1]}
-            onClick={() => {
-              setWikiId(selectedItem.value)
-              setAreaColorLabel('ruler', 'ruler')
-            }}
-            className='bottomNavigationItem'
-            icon={<CardHeader
-              title={entityMeta.ruler.name}
-              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
-              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
-              style={styles.cardHeader.style}
-              subtitle='Ruler'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
-                {...(entityMeta.ruler.icon ? (entityMeta.ruler.icon[0] === '/' ? { src: entityMeta.ruler.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.ruler.icon)) }) : { icon: <RulerIcon viewBox={'0 0 64 64'} /> })} />}
+            <BottomNavigationItem
+              themeBackColors={themes[theme].backColors[1]}
+              onClick={() => {
+                setWikiId(selectedItem.value)
+                setAreaColorLabel('ruler', 'ruler')
+              }}
+              className='bottomNavigationItem'
+              icon={<CardHeader
+                title={entityMeta.ruler.name}
+                subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+                titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
+                style={styles.cardHeader.style}
+                subtitle='Ruler'
+                avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
+                  {...(entityMeta.ruler.icon ? (entityMeta.ruler.icon[0] === '/' ? { src: entityMeta.ruler.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.ruler.icon)) }) : { icon: <RulerIcon viewBox={'0 0 64 64'} /> })} />}
             />}
           />
-          <BottomNavigationItem
-            themeBackColors={themes[theme].backColors[1]}
-            onClick={() => {
-              setWikiId(selectedItem.value)
-              setAreaColorLabel('culture', 'culture')
-            }}
-            className='bottomNavigationItem'
-            icon={<CardHeader
-              title={entityMeta.culture.name}
-              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
-              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
-              style={styles.cardHeader.style}
-              subtitle='Culture'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
+            <BottomNavigationItem
+              themeBackColors={themes[theme].backColors[1]}
+              onClick={() => {
+                setWikiId(selectedItem.value)
+                setAreaColorLabel('culture', 'culture')
+              }}
+              className='bottomNavigationItem'
+              icon={<CardHeader
+                title={entityMeta.culture.name}
+                subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+                titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
+                style={styles.cardHeader.style}
+                subtitle='Culture'
+                avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
 
-                {...(entityMeta.culture.icon ? (entityMeta.culture.icon[0] === '/' ? { src: entityMeta.culture.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.culture.icon)) }) : { icon: <CultureIcon viewBox={'0 0 64 64'} /> })} />}
+                  {...(entityMeta.culture.icon ? (entityMeta.culture.icon[0] === '/' ? { src: entityMeta.culture.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.culture.icon)) }) : { icon: <CultureIcon viewBox={'0 0 64 64'} /> })} />}
             />}
           />
-          <BottomNavigationItem
-            themeBackColors={themes[theme].backColors[1]}
-            onClick={() => {
-              setWikiId(selectedItem.value)
-              setAreaColorLabel('religion', 'religion')
-            }}
-            className='bottomNavigationItem'
-            icon={<CardHeader
-              title={entityMeta.religion.name /* + ' [' + entityMeta.religionGeneral.name + ']' */}
-              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
-              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
-              style={styles.cardHeader.style}
-              subtitle='Religion'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
-                {...(entityMeta.religion.icon ? (entityMeta.religion.icon[0] === '/' ? { src: entityMeta.religion.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.religion.icon)) }) : {
-                  icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
-                    viewBox={'0 0 200 168'} />
-                })} />}
+            <BottomNavigationItem
+              themeBackColors={themes[theme].backColors[1]}
+              onClick={() => {
+                setWikiId(selectedItem.value)
+                setAreaColorLabel('religion', 'religion')
+              }}
+              className='bottomNavigationItem'
+              icon={<CardHeader
+                title={entityMeta.religion.name /* + ' [' + entityMeta.religionGeneral.name + ']' */}
+                subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+                titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
+                style={styles.cardHeader.style}
+                subtitle='Religion'
+                avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
+                  {...(entityMeta.religion.icon ? (entityMeta.religion.icon[0] === '/' ? { src: entityMeta.religion.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.religion.icon)) }) : {
+                    icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
+                      viewBox={'0 0 200 168'} />
+                  })} />}
             />}
           />
-          <BottomNavigationItem
-            themeBackColors={themes[theme].backColors[1]}
-            onClick={() => {
-              setWikiId(selectedItem.value)
-              setAreaColorLabel('religionGeneral', 'religionGeneral')
-            }}
-            className='bottomNavigationItem'
-            icon={<CardHeader
-              title={entityMeta.religionGeneral.name}
-              subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
-              titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
-              style={styles.cardHeader.style}
-              subtitle='General Religion'
-              avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
-                {...(entityMeta.religionGeneral.icon ? (entityMeta.religionGeneral.icon[0] === '/' ? { src: entityMeta.religionGeneral.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.religionGeneral.icon)) }) : {
-                  icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
-                    viewBox={'0 0 200 168'} />
-                })} />}
+            <BottomNavigationItem
+              themeBackColors={themes[theme].backColors[1]}
+              onClick={() => {
+                setWikiId(selectedItem.value)
+                setAreaColorLabel('religionGeneral', 'religionGeneral')
+              }}
+              className='bottomNavigationItem'
+              icon={<CardHeader
+                title={entityMeta.religionGeneral.name}
+                subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
+                titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
+                style={styles.cardHeader.style}
+                subtitle='General Religion'
+                avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
+                  {...(entityMeta.religionGeneral.icon ? (entityMeta.religionGeneral.icon[0] === '/' ? { src: entityMeta.religionGeneral.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.religionGeneral.icon)) }) : {
+                    icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
+                      viewBox={'0 0 200 168'} />
+                  })} />}
             />}
           />
-        </BottomNavigation> : null
+          </BottomNavigation> : null
       }
       iconElementRight={
         <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
@@ -860,8 +885,14 @@ class RightDrawerRoutes extends PureComponent {
         />
         /* <Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'article' }}>  TODO: do pathname dynamicaly*!/ */
 
-    const CoreContent = (headerComponent, component, route, commonProps, routeProps) => (
-      <Responsive
+    const CoreContent = (headerComponent, component, route, commonProps, routeProps) => {
+      const { selectedItem } = this.props
+      const items = ((this.props.selectedItem || {}).data || {}).content || []
+      const potentialPartOfItem = (selectedItem.value || {}).partOf
+      const partOfEntity = potentialPartOfItem && items.find(el => (el.properties || {}).id === potentialPartOfItem)
+
+      const partOfEntities = partOfEntity ? [partOfEntity] : items
+      return <Responsive
         small={
           <Drawer
             docked={false}
@@ -883,7 +914,13 @@ class RightDrawerRoutes extends PureComponent {
             <RaisedButton
               className={(isMarker) ? 'dragHandle markerHandle' : 'dragHandle'}
               icon={(isMarker) ? <IconArrowLeft /> : <IconDrag />}
-              style={(isMarker) ? { ...styles.draggableButtonDiv, top: 'calc(100% - 20px)', left: '20px', minWidth: 'inherit', transform: 'inherit' } : styles.draggableButtonDiv}
+              style={(isMarker) ? {
+                ...styles.draggableButtonDiv,
+                top: 'calc(100% - 20px)',
+                left: '20px',
+                minWidth: 'inherit',
+                transform: 'inherit'
+              } : styles.draggableButtonDiv}
               labelStyle={{ width: '640px' }}
               rippleStyle={{ width: '440px' }}
               buttonStyle={styles.draggableButton}
@@ -898,23 +935,84 @@ class RightDrawerRoutes extends PureComponent {
               })}
             </div>
           </Card>
-            { partOfEntities && partOfEntities.length !== 0 && <div style={{ ...styles.partOfDiv, background: themes[theme].backColors[0], width: this.state.newMarkerPartOfWidth, top: this.state.newMarkerPartOfHeight }}>
-              <CardActions style={{ textAlign: 'center' }}>
-                { (partOfEntities.length === 1) ? <FlatButton
-                  // style={{ color: '#fff' }}
-                  // backgroundColor='rgb(255, 64, 129)'
-                  hoverColor={themes[theme].highlightColors[0]}//'#8AA62F'
+            {partOfEntities && partOfEntities.length !== 0 && <div style={{
+              ...styles.partOfDiv,
+              background: themes[theme].backColors[0],
+              width: this.state.newMarkerPartOfWidth,
+              top: this.state.newMarkerPartOfHeight
+            }}>
+              <CardActions style={{ textAlign: 'center', maxHeight: 48 }}>
+                {(partOfEntities.length === 1) ? <FlatButton
+                    // style={{ color: '#fff' }}
+                    // backgroundColor='rgb(255, 64, 129)'
+                  hoverColor={themes[theme].highlightColors[0]}// '#8AA62F'
                   onClick={() => this._openPartOf(partOfEntities[0])}
-                  labelStyle={{paddingLeft: 0, paddingRight: 0}}
-                  label={<div style={{paddingLeft: 14, paddingRight: 14}}>Part Of <span style={{paddingLeft: 0, paddingRight: 0, fontWeight: 'bolder'}}>{((partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase() }</span></div>} />
+                  labelStyle={{ paddingLeft: 0, paddingRight: 0 }}
+                  label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>Part Of <span style={{
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    fontWeight: 'bolder'
+                  }}>{((partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()}</span>
+                  </div>} />
                   : <SelectField
+                    style={{
+                      width: 200,
+                   //   color: 'rgb(255, 255, 255)',
+                      backgroundColor: 'transparent',
+                      // maxHeight: 40,
+                      // marginTop: -40,
+                      textAlign: 'center',
+                      marginRight: 8,
+                      maxHeight: 9,
+                      marginTop: 1,
+                      top: -32,
+                      // transition: '1s all'
+                    }}
+                    menuStyle={{
+                      width: 200,
+                   //   color: 'rgb(255, 255, 255)',
+                      top: 14,
+                      maxHeight: 36,
+                  //    backgroundColor: 'rgb(106, 106, 106)'
+                    }}
+                    menuItemStyle={{
+                      width: 200,
+                      maxHeight: 36,
+                //      color: 'rgb(255, 255, 255)',
+               //       backgroundColor: 'rgb(106, 106, 106)'
+                    }}
+                    labelStyle={{
+                      maxHeight: 36,
+                      width: 200,
+                      left: 0,
+              //        color: 'rgb(255, 255, 255)',
+               //       backgroundColor: 'rgb(106, 106, 106)'
+                    }}
+                    listStyle={{ width: 200 }}
+                    underlineStyle={{ width: 200 }}
+                    floatingLabelStyle={{
+                      maxHeight: 36,
+                      width: 200,
+                      left: 0,
+               //       color: 'rgb(255, 255, 255)',
+               //       backgroundColor: 'rgb(106, 106, 106)'
+                    }}
+                    iconStyle={{
+                      top: -4
+                    }}
+                    hintStyle={{ width: 200, left: 22, /*color: 'rgb(255, 255, 255)'*/}}
+                    // maxHeight={36}
+
                     floatingLabelText={translate('pos.related_item')}
                     hintText={translate('pos.related_item')}
                     value={null}
-                    onChange={(event, index, value) => { this._openPartOf(value) }}
+                    onChange={(event, index, value) => {
+                      this._openPartOf(value)
+                    }}
                   >
-                    { partOfEntities.map((el) => {
-                      return <MenuItem value={el} primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                    {partOfEntities.map((el, index) => {
+                      return <MenuItem key={'partOf_' + index} value={el}
+                        primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
                     })}
                   </SelectField>
                 }
@@ -944,7 +1042,7 @@ class RightDrawerRoutes extends PureComponent {
               // onClick={(event) => console.debug('onClick', event)}
             />
             <div style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
-              { !isEpic && headerComponent}
+              {!isEpic && headerComponent}
               {component && createElement(component, {
                 ...commonProps,
                 ...routeProps
@@ -952,8 +1050,8 @@ class RightDrawerRoutes extends PureComponent {
             </div>
           </Drawer>
         }
-        />
-        )
+      />
+    }
 
     const unrestrictPage = (headerComponent, component, route, commonProps) => {
       const UnrestrictedPage = routeProps => (
@@ -980,14 +1078,13 @@ class RightDrawerRoutes extends PureComponent {
             exact
             path={'/article'}
             render={unrestrictPage(articleHeader, Content, '', {
-          // setPartOfEntities,
               metadata,
-              rulerEntity,
+              influenceRawData: rulerEntity,
               provinceEntity,
+              setMetadataEntity: this.setMetadataEntity,
               setMetadataType: this.setMetadataType,
               selectedYear,
               newWidth,
-              setPartOfItems: this._setPartOfItems,
               history
             })}
         />
@@ -1085,13 +1182,15 @@ class RightDrawerRoutes extends PureComponent {
           } else if (resourceKey === TYPE_LINKED || resourceKey === TYPE_EPIC) {
             finalProps = {
               ...commonProps,
+              actOnRootTypeChange: this.actOnRootTypeChange,
+              contentTypeRaw,
+              epicsChoice: this.state.epicsChoice,
+              setSearchEpic: this.setSearchEpic,
               selectedItem,
               selectedYear,
               setModDataLng,
               setModDataLat,
-              contentTypeRaw,
               metadata,
-              actOnRootTypeChange: this.actOnRootTypeChange,
               resource: 'metadata',
               history
             }
@@ -1157,6 +1256,8 @@ const enhance = compose(
       setWikiId,
       selectEpicItem,
       selectValue,
+      setFullItem,
+      setYear,
       selectAreaItem,
       deselectItem: deselectItemAction,
       toggleRightDrawer: toggleRightDrawerAction,
@@ -1165,7 +1266,8 @@ const enhance = compose(
       setModDataLat: setModDataLatAction,
       selectLinkedItem,
       selectMarkerItem,
-      setRightDrawerVisibility
+      setRightDrawerVisibility,
+      showNotification
     }),
   pure,
   translate,

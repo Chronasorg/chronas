@@ -1,32 +1,16 @@
-import React, {createElement} from 'react'
-import { Sunburst, LabelSeries, Treemap, } from 'react-vis'
+import React from 'react'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
-import Divider from 'material-ui/Divider'
-import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
-import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left'
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
-import ContentFilter from 'material-ui/svg-icons/content/filter-list'
-import ImageGallery from 'react-image-gallery'
-import YouTube from 'react-youtube'
-import axios from 'axios'
-import Badge from 'material-ui/Badge';
-
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { properties, themes } from "../../../properties";
 import {resetModActive, setFullModActive} from "../../restricted/shared/buttons/actionReducers";
 import {toggleRightDrawer as toggleRightDrawerAction} from "../actionReducers";
-import NewDiscussion from "../../menu/board/ReForum/Views/NewDiscussion";
-import AppContainer from "../../menu/board/ReForum/App/App";
 import QAAForum from "../../menu/board/ReForum/Views/ForumFeed/QAAForum";
-import Highscore from "../../menu/board/ReForum/Views/Highscore";
-import UserProfile from "../../menu/board/ReForum/Views/UserProfile";
-import SingleDiscussion from "../../menu/board/ReForum/Views/SingleDiscussion";
-import AdminContainer from "../../menu/board/ReForum/App/Admin";
 import {
   translate,
   AutocompleteInput,
@@ -242,7 +226,7 @@ class LinkedQAA extends React.Component {
     super(props)
     this.state = {
       forums: [],
-      discussions: [], // [{"_id":"5b2033277360754cc222298f","forum_id":"5b1ebb597399ff48be74ec55","forum":{"_id":"5b1ebb597399ff48be74ec55","forum_slug":"ggeneral","forum_name":"General","__v":0},"user_id":"user@keystonejs.com","user":{"_id":"user@keystonejs.com","username":"prickly-reading","name":"prickly-reading","password":"$2a$10$s51BoOAkr6RBS68KyK32M.fFepqBZCHcjvE833yxswPHmSQI.TnKG","email":"user@keystonejs.com","karma":45,"lastUpdated":"2018-03-30T16:37:10.745Z","createdAt":"2018-03-30T16:37:10.745Z","privilege":1,"authType":"chronas","loginCount":1,"count_deleted":8,"count_created":17,"count_reverted":7,"count_mistakes":5,"count_voted":84,"count_updated":45,"count_linked":18},"discussion_slug":"hhhhhhhhhhhhhhhhhhhhhhhhhh_5b2033277360754cc222298e","date":"2018-06-12T20:55:03.628Z","title":"hhhhhhhhhhhhhhhhhhhhhhhhhh","content":"{\"blocks\":[{\"key\":\"7rg4b\",\"text\":\"hgfffffffffffffffff\",\"type\":\"blockquote\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}","pinned":false,"tags":["hhhhhhhhhhhh"],"favorites":[],"__v":0,"opinion_count":0},{"_id":"5b202743d5e65f532049678c","forum_id":"5b1ebb597399ff48be74ec55","forum":{"_id":"5b1ebb597399ff48be74ec55","forum_slug":"ggeneral","forum_name":"General","__v":0},"user_id":"user@keystonejs.com","user":{"_id":"user@keystonejs.com","username":"prickly-reading","name":"prickly-reading","password":"$2a$10$s51BoOAkr6RBS68KyK32M.fFepqBZCHcjvE833yxswPHmSQI.TnKG","email":"user@keystonejs.com","karma":45,"lastUpdated":"2018-03-30T16:37:10.745Z","createdAt":"2018-03-30T16:37:10.745Z","privilege":1,"authType":"chronas","loginCount":1,"count_deleted":8,"count_created":17,"count_reverted":7,"count_mistakes":5,"count_voted":84,"count_updated":45,"count_linked":18},"discussion_slug":"wtestsgdfggggggggggdfg_5b202743d5e65f532049678b","date":"2018-06-12T20:04:19.105Z","title":"wtestsgdfggggggggggdfg","content":"{\"blocks\":[{\"key\":\"6cqm\",\"text\":\"gfdgdfgdggggggggggggdd\",\"type\":\"unstyled\",\"depth\":0,\"inlineStyleRanges\":[],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}","pinned":false,"tags":["dsfsdf"],"favorites":[],"__v":6,"opinion_count":1}],
+      discussions: [],
       opinions: [],
       users: [],
       currentForum: 'general',
@@ -269,12 +253,6 @@ class LinkedQAA extends React.Component {
   _minimize = () => {
     this.props.setContentMenuItem('')
   }
-
-  _handleOpenSource = (source) => {
-    console.debug("_handleOpenSource", source)
-    window.open(source, '_blank').focus()
-  }
-
 
   render () {
     const { isMinimized, options, qId, qName, setHasQuestions, theme } = this.props
@@ -318,7 +296,7 @@ class LinkedQAA extends React.Component {
             : <IconButton onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
         <div style={styles.container}>
-          <QAAForum setHasQuestions={setHasQuestions} forums={[]} qaaEntity={qId} users={this.state.users} discussions={this.state.discussions} />
+          {qId && qId !== "" && <QAAForum setHasQuestions={setHasQuestions} forums={[]} qaaEntity={qId} users={this.state.users} discussions={this.state.discussions} />}
         </div>
       </Paper>
     )

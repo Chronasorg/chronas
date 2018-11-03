@@ -26,6 +26,7 @@ export default {
     sign_up: 'Join'
   },
   pos: {
+    timeline: { expand: 'Expand Timeline', reset: 'Reset Timeline View' },
     about: 'About Chronas',
     account: 'Manage Account',
     back: 'Back',
@@ -58,9 +59,10 @@ export default {
     help: 'Intro and Information',
     share: 'Share as link or export image',
     resources: 'Resources',
-    related_item: 'Related Items...',
+    related_item: 'RELATED ITEMS...',
     users: 'Manage Users',
     upvote: 'Interesting and accurate',
+    openEpic: 'Open Own Epic',
     theme: {
       name: 'Theme',
       dark: 'Dark',
@@ -89,7 +91,7 @@ export default {
       fields: {
         province_list: 'Click on provinces to selecect/ deselect',
         display_name: 'Display Name',
-        search_name: 'Search By Name',
+        search_name: 'Select By Name',
         main_ruler_name: 'Main Ruler Name',
         color: 'Area Color',
         main_religion_name: 'Main Religion Name',

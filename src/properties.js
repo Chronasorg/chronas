@@ -1,3 +1,26 @@
+import React from 'react'
+import LayersIcon from 'material-ui/svg-icons/maps/layers'
+import InfoIcon from 'material-ui/svg-icons/action/announcement'
+import CommentIcon from 'material-ui/svg-icons/communication/comment'
+import DiscoverIcon from 'material-ui/svg-icons/action/explore'
+import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
+import { ProvinceIcon } from 'components/map/assets/placeholderIcons'
+
+const styles = {
+  icon: { color: 'rgba(200, 178, 115, 230)', marginLeft: -16, marginRight: 12 }
+}
+// <InfoIcon style={styles.icon} />
+export const didYouKnows = [
+  [ 'timeline', <div>You can mouse scroll the timeline to scale</div>],
+  [ 'discover',<div>You can browse images and other media by clicking <DiscoverIcon /> on the menu bar</div>],
+  [ 'coloring',<div>You can change map coloring to religion, culture or population at <LayersIcon /> on the menu bar</div>],
+  [ 'markerlimit',<div>You can improve performance by decreasing marker count at <LayersIcon /> on the menu bar</div>],
+  [ 'province',<div>You can see a complete history of a province by clicking <ProvinceIcon viewBox={'0 0 64 64'} /> on the article header</div>],
+  [ 'question',<div>You can ask questions about articles and answer others in the <CommentIcon /> section</div>],
+  [ 'distribution',<div>You can see a complete distribution of people of a realm by clicking <CompositionChartIcon /> on an article</div>],
+  [ 'link',<div>You can link any articles together to show up in a content section (articles) or the media section</div>],
+]
+
 const arrayToObject = (array) =>
   array.reduce((obj, item) => {
     obj[item[0]] = item[1]
@@ -5,37 +28,55 @@ const arrayToObject = (array) =>
   }, {})
 
 export const markerIdNameArray = [
-  ['ar', 'Artifacts', 'Artifacts', 'Artifacts'],
-  ['b', 'Battles -> Battles', 'Battles', 'Battles'],
-  ['si', 'Battles -> Sieges', 'Sieges', 'Battles'],
-  ['c', 'Cities -> Cities', 'Cities', 'Cities'],
-  ['ca', 'Cities -> Castles', 'Castles', 'Cities'],
-  ['m', 'People -> Military', 'Military', 'People'],
-  ['p', 'People -> Politicians', 'Politicians', 'People'],
-  ['e', 'People -> Explorers', 'Explorers', 'People'],
-  ['s', 'People -> Scientists', 'Scientists', 'People'],
-  ['a', 'People -> Artists', 'Artists', 'People'],
-  ['r', 'People -> Religious', 'Religious', 'People'],
-  ['at', 'People -> Athletes', 'Athletes', 'People'],
-  ['op', 'People -> Unclassified', 'Unclassified', 'People'],
-  ['ai', 'Other -> Area Info', 'Area Info', 'Other'],
-  ['o', 'Other -> Unknown', 'Artifacts', 'Other']
+  ['ar', 'Artifact', 'Artifacts', 'Artifacts'],
+  ['b', 'Battle', 'Battles', 'Battles'],
+  ['si', 'Siege', 'Sieges', 'Battles'],
+  ['c', 'City', 'Cities', 'Cities'],
+  ['cp', 'Capital', 'Capital', 'Capital'],
+  ['ca', 'Castle', 'Castles', 'Cities'],
+  ['m', 'Military', 'Military', 'People'],
+  ['p', 'Politician', 'Politicians', 'People'],
+  ['e', 'Explorer', 'Explorers', 'People'],
+  ['s', 'Scientist', 'Scientists', 'People'],
+  ['a', 'Artist', 'Artists', 'People'],
+  ['r', 'Religious', 'Religious', 'People'],
+  ['at', 'Athlete', 'Athletes', 'People'],
+  ['op', 'Unclassified', 'Unclassified', 'People'],
+  ['ai', 'Area Info', 'Area Info', 'Other'],
+  ['o', 'Unknown', 'Unknown', 'Other']
 ]
 
 export const epicIdNameArray = [
-    ['ebio', 'Biography', 'rgba(0, 128, 0, 0.5)'],
-    ['ec', 'Conflicts', 'rgba(255, 165, 0, 0.5)'],
-    ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)'],
-    ['ew', 'War', 'rgba(214, 0, 0, 0.5)'],
-    ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)']
+  ['ebio', 'Biography', 'rgba(0, 128, 0, 0.5)'],
+  ['ec', 'Conflicts', 'rgba(255, 165, 0, 0.5)'],
+  ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)'],
+  ['ew', 'War', 'rgba(214, 0, 0, 0.5)'],
+  ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)']
 ]
 
-export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray))
+export const aeIdNameArray = [
+  ['ae|ruler', 'Ruler', 'rgba(0, 128, 0, 0.5)'],
+  ['ae|culture', 'Culture', 'rgba(255, 165, 0, 0.5)'],
+  ['ae|religion', 'Religion', 'rgba(0, 0, 255, 0.5)'],
+  ['ae|religionGeneral', 'Religion General', 'rgba(214, 0, 0, 0.5)'],
+]
+
+export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray))
 
 const iconWidthModern = 128
 const iconHeightModern = 169
 const iconWidth = 135
 const iconHeight = 127
+const iconHeightCluster = 117
+const iconWidthCluster = 125
+
+export const iconSize = {
+  'cp': 6,
+  'ca': 4,
+  'b': 6,
+  'si': 6,
+  'c0': 6,
+}
 
 export const iconMapping = {
   them: {
@@ -144,19 +185,42 @@ export const iconMapping = {
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'capital': {
+    'c': {
+      'x': 0,
+      'y': 5 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight,
+    },
+    'eb1': {
+      'x': iconWidth,
+      'y': 5 * iconHeight,
+      'width': iconWidth/2,
+      'height': iconHeight,
+      'anchorY': iconHeight,
+    },
+    'eb2': {
+      'x': iconWidth,
+      'y': 5 * iconHeight,
+      'width': iconWidth/2,
+      'height': iconHeight,
+      'anchorX': iconWidth/2,
+      'anchorY': iconHeight,
+    },
+    'cp': {
       'x': 3 * iconWidth,
       'y': 3 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
-      'anchorY': iconHeight
+      'anchorY': iconHeight/2,
+      'mask': true
     },
-    'c': {
+    'c0': {
       'x': iconWidth,
       'y': 4 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
-      'anchorY': iconHeight
+      'anchorY': iconHeight/2,
     },
     'ca': {
       'x': 0,
@@ -301,11 +365,40 @@ export const iconMapping = {
       'anchorY': iconHeightModern
     },
     'c': {
+      'x': 0,
+      'y': 5 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern,
+    },
+    'eb1': {
+      'x': iconWidthModern,
+      'y': 5 * iconHeightModern,
+      'width': iconWidthModern/2,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern,
+    },
+    'eb2': {
+      'x': 1.5 * iconWidthModern,
+      'y': 5 * iconHeightModern,
+      'width': iconWidthModern / 2,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern,
+    },
+    'cp': {
+      'x': 3 * iconWidthModern,
+      'y': 3 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern/2,
+      'mask': true
+    },
+    'c0': {
       'x': iconWidthModern,
       'y': 4 * iconHeightModern,
       'width': iconWidthModern,
       'height': iconHeightModern,
-      'anchorY': iconHeightModern
+      'anchorY': iconHeightModern/2,
     },
     'ca': {
       'x': 0,
@@ -340,142 +433,142 @@ export const iconMapping = {
     '1': {
       'x': 0,
       'y': 0,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '2': {
-      'x': iconWidth,
+      'x': iconWidthCluster,
       'y': 0,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '3': {
-      'x': 2 * iconWidth,
+      'x': 2 * iconWidthCluster,
       'y': 0,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '4': {
-      'x': 3 * iconWidth,
+      'x': 3 * iconWidthCluster,
       'y': 0,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '5': {
       'x': 0,
-      'y': iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'y': iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '6': {
-      'x': iconWidth,
-      'y': iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': iconWidthCluster,
+      'y': iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '7': {
-      'x': 2 * iconWidth,
-      'y': iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': 2 * iconWidthCluster,
+      'y': iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '8': {
-      'x': 3 * iconWidth,
-      'y': iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': 3 * iconWidthCluster,
+      'y': iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '9': {
       'x': 0,
-      'y': 2 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'y': 2 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '10': {
-      'x': iconWidth,
-      'y': 2 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': iconWidthCluster,
+      'y': 2 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '20': {
-      'x': 2 * iconWidth,
-      'y': 2 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': 2 * iconWidthCluster,
+      'y': 2 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '30': {
-      'x': 3 * iconWidth,
-      'y': 2 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': 3 * iconWidthCluster,
+      'y': 2 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '40': {
       'x': 0,
-      'y': 3 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'y': 3 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '50': {
-      'x': iconWidth,
-      'y': 3 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': iconWidthCluster,
+      'y': 3 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '60': {
-      'x': 2 * iconWidth,
-      'y': 3 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': 2 * iconWidthCluster,
+      'y': 3 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '70': {
-      'x': 3 * iconWidth,
-      'y': 3 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': 3 * iconWidthCluster,
+      'y': 3 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '80': {
       'x': 0,
-      'y': 4 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'y': 4 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '90': {
-      'x': iconWidth,
-      'y': 4 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': iconWidthCluster,
+      'y': 4 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     '100': {
-      'x': 2 * iconWidth,
-      'y': 4 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': 2 * iconWidthCluster,
+      'y': 4 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     },
     'marker': {
-      'x': 3 * iconWidth,
-      'y': 4 * iconHeight,
-      'width': iconWidth,
-      'height': iconHeight,
-      'anchorY': iconHeight
+      'x': 3 * iconWidthCluster,
+      'y': 4 * iconHeightCluster,
+      'width': iconWidthCluster,
+      'height': iconHeightCluster,
+      'anchorY': iconHeightCluster
     }
   }
 }
@@ -491,10 +584,10 @@ export const properties = {
   provinceThreshold: 4,
   chronasApiHost: 'http://localhost:4040/v1',
   markersTypes: ['w', 'w|b', 'w|si', 'w|c', 'w|ca', 'w|m', 'w|p', 'w|e', 'w|s', 'w|a', 'w|r', 'w|at', 'w|op', 'w|ai', 'w|o'],
-  metadataTypes: ['ae|r', /*'ae|ca',*/ 'ae|c', 'ae|re', 'ae|reg', 'a', 'e', 't', 'h', 'i|a', 'i|b', 'i|c', 'i|p', 'i|m', 'i|siege', 'i|war', 'ps', 'v'],
+  metadataTypes: ['ae|ruler', /*'ae|ca',*/ 'ae|culture', 'ae|religion', 'ae|religionGeneral', 'a', 'e', 't', 'h', 'i|a', 'i|b', 'i|c', 'i|p', 'i|m', 'i|siege', 'i|war', 'ps', 'v'],
   linkedTypes: [
     { name: '[Audio]', id: 'a' },
-    { name: '[Epic]', id: 'e' },
+    { name: '[Epic] Wars', id: 'ew' },
     { name: '[HTML or Text]', id: 'h' },
     { name: '[HTML or Text] Primary Source', id: 'ps' },
     { name: '[Image] Artefact', id: 'i|a' },
@@ -523,11 +616,15 @@ export const properties = {
   ],
   QAID: 'questions',
   typeToDescriptedType: {
+    'ae|ruler': '[Area Entity] Ruler',
     'ae|r': '[Area Entity] Ruler',
     // 'ae|ca': '[Area Entity] Capital',
     'ae|c': '[Area Entity] Culture',
+    'ae|culture': '[Area Entity] Culture',
     'ae|re': '[Area Entity] Religion',
+    'ae|religion': '[Area Entity] Religion',
     'ae|reg': '[Area Entity] General Religion',
+    'ae|religionGeneral': '[Area Entity] General Religion',
     'a': '[Podcast & Audio]',
     'e': '[Epic]',
     't': '[External Article or Primary Source]',
@@ -586,7 +683,7 @@ export const themes = {
       '#cfcfcf',
       '#cfcfcf'],
     borderColors: ['rgba(200,200,200,100)'],
-    highlightColors: ['rgba(255,204,0,200)'],
+    highlightColors: ['rgba(200, 178, 115, 230)'],
     gradientColors: ['linear-gradient(180deg,#fff 0,#F2F2F2)'],
     className: 'defaultTheme'
   },
@@ -598,7 +695,7 @@ export const themes = {
       '#F2F2F2',
       '#cbcbcb'],
     borderColors: ['rgba(200,200,200,100)'],
-    highlightColors: ['rgba(255,204,0,200)'],
+    highlightColors: ['rgba(200, 178, 115, 230)'],
     gradientColors: ['linear-gradient(180deg,#fff 0,#F2F2F2)'],
     className: 'lightTheme'
   },
@@ -640,9 +737,18 @@ export const themes = {
   // }
 }
 
+export const getPercent = (min,max,val) => {
+  var range = max - min
+  return (val - min) / range
+}
+
 export const RGBAtoArray = (str) => {
   const match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d{1,3})\))?/)
   return match ? [+match[1], +match[2], +match[3], +(match[4] || 255)] : [0, 0, 0, 0]
+}
+
+export const getFullIconURL = (iconPath) => {
+  return 'https://upload.wikimedia.org/wikipedia/commons/thumb/' + iconPath + '/40px-' + iconPath.substr(iconPath.lastIndexOf('/') + 1) + ((iconPath.toLowerCase().indexOf('svg') > -1) ? '.PNG' : '')
 }
 
 export const getYoutubeId = (url) => {

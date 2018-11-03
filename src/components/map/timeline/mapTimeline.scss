@@ -3,7 +3,7 @@
   transition: all .5s;
   transition-timing-function: ease-in-out;
   .vis-panel.vis-bottom {
-    top: 24px!important;
+    top: 62px!important;
     pointer-events: none;
   }
 }
@@ -17,11 +17,25 @@
   }
 
   .vis-timeline {
+    cursor: ew-resize;
     visibility: visible !important;
     border: none;
   }
 }
 
+.provinceTimelineItem{
+  cursor: pointer;
+  //background: inherit !important;
+}
+
+.vis-item {
+  &.vis-box {
+    //border: none;//2px solid rgba(214, 0, 0, 0.4);
+    background: inherit;
+  }
+  &.vis-range {
+    background: inherit;
+  }}
 .entityTimelineItem {
   cursor: pointer;
   border-radius: 30px !important;
@@ -38,20 +52,44 @@
 }
 
 .mapTimeline { .vis-timeline {
+  cursor: ew-resize;
   border: none;
   position: fixed;
-  bottom: -46px !important;
+  bottom: -8px !important;
   //height: 120px !important;
   width: 100%;
   max-height: 90% !important;
 }}
 
-.mapTimeline:hover {.vis-timeline {
+.vis-panel {
+  &.vis-center {
+    cursor: ew-resize;
+  }
+}
+
+.mapTimeline {
+
+  .vis-time-axis .vis-grid.vis-vertical {
+    position: absolute;
+    border-left: 1px solid;
+    top: 56px !important;
+    border-color: #e5e5e5;
+  }
+
+  .vis-panel {
+    &.vis-background {
+    &.vis-horizontal {
+      top: 9px !important;
+    }
+  }
+}
+  .vis-timeline {
   //height: 500px !important; // !important;
 }}
 
 .vis-custom-time {
   &.selectedYear {
+    z-index: 2;
     transition: left 100ms cubic-bezier(0.4, 0, 0.2, 1), right 100ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   background-color: #FF7F6E;
@@ -62,6 +100,26 @@
   height: 24px;
 }
 
+.mapTimeline {
+
+  .vis-text {
+    text-shadow: 0.03em 0 4px #fff, 0.03em 0 4px #fff;
+    font-weight: 600;
+  }
+
+  .vis-panel {
+    &.vis-center {
+      pointer-events: all;
+    }
+  }
+
+  .vis-timeline {
+    &.vis-bottom {
+      pointer-events: none;
+    }
+  }
+}
+
 .vis-text.vis-minor {
   padding-left: 14px;
   padding-top: 24px;
@@ -70,6 +128,10 @@
 .vis-panel.vis-bottom, .vis-panel.vis-center, .vis-panel.vis-left, .vis-panel.vis-right, .vis-panel.vis-top {
   border: 2px #ffffff;
 }
+.rv-xy-plot {
+  overflow: hidden;
+}
+
 
 .currentYearMarker {
   .rv-crosshair__line {
@@ -99,6 +161,7 @@
     }
   }
 }
+.rv-crosshair { &.undefined { position:fixed }}
 
 .startMarker, .endMarker {
   .rv-crosshair__line {
@@ -253,4 +316,8 @@
     font-weight: bolder !important;
     line-height: 24px !important;
   }
+}
+
+.mapTimelineIcons {
+  width: inherit !important;
 }

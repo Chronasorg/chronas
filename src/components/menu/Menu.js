@@ -23,7 +23,6 @@ import { translate, defaultTheme, userLogout, showNotification } from 'admin-on-
 import { selectAreaItem as selectAreaItemAction } from '../map/actionReducers'
 import { toggleMenuDrawer as toggleMenuDrawerAction, setActiveMenu as setActiveMenuAction } from './actionReducers'
 import { toggleRightDrawer as toggleRightDrawerAction } from '../content/actionReducers'
-import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
 import { logout, setToken } from './authentication/actionReducers'
 import { themes } from '../../properties'
@@ -123,7 +122,7 @@ class Menu extends PureComponent {
           iconStyle={{ color: themes[theme].foreColors[0] }}
         >
           <LayersIcon
-            hoverColor={chronasMainColor}
+            hoverColor={themes[theme].highlightColors[0]}
           />
         </IconButton>
         <IconButton
@@ -136,7 +135,7 @@ class Menu extends PureComponent {
           iconStyle={{color: themes[theme].foreColors[0]}}
         >
           <DiscoverIcon
-            hoverColor={chronasMainColor}/>
+            hoverColor={themes[theme].highlightColors[0]}/>
         </IconButton>
         <IconButton
           key={'random'}
@@ -147,7 +146,7 @@ class Menu extends PureComponent {
           iconStyle={{color: themes[theme].foreColors[0]}}
         >
           <DiceIcon
-            hoverColor={chronasMainColor}/>
+            hoverColor={themes[theme].highlightColors[0]}/>
         </IconButton>
         <IconButton
           key={'configuration'}
@@ -158,37 +157,37 @@ class Menu extends PureComponent {
           onClick={() => setActiveMenu('configuration')}
           iconStyle={{color: themes[theme].foreColors[0]}}
         >
-          <SettingsIcon hoverColor={chronasMainColor}/>
+          <SettingsIcon hoverColor={themes[theme].highlightColors[0]}/>
         </IconButton>
       </div>
       <div style={styles.bottomMenu}>
         <div>
           { isLoggedIn ? (
             <div>
-              <IconButton
-                key={'mod'}
-                containerElement={<Link to="/mod" />}
-                tooltipPosition="bottom-right"
-                tooltip={translate('pos.mod')}
-                tooltipStyles={tooltip}
-                onClick={() => toggleRightDrawer()}
-                iconStyle={{color: themes[theme].foreColors[0]}}
-              >
-                <EditIcon
-                  hoverColor={chronasMainColor}/>
-              </IconButton>
-              <IconButton
-                key={'resources'}
-                containerElement={<Link to="/resources" />}
-                tooltipPosition="bottom-right"
-                tooltip={translate('pos.resources')}
-                tooltipStyles={tooltip}
-                onClick={onMenuTap}
-                iconStyle={{color: themes[theme].foreColors[0]}}
-              >
-                <StorageIcon
-                  hoverColor={chronasMainColor}/>
-              </IconButton>
+              {/*<IconButton*/}
+                {/*key={'mod'}*/}
+                {/*containerElement={<Link to="/mod" />}*/}
+                {/*tooltipPosition="bottom-right"*/}
+                {/*tooltip={translate('pos.mod')}*/}
+                {/*tooltipStyles={tooltip}*/}
+                {/*onClick={() => toggleRightDrawer()}*/}
+                {/*iconStyle={{color: themes[theme].foreColors[0]}}*/}
+              {/*>*/}
+                {/*<EditIcon*/}
+                  {/*hoverColor={themes[theme].highlightColors[0]}/>*/}
+              {/*</IconButton>*/}
+              {/*<IconButton*/}
+                {/*key={'resources'}*/}
+                {/*containerElement={<Link to="/resources" />}*/}
+                {/*tooltipPosition="bottom-right"*/}
+                {/*tooltip={translate('pos.resources')}*/}
+                {/*tooltipStyles={tooltip}*/}
+                {/*onClick={onMenuTap}*/}
+                {/*iconStyle={{color: themes[theme].foreColors[0]}}*/}
+              {/*>*/}
+                {/*<StorageIcon*/}
+                  {/*hoverColor={themes[theme].highlightColors[0]}/>*/}
+              {/*</IconButton>*/}
               <IconButton
                 key={'community'}
                 containerElement={<Link to="/community/general" />}
@@ -199,7 +198,7 @@ class Menu extends PureComponent {
                 iconStyle={{color: themes[theme].foreColors[0]}}
               >
                 <BoardIcon
-                  hoverColor={chronasMainColor}/>
+                  hoverColor={themes[theme].highlightColors[0]}/>
               </IconButton>
               <IconButton
               key={'account'}
@@ -208,16 +207,20 @@ class Menu extends PureComponent {
               tooltip={translate('pos.account')}
               tooltipStyles={tooltip}
               onClick={onMenuTap}
-              iconStyle={{color: themes[theme].foreColors[0]}}
+              iconStyle={{backgroundColor: themes[theme].foreColors[0]}}
               >
                 { customAvatar ? <Avatar
                   size={24}
                   src={customAvatar} /> : <Avatar
                   style={{ fontSize: 16 }}
                   size={24}
-                  color={{color: themes[theme].backColors[0]}}
-                  src={customAvatar}>{(username || " ").substr(0, 1).toUpperCase()}</Avatar>/*  <AccountIcon
-              hoverColor={chronasMainColor}/>*/ }
+                  color={{
+                    // color: themes[theme].foreColors[0],
+                    // backgroundColor: themes[theme].backColors[0]
+                  }}
+                  hoverColor={themes[theme].highlightColors[0]}
+                  src={customAvatar}><span style={{fontWeight: 'bolder', color: themes[theme].backColors[0]}}>{(username || " ").substr(0, 1).toUpperCase()}</span></Avatar>/*  <AccountIcon
+              hoverColor={themes[theme].highlightColors[0]}/>*/ }
               </IconButton>
             </div>
             ) : null
@@ -231,7 +234,7 @@ class Menu extends PureComponent {
             onClick={() => setActiveMenu('share')}
             iconStyle={{color: themes[theme].foreColors[0]}}
           >
-            <ShareIcon hoverColor={chronasMainColor}/>
+            <ShareIcon hoverColor={themes[theme].highlightColors[0]}/>
           </IconButton> }
           <IconButton
             key={'help'}
@@ -242,7 +245,7 @@ class Menu extends PureComponent {
             onClick={() => setActiveMenu('info')}
             iconStyle={{color: themes[theme].foreColors[0]}}
           >
-            <HelpIcon hoverColor={chronasMainColor}/>
+            <HelpIcon hoverColor={themes[theme].highlightColors[0]}/>
           </IconButton>
           <IconButton
             tooltipPosition="bottom-right"
@@ -251,7 +254,7 @@ class Menu extends PureComponent {
             onClick={isLoggedIn ? this.handleLogout : userLogout }
             className="logout"
             iconStyle={{color: isLoggedIn ? themes[theme].highlightColors[0] : themes[theme].foreColors[0]}}
-          > <LogoutIcon hoverColor={chronasMainColor}/>
+          > <LogoutIcon hoverColor={themes[theme].highlightColors[0]}/>
           </IconButton>
         </div>
       </div>

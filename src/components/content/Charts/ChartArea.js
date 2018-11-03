@@ -131,21 +131,24 @@ export default class InfluenceChart extends React.Component {
 
     const currentYearMarkerValues = epicMeta
       ? nextSeries.map((s, i) => {
-        const nearestYear = s[0].data.map(y => +y.left).reduce(function (prev, curr) {
+        const nearestYear = s[0]
+          .data.map(y => +y.left).reduce(function (prev, curr) {
           return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
-        }).toString()
+        },Infinity).toString()
+        const topObj = s[0].data.filter(f => f.left === nearestYear)[0]
         return {
           left: selectedYear,
-          top: s[0].data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
+          top: topObj ? (topObj.top + ((i !== 2) ? '' : '%')) : ''
         }
       })
       : newData[0].data.map((s, i) => {
         const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
           return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
         }).toString()
+        const topObj = s.data.filter(f => f.left === nearestYear)[0]
         return {
           left: selectedYear,
-          top: s.data.filter(f => f.left === nearestYear)[0].top + ((i !== 2) ? '' : '%')
+          top: topObj ? (topObj.top + ((i !== 2) ? '' : '%')) : ''
         }
       })
 

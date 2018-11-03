@@ -25,6 +25,7 @@ function getStyles(props, context) {
       background: props.titleBackground,
       display: 'flex',
       alignItems: 'center',
+      pointerEvents: 'none'
     },
     titleWrap: {
       flexGrow: 1,

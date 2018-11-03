@@ -59,7 +59,9 @@ class RichEditor extends Component {
     this.setState({ editorState });
 
     // trigger on change converting the ContentState to raw object
-    onChange(JSON.stringify(convertToRaw(editorState.getCurrentContent())));
+    setTimeout(()=> {
+      onChange(JSON.stringify(convertToRaw(editorState.getCurrentContent())));
+    },100)
   }
 
   handleKeyCommand(command) {

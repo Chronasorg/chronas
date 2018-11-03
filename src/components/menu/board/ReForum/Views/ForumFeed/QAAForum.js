@@ -15,7 +15,7 @@ import appLayout from '../../SharedStyles/appLayout.css'
 import styles from './styles.css'
 import {getForums} from '../../App/actions'
 
-import { properties } from '../../../../../../properties'
+import {didYouKnows, properties, themes} from '../../../../../../properties'
 
 const inlineStyles = {
   addButton: {
@@ -51,9 +51,11 @@ class QAAForum extends Component {
     // if (!forumId) {
     //   // setForums()
     // } else {
+    localStorage.setItem('chs_dyk_question', true)
+
       getDiscussions(properties.QAID, sortingMethod, qaaEntity).then( (data) => {
         this.setState({ fetchingDiscussions: false, discussions: data })
-        this.props.setHasQuestions((data || []).length > 0)
+        this.props.setHasQuestions((data || []).length)
       })
     // }
   }
@@ -76,7 +78,7 @@ class QAAForum extends Component {
       })
       getDiscussions(properties.QAID, sortingMethod, nextProps.qaaEntity).then((data) => {
         this.setState({ fetchingDiscussions: false, discussions: data })
-        this.props.setHasQuestions((data || []).length > 0)
+        this.props.setHasQuestions((data || []).length)
       })
     }
   }
@@ -104,7 +106,8 @@ class QAAForum extends Component {
   render () {
     const {
       error,
-      qaaEntity
+      qaaEntity,
+      theme
     } = this.props;
 
 
@@ -128,13 +131,14 @@ class QAAForum extends Component {
         <div className={'appLayout_primaryContent'}>
           <div className='addContainer'>
             <Link to={`/community/${properties.QAID}/new_discussion/${qaaEntity}`}>
-              <Button style={inlineStyles.addButton} type='outline' fullWidth noUppercase>
+              <Button style={{ ...inlineStyles.addButton, background: themes[theme].highlightColors[0], borderColor: themes[theme].highlightColors[0], color: themes[theme].backColors[0], boxShadow: '0 2px 2px 0 rgb(114, 114, 114), 0 3px 1px -2px rgba(171, 171, 171, 0.7), 0 1px 5px 0 rgba(128, 128, 128, 0.69)' }} type='outline' fullWidth noUppercase>
                 <b>Ask question</b>
               </Button>
             </Link>
           </div>
           <FeedBox
             type='general'
+            customTheme={themes[theme]}
             loading={fetchingDiscussions}
             discussions={discussions}
             currentForum={properties.QAID}
@@ -147,17 +151,9 @@ class QAAForum extends Component {
   }
 }
 
-export default connect(
-  (state) => { return {
-    // currentForumId: () => {
-    //   const currentForumObj = _.find(state.app.forums, { forum_slug: state.app.currentForum });
-    //   if (currentForumObj) return currentForumObj._id;
-    //   else return null;
-    // },
-    // fetchingDiscussions: state.feed.fetchingDiscussions,
-    // sortingMethod: state.feed.sortingMethod,
-    // error: state.feed.error,
-  }; },
+export default connect(state => ({
+    theme: state.theme,
+  }),
   (dispatch) => { return {
     // updateSortingMethod: (method) => { dispatch(updateSortingMethod(method)); },
   }; }

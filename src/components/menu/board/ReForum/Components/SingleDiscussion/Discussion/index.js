@@ -5,12 +5,10 @@ import moment from 'moment'
 import classnames from 'classnames'
 import styles from './styles.css'
 import AccountIcon from 'material-ui/svg-icons/action/account-circle'
-
 import PlaceholderImage from '../../../SharedStyles/placeholder.jpg'
 import Button from '../../../Components/Button'
 import Tag from '../../../Components/Tag'
 import RichEditor from '../../../Components/RichEditor'
-
 
 class Discussion extends Component {
   render () {

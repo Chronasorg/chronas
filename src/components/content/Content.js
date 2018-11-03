@@ -21,7 +21,7 @@ import { setRightDrawerVisibility, toggleRightDrawer as toggleRightDrawerAction 
 import { setFullModActive, resetModActive } from '../restricted/shared/buttons/actionReducers'
 import {
   TYPE_AREA, TYPE_MARKER, TYPE_LINKED, TYPE_EPIC, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE,
-  deselectItem as deselectItemAction, selectValue
+  deselectItem as deselectItemAction, selectValue, setData
 } from '../map/actionReducers'
 import { chronasMainColor } from '../../styles/chronasColors'
 import { tooltip } from '../../styles/chronasStyleComponents'
@@ -119,7 +119,6 @@ class Content extends Component {
     selectedWiki: null,
     hasQuestions: false,
     sunburstData: [],
-    linkedItems: { media: [], content: [], id: '' },
     activeContentMenuItem: (localStorage.getItem('chs_activeContentMenuItem') !== null) ? localStorage.getItem('chs_activeContentMenuItem') : 'sunburst'
   }
 
@@ -133,7 +132,6 @@ class Content extends Component {
     this.setState({
       iframeLoading: true,
       selectedWiki: null,
-      linkedItems: { media: [], content: [], id: '' },
       hasQuestions: false,
     })
     this._cleanUp()
@@ -167,7 +165,7 @@ class Content extends Component {
   }
 
   _handleNewData = (selectedItem, metadata, activeArea, doCleanup = false) => {
-    const { showNotification, setFullModActive, resetModActive } = this.props
+    const { setData, showNotification, setFullModActive, resetModActive } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED
@@ -275,20 +273,24 @@ class Content extends Component {
                 score: imageItem.score || imageItem.properties.s,
               })
             })
-            linkedItems.content = res.map.sort((a, b) => (+b.score || 0) - (+a.score || 0))
+            linkedItems.content = res.map.sort((a, b) => {
+              return +(a.properties.y || -5000) - +(b.properties.y || -5000)
+            })
             linkedItems.media = linkedItems.media.sort((a, b) => (+b.score || 0) - (+a.score || 0))
 
             showNotification(linkedItems.media.length + ' linked media item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
 
-            if (res.map) {
-              if (isMarker || isMedia) {
-                this.props.setPartOfItems(res.map)
-              }
-              else {
-                // add to entityList
-              }
-            }
-            this.setState({ linkedItems })
+            // if (res.map) {
+            //   if (isMarker || isMedia) {
+            //     this.props.setPartOfItems(res.map)
+            //   }
+            //   else {
+            //     // add to entityList
+            //   }
+            // }
+
+            setData(linkedItems)
+            //this.setState({ linkedItems })
           } else {
             showNotification('No linked items found, consider adding one') // TODO: notifications don't seem to work on this page
           }
@@ -309,10 +311,10 @@ class Content extends Component {
   }
 
   render () {
-    const { activeContentMenuItem, hasQuestions, sunburstData, iframeLoading, selectedWiki, linkedItems } = this.state
-    const { activeArea, deselectItem, selectedItem, rulerEntity, provinceEntity, selectedYear, setMetadataType, theme, metadata, newWidth, history } = this.props
+    const { activeContentMenuItem, hasQuestions, sunburstData, iframeLoading, selectedWiki } = this.state
+    const { activeArea, deselectItem, selectedItem, influenceRawData, provinceEntity, selectedYear, setMetadataType, theme, metadata, newWidth, history, setMetadataEntity } = this.props
 
-    const finalLinkedItems = (linkedItems || {}).id ? linkedItems : ((selectedItem.data || {}).data || {}).data || { media: [], content: [], id: '' }
+    const finalLinkedItems = /*(linkedItems || {}).id ? linkedItems : */selectedItem.data || { media: [], content: [], id: '' }
     const shouldLoad = (iframeLoading || selectedWiki === null)
 
     const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
@@ -331,9 +333,9 @@ class Content extends Component {
       { (entityTimelineOpen || epicTimelineOpen || isMarker || isMedia) && <div>
         <Paper style={{ ...styles.contentLeftMenu, backgroundColor: themes[theme].backColors[0], color: themes[theme].foreColors[0] }}>
           <Menu desktop>
-            { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], backgroundColor: ((activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('sunburst')} leftIcon={<CompositionChartIcon hoverColor={themes[theme].highlightColors[0]} style={{ ...styles.menuIcon, fill: themes[theme].foreColors[0]}} />} /> }
+            { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], backgroundColor: ((activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => {localStorage.setItem('chs_dyk_distribution', true); this._toggleContentMenuItem('sunburst')}} leftIcon={<CompositionChartIcon hoverColor={themes[theme].highlightColors[0]} style={{ ...styles.menuIcon, fill: themes[theme].foreColors[0]}} />} /> }
             { entityTimelineOpen && <Divider style={{ backgroundColor: themes[theme].backColors[2] }} /> }
-            <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
+            <MenuItem style={{ ...styles.menuItem, zIndex: 10, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
               <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0 }} >
                 <Badge
                   badgeContent={linkedCount}
@@ -370,18 +372,21 @@ class Content extends Component {
           setContentMenuItem={this._setContentMenuItem}
           activeContentMenuItem={activeContentMenuItem}
           activeAreaDim={activeAreaDim}
-          rulerProps={entityTimelineOpen ? metadata[activeAreaDim][rulerEntity.id] : (selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id])}
+          setMetadataEntity={setMetadataEntity}
+          influenceRawData={influenceRawData}
+          rulerProps={entityTimelineOpen ? metadata[activeAreaDim][influenceRawData.id] : (selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id])}
           selectedYear={selectedYear}
           selectedItem={selectedItem}
-          epicData={entityTimelineOpen ? rulerEntity : selectedItem.data}
+          // epicData={entityTimelineOpen ? rulerEntity : selectedItem.data}
           isEntity={entityTimelineOpen}
           sunburstData={sunburstData}
-          linkedItems={finalLinkedItems} />
+          // linkedItems={finalLinkedItems}
+        />
         : provinceTimelineOpen
           ? <ProvinceTimeline deselectItem={deselectItem} history={history} selectedItem={selectedItem} metadata={metadata} setMetadataType={setMetadataType} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
           : <div style={{ height: '100%' }}>
-              <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ linkedItems.id } qName={ selectedWiki || '' } />
-              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={linkedItems.media} selectedYear={selectedYear} qName={ selectedWiki || '' } />
+              <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ ((selectedItem || {}).data || {}).id || '' } qName={ selectedWiki || '' } />
+              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={((selectedItem || {}).data || {}).media || []} selectedYear={selectedYear} qName={ selectedWiki || '' } />
               <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki} selectedItem={selectedItem} />
             </div>
       }
@@ -404,6 +409,7 @@ const enhance = compose(
     toggleRightDrawer: toggleRightDrawerAction,
     deselectItem: deselectItemAction,
     setFullModActive,
+    setData,
     resetModActive,
     showNotification,
     setRightDrawerVisibility,

@@ -1,4 +1,5 @@
 import React from 'react'
+
 import {
     translate,
     BooleanField,
@@ -30,12 +31,14 @@ import {
     required,
     minLength
 } from 'admin-on-rest'
+
 import Icon from 'material-ui/svg-icons/social/person'
 import EditButton from '../shared/buttons/EditButton'
 import DeleteButton from '../shared/buttons/DeleteButton'
 import Divider from 'material-ui/Divider'
+import { EmbeddedArrayInput } from 'aor-embedded-array'
+import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import Delete from '../shared/crudComponents/Delete'
-import ModGeoInput from '../shared/inputs/ModGeoInput'
 import ModButton from '../shared/buttons/ModButton'
 import AddEditLinkNavigation from '../../restricted/shared/AddEditLinkNavigation'
 import { chronasMainColor } from '../../../styles/chronasColors'
@@ -83,29 +86,64 @@ export const MarkerList = (props) => {
 }
 
 export const MarkerEdit = (props) => {
+  const choicesRuler = Object.keys(props.metadata['ruler']).map((rulerId) => {
+    return { id: rulerId, name: props.metadata['ruler'][rulerId][0] }
+  }) || {}
+
+
+  let defaultObj = {}
+  const cIndex = ((props.selectedItem || {}).data || {}).contentIndex
+  const contentArr = ((props.selectedItem || {}).data || {}).content
+  const isContent = contentArr &&
+    typeof cIndex !== 'undefined' &&
+    ((contentArr[cIndex] || {}).properties || {}).ct === 'marker'
+
   const validateWikiProps = (values) => {
     const errors = {}
-    if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
+    if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki) && (((contentArr[cIndex] || {}).properties || {}).w !== values.wiki)) {
       errors.wiki = ['The URL needs to be a full Wikipedia URL']
     }
     return errors
   }
 
+  if (isContent) {
+    const potData = ((contentArr[cIndex] || {}).properties || {})
+    defaultObj = {
+      "_id": potData.w,
+      "wiki": potData.w,
+      "subtype": potData.t,
+      "name": potData.n,
+      "coo": ((contentArr[cIndex] || {}).geometry || {}).coordinates,
+      "type": "w",
+      "year": potData.y,
+    }
+  } else {
+    defaultObj = {
+      ...props.selectedItem.value,
+      capital: (props.selectedItem.value.capital || []).map((el) => { return { capitalStart: el[0], capitalEnd: el[1], capitalOwner: el[2] }})
+    }
+  }
+
   return <div>
     <AddEditLinkNavigation pathname={props.location.pathname} />
     <Divider/>
-    <Create title={'Edit Article'}  {...props}>
-    {(props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit'>
-      <SelectInput options={{ fullWidth: true }} onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.type + '|' + props.selectedItem.value.subtype} choices={properties.linkedTypes} label='resources.markers.fields.type' />
+    <Create title={'Edit Article'} {...props}>
+    {((props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) || isContent) ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
+      <SelectInput options={{ fullWidth: true }} onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.type ? (props.selectedItem.value.type + '|' + props.selectedItem.value.subtype) : (defaultObj.type) ? (defaultObj.type + '|' + defaultObj.subtype) : "" } choices={properties.linkedTypes} label='resources.markers.fields.type' />
       <TextInput options={{ fullWidth: true }} source='name' defaultValue={props.selectedItem.value.name} label='resources.markers.fields.name' />
-      <DisabledInput options={{ fullWidth: true }} source='wiki' defaultValue={'https://en.wikipedia.org/wiki/' + props.selectedItem.value._id} label='resources.markers.fields.url' />
+      <DisabledInput options={{ fullWidth: true }} source='wiki' defaultValue={'https://en.wikipedia.org/wiki/' + (props.selectedItem.value._id || defaultObj.wiki )} label='resources.markers.fields.url' />
       <ModButton style={{ width: '30%', float: 'left' }} modType='marker' />
       <TextInput style={{ width: '30%', float: 'left' }} source='coo[0]' onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0]} label='resources.markers.fields.lat' />
       <TextInput style={{ width: '30%', float: 'right' }} source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1]} label='resources.markers.fields.lng' />
       <NumberInput options={{ fullWidth: true }} validate={required} defaultValue={props.selectedItem.value.year} source='year' label='resources.markers.fields.year' type='number' />
       <LongTextInput options={{ fullWidth: true }} source='geojson' label='resources.linked.fields.geojson' defaultValue={props.selectedItem.value.geojson || ''} />
+      <EmbeddedArrayInput options={{ fullWidth: true }} source='capital'>
+        <NumberInput options={{ width: '30%', float: 'right' }} label='resources.markers.fields.capitalStart' type='number' source='capitalStart' />
+        <NumberInput options={{ fwidth: '30%', float: 'right' }} label='resources.markers.fields.capitalEnd' type='number' source='capitalEnd' />
+        <AutocompleteInput options={{ fwidth: '30%', float: 'right' }} choices={choicesRuler} label='resources.areas.fields.capitalOwner' source='capitalOwner' />
+      </EmbeddedArrayInput>
       <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
-      <DeleteButton resource='markers' id={props.selectedItem.value._id} {...props} />
+      <DeleteButton resource='markers' id={props.selectedItem.value._id || defaultObj.wiki} {...props} />
     </MarkerForm> : <MarkerForm hidesavebutton>
       <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.type} choices={properties.linkedTypes} label='resources.markers.fields.type' />
       <h4>click on marker on the map which you like to modify</h4></MarkerForm>}
@@ -113,6 +151,9 @@ export const MarkerEdit = (props) => {
 }
 
 export const MarkerCreate = (props) => {
+  const choicesRuler = Object.keys(props.metadata['ruler']).map((rulerId) => {
+    return { id: rulerId, name: props.metadata['ruler'][rulerId][0] }
+  }) || {}
   return <div>
     <AddEditLinkNavigation pathname={props.location.pathname} />
     <Divider/>
@@ -126,6 +167,11 @@ export const MarkerCreate = (props) => {
       <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => { props.setModDataLat(+v) }} source='coo[1]' label='resources.markers.fields.lng' />
       <NumberInput source='year' label='resources.markers.fields.year' />
       <LongTextInput options={{ fullWidth: true }}source='geojson' label='resources.linked.fields.geojson' />
+      <EmbeddedArrayInput options={{ fullWidth: true }} source='capital'>
+        <NumberInput options={{ width: '30%', float: 'right' }} label='resources.markers.fields.capitalStart' type='number' source='capitalStart' />
+        <NumberInput options={{ fwidth: '30%', float: 'right' }} label='resources.markers.fields.capitalEnd' type='number' source='capitalEnd' />
+        <AutocompleteInput options={{ fwidth: '30%', float: 'right' }} choices={choicesRuler} label='resources.areas.fields.capitalOwner' source='capitalOwner' />
+      </EmbeddedArrayInput>
       <BooleanInput label="resources.linked.fields.onlyEpicContent" source="onlyEpicContent" defaultValue={false} />
     </MarkerForm>
   </Create></div>

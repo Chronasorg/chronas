@@ -13,7 +13,8 @@ import {
   Filter,
   FormTab,
   Edit,
-  Delete, SimpleForm,
+  Delete,
+  SimpleForm,
   UrlField,
   NullableBooleanInput,
   NumberField,
@@ -57,16 +58,17 @@ export const ModMetaEdit = (props) => {
     }
   }
 
+  const modObj = (props.metadataType === "religionGeneral") ? ((metadata[props.metadataType] || {})[((metadata['religion'] || {})[props.metadataEntity] || {})[3]] || {}) : ((metadata[props.metadataType] || {})[props.metadataEntity] || {})
   const defaultValues = {
-      dataName: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[0] || '',
-      dataColor: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[1] || '',
-      dataUrl: (props.metadataType === 'capital' || props.metadataType === 'province') ? 'https://en.wikipedia.org/wiki/' + ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[0] || '' : 'https://en.wikipedia.org/wiki/' + ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[2] || '',
+      dataName: modObj[0] || '',
+      dataColor: modObj[1] || '',
+      dataUrl: (props.metadataType === 'capital' || props.metadataType === 'province') ? 'https://en.wikipedia.org/wiki/' + modObj[0] || '' : 'https://en.wikipedia.org/wiki/' + modObj[2] || '',
       dataIcon: (props.metadataType === 'capital' || props.metadataType === 'province')
-        ? ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[1] || ''
+        ? modObj[1] || ''
         : (props.metadataType === 'religion')
-          ? ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[4] || ''
-          : ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[3] || '',
-      dataParentname: ((metadata[props.metadataType] || {})[props.metadataEntity] || {})[3] || '',
+          ? modObj[4] || ''
+          : modObj[3] || '',
+      dataParentname: modObj[3] || '',
     }
 
   const choicesRuler = Object.keys(metadata['ruler']).map((rulerId) => {

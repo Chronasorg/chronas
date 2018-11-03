@@ -18,6 +18,7 @@ import Divider from 'material-ui/Divider'
 import Checkbox from 'material-ui/Checkbox'
 import RadioButton from 'material-ui/RadioButton'
 import Toggle from 'material-ui/Toggle'
+import Slider from 'material-ui/Slider'
 import ActionGrade from 'material-ui/svg-icons/action/grade'
 import AreaIcon from 'material-ui/svg-icons/maps/map'
 import MarkerIcon from 'material-ui/svg-icons/maps/place'
@@ -46,6 +47,7 @@ import {
   changeLabel as changeLabelAction,
   changeColor as changeColorAction,
   toggleMarker as toggleMarkerAction,
+  setMarkerLimit,
   toggleEpic as toggleEpicAction } from './actionReducers'
 import { iconMapping, markerIdNameArray, epicIdNameArray, themes } from '../../../properties'
 
@@ -98,6 +100,7 @@ class LayerContent extends Component {
     super(props)
     this.state = {
       basemapId: 0,
+      markerLimit: localStorage.getItem('chs_markerLimit') ? +localStorage.getItem('chs_markerLimit') : 3000,
       locked: true,
       selectedBasemap: "topographic",
     }
@@ -112,7 +115,7 @@ class LayerContent extends Component {
 
   render () {
     const { basemapId, locked } = this.state
-    const {activeArea, setPopOpacity, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, toggleMarker, toggleEpic, theme} = this.props
+    const {activeArea, setPopOpacity, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme} = this.props
 
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
@@ -300,9 +303,9 @@ class LayerContent extends Component {
               initiallyOpen={false}
               primaryTogglesNestedList={true}
               nestedItems={markerIdNameArray.map(id => {
-                const cofficient = 40 / 169
+                const cofficient = 40 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
                 const backgroundPosition = 'url(/images/' + markerTheme + '-atlas.png) -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][id[0]] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][id[0]] || {}).y * cofficient)) + 'px'
-                const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 200px' : '127px 150px'
+                const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 238px' : '154px 224px'
                 //((iconMapping['abst'][id[0]] || {}).width) + 'px ' + ((iconMapping['abst'][id[0]] || {}).height) + 'px'
                 return <ListItem value={id[0]}
                             // style={{ display: (id[0] === 'c' ? 'none' : 'inherit') }}
@@ -316,10 +319,42 @@ class LayerContent extends Component {
                               width: 30,
                               background: backgroundPosition,
                               backgroundSize: backgroundSize,
-                              opacity: activeMarkers.includes(id[0]) ? 1 : 0.2
+                              opacity: activeMarkers.list.includes(id[0]) ? 1 : 0.2
                             }} src="/images/transparent.png" /> {id[2]}</div>}
-                  />})}
-            />
+                  />}).concat(
+              [<ListItem
+                key={'markerLimit'}
+                style={{ height: 60 }}
+                innerDivStyle={{ padding: 0 }}
+                primaryText={<div className="listAvatar">
+                  <div style={{ marginBottom: -20, paddingTop: 18 }}>Marker Limit <span style={{fontWeight: 'bolder', paddingLeft: 8,     position: 'absolute', right: 22}}>{this.state.markerLimit}</span></div>
+                  <Slider
+                    min={0}
+                    max={10000}
+                    step={1}
+                    style={{ paddingRight: 16 }}
+                    value={this.state.markerLimit}
+                    onDragStop={ () => {
+                      const value = this.state.markerLimit
+                      localStorage.setItem('chs_markerLimit', value)
+                      setMarkerLimit(value)
+                    }}
+                    onChange={ (event, value) => {
+                      this.setState({ markerLimit: value })
+                    }}
+                  />
+                </div>}
+                />,
+                <ListItem primaryText="Cluster Marker"
+                          style={{
+                            padding: '16px 72px 16px 0px',
+                            whiteSpace: 'nowrap'
+                          }}
+                              rightToggle={<Toggle onToggle={() => setClusterMarkers(!mapStyles.clusterMarkers)} />}
+                          defaultToggled={mapStyles.clusterMarkers} />,<hr />])
+              }
+        />
+
           <ListItem
             primaryText="Epics"
             leftIcon={<EpicIcon />}
@@ -345,20 +380,17 @@ class LayerContent extends Component {
         </List>
         <List style={{ ...styles.listStyle, background: themes[theme].backColors[0], borderBottom: '1px solid rgb(217, 217, 217)' }}>
           <Subheader>Advanced</Subheader>
-          <DropDownMenu className="dropdownAvatarMenu" selectedMenuItemStyle={{ paddingLeft: 0 }} value={this.state.selectedBasemap} onChange={this.handleChange} openImmediately={false}>
-            <MenuItem value="topographic" primaryText="Topographic" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
-                      label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+          <DropDownMenu className="dropdownAvatarMenu" selectedMenuItemStyle={{ fontWeight: 'bolder', color: themes[theme].highlightColors[0], paddingLeft: 0 }} value={this.state.selectedBasemap} onChange={this.handleChange} openImmediately={false}>
+            <MenuItem value="topographic" primaryText="Topographic" leftIcon={<Avatar style={{borderRadius: 0}} src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/2/1/2" />}
+                      label={<ListItem style={ styles.listItem } leftAvatar={<Avatar style={{borderRadius: 0}} src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/2/1/2" />}>Basemap</ListItem>}
             />
-            <MenuItem value="watercolor" primaryText="Watercolor" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
-                      label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+            <MenuItem value="watercolor" primaryText="Watercolor" leftIcon={<Avatar style={{borderRadius: 0}} src="https://stamen-tiles.a.ssl.fastly.net/watercolor/2/2/1.jpg" />}
+                      label={<ListItem style={ styles.listItem } leftAvatar={<Avatar style={{borderRadius: 0}} src="https://stamen-tiles.a.ssl.fastly.net/watercolor/2/2/1.jpg" />}>Basemap</ListItem>}
             />
-            <MenuItem value="none" primaryText="None" leftIcon={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}
-                      label={<ListItem style={ styles.listItem } leftAvatar={<Avatar src="https://v0.material-ui.com/images/uxceo-128.jpg" />}>Basemap</ListItem>}
+            <MenuItem value="none" primaryText="None" leftIcon={<Avatar style={{borderRadius: 0}} src="/images/transparent.png" />}
+                      label={<ListItem style={ styles.listItem } leftAvatar={<Avatar style={{borderRadius: 0}} src="/images/transparent.png" />}>Basemap</ListItem>}
             />
           </DropDownMenu>
-          <ListItem primaryText="Cluster Marker"
-                    rightToggle={<Toggle onToggle={() => setClusterMarkers(!mapStyles.clusterMarkers)} />}
-                    open={mapStyles.clusterMarkers} />
           <ListItem primaryText="Show Provinces"
                     rightToggle={<Toggle onToggle={() => setProvinceBorders(!mapStyles.showProvinceBorders)} />}
                     open={mapStyles.showProvinceBorders} />
@@ -389,6 +421,7 @@ const enhance = compose(
     setClusterMarkers: setClusterMarkersAction,
     changeLabel: changeLabelAction,
     changeColor: changeColorAction,
+    setMarkerLimit,
     toggleMarker: toggleMarkerAction,
     toggleEpic: toggleEpicAction,
     toggleMenuDrawer: toggleMenuDrawerAction,

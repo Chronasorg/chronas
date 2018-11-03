@@ -12,6 +12,7 @@ export const REMOVE_MARKER = 'REMOVE_MARKER'
 export const SET_MARKER = 'SET_MARKER'
 export const SET_CLUSTER = 'SET_CLUSTER'
 export const TOGGLE_MARKER = 'TOGGLE_MARKER'
+export const SET_MARKERLIMIT = 'SET_MARKERLIMIT'
 
 export const ADD_EPIC = 'ADD_EPIC'
 export const REMOVE_EPIC = 'REMOVE_EPIC'
@@ -35,10 +36,13 @@ export const setProvinceBorders = borderActive => ({
   payload: borderActive,
 })
 
-export const setClusterMarkers = clusterActive => ({
-  type: SET_CLUSTER,
-  payload: clusterActive,
-})
+export const setClusterMarkers = clusterActive => {
+  localStorage.setItem('chs_cluster', clusterActive)
+  return {
+    type: SET_CLUSTER,
+    payload: clusterActive,
+  }
+}
 
 export const setArea = (data, color, label) => ({
   type: SET_AREA,
@@ -63,6 +67,11 @@ export const changeLabel = text => ({
 export const changeColor = color => ({
   type: CHANGE_COLOR,
   payload: color,
+})
+
+export const setMarkerLimit = limit => ({
+  type: SET_MARKERLIMIT,
+  payload: limit,
 })
 
 export const addMarker = marker => ({
@@ -100,6 +109,7 @@ export const setEpic = epics => ({
   payload: epics,
 })
 
+
 export const toggleEpic = epic => ({
   type: TOGGLE_EPIC,
   payload: epic,
@@ -107,7 +117,7 @@ export const toggleEpic = epic => ({
 
 /** Reducers **/
 
-export const mapStylesReducer = (initial = { basemap: 'topographic', showProvinceBorders: true, 'popOpacity': false, 'clusterMarkers': false }) =>
+export const mapStylesReducer = (initial = { basemap: 'topographic', showProvinceBorders: true, 'popOpacity': false, 'clusterMarkers': (localStorage.getItem('chs_cluster') === 'true') || false }) =>
   (prevMapStyle = initial, { type, payload }) => {
     switch (type) {
       case SET_POPOPACITY:
@@ -139,6 +149,7 @@ export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': '
   (prevArea = initial, { type, payload }) => {
     switch (type) {
       case SET_AREA:
+        localStorage.setItem('chs_dyk_coloring', true)
         return {
           ...prevArea,
           data: payload[0],
@@ -146,12 +157,14 @@ export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': '
           label: payload[2]
         }
       case SET_AREA_COLOR_LABEL:
+        localStorage.setItem('chs_dyk_coloring', true)
         return {
           ...prevArea,
           color: payload[0],
           label: payload[1],
         }
       case CHANGE_COLOR:
+        localStorage.setItem('chs_dyk_coloring', true)
         return {
           ...prevArea,
           color: payload
@@ -171,33 +184,54 @@ export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': '
     }
   }
 
-export const markerReducer = (initial = []) =>
+export const markerReducer = (initial = { list: [], limit: (localStorage.getItem('chs_markerLimit') ? +localStorage.getItem('chs_markerLimit') : 3000) }) =>
   (prevMarker = initial, { type, payload }) => {
     switch (type) {
+      case SET_MARKERLIMIT:
+        localStorage.setItem('chs_dyk_markerlimit', true)
+        return {
+          ...prevMarker,
+          limit: payload,
+        }
       case SET_MARKER:
-        return payload
+        return {
+          ...prevMarker,
+          list: payload,
+        }
       case TOGGLE_MARKER:
-        if (prevMarker.indexOf(payload) > -1) {
-          return [
-            ...prevMarker.filter(marker =>
-            marker !== payload)
-          ]
-        } else {
-          return [
+        if (prevMarker.list.indexOf(payload) > -1) {
+          return {
             ...prevMarker,
-            payload
-          ]
+            list: [
+              ...prevMarker.list.filter(marker =>
+                marker !== payload)
+            ],
+          }
+        } else {
+          return {
+            ...prevMarker,
+            list: [
+              ...prevMarker.list,
+              payload
+            ],
+          }
         }
       case ADD_MARKER:
-        return [
+        return {
           ...prevMarker,
-          payload
-        ]
+          list: [
+            ...prevMarker.list,
+            payload
+          ],
+        }
       case REMOVE_MARKER:
-        return [
-          ...prevMarker.filter(marker =>
-          marker !== payload)
-        ]
+        return {
+          ...prevMarker,
+          list: [
+            ...prevMarker.list.filter(marker =>
+              marker !== payload)
+          ],
+        }
       default:
         return prevMarker
     }

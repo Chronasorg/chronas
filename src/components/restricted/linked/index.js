@@ -43,7 +43,7 @@ import { chronasMainColor } from '../../../styles/chronasColors'
 import ArrayField from './ArrayField'
 import LinkedForm from '../shared/forms/LinkedForm'
 import { TYPE_LINKED } from '../../map/actionReducers'
-import { properties } from "../../../properties";
+import {epicIdNameArray, properties} from "../../../properties";
 
 export const LinkedIcon = Icon
 
@@ -110,33 +110,54 @@ export const isNotAnAudio = (urlPre) => {
   return (url.toLowerCase().match(/\.(mp3)$/) === null)
 }
 
-
 export const LinkedEdit = (props) => {
   const validateWikiProps = (values) => {
     const errors = {}
-    if ((values.wiki && values.wiki !== (props.selectedItem.value.wiki || '') && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).wiki !== values.wiki)) {
+    const initWiki = props.selectedItem.value.wiki || ((props.selectedItem || {}).data || {}).wiki || ''
+    if ((values.wiki && values.wiki !== initWiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && (initWiki !== values.wiki)) {
       errors.wiki = ['The URL needs to be a full Wikipedia URL']
     }
-
     return errors
   }
 
-  const isEpic = props.contentTypeRaw === 'e'
+  const postType = props.contentTypeRaw || ((props.selectedItem || {}).data || {}).subtype
+  const isEpic = /*props.contentTypeRaw === */epicIdNameArray.map(el => el[0]).includes(postType)
 
-  if (!isEpic && ((props.selectedItem.value || {})._id || "").substr(0, 2) === "e_") {
-    props.actOnRootTypeChange("e")
-  }
+  // if (!isEpic && ((props.selectedItem.data || {})._id || "").substr(0, 2) === "e_") {
+  //   props.actOnRootTypeChange("e")
+  // }
 
   const choicesRuler = Object.keys(props.metadata['ruler']).map((rulerId) => {
     return { id: rulerId, name: props.metadata['ruler'][rulerId][0]}
   }) || {}
 
+  let epicDefaults
+  if (isEpic) {
+    const selectedData = props.selectedItem.data
+    epicDefaults = {
+      subtype: selectedData.subtype,
+      type: selectedData.type,
+      src: selectedData._id,
+      attacker: ((selectedData.data || {}).participants || [])[0].map(el => {return { name: el }}),
+      defender: ((selectedData.data || {}).participants || [])[1].map(el => {return { name: el }}),
+      description: (selectedData.data || {}).title,
+      poster: (selectedData.data || {}).poster,
+      wiki: selectedData.wiki,
+      year: selectedData.year,
+      end: (selectedData.data || {}).end,
+    }
+  }
+
   return <div>
     <AddEditLinkNavigation pathname={props.location.pathname} />
     <Divider />
     <Create title={'Edit Article'} {...props}>
-    <LinkedForm validate={validateWikiProps} defaultValue={props.selectedItem.value} history={props.history} redirect='edit'>
-      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.subtype' defaultValue={props.selectedItem.value.subtype} />
+    <LinkedForm validate={validateWikiProps} defaultValue={epicDefaults || props.selectedItem.value} history={props.history} redirect='edit'>
+      <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.type' defaultValue={props.selectedItem.value.subtype} />
+
+      {isEpic && <AutocompleteInput options={{ fullWidth: true }} source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.search_name" />}
+
+      {/*{isEpic && <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' choices={properties.linkedTypes} label='resources.linked.fields.type' defaultValue={props.selectedItem.value.subtype} /> }*/}
       <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
       {isEpic && <EmbeddedArrayInput options={{ fullWidth: true }} source='attacker'>
         <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.attacker' />
@@ -145,19 +166,18 @@ export const LinkedEdit = (props) => {
         <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.defender' />
       </EmbeddedArrayInput> }
       <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || (props.selectedItem.value.data || {}).title || ''} />
-      <LongTextInput source='content' label='resources.linked.fields.content' defaultValue={props.selectedItem.value.content || (props.selectedItem.value.data || {}).content || ''} />
-      <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />
+      { !isEpic && <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />}
       <LongTextInput source='poster' label='resources.linked.fields.poster' type='url' defaultValue={(props.selectedItem.value.data || {}).poster || ''} />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
-      <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
+      {/*<h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>*/}
       <NumberInput style={ isEpic ? { width: '50%', float: 'left' } : {}} validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle} source='year' label='resources.linked.fields.year' type='number' />
-      { isEpic && <NumberInput style={{ width: '50%', float: 'right' }} source="end" defaultValue={props.selectedItem.value.data.end || props.selectedItem.value.year || props.selectedItem.value.subtitle} label="resources.areas.fields.endYear" /> }
-      <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
-      <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} source='coo[0]' label='resources.markers.fields.lat' />
-      <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} source='coo[1]' label='resources.markers.fields.lng' />
-      <LongTextInput source='geojson' label='resources.linked.fields.geojson' defaultValue={props.selectedItem.value.geojson || ''} />
-      <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
-      <DeleteButton id={encodeURIComponent(props.selectedItem.value.src)} {...props} />
+      { isEpic && <NumberInput style={{ width: '50%', float: 'right' }} source="end" defaultValue={(props.selectedItem.value.data || {}).end || props.selectedItem.value.year || props.selectedItem.value.subtitle} label="resources.areas.fields.endYear" /> }
+      { !isEpic && <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />}
+      { !isEpic && <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} source='coo[0]' label='resources.markers.fields.lat' />}
+      { !isEpic && <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} source='coo[1]' label='resources.markers.fields.lng' />}
+      { !isEpic && <LongTextInput source='geojson' label='resources.linked.fields.geojson' defaultValue={props.selectedItem.value.geojson || ''} />}
+      { !isEpic && <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />}
+      <DeleteButton id={encodeURIComponent((epicDefaults || {}).src || props.selectedItem.value.src)} {...props} />
     </LinkedForm>
     </Create>
   </div>
@@ -174,7 +194,7 @@ export const LinkedCreate = (props) => {
       values.subtype === 'misc' &&
       isNotAnImage(values.src || '')) {
       errors.src = ['This URL must lead to an image']
-    } else if (values.subtype === 'videos' &&
+    } else if (values.subtype === 'v' &&
       isNotAnVideo(values.src || '')) {
       errors.src = ['This URL must lead to a video']
     } else if (values.subtype === 'audios' &&
@@ -205,7 +225,7 @@ export const LinkedCreate = (props) => {
       <LongTextInput source='source' label='resources.linked.fields.source' type='url' />
       <LongTextInput source='poster' label='resources.linked.fields.poster' type='url' />
       <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' />
-      <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>
+      {/*<h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>*/}
       <NumberInput validate={required} defaultValue={props.selectedYear || ''} source='year' label='resources.linked.fields.year' type='number' />
       <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
       <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => { props.setModDataLng(+v) }} source='coo[0]' label='resources.markers.fields.lat' />

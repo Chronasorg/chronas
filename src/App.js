@@ -6,6 +6,7 @@ import {
   Delete,
   Restricted,
   TranslationProvider,
+  showNotification
 } from 'admin-on-rest'
 import decodeJwt from 'jwt-decode'
 import 'font-awesome/css/font-awesome.css'
@@ -28,8 +29,6 @@ import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import LoadingBar from './components/global/LoadingBar'
 import LoadingPage from './components/loadingPage/LoadingPage'
-
-// translations
 import messages from './translations'
 import { history } from './store/createStore'
 import Account from './components/menu/account/Account'
@@ -43,7 +42,7 @@ import Login from './components/menu/authentication/Login'
 import customTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
 import utilsQuery from './components/map/utils/query'
-import { properties, themes } from './properties'
+import { didYouKnows, properties, themes } from './properties'
 
 const styles = {
   wrapper: {
@@ -119,7 +118,7 @@ class App extends Component {
           type: (utilsQuery.getURLParameter('type') || ''),
           value: (utilsQuery.getURLParameter('value') || ''),
         }
-        const selectedMarker = (utilsQuery.getURLParameter('markers') || 'c')
+        const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,m,op,p,r,s,si')
         const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ew')
 
         setYear(selectedYear)
@@ -143,6 +142,7 @@ class App extends Component {
           '&fill=' + activeArea.color +
           '&label=' + activeArea.label +
           '&value=' + selectedItem.value +
+          '&position=' + (utilsQuery.getURLParameter('position') || '37,37,2.5') +
           window.location.hash)
     })
   }
@@ -194,13 +194,52 @@ class App extends Component {
   }
 
   componentDidMount () {
-    const { setMetadata, setLoadStatus, setUser } = this.props
+    const { setMetadata, setLoadStatus, setUser, showNotification } = this.props
+
+    setTimeout(() => {
+      const selectedIndex = Math.floor(Math.random() * didYouKnows.length)
+      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex][0], true)
+      showNotification(didYouKnows[selectedIndex][1])
+    }, 500)
+
     axios.get(properties.chronasApiHost + '/metadata?type=g&f=provinces,ruler,culture,religion,capital,province,religionGeneral')
       .then((metadata) => {
         setMetadata(metadata.data)
       })
       .then(() => {
         setLoadStatus(false)
+
+        const didYouKnowInterval = setInterval(() => {
+          let selectedItem
+          if (!localStorage.getItem('chs_dyk_timeline')) {
+            selectedItem = didYouKnows[0][1]
+            localStorage.setItem('chs_dyk_timeline', true)
+          } else if (!localStorage.getItem('chs_dyk_discover')) {
+            selectedItem = didYouKnows[1][1]
+            localStorage.setItem('chs_dyk_discover', true)
+          } else if (!localStorage.getItem('chs_dyk_coloring')) {
+            selectedItem = didYouKnows[2][1]
+            localStorage.setItem('chs_dyk_coloring', true)
+          } else if (!localStorage.getItem('chs_dyk_markerlimit')) {
+            selectedItem = didYouKnows[3][1]
+            localStorage.setItem('chs_dyk_markerlimit', true)
+          } else if (!localStorage.getItem('chs_dyk_province')) {
+            selectedItem = didYouKnows[4][1]
+            localStorage.setItem('chs_dyk_province', true)
+          } else if (!localStorage.getItem('chs_dyk_question')) {
+            selectedItem = didYouKnows[5][1]
+            localStorage.setItem('chs_dyk_question', true)
+          } else if (!localStorage.getItem('chs_dyk_distribution')) {
+            selectedItem = didYouKnows[6][1]
+            localStorage.setItem('chs_dyk_distribution', true)
+          } else if (!localStorage.getItem('chs_dyk_link')) {
+            selectedItem = didYouKnows[7][1]
+            localStorage.setItem('chs_dyk_link', true)
+          }
+          if (selectedItem) return showNotification(selectedItem)
+          else return clearInterval(didYouKnowInterval)
+        }, 30000)
+
         this.forceUpdate()
       })
 
@@ -251,18 +290,20 @@ class App extends Component {
       selectedFontClass
     } = this.state
 
-    console.error('!!! rendering App component !!! ' + theme)
     // console.debug(customTheme, defaultTheme)
     customTheme.fontFamily = 'inherit'
 
+    customTheme.palette.accent1Color = themes[theme].highlightColors[0]
     customTheme.palette.primary1Color = themes[theme].foreColors[0]
     customTheme.palette.primary2Color = themes[theme].backColors[0]
     customTheme.palette.textColor = themes[theme].foreColors[0]
     customTheme.palette.alternateTextColor = themes[theme].backColors[0]
     customTheme.palette.canvasColor = themes[theme].backColors[1]
-    customTheme.baseTheme.palette.primary1Color = themes[theme].backColors[0]
-    customTheme.baseTheme.palette.accent1Color = themes[theme].highlightColors[0]
-    customTheme.tabs = {
+    customTheme.palette.accent1Color = themes[theme].highlightColors[0]
+
+
+
+      customTheme.tabs = {
       backgroundColor: 'transparent',
       selectedTextColor:  themes[theme].foreColors[1],
       textColor: themes[theme].foreColors[0]
@@ -271,6 +312,11 @@ class App extends Component {
     delete customTheme.drawer
 
     const muiTheme = getMuiTheme(customTheme) // customTheme
+
+    muiTheme.baseTheme.palette.primary1Color = themes[theme].backColors[0]
+    muiTheme.baseTheme.palette.accent1Color = themes[theme].highlightColors[0]
+    muiTheme.menuItem.selectedTextColor = themes[theme].highlightColors[0]
+    muiTheme.tabs.selectedTextColor = themes[theme].highlightColors[0]
 
     // console.debug(JSON.stringify(muiTheme))
     if (!prefixedStyles.main) {
@@ -293,7 +339,6 @@ class App extends Component {
       prefixedStyles.content.marginLeft = 0
     }
 
-
     return (
       <Provider store={store}>
         <TranslationProvider messages={messages}>
@@ -301,10 +346,9 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
-                  {/*{!isStatic && <LoadingBar theme={theme} />}*/}
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     {isLoading && !isStatic && <LoadingPage />}
-                    {!isLoading && createElement(Map, { history: history, isLoading: isLoading })}
+                    {!isLoading && createElement(Map, { history, isLoading })}
                     {!isLoading && !isStatic && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <Switch>
                         <Route exact path='/' />
@@ -363,6 +407,7 @@ const mapStateToProps = (state, props) => ({
 })
 
 const mapDispatchToProps = {
+  showNotification,
   setArea,
   setUser,
   setLoadStatus,

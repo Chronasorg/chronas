@@ -26,36 +26,115 @@ body {
 }
 
 .vis-item {
-  border-width: 0px !important;
+  //border-width: 0px !important;
 }
 .mapTimeline {
+  margin-left: -40px;
   .vis-panel.vis-center {
-    top: 4px !important;
+    top: 38px !important;
   }
+}
+
+.warContainer {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .vis-selected {
-  top: -20px !important;
+  //top: 5px!important;
+}
+
+.tsTicks { display: none }
+.vis-item:hover {
+  .tsTicks { display: block }
+}
+
+div.vis-tooltip {
+  //backgroundColor: theme.palette.grey[700],
+  padding: 4px 8px !important;
+  font-family: inherit !important;
+
+  position: absolute;
+  visibility: hidden;
+  white-space: nowrap;
+
+  font-size:14px;
+  color:#ddd !important;
+  background-color: rgba(85, 85, 85, 0.85) !important;
+
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  border: 0px solid #808074 !important;
+
+  box-shadow: none;
+  pointer-events: none;
+
+  z-index: 5;
+}
+
+.vis-selected {
+  .tsTicks { display: block !important }
+}
+
+.extendedTimeline {
+  .timelineItem_ew {
+    background-color: white !important;
+    border: 2px solid rgb(214, 0, 0);
+  }
+  .vis-panel {
+    &.vis-center {
+      cursor: move;
+    }
+  }
 }
 
 .vis-item {
+  //background: inherit;
+  //background: transparent !important;
+  cursor: pointer;
+
   &.timelineItem_war {
-    background: rgba(214, 0, 0, 0.5);
+    border: 2px solid rgba(214, 0, 0, 0.2);
   }
   &.timelineItem_ew {
-    background: rgba(214, 0, 0, 0.5);
+    border: 2px solid rgba(214, 0, 0, 0.2);
+    &:hover {
+      border: none;//2px solid rgba(214, 0, 0, 0.4);
+      background: white !important;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 45px, rgba(0, 0, 0, 0.22) 0px 10px 18px;
+    }
+    &.vis-selected {
+      border: none;//2px solid rgba(214, 0, 0, 0.4);
+      background: white !important;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 45px, rgba(0, 0, 0, 0.22) 0px 10px 18px;
+    }
+
+
+  }
+  &.provinceTimelineItem {
+    &:hover {
+      //background-image: linear-gradient(#ffffff80,#f2f2f2) !important;
+      border: none;//2px solid rgba(214, 0, 0, 0.4);
+      background: white !important;
+      box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 45px, rgba(0, 0, 0, 0.22) 0px 10px 18px;
+    }
   }
   &.timelineItem_ebio {
-    background: rgba(0, 128, 0, 0.5);
+    border: 2px solid rgba(0, 128, 0, 0.2);
   }
   &.timelineItem_ec {
-    background: rgba(255, 165, 0, 0.5);
+    border: 2px solid rgba(255, 165, 0, 0.2);
   }
   &.timelineItem_ee {
-    background: rgba(0, 0, 255, 0.5);
+    border: 2px solid rgba(0, 0, 255, 0.2);
   }
   &.timelineItem_eo {
-    background: rgba(255, 255, 255, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  &.timelineItem_eb {
+    background: transparent;
   }
 }
 .classReveal {
@@ -358,6 +437,7 @@ button:focus {
 
 .loadingPage {
   .splash_description {
+    white-space: nowrap;
     font-size: 2rem;
     position: absolute;
     bottom: 20%;
@@ -372,8 +452,14 @@ button:focus {
 }
 
 .mapboxgl-popup-content {
-  border: 2px solid black;
-  background: rgba(220,220,220,0.8);
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgb(255, 255, 255);
+  transition: transform 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+  box-sizing: border-box;
+  //font-family: Cinzel, serif;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  box-shadow: rgba(0, 0, 0, 0.14) 0px 4px 5px 0px, rgba(0, 0, 0, 0.12) 0px 1px 10px 0px, rgba(0, 0, 0, 0.4) 0px 2px 4px -1px;
+  border-radius: 2px;
 }
 
 
@@ -400,6 +486,11 @@ button:focus {
 $spin-speed: 1s;
 //the more time, the slower it spins
 
+//#LoadingCircle_svg2 {
+//  -webkit-filter: drop-shadow( 0px 2px 2px #333 );
+//  filter: drop-shadow(0 0px 2px #333)
+//}
+
 #LoadingCircle_g_logoCircle {
   fill: #333
 }
@@ -421,12 +512,14 @@ $spin-speed: 1s;
 }
 
 .LoadingCircle_wrapper {
+  overflow: visible;
   text-align: center;
   height: 100%;
   width: 100%;
 }
 
 .LoadingCircle_inner {
+  overflow: hidden;
   width: 100%;
   margin-top: 15%;
   display: inline-block;
@@ -521,3 +614,34 @@ svg.LoadingCircle_rotate {
   }
 }
 
+.iconImage {
+  height: initial !important;
+  vertical-align: middle;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tsTicks {
+  //border-right: 1px solid #42adec;
+  position: absolute;
+  height: 36px;
+  margin-top: -38px;
+}
+
+.vis-item .vis-item-overflow {
+  overflow: visible !important;
+}
+
+div.vis-tooltip {
+  overflow: visible !important;
+}
+
+.EmbeddedArrayInputItemContainer {
+  div:first-child {
+    width: 70% !important;
+  }
+  div:last-child {
+    float: right;
+  }
+}

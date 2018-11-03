@@ -66,7 +66,7 @@ export const ModAreasAll = (props) => {
       values.ruler === defaultValues.dataRuler &&
       values.culture === defaultValues.dataCulture &&
       values.religion === defaultValues.dataReligion &&
-      values.capital === defaultValues.dataCapital &&
+      // values.capital === defaultValues.dataCapital &&
       values.population === defaultValues.dataPopulation) {
       errors.ruler = ['At least one of ruler, culture, religion, capital or population is required']
     }

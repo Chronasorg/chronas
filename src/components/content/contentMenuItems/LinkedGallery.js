@@ -11,14 +11,14 @@ import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
 import ImageGallery from 'react-image-gallery'
 import YouTube from 'react-youtube'
 import axios from 'axios'
-import Badge from 'material-ui/Badge'
 import Menu from 'material-ui/Menu'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { Player } from 'video-react'
 import Dialog from 'material-ui/Dialog'
-import { GridList, GridTile } from 'material-ui/GridList'
+import { GridList } from 'material-ui/GridList'
+import GridTile from '../../overwrites/GridTile'
 import RaisedButton from 'material-ui/RaisedButton'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import IconThumbUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
@@ -27,6 +27,8 @@ import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconEdit from 'material-ui/svg-icons/content/create'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import ContentAdd from 'material-ui/svg-icons/content/add'
+import ContentLink from 'material-ui/svg-icons/content/link'
+import CommentIcon from 'material-ui/svg-icons/communication/comment'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
@@ -37,7 +39,7 @@ import SwipeableViews from 'react-swipeable-views'
 import { translate, ViewTitle, showNotification } from 'admin-on-rest'
 import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
 import { tooltip } from '../../../styles/chronasStyleComponents'
-import { getYoutubeId, properties, themes } from "../../../properties"
+import {didYouKnows, getYoutubeId, properties, themes} from "../../../properties"
 import { resetModActive, setFullModActive } from "../../restricted/shared/buttons/actionReducers";
 import { toggleRightDrawer as toggleRightDrawerAction } from "../actionReducers";
 
@@ -47,7 +49,7 @@ const MODE = [
   'circlePack',
   'partition'
 ]
-
+const GALLERYBATCHSIZE = 10
 const imgButton = { width: 20, height: 20}
 const styles = {
   container: {
@@ -65,7 +67,7 @@ const styles = {
     /* margin-top: -315px; */
     position: 'relative',
     right: 0,
-    bottom: 290,
+    bottom: 260,
     pointerEvents: 'all'
   },
   closeButton: {
@@ -84,6 +86,7 @@ const styles = {
   downArrow: { ...imgButton, padding: 0, right: 11, top: 24, position: 'absolute' },
   editButton: { ...imgButton, right: 60, top: 1, position: 'absolute' },
   sourceButton: { ...imgButton, right: 110, top: 1, position: 'absolute', padding: 0 },
+  fullButton: { ...imgButton, right: 170, top: 1, position: 'absolute', padding: 0 },
   scoreLabel: {
     width: 38,
     height: 20,
@@ -161,6 +164,7 @@ const styles = {
     transition: 'all .5s ease',
     bottom: '20px',
     left: '30px',
+    position: 'absolute',
     paddingRight: '2em',
     pointerEvents: 'none'
 
@@ -234,6 +238,7 @@ class LinkedGallery extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      showMax: GALLERYBATCHSIZE,
       filtered:[
         'artefacts',
         'articles',
@@ -242,7 +247,7 @@ class LinkedGallery extends React.Component {
         'cities',
         'battles',
         'misc',
-        'videos',
+        'v',
         'audios',
         'ps'
       ],
@@ -260,7 +265,7 @@ class LinkedGallery extends React.Component {
        'cities',
        'battles',
        'misc',
-       'videos',
+       'v',
        'audios',
         'ps'
       ]
@@ -269,6 +274,7 @@ class LinkedGallery extends React.Component {
 
   loadLinkedItemsToTileData = (nextLinkedItems) => {
     this.setState({
+      showMax: GALLERYBATCHSIZE,
       tileData: nextLinkedItems,
     },
       this.forceUpdate);
@@ -277,6 +283,7 @@ class LinkedGallery extends React.Component {
   handleChangeFilter = (event, value) => {
     this.setState({
       filtered: value,
+      showMax: GALLERYBATCHSIZE
     });
   };
 
@@ -449,22 +456,35 @@ class LinkedGallery extends React.Component {
     this.forceUpdate()
   }
 
+  _handleScroll = (e) => {
+    const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    if (bottom) {
+      const { showMax, tileData, filtered } = this.state
+      const tileLength = tileData.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1 )).length
+      if (showMax < tileLength) {
+        this.setState({ showMax: (showMax + GALLERYBATCHSIZE)})
+      }
+      console.debug("bottom reached!",tileLength)
+
+    }
+  }
+
   render () {
     const { isMinimized, linkedItems, selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility, qName, theme } = this.props
-    const { selectedImage, filtered, slideIndex, tileData, categories } = this.state
+    const { showMax, selectedImage, filtered, slideIndex, tileData, categories } = this.state
 
     const noTiles = (typeof linkedItems === 'undefined' || (tileData && tileData.length === 0))
 
     const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
     const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
 
-    const slideButtons = (score, id, source, stateData) => {
-      console.debug(id, source, source || id)
+    const slideButtons = (subtype, score, id, source, stateData) => {
+      // console.debug(id, source, source || id)
 
       const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
       const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
-      const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'white' : 'green'
-      const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'white' : 'red'
+      const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'rgba(170, 170, 170, 0.73)' : 'green'
+      const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'rgba(170, 170, 170, 0.73)' : 'red'
 
       const sourceSelected = decodeURIComponent(source !== "undefined" ? source : id)
 
@@ -486,18 +506,6 @@ class LinkedGallery extends React.Component {
           tooltip={translate('pos.downvote')}
         ><IconThumbDown color={downvoteColor} /></IconButton>
         <div style={ styles.scoreLabel }>{ score} </div>
-        {(stateData[2] === 'audios' || stateData[2] === 'articles' || stateData[2] === 'ps' || stateData[2] === 'videos') ? <IconButton
-          style={styles.sourceButton}
-          tooltipPosition="bottom-center"
-          tooltip={sourceSelected}
-          onClick={() => this._handleOpenSource(sourceSelected)} >
-          tooltip={hasWiki ? translate('pos.linkedGallery.hasNoSource') : translate('pos.linkedGallery.openSource')}>
-          <FloatingActionButton
-            mini={true}
-            backgroundColor='#aaaaaaba'
-          ><IconOutbound color="white" style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
-          </FloatingActionButton >
-        </IconButton> : null }
         <FloatingActionButton
           mini={true}
           onClick={() => this._handleEdit(id)}
@@ -505,13 +513,35 @@ class LinkedGallery extends React.Component {
           style={ styles.editButton }
         ><IconEdit color='white' />
         </FloatingActionButton >
+        { subtype !== "ps" && source && source !== "undefined" && <FloatingActionButton
+          mini={true}
+          onClick={() => window.open(decodeURIComponent(source), '_blank').focus()}
+          backgroundColor='#aaaaaaba'
+          style={ styles.sourceButton }
+        ><CommentIcon
+          tooltipPosition="center-left"
+          tooltip={translate('pos.downvote')}
+          hoverColor={themes[theme].highlightColors[0]}
+          color='white' />
+        </FloatingActionButton >}
+        <FloatingActionButton
+          mini={true}
+          onClick={() => window.open(decodeURIComponent(subtype !== "ps" ? id : source), '_blank').focus()}
+          backgroundColor='#aaaaaaba'
+          style={ styles.fullButton }
+          tooltipPosition="center-left"
+          tooltip={translate('pos.downvote')}
+        ><IconOutbound  hoverColor={themes[theme].highlightColors[0]} color='white' />
+        </FloatingActionButton >
       </div>
     }
 
     const addButtonDynamicStyle = {...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit'}
 
     return (
-      <Paper zDepth={3} style={{
+      <Paper
+        onScroll={this._handleScroll}
+        zDepth={3} style={{
         position: 'fixed',
         left:  (isMinimized ? '-52px' : '-574px'),
         top: '4px',
@@ -542,15 +572,16 @@ class LinkedGallery extends React.Component {
           <div style={styles.root}>
             <div style={styles.rootMenu}>
                <IconMenu
+                clickCloseDelay={0}
                 iconButtonElement={<IconButton tooltip='Filter Media'><ContentFilter /></IconButton>}
                 onChange={this.handleChangeFilter}
                 value={filtered}
                 multiple={true}
               >
-                {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category} primaryText={category} disabled={!tileData.some(linkedItem => linkedItem.subtype === category)} />)}
+                {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category} primaryText={category} disabled={!tileData || !tileData.some(linkedItem => linkedItem.subtype === category)} />)}
               </IconMenu>
               <IconMenu
-                iconButtonElement={<IconButton tooltip='Add Media'><ContentAdd /></IconButton>}
+                iconButtonElement={<IconButton tooltip='Add Media'><ContentLink /></IconButton>}
                 onClick={this._handleAdd}
                 style={ addButtonDynamicStyle }>
               </IconMenu>
@@ -562,8 +593,8 @@ class LinkedGallery extends React.Component {
               cols={1}
               style={styles.gridList}
             >
-              {tileData.length > 0 ? tileData.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1 )).map((tile, j) => (
-                  (tile.subtype !== 'videos' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
+              {tileData.length > 0 ? tileData.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1 )).slice(0,showMax).map((tile, j) => (
+                  (tile.subtype !== 'v' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
                   ? <GridTile
                     key={tile.src}
                     style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
@@ -571,12 +602,13 @@ class LinkedGallery extends React.Component {
                     subtitleStyle={styles.subtitle}
                     title={tile.subtitle}
                     subtitle={tile.title}
-                    actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0])}
+                    actionIcon={slideButtons(tile.subtype, tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0])}
                     actionPosition='right'
                     titlePosition='bottom'
                     titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
                     cols={1}
                     rows={2}
+                    titleHeight={128}
                   >
                     <img src={tile.src}
                          onError={() => this._removeTile(tile.src)}
@@ -597,13 +629,14 @@ class LinkedGallery extends React.Component {
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
                       subtitle={tile.title}
-                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
+                      actionIcon={slideButtons(tile.subtype, tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
                       actionPosition='right'
                       titlePosition='bottom'
                       titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
                       cols={1}
                       rows={2}
-                    ><img src='http://www.antigrain.com/research/font_rasterization/msword_text_rendering.png'
+                      titleHeight={128}
+                    ><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Sachsenspiegel.jpg/614px-Sachsenspiegel.jpg'
                           onError={() => this._removeTile(tile.src)}
                           onClick={() => { this.setState({ selectedImage: {
                               src: tile.src,
@@ -621,11 +654,12 @@ class LinkedGallery extends React.Component {
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
                       subtitle={tile.title}
-                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
+                      actionIcon={slideButtons(tile.subtype, tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
                       actionPosition='right'
                       titlePosition='bottom'
                       titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
                       rows={2}
+                      titleHeight={128}
                     >
                       {getYoutubeId(tile.src)
                         ? <YouTube
@@ -640,6 +674,7 @@ class LinkedGallery extends React.Component {
                       }
                     </GridTile>
               )) : <span> {translate('pos.noLinkedContents')} </span>}
+
             </GridList>
           </div>
           <Dialog
@@ -660,7 +695,7 @@ class LinkedGallery extends React.Component {
               <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
               <p style={styles.selectedImageDescription}>{selectedImage.title}</p>
               <div style={styles.selectedImageButtonContainer}>
-                <IconButton
+                { selectedImage.source && <IconButton
                   style={styles.buttonOpenArticle}
                   tooltipPosition="bottom-center"
                   tooltip={hasWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
@@ -671,7 +706,7 @@ class LinkedGallery extends React.Component {
                     onClick={() => this._handleOpenSource(selectedImage.source)} >
                     <IconOutbound color="white" style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
                   </RaisedButton>
-                </IconButton>
+                </IconButton>}
                 <IconButton
                   style={styles.buttonOpenArticle}
                   tooltipPosition="bottom-center"
@@ -694,7 +729,6 @@ const enhance = compose(
   connect(state => ({
     theme: state.theme,
     locale: state.locale,
-    selectedItem: state.selectedItem,
     activeArea: state.activeArea,
     rightDrawerOpen: state.rightDrawerOpen,
   }), {

@@ -1,3 +1,5 @@
+import utilsQuery from "./utils/query";
+
 export const SET_WIKI_ID = 'SET_WIKI_ID'
 export const SET_DATA = 'SET_DATA'
 export const SET_AREA_ITEM = 'SET_AREA_ITEM'
@@ -25,10 +27,23 @@ export const setWikiId = id => ({
   payload: id,
 })
 
-export const selectValue = value => ({
-  type: SET_VALUE,
-  payload: value,
-})
+export const selectValue = value => {
+  utilsQuery.updateQueryStringParameter('value', value)
+  return {
+    type: SET_VALUE,
+    payload: value,
+  }
+}
+
+export const setFullItem = (wiki, province, type, data) => {
+  utilsQuery.updateQueryStringParameter('type', type)
+  utilsQuery.updateQueryStringParameter('value', province)
+
+  return {
+    type: SET_FULL_ITEM,
+    payload: [wiki, province, type, data],
+  }
+}
 
 export const setData = data => ({
   type: SET_DATA,
@@ -40,30 +55,40 @@ export const setEpicContentIndex = index => ({
   payload: index,
 })
 
-export const setFullItem = (wiki, province, type, data) => ({
-  type: SET_FULL_ITEM,
-  payload: [wiki, province, type, data],
-})
+export const selectAreaItem = (wiki, province) => {
+  utilsQuery.updateQueryStringParameter('type', TYPE_AREA)
+  utilsQuery.updateQueryStringParameter('value', province)
 
-export const selectAreaItem = (wiki, province) => ({
-  type: SET_AREA_ITEM,
-  payload: [wiki, province],
-})
+  return {
+    type: SET_AREA_ITEM,
+    payload: [wiki, province],
+  }
+}
 
-export const selectEpicItem = (wiki, year) => ({
-  type: SET_EPIC_ITEM,
-  payload: [wiki, year],
-})
+export const selectEpicItem = (wiki, year, id) => {
+  utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
+  utilsQuery.updateQueryStringParameter('value', id)
+  return {
+    type: SET_EPIC_ITEM,
+    payload: [wiki, year, id],
+  }
+}
 
-export const selectLinkedItem = (wiki, value = wiki) => ({
-  type: SET_LINKED_ITEM,
-  payload: [wiki, value],
-})
+export const selectLinkedItem = (wiki, value = wiki) => {
+  utilsQuery.updateQueryStringParameter('type', TYPE_LINKED)
+  utilsQuery.updateQueryStringParameter('value', wiki)
+  return {
+    type: SET_LINKED_ITEM,
+    payload: [wiki, value],
+}}
 
-export const selectMarkerItem = (wiki, value = wiki) => ({
-  type: SET_MARKER_ITEM,
-  payload: [wiki, value],
-})
+export const selectMarkerItem = (wiki, value = wiki) => {
+  utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
+  utilsQuery.updateQueryStringParameter('value', wiki)
+  return {
+    type: SET_MARKER_ITEM,
+    payload: [wiki, value],
+}}
 
 export const deselectItem = () => ({
   type: DESELECT_ITEM
@@ -115,7 +140,7 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
         return {
           ...previousState,
           wiki: payload[0],
-          value: payload[0],
+          value: payload[2],
           type: TYPE_EPIC,
           data: false
         }

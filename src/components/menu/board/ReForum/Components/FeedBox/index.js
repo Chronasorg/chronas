@@ -50,13 +50,14 @@ class FeedBox extends Component {
       discussions,
       currentForum,
       userProfile,
+      customTheme
     } = this.props;
 
     const discussionBoxTitle = (currentForum === properties.QAID) ? 'Questions' : (type === 'pinned') ? 'Pinned' : 'Threads'
 
     return (
       <div className='FeedBox_container'>
-        <div className='FeedBox_header'>
+        <div className='FeedBox_header' style={customTheme ? { background: customTheme.foreColors[0]} : {}}>
           <span className='FeedBox_title'>{discussionBoxTitle}</span>
           { !userProfile && this.renderSort() }
         </div>

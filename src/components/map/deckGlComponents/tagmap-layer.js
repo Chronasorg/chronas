@@ -9,7 +9,6 @@ const TEXTCOLOR = [
 
 const defaultProps = {
   getLabel: x => x.label,
-  onMarkerClick: () => {},
   getWeight: x => x.weight || 1,
   getPosition: x => x.position,
   minFontSize: 14,
@@ -18,6 +17,40 @@ const defaultProps = {
 };
 
 const MAX_CACHED_ZOOM_LEVEL = 5;
+
+const zoomFontSizes = [
+  {
+    minFontSize: 0,
+    maxFontSize: 0,
+    weightThreshold: 0,
+  },
+  {
+    minFontSize: 0,
+    maxFontSize: 0,
+    weightThreshold: 0,
+  },
+  {
+    minFontSize: 0,
+    maxFontSize: 16,
+    weightThreshold: 3,
+  },{
+    minFontSize: 0,
+    maxFontSize: 22,
+    weightThreshold: 1.5,
+  },{
+    minFontSize: 12,
+    maxFontSize: 28,
+    weightThreshold: 1,
+  },{
+    minFontSize: 24,
+    maxFontSize: 34,
+    weightThreshold: 1,
+  },{
+    minFontSize: 34,
+    maxFontSize: 50,
+    weightThreshold: 1,
+  }
+]
 
 export default class TagmapLayer extends CompositeLayer {
   initializeState() {
@@ -96,11 +129,12 @@ export default class TagmapLayer extends CompositeLayer {
       };
     }
 
+    console.debug(discreteZoomLevel)
     tags = tagMap.getTags({
       bbox,
-      minFontSize,
-      maxFontSize,
-      weightThreshold,
+      minFontSize: (zoomFontSizes[discreteZoomLevel] || {}).minFontSize || 0,
+      maxFontSize: (zoomFontSizes[discreteZoomLevel] || {}).maxFontSize || 74,
+      weightThreshold: (zoomFontSizes[discreteZoomLevel] || {}).weightThreshold || 1,
       zoom: discreteZoomLevel
     });
 
@@ -120,12 +154,13 @@ export default class TagmapLayer extends CompositeLayer {
         data: tags,
         fontFamily: 'Cinzel, serif',
         getAlignmentBaseline: 'bottom',
+        getPixelOffset: [0,-10],
         onClick: onMarkerClick,
         getText: d => d.label,
         getPosition: d => d.position,
         getColor: d => TEXTCOLOR,
-        getSize: d => d.height,
-        pickable: true,
+        getSize: (d) => { /*console.debug(d);*/ return d.capital ? (1.5*d.height) : d.height },
+        pickable: false,
       })
     ];
   }

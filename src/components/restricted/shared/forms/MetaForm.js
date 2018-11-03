@@ -29,6 +29,19 @@ const styles = {
   }
 }
 
+function hexToRgb (hex) {
+  var c
+  if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+    c = hex.substring(1).split('')
+    if (c.length == 3) {
+      c = [c[0], c[0], c[1], c[1], c[2], c[2]]
+    }
+    c = '0x' + c.join('')
+    return 'rgb(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ')'
+  }
+  throw new Error('Bad Hex')
+}
+
 export class MetaForm extends Component {
   state = {
     metaToUpdate: '',
@@ -39,6 +52,9 @@ export class MetaForm extends Component {
     this.props.handleSubmit(values => {
       const { initialValues, history, metadataEntity } = this.props
 
+      if (values.color && values.color[0] === "#") {
+        values.color = hexToRgb(values.color)
+      }
       const wikiURL = values.url
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
       let newWikiURL
@@ -53,6 +69,7 @@ export class MetaForm extends Component {
           '_id': 'e_' + newWikiURL,
           'name': values.title,
           'data': {
+            'title': values.title,
             'wiki': newWikiURL,
             'start': +values.start,
             'end':  +values.end,
@@ -100,8 +117,7 @@ export class MetaForm extends Component {
               this.props.showNotification((redirect !== 'create') ? 'Epic not updated' : 'Epic not added', 'warning')
             }
           })
-      }
-      else {
+      } else {
         const wikiURL = values.url
         const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
         let newWikiURL
@@ -111,7 +127,7 @@ export class MetaForm extends Component {
           return 'Not a full Wikipedia URL'
         }
 
-        const iconURL = values.icon
+        const iconURL = values.icon || ''
         const fileIndex = iconURL.indexOf('media/File:') + 6
         const iconUrlPromise = new Promise((resolve, reject) => {
           if (values.icon === initialValues.icon) {
@@ -123,8 +139,9 @@ export class MetaForm extends Component {
                 resolve('')
               } else {
                 let thumbUrl = Object.values(rulerMetadata.query.pages)[0].imageinfo[0].thumburl
-                const startUrl = thumbUrl.indexOf('commons/thumb/') + 'commons/thumb/'.length
-                const endUrl = thumbUrl.substr(52).lastIndexOf('/') + startUrl - 1
+                const startUrl = thumbUrl.indexOf('/thumb/') + '/thumb/'.length
+                const lastl = thumbUrl.substr(startUrl).lastIndexOf('/')
+                const endUrl = (lastl === -1) ? lastl + startUrl : lastl + startUrl// - 1
                 thumbUrl = thumbUrl.substring(startUrl, endUrl)
 
                 resolve(thumbUrl)
@@ -137,7 +154,23 @@ export class MetaForm extends Component {
 
             resolve(iconURL.substring(0, beforeRes) + '/100' + iconURL.substr(afterRes))
           } else {
-            resolve(iconURL)
+            const imageName = iconURL.substr(iconURL.lastIndexOf("/")+1).replace(/File:/g, '')
+            jsonp('https://en.wikipedia.org/w/api.php?action=query&titles=Image:' + imageName + '&prop=imageinfo&iiprop=url&iiurlwidth=100&format=json', null, (err, rulerMetadata) => {
+              // 'https://commons.wikimedia.org/w/api.php?action=query&titles=' + filePath + '&prop=imageinfo&&iiprop=url&iiurlwidth=100&format=json', null, (err, rulerMetadata) => {
+              if (err) {
+                return reject(err)
+              } else {
+                let thumbUrl = Object.values(rulerMetadata.query.pages)[0].imageinfo[0].thumburl
+                const startUrl = thumbUrl.indexOf('/thumb/') + '/thumb/'.length
+                const lastl = thumbUrl.substr(startUrl).lastIndexOf('/')
+                const endUrl = (lastl === -1) ? lastl + startUrl : lastl + startUrl //- 1
+                thumbUrl = thumbUrl.substring(startUrl, endUrl)
+                if (!thumbUrl) {
+                  return reject(err)
+                }
+                resolve(thumbUrl)
+              }
+            })
           }
         })
 
@@ -153,7 +186,8 @@ export class MetaForm extends Component {
 
           const bodyToSend = {}
           const metadataItem = values.type
-          bodyToSend['subEntityId'] = (redirect === 'edit') ? values.select || metadataEntity : '_' + values.name.replace(/ /g, '_')
+          const fMetadataEntity = (metadataItem === "religionGeneral") ? ((this.props.metadata['religion'] || {})[metadataEntity] || {})[3] : metadataEntity
+          bodyToSend['subEntityId'] = (redirect === 'edit') ? values.select || fMetadataEntity : '_' + values.name.replace(/ /g, '_')
           bodyToSend['nextBody'] = nextBodyByType[metadataItem]
 
           const token = localStorage.getItem('chs_token')
@@ -182,6 +216,8 @@ export class MetaForm extends Component {
               this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
             }
           })
+        }).catch((err) => {
+          this.props.showNotification((redirect === 'edit') ? 'Metadata not updated: invalid icon url.' : 'Metadata not added: invalid icon url', 'warning')
         })
       }
     })
@@ -211,7 +247,6 @@ export class MetaForm extends Component {
   componentWillReceiveProps (nextProps) {
     if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) { this.props.change('coo[0]', nextProps.modActive.data[0]) }
     if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) { this.props.change('coo[1]', nextProps.modActive.data[1]) }
-    // if (this.props.metadataEntity !== nextProps.metadataEntity) { this.props.change('select', nextProps.metadataEntity) }
   }
 
   render () {

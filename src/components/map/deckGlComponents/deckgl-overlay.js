@@ -1,7 +1,7 @@
-import React, {Component} from 'react'
-import {scaleQuantile} from 'd3-scale'
-import {rgb} from 'd3-color'
-import {easeCubic} from 'd3-ease'
+import React, { Component } from 'react'
+import { scaleQuantile } from 'd3-scale'
+import { rgb } from 'd3-color'
+import { easeCubic } from 'd3-ease'
 import rbush from 'rbush'
 import DeckGL, {
   WebMercatorViewport,
@@ -12,15 +12,16 @@ import DeckGL, {
   TextLayer,
   ArcLayer
 } from 'deck.gl'
+import TagmapLayer from './tagmap-layer'
+import { properties, RGBAtoArray, iconMapping, iconSize } from '../../../properties'
+import utilsQuery from "../utils/query";
 
 const Arc = require('arc')
-import TagmapLayer from './tagmap-layer'
-import {properties, RGBAtoArray, iconMapping} from '../../../properties'
 
 const fullTime = 4000
 let interval = -1
 
-function getIconName(size) {
+function getIconName (size) {
   if (size === 0) {
     return ''
   }
@@ -33,11 +34,11 @@ function getIconName(size) {
   return '100'
 }
 
-function getIconSize(size) {
+function getIconSize (size) {
   return Math.min(100, size) / 100 * 0.5 + 0.5
 }
 
-function colorToRGBArray(color) {
+function colorToRGBArray (color) {
   if (Array.isArray(color)) {
     return color.slice(0, 4)
   }
@@ -47,7 +48,7 @@ function colorToRGBArray(color) {
 }
 
 export default class DeckGLOverlay extends Component {
-  static get defaultViewport() {
+  static get defaultViewport () {
     return {
       longitude: -100,
       latitude: 40.7,
@@ -58,14 +59,15 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props)
+
     this._tree = rbush(9, ['.x', '.y', '.x', '.y'])
     this.state = {
       animatedFeature: [],
-      arcs: this._getArcs(props.arcData),
       marker: [],
       texts: [],
+      layers: [],
       // geo: props.geoData || [],
       x: 0,
       y: 0,
@@ -73,7 +75,7 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     if (interval !== -1) {
       clearInterval(interval)
       interval = -1
@@ -82,57 +84,233 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
-  componentDidMount() {
-    const {markerData, viewport, selectedYear, sizeScale, showCluster} = this.props
-    this._getMarker({
-      ...{
-        markerData: markerData.filter(el => el.subtype !== 'c' || (el.capital && el.capital.find((ell, index) => {
-            return ell[0] <= +selectedYear && ell[1] >= +selectedYear
-          })
-        ))
-      }, sizeScale, viewport, showCluster
-    })
-    this._getTexts({...{markerData: markerData.filter(el => el.subtype === 'c')}, viewport, showCluster})
+  componentDidMount () {
   }
 
-  componentWillReceiveProps(nextProps) {
-    const {contentIndex, markerData, arcData, markerTheme, geoData, updateLine} = this.props
-    const {showCluster, sizeScale} = nextProps
+  componentWillReceiveProps (nextProps) {
+    const { activeColor, clusterRawData, contentIndex, markerData, arcData, markerTheme, selectedYear, selectedItem, geoData, updateLine } = this.props
+    const { strokeWidth, onHover, showCluster, theme, metadata, onMarkerClick, sizeScale } = nextProps
+    // const { layers } = this.state
 
-    if (
-      nextProps.arcData !== arcData || !nextProps.arcData.every((el, i) => el === arcData[i])
-    ) {
-      this.setState({
-        arcs: this._getArcs(nextProps.arcData)
+    let layers =  false
+    const { viewport } = nextProps
+    const oldViewport = this.props.viewport
+
+    const { animatedFeature, arcs, marker, texts, /* geo */} = this.state
+    const z = Math.floor(viewport.zoom)
+    const size = /* showCluster ? 1 : */ Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
+    const updateTrigger = z * showCluster
+
+    const viewportChange = viewport.latitude !== oldViewport.latitude || viewport.longitude !== oldViewport.longitude || viewport.zoom !== oldViewport.zoom
+    let isDirty = viewportChange
+
+    if (viewportChange || nextProps.arcData !== arcData || !nextProps.arcData.every((el, i) => el === arcData[i])) {
+
+      if (viewportChange) {
+        utilsQuery.updateQueryStringParameter('position', viewport.latitude + "," + viewport.longitude + "," + viewport.zoom)
+      }
+
+      isDirty = true
+      if (!layers) layers = Object.assign([], this.state.layers)
+      layers[3] = new ArcLayer({
+        id: 'arc',
+        data: this._getArcs(nextProps.arcData),
+        getSourcePosition: d => d.source,
+        getTargetPosition: d => d.target,
+        getSourceColor: d => d.color,
+        getTargetColor: d => d.color2,
+        strokeWidth
       })
     }
 
-    const {viewport} = nextProps
-    const oldViewport = this.props.viewport
-
-    if (this.props.showCluster !== showCluster ||
+    if (viewportChange ||
+      this.props.showCluster !== showCluster ||
+      nextProps.activeColor !== activeColor ||
       nextProps.markerData.length !== markerData.length ||
+      nextProps.geoData.length !== geoData.length ||
+      nextProps.clusterRawData.length !== clusterRawData.length ||
       viewport.width !== oldViewport.width ||
-      viewport.height !== oldViewport.height) {
+      viewport.height !== oldViewport.height ||
+      nextProps.contentIndex !== contentIndex ||
+      nextProps.selectedItem.wiki !== selectedItem.wiki) {
 
-
-      const nextIconMarker = nextProps.markerData
+      let nextIconMarker = nextProps.geoData.length !== 0 ? nextProps.geoData.map((el) => {
+        if (el.index === nextProps.contentIndex) {
+          el.isActive = true;
+          return el
+        } else {
+          el.isActive = false;
+          return el
+        }
+      }) : nextProps.markerData
       const nextTextMarker = nextProps.markerData.filter(el => el.subtype === 'c')
-      const iconMarker = markerData
+      const iconMarker = geoData.length !== 0 ? geoData : markerData
       const textMarker = markerData.filter(el => el.subtype === 'c')
 
-      if (this.props.showCluster !== showCluster || nextIconMarker.length !== iconMarker.length) {
-        this.setState({
-          marker: this._getMarker({
-            ...{markerData: nextIconMarker.filter(el => el.subtype !== 'c')},
+      let capitalMarkers = []
+      let capitalMarkers0 = []
+
+      if ((viewportChange || this.props.showCluster !== showCluster || nextIconMarker.length !== iconMarker.length || nextProps.activeColor !== activeColor || nextProps.contentIndex !== contentIndex || nextProps.selectedItem.wiki !== selectedItem.wiki) && (clusterRawData.length === nextProps.clusterRawData.length) || ((clusterRawData.length !== nextProps.clusterRawData.length && nextProps.clusterRawData.length === 0))) {
+
+        if (nextProps.selectedItem.wiki !== selectedItem.wiki || nextIconMarker.length !== iconMarker.length) {
+          const activeWiki = nextProps.selectedItem.wiki
+          nextIconMarker = nextIconMarker.map((el) => {
+            if (el._id === activeWiki) {
+              el.isActive = true
+              return el
+            } else {
+              el.isActive = false
+              return el
+            }
+          })
+        }
+
+        capitalMarkers = []
+        if (!showCluster && nextProps.activeColor === 'ruler') {
+          capitalMarkers = nextIconMarker.filter(el => el.subtype === 'cp' || (el.subtype === 'c' && (el.capital && el.capital.find((ell) => {
+            return ell[0] <= +selectedYear && ell[1] >= +selectedYear
+          }))))
+        }
+
+        capitalMarkers0 = []
+        if (!showCluster && nextProps.activeColor === 'ruler') {
+          capitalMarkers.forEach(el => {
+            el.subtype = 'cp'
+            capitalMarkers0.push({ ...el, subtype: 'c0' })
+          })
+        }
+
+        isDirty = true
+        if (!layers) layers = Object.assign([], this.state.layers)
+        layers[4] = new IconLayer({
+          id: 'icon',
+          autoHighlight: true,
+          highlightColor: showCluster ? [0,0,0,0] : RGBAtoArray(theme.highlightColors[0]),//showCluster
+            // ? [0,0,0,0] : RGBAtoArray(theme.highlightColors[0]),
+          data: this._getMarker({
+            ...{
+              markerData: (showCluster && nextProps.geoData.length > 0) ? [] : nextIconMarker.filter(el => el.subtype !== 'c').concat(capitalMarkers0).concat(capitalMarkers)
+            }, // .filter(el => el.subtype !== 'c')},
             sizeScale,
             viewport,
-            showCluster
-          })
+            geoData: nextProps.geoData,
+            showCluster,
+          }),
+          opacity: 0.8,
+          pickable: true,
+          iconAtlas: showCluster
+            ? ('/images/themed-cluster-atlas.png')//('/images/' + markerTheme + '-cluster-atlas.png')
+            : ('/images/' + markerTheme + '-atlas.png'),
+          iconMapping: iconMapping[showCluster ? 'cluster' : markerTheme.substr(0, 4)],
+          sizeScale: properties.markerSize * size * window.devicePixelRatio,
+          getPosition: d => d.coo,
+          getIcon: d => showCluster ? (d.zoomLevels[z] && d.zoomLevels[z].icon) : d.subtype, // should be d.subtype (or type)
+          getSize: d => showCluster ? (d.zoomLevels[z] && d.zoomLevels[z].size * 20) : (d.isActive) ? ((iconSize[d.subtype] || 4) + 10) : iconSize[d.subtype] || 4,
+          getColor: (d) => {
+            return d.subtype === 'cp' ? RGBAtoArray((metadata['ruler'][(d.capital.find((ell) => {
+              return ell[0] <= +selectedYear && ell[1] >= +selectedYear
+            }) || [])[2]] || [])[1]) || [0, 0, 0, 100] : [0, 0, 0, 100]
+          },
+          onHover: e => onHover(e),
+          onClick: onMarkerClick,
+          updateTriggers: {
+            getIcon: updateTrigger,
+            getSize: updateTrigger
+          }
         })
       }
+
+      if ((clusterRawData.length !== nextProps.clusterRawData.length && (nextProps.clusterRawData !== -1 || nextProps.clusterRawData.length === 0)) || (showCluster && nextProps.clusterRawData !== -1)) {
+        isDirty = true
+        if (!layers) layers = Object.assign([], this.state.layers)
+
+
+        capitalMarkers = []
+        if (showCluster && nextProps.activeColor === 'ruler') {
+          capitalMarkers = nextIconMarker.filter(el => el.subtype === 'cp' || (el.subtype === 'c' && (el.capital && el.capital.find((ell) => {
+            return ell[0] <= +selectedYear && ell[1] >= +selectedYear
+          }))))
+        }
+
+        capitalMarkers0 = []
+        if (showCluster && nextProps.activeColor === 'ruler') {
+          capitalMarkers.forEach(el => {
+            el.subtype = 'cp'
+            capitalMarkers0.push({ ...el, subtype: 'c0' })
+          })
+        }
+
+        layers[1] = new IconLayer({ //4
+          id: 'clusterIcon',
+          autoHighlight: false,
+          data: this._getMarker({
+            ...{
+              markerData: (showCluster && nextProps.geoData.length > 0) ? nextProps.geoData.concat(capitalMarkers0).concat(capitalMarkers) : nextProps.clusterRawData.concat(capitalMarkers0).concat(capitalMarkers)
+            }, // .filter(el => el.subtype !== 'c')},
+            sizeScale,
+            viewport,
+            geoData: nextProps.geoData,
+            // geoData: [],
+            showCluster: false,
+          }),
+          opacity: 1,
+          pickable: true,
+          iconAtlas: '/images/' + markerTheme + '-atlas.png',
+          iconMapping: iconMapping[markerTheme.substr(0, 4)],
+          sizeScale: properties.markerSize * size * window.devicePixelRatio,
+          getPosition: d => d.coo,
+          getIcon: d => d.subtype, // should be d.subtype (or type)
+          getSize: d => d.isActive ? ((iconSize[d.subtype] || 4) + 10) : iconSize[d.subtype] || 4,
+          getColor: (d) => {
+            return d.subtype === 'cp' ? RGBAtoArray((metadata['ruler'][(d.capital.find((ell) => {
+              return ell[0] <= +selectedYear && ell[1] >= +selectedYear
+            }) || [])[2]] || [])[1]) || [0, 0, 0, 100] : [0, 0, 0, 100]
+          },
+          onHover: e => onHover(e),
+          onClick: onMarkerClick,
+          updateTriggers: {
+            getIcon: updateTrigger,
+            getSize: updateTrigger
+          }
+        })
+      }
+
       if (nextTextMarker.length !== textMarker.length) {
-        this.setState({texts: this._getTexts({...{markerData: nextTextMarker}, viewport})})
+        const myTexts = this._getTexts({ ...{ textData: nextTextMarker }, viewport })
+        isDirty = true
+        if (!layers) layers = Object.assign([], this.state.layers)
+        layers[2] = new TagmapLayer({
+          id: 'cities-labels',
+          data: myTexts,
+          pickable: false,
+          getWeight: d => d.capital ? 2 : 1,
+          // getWeight: x => /*normalize(x.pop) ||*/ Math.random() * 100,
+          getLabel: d => d.name,
+          // onMarkerClick: onMarkerClick,
+          getPosition: d => d.coo,
+          minFontSize: 18,
+          maxFontSize: 24
+        })
+        layers[0] = new ScatterplotLayer({
+          id: 'cities-dots',
+          data: myTexts.filter(el => !(el.capital && el.capital.find((ell) => {
+              return ell[0] <= +selectedYear && ell[1] >= +selectedYear
+            })
+          )),
+          // outline: true,
+          radiusScale: 10000,
+          opacity: 0.6,
+          // strokeWidth: 3,
+          autoHighlight: true,
+          highlightColor: RGBAtoArray(theme.highlightColors[0]),
+          getPosition: d => d.coo,
+          pickable: true,
+          onHover: e => onHover(e),
+          onClick: onMarkerClick,
+          getColor: [50, 50, 50, 200], // d => (d[2] === 1 ? maleColor : femaleColor),
+          radiusMinPixels: 0,
+          radiusMaxPixels: 10,
+        })
       }
     }
 
@@ -151,27 +329,27 @@ export default class DeckGLOverlay extends Component {
       }
 
       // animate if currentIndex has feature
-      let selectedFeature = geoData.filter(f => f.index === nextProps.contentIndex)[0]
+      let selectedFeature = nextProps.geoData.find(f => f.index === nextProps.contentIndex)
       if (selectedFeature) {
         let step = 0
         let lineToAnimate
 
-        if (selectedFeature.connect !== true && (selectedFeature.geometry.coordinates || []).length === 2) {
+        if (selectedFeature.connect !== true && (selectedFeature.coo || []).length === 2) {
           let prevCoords
           for (let i = +nextProps.contentIndex - 1; i > -1; i--) {
-            const currCoords = ((geoData[i] || {}).geometry || {}).coordinates || []
+            const currCoords = (geoData[i] || {}).coo || []
             if (currCoords.length === 2) {
               prevCoords = currCoords
               break
             }
           }
           if (!prevCoords) return
-          const end = {x: selectedFeature.geometry.coordinates[0], y: selectedFeature.geometry.coordinates[1]}
-          const start = {x: prevCoords[0], y: prevCoords[1]}
+          const end = { x: selectedFeature.coo[0], y: selectedFeature.coo[1] }
+          const start = { x: prevCoords[0], y: prevCoords[1] }
           const generator = new Arc.GreatCircle(start, end, {})
-          lineToAnimate = generator.Arc(100, {offset: 10}).geometries[0].coords
+          lineToAnimate = generator.Arc(100, { offset: 10 }).geometries[0].coords
         } else {
-          lineToAnimate = (((selectedFeature.properties || {}).f || {}).geometry || {}).coordinates
+          lineToAnimate = selectedFeature.coo
           if (!lineToAnimate) return
         }
 
@@ -204,10 +382,14 @@ export default class DeckGLOverlay extends Component {
         }, fullTime / numSteps)
       }
     }
+
+    if (isDirty) {
+      this.setState({ layers: layers })
+    }
   }
 
-  _getTexts({markerData, viewport}) {
-    if (!markerData) {
+  _getTexts ({ textData, viewport }) {
+    if (!textData) {
       return false
     }
 
@@ -216,17 +398,21 @@ export default class DeckGLOverlay extends Component {
       zoom: 0
     })
 
-    markerData.forEach(p => {
-      const screenCoords = transform.project(p.coo)
-      p.x = screenCoords[0]
-      p.y = screenCoords[1]
-      p.zoomLevels = []
+    textData.forEach(p => {
+      try {
+        const screenCoords = transform.project(p.coo)
+        p.x = screenCoords[0]
+        p.y = screenCoords[1]
+        p.zoomLevels = []
+      } catch (e) {
+        // console.error('error parsing marker coordinates',e)
+      }
     })
 
-    return markerData
+    return textData
   }
 
-  _getMarker({markerData, viewport, showCluster}) {
+  _getMarker ({ markerData, viewport, showCluster }) {
     if (!markerData) {
       return false
     }
@@ -239,10 +425,14 @@ export default class DeckGLOverlay extends Component {
     })
 
     markerData.forEach(p => {
-      const screenCoords = transform.project(p.coo)
-      p.x = screenCoords[0]
-      p.y = screenCoords[1]
-      p.zoomLevels = []
+      try {
+        const screenCoords = transform.project(p.coo)
+        p.x = screenCoords[0]
+        p.y = screenCoords[1]
+        p.zoomLevels = []
+      } catch (e) {
+        // console.error('error parsing marker coordinates',e)
+      }
     })
 
     tree.clear()
@@ -254,9 +444,9 @@ export default class DeckGLOverlay extends Component {
         const radius = sizeScale / Math.sqrt(2) / Math.pow(2, z)
 
         markerData.filter(el => el.subtype !== 'c').forEach(p => {
-          if (p.zoomLevels[z] === undefined) {
+          if (p.zoomLevels && p.zoomLevels[z] === undefined) {
             // this point does not belong to a cluster
-            const {x, y} = p
+            const { x, y } = p
 
             // find all points within radius that do not belong to a cluster
             const neighbors = tree
@@ -287,8 +477,7 @@ export default class DeckGLOverlay extends Component {
     return markerData
   }
 
-
-  _getArcs(data) {
+  _getArcs (data) {
     if (!data) {
       return null
     }
@@ -301,6 +490,7 @@ export default class DeckGLOverlay extends Component {
         source: el[0],
         target: el[1],
         color: el[2],
+        color2: el[3],
         value: 200
       }
     })
@@ -360,98 +550,12 @@ export default class DeckGLOverlay extends Component {
 
    */
 
-  render() {
-    const {viewport, strokeWidth, showCluster, geoData, setTooltip, onHover, markerTheme, theme, onMarkerClick, selectedYear} = this.props
-    const {animatedFeature, arcs, marker, texts /* geo */} = this.state
-    const z = Math.floor(viewport.zoom)
-    const size = /*showCluster ? 1 :*/ Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
-    const updateTrigger = z * showCluster
+  render () {
+    const { viewport, markerData, selectedYear, theme } = this.props
+    const { layers } = this.state
 
-    // console.debug("remder iconlayer with data", iconData)
-    const layers = []
-
-    if (texts && texts.length > 0) {
-      layers.push(new TagmapLayer({
-        id: 'cities-labels',
-        data: texts,
-        // getWeight: x => /*normalize(x.pop) ||*/ Math.random() * 100,
-        getLabel: d => d.name,
-        onMarkerClick: onMarkerClick,
-        getPosition: d => d.coo,
-        minFontSize: 18,
-        maxFontSize: 23
-      }))
-
-      layers.push(new ScatterplotLayer({
-        id: 'cities-dots',
-        data: texts.filter(el => !(el.capital && el.capital.find((ell, index) => {
-            return ell[0] <= +selectedYear && ell[1] >= +selectedYear
-          })
-        )),
-        outline: true,
-        // radiusScale: 30,
-        opacity: 0.6,
-        strokeWidth: 3,
-        autoHighlight: true,
-        highlightColor: RGBAtoArray(theme.highlightColors[0]),
-        getPosition: d => d.coo,
-        pickable: true,
-        onClick: onMarkerClick,
-        getColor: [50, 50, 50, 200], // d => (d[2] === 1 ? maleColor : femaleColor),
-        radiusMinPixels: 3,
-        radiusMaxPixels: 3,
-      }))
-    }
-
-    if (marker && marker.length > 0) {
-      layers.push(new IconLayer({
-        id: 'icon',
-        autoHighlight: true,
-        highlightColor: RGBAtoArray(theme.highlightColors[0]),
-        data: marker,
-        opacity: 0.8,
-        pickable: true,
-        iconAtlas: showCluster
-          ? ('/images/' + markerTheme + '-cluster-atlas.png')
-          : ('/images/' + markerTheme + '-atlas.png'),
-        iconMapping: iconMapping[(showCluster ? 'cluster' : markerTheme.substr(0, 4))],
-        sizeScale: properties.markerSize * size * window.devicePixelRatio,
-        getPosition: d => d.coo,
-        getIcon: d => (showCluster ? (d.zoomLevels[z] && d.zoomLevels[z].icon) : d.subtype), // should be d.subtype (or type)
-        getSize: d => showCluster ? (d.zoomLevels[z] && d.zoomLevels[z].size * 15) : 4,
-        onHover: e => onHover(e),
-        onClick: onMarkerClick,
-        updateTriggers: {
-          getIcon: updateTrigger,
-          getSize: updateTrigger
-        }
-      }))
-    }
-
-    // if (texts && texts.length > 0) {
-    //   layers.push(new TagmapLayer({
-    //     id: 'c-layer',
-    //     data: texts,
-    //     getWeight: x => 50,//*normalize(x.pop) ||*/ Math.random()*100,
-    //     getLabel: d => d.name,
-    //     getPosition: d => d.coo,
-    //     minFontSize: 24,
-    //     maxFontSize: 32 * 2 - 14
-    //   }))
-    // }
-
-    if (arcs && arcs.length > 0) {
-      layers.push(new ArcLayer({
-        id: 'arc',
-        data: arcs,
-        getSourcePosition: d => d.source,
-        getTargetPosition: d => d.target,
-        getSourceColor: d => d.color,
-        getTargetColor: d => d.color,
-        strokeWidth
-      }))
-    }
-
-    return <DeckGL {...viewport} layers={layers}/>
+    return <DeckGL {...viewport}
+                   getCursor={() => 'pointer' }
+                   layers={layers} />
   }
 }

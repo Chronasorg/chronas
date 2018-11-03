@@ -49,34 +49,25 @@ const utils = {
     return ([minX, minY, maxX, maxY])
   },
 
-  get_polygon_centroid2: function (fullpts) {
-    var pts = []
-    for (var j = 0; j < fullpts.length; j++) {
-      for (var k = 0; k < fullpts[j].length; k++) {
-        pts.push(fullpts[j][k])
-      }
-    }
+  get_polygon_centroid: function (fullpts) {
+    let xSum = 0;
+    let ySum = 0;
+    let len = 0;
 
-    var twicearea = 0,
-      x = 0, y = 0,
-      nPts = pts.length,
-      p1, p2, f
+    fullpts.forEach((polys) => {
+      polys.forEach((coord) => {
+        xSum += coord[0];
+        ySum += coord[1];
+        len++;
+      })
+    })
 
-    for (var i = 0, j = nPts - 1; i < nPts; j = i++) {
-      p1 = pts[i]
-      p2 = pts[j]
-      f = p1[0] * p2[1] - p2[0] * p1[1]
-      twicearea += f
-      x += (p1[0] + p2[0]) * f
-      y += (p1[1] + p2[1]) * f
-    }
-    f = twicearea * 3
-    return [x / f, y / f]
+    return [xSum / len, ySum / len]
   },
 
   getCoordsForMultiPolyLine: function (myCoords) {
     var extremas = this.getExtrema2(myCoords)
-    var point = this.get_polygon_centroid2(myCoords)
+    var point = this.get_polygon_centroid(myCoords)
 
     // max x - min x > max y - min y
     if (extremas[2][0] - extremas[0][0] > extremas[3][1] - extremas[1][1]) {
@@ -309,7 +300,7 @@ const utils = {
         }
 
         try {
-          var multiLine = turf.bezier(turf.lineString(lineCoordinates, { sharpness: 1, resolution: 1000 } ))  // EXTREMACENTROIDLINE    200MS
+          var multiLine = turf.bezier(turf.lineString(lineCoordinates, { sharpness: 1, resolution: 10 } ))  // EXTREMACENTROIDLINE    200MS
 
           // turfUnion.apply( this, polyGroups[key][i] );
           // console.debug(JSON.stringify(polyGroups[key][i]),"->", JSON.stringify(multiLine))
