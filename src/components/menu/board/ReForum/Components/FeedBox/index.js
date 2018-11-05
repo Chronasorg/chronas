@@ -57,7 +57,7 @@ class FeedBox extends Component {
 
     return (
       <div className='FeedBox_container'>
-        <div className='FeedBox_header' style={customTheme ? { background: customTheme.foreColors[0]} : {}}>
+        <div className='FeedBox_header' style={customTheme ? { background: customTheme.foreColors[0] } : {}}>
           <span className='FeedBox_title'>{discussionBoxTitle}</span>
           { !userProfile && this.renderSort() }
         </div>
@@ -73,6 +73,7 @@ class FeedBox extends Component {
                 userGitHandler={(discussion.user || {}).username}
                 discussionTitle={discussion.title}
                 time={discussion.date}
+                customTheme={customTheme}
                 tags={discussion.tags}
                 opinionCount={discussion.opinion_count}
                 voteCount={(discussion.favorites || {}).length || discussion.favorites}

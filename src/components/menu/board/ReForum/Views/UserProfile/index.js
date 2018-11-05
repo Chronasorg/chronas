@@ -14,6 +14,7 @@ import {
   fetchUserProfile,
 } from './actions';
 import {getDiscussion} from "../SingleDiscussion/actions";
+import {themes} from "../../../../../../properties";
 
 const opinionBoxTitle = 'Comments'
 
@@ -55,7 +56,7 @@ class UserProfile extends Component {
 
   render() {
     const {
-      forums, translate
+      forums, translate, theme
     } = this.props;
 
     const {
@@ -118,12 +119,13 @@ class UserProfile extends Component {
             { profile.karma && statItem('Vote Count', profile.count_voted) }
           </div>
           <FeedBox
+            customTheme={themes[theme]}
             userProfile
             type='general'
             discussions={discussions}
           />
           <div className='FeedBox_container'>
-            <div className='FeedBox_header'>
+            <div className='FeedBox_header' style={{ background: themes[theme].foreColors[0]}}>
               <span className='FeedBox_title'>{opinionBoxTitle}</span>
             </div>
             <div className='FeedBox_discussions'>
@@ -132,6 +134,7 @@ class UserProfile extends Component {
                 const forum = (forums.filter(f => opinion.forum_id === f._id) || {})[0]
                 return (
                   <Opinion
+                    theme={theme}
                     userProfile
                     forum={forum}
                     isQA={false}

@@ -27,7 +27,7 @@ class Button extends Component {
           alwaysActive && 'BoardButton_alwaysActive',
           className
         )}
-        style={style}
+        style={{...style, fontFamily: 'inherit', fontWeight: 'bold'}}
       >
         {this.props.children}
       </button>

@@ -19,7 +19,7 @@ import {
 import styles from './styles.css'
 import appLayout from '../../SharedStyles/appLayout.css'
 
-import { properties } from '../../../../../../properties'
+import { properties, themes } from '../../../../../../properties'
 
 class NewDiscussion extends Component {
   constructor (props) {
@@ -136,6 +136,7 @@ class NewDiscussion extends Component {
       // updateDiscussionPinStatus,
       // updateDiscussionTags,
       // postDiscussion,
+      theme,
       match,
       currentForum,
     } = this.props
@@ -174,10 +175,12 @@ class NewDiscussion extends Component {
       <TagsInput
         key={'tags'}
         value={tags}
+        customTheme={themes[theme]}
         isQA={isQA}
         onChange={(tags) => { this.updateDiscussionTags(tags) }}
         />,
       <RichEditor
+        customTheme={themes[theme]}
         newDiscussion
         key={'content'}
         type='newDiscussion'

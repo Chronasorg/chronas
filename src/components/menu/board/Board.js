@@ -120,7 +120,7 @@ class Board extends PureComponent {
   }
 
   render () {
-    const { resources, userDetails, list, create, edit, show, remove, history, options, onMenuTap, translate } = this.props
+    const { resources, userDetails, list, create, edit, show, remove, history, options, onMenuTap, translate, theme } = this.props
     const { forums, users } = this.state
     const commonProps = {
       options,
@@ -131,6 +131,7 @@ class Board extends PureComponent {
       hasDelete: true,
       resource: 'users',
       translate: translate,
+      theme: theme,
     }
 
     const restrictPage = (component, commonProps, customProps) => {
@@ -186,7 +187,7 @@ class Board extends PureComponent {
                   contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
             <Card style={styles.card}>
               {(forums) ? <div>
-                <Header updateCurrentForum={this._updateCurrentForum} history={history} translate={translate} forums={forums} users={users} />
+                <Header theme={theme} handleClose={this.handleClose} updateCurrentForum={this._updateCurrentForum} history={history} translate={translate} forums={forums} users={users} />
                 {createElement(component, {
                   ...commonProps,
                   ...routeProps,

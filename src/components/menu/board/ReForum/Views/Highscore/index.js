@@ -10,6 +10,7 @@ import styles from './styles.css';
 import {
   fetchHighscore,
 } from './actions';
+import {themes} from "../../../../../../properties";
 
 const opinionBoxTitle = 'Highscore'
 
@@ -27,6 +28,9 @@ class Highscore extends Component {
 
   render () {
     const {
+      theme
+    } = this.props;
+    const {
       fetchingHighscore,
       highscoreData,
     } = this.state;
@@ -43,7 +47,7 @@ class Highscore extends Component {
       <div className={classnames('appLayout_constraintWidth', 'UP_container')}>
         <div className={'appLayout_primaryContent'}>
           <div className='FeedBox_container'>
-            <div className='FeedBox_header'>
+            <div className='FeedBox_header' style={{ background: themes[theme].highlightColors[0]}}>
               <span className='FeedBox_title'>{opinionBoxTitle}</span>
             </div>
             <div className='FeedBox_discussions'>

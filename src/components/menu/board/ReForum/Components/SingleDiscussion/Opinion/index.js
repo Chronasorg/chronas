@@ -10,6 +10,7 @@ import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
 import PlaceholderImage from '../../../SharedStyles/placeholder.jpg'
 import Button from '../../../Components/Button'
 import RichEditor from '../../../Components/RichEditor'
+import {themes} from "../../../../../../../properties";
 
 const imgButton = { width: 20, height: 20}
 const styles = {
@@ -57,6 +58,7 @@ class Opinion extends Component {
       currentUserRole,
       voteAction,
       deleteAction,
+      theme,
       deletingOpinion,
       translate
     } = this.props
@@ -110,6 +112,7 @@ class Opinion extends Component {
 
         <div className='Opinion_opContent'>
           <RichEditor
+            customTheme={themes[theme]}
             isQA={isQA}
             readOnly
             value={opContent}

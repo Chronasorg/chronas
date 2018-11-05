@@ -9,6 +9,7 @@ import PlaceholderImage from '../../../SharedStyles/placeholder.jpg'
 import Button from '../../../Components/Button'
 import Tag from '../../../Components/Tag'
 import RichEditor from '../../../Components/RichEditor'
+import { themes } from "../../../../../../../properties";
 
 class Discussion extends Component {
   render () {
@@ -20,6 +21,7 @@ class Discussion extends Component {
       discTitle,
       discDate,
       discContent,
+      theme,
       tags,
       favoriteCount,
       favoriteAction,
@@ -58,6 +60,7 @@ class Discussion extends Component {
         <div className='Discussion_discTitle'>{discTitle}</div>
         <div className='Discussion_discContent'>
           <RichEditor
+            customTheme={themes[theme]}
             readOnly
             value={discContent}
           />
@@ -65,9 +68,9 @@ class Discussion extends Component {
 
         <div className='Discussion_discFooter'>
           <div className='Discussion_tags'>
-            { tags.map(tag => <Tag name={tag} key={_.uniqueId('tag_')} />)}
+            { tags.map(tag => <Tag customTheme={themes[theme]} name={tag} key={_.uniqueId('tag_')} />)}
           </div>
-          <Button noUppercase className='Discussion_favoriteButton' onClick={() => { !toggleingFavorite && favoriteAction(id) }}>
+          <Button noUppercase className='Discussion_favoriteButton' style={{ color: themes[theme].backColors[0], background: themes[theme].foreColors[0]}} onClick={() => { !toggleingFavorite && favoriteAction(id) }}>
             <i className={classnames(`fa fa-${userFavorited ? 'heart' : 'heart-o'}`)} />
             <span>{favCount}</span>
           </Button>

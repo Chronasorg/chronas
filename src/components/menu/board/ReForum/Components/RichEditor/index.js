@@ -13,6 +13,7 @@ import styles from './styles.css';
 import Button from '../../Components/Button';
 import BlockStyleControls from './BlockStyleControls';
 import InlineStyleControls from './InlineStyleControls';
+import {themes} from "../../../../../../properties";
 
 
 class RichEditor extends Component {
@@ -107,6 +108,7 @@ class RichEditor extends Component {
 
   render() {
     const {
+      customTheme,
       type,
       onSave,
       readOnly,
@@ -131,7 +133,6 @@ class RichEditor extends Component {
 
     let placeholder = '';
     if (type === 'newOpinion') placeholder = isQA ? 'Your answer...\nBe Nice: No Racism, Bigotry, or Offensive Behavior.\n' +
-      'Ask Clear and Specific Questions, with Time and Place in Mind.\n' +
       'Provide preferably Primary and Secondary Sources If Asked Rather Than Tertiary Sources Like Wikipedia.\n' +
       'Serious On-Topic Answers Only: No Jokes, Anecdotes, Clutter, or other Digressions.' : 'Your opinion...'
     if (type === 'newDiscussion') placeholder = isQA ? 'Give a bit of context to your question...' : 'Discussion summary...'
@@ -173,7 +174,7 @@ class RichEditor extends Component {
           />
         </div>
 
-        { !readOnly && <Button noUppercase style={{ alignSelf: 'center' }} onClick={onSave}>
+        { !readOnly && <Button noUppercase style={{ alignSelf: 'center', background: customTheme.foreColors[0], color: customTheme.backColors[1] }} onClick={onSave}>
           {saveButtonLabel}
         </Button> }
       </div>

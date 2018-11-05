@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styles from './styles.css';
 
 import RichEditor from '../../../Components/RichEditor';
+import {themes} from "../../../../../../../properties";
 
 
 class ReplyBox extends Component {
@@ -9,6 +10,7 @@ class ReplyBox extends Component {
     const {
       posting,
       onSubmit,
+      theme,
       opinionContent,
       onChange,
       isQA
@@ -18,6 +20,7 @@ class ReplyBox extends Component {
 
     return (
       <RichEditor
+        customTheme={themes[theme]}
         isQA={isQA}
         type="newOpinion"
         onSave={onSubmit}

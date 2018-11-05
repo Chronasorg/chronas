@@ -211,6 +211,7 @@ class Menu extends PureComponent {
               >
                 { customAvatar ? <Avatar
                   size={24}
+                  hoverColor={themes[theme].highlightColors[0]}
                   src={customAvatar} /> : <Avatar
                   style={{ fontSize: 16 }}
                   size={24}

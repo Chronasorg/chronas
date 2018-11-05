@@ -61,11 +61,13 @@ class TagsInput extends Component {
   }
 
   renderTags() {
+    const { customTheme } = this.props;
     const { tags } = this.state;
 
     return tags.map((tag, i) => {
       return (
         <Tag
+          customTheme={customTheme}
           name={tag}
           key={tag}
           withRemove

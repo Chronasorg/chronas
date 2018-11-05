@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import RaisedButton from 'material-ui/RaisedButton'
+import FlatButton from 'material-ui/FlatButton'
+import IconButton from 'material-ui/IconButton'
+import CloseIcon from 'material-ui/svg-icons/content/clear'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import { translate, defaultTheme } from 'admin-on-rest'
 import styles from './styles.css';
+import {themes} from "../../../../../../../properties";
 
 const Logo = (props) => {
   const username = localStorage.getItem('chs_username')
@@ -28,13 +31,30 @@ const Logo = (props) => {
             My Profile
           </Link>
         </div>
-        <div className='BoardLogo_logoTitle_back'>
-          <RaisedButton
-            icon={<IconBack />}
-            primary={true}
-            label={'Back'}
-            onClick={() => { props.history.goBack() } }
-          />
+        <div className='BoardLogo_logoTitle_back' style={{ marginTop: -4 }}>
+          <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => props.history.goBack()} >
+            <IconBack style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[props.theme].highlightColors[0]} />
+          </IconButton>
+
+          {/*<FlatButton*/}
+            {/*style={{ width: 40, minWidth: 40 }}*/}
+            {/*icon={<IconBack />}*/}
+            {/*primary={true}*/}
+            {/*label={''}*/}
+            {/*onClick={() => { props.history.goBack() } }*/}
+          {/*/>*/}
+        </div>
+        <div className='BoardLogo_logoTitle_back' style={{ marginLeft: 0, marginTop: -4 }}>
+          <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => props.handleClose()} >
+            <CloseIcon style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[props.theme].highlightColors[0]} />
+          </IconButton>
+          {/*<FlatButton*/}
+            {/*style={{ width: 40, minWidth: 40 }}*/}
+            {/*icon={<CloseIcon />}*/}
+            {/*primary={true}*/}
+            {/*label={''}*/}
+            {/*onClick={() => { props.handleClose() } }*/}
+          {/*/>*/}
         </div>
       </div>
     </div>

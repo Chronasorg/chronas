@@ -17,6 +17,7 @@ class DiscussionBox extends Component {
       time,
       opinionCount,
       tags,
+      customTheme,
       link,
       userProfile,
     } = this.props;
@@ -33,10 +34,9 @@ class DiscussionBox extends Component {
         { !userProfile && <div className='DiscussionBox_posterInfo'>
           <Link to={`/community/user/${userGitHandler}`} className='DiscussionBox_name'>{userName}</Link>
         </div> }
-
         <div className='DiscussionBox_boxFooter'>
-          { !isQuestion && <div className='DiscussionBox_tagsArea'>
-            { tags.map((tag) => <Tag key={tag} name={tag} />) }
+          { <div className='DiscussionBox_tagsArea'>
+            { tags.map((tag) => <Tag customTheme={customTheme} key={tag} name={tag} />) }
           </div> }
 
           <div className='DiscussionBox_postInfo'>

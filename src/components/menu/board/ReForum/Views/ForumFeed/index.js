@@ -16,6 +16,7 @@ import SideBar from '../../Components/SideBar';
 import appLayout from '../../SharedStyles/appLayout.css';
 import styles from './styles.css';
 import {getForums} from "../../App/actions";
+import {themes} from "../../../../../../properties";
 
 class ForumFeed extends Component {
   constructor (props) {
@@ -75,8 +76,8 @@ class ForumFeed extends Component {
         fetchingDiscussions: false,
         fetchingPinnedDiscussions: false,
       })
-      getDiscussions(currentForum, sortingMethod).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
-      getPinnedDiscussions(currentForum).then( (data) => this.setState({ fetchingPinnedDiscussions: false, pinnedDiscussions: data }) )
+      getDiscussions(nextProps.currentForum, sortingMethod).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
+      getPinnedDiscussions(nextProps.currentForum).then( (data) => this.setState({ fetchingPinnedDiscussions: false, pinnedDiscussions: data }) )
     }
   }
 
@@ -99,17 +100,17 @@ class ForumFeed extends Component {
         fetchingDiscussions: false,
         sortingMethod: newSortingMethod
       })
-      getDiscussions(forumId, newSortingMethod).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
+      getDiscussions(currentForum, newSortingMethod).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
     }
   }
 
   renderNewDiscussionButtion() {
-    const { currentForum } = this.props;
+    const { currentForum, theme } = this.props;
 
     return (
       <div className={classnames('ForumFeed_showOnMediumBP', 'ForumFeed_newDiscussionBtn')}>
         <Link to={`/community/${currentForum}/new_discussion`}>
-          <Button type='outline' fullWidth noUppercase>
+          <Button type='outline' style={{ background: themes[theme].highlightColors[0]}} fullWidth noUppercase>
             New Discussion
           </Button>
         </Link>
@@ -121,6 +122,7 @@ class ForumFeed extends Component {
     const {
       currentForum,
       error,
+      theme
     } = this.props;
 
 
@@ -144,12 +146,14 @@ class ForumFeed extends Component {
       <div className={classnames('appLayout_constraintWidth', 'ForumFeed_contentArea')}>
         <div className={'appLayout_primaryContent'}>
           <FeedBox
+            customTheme={themes[theme]}
             type='pinned'
             loading={fetchingPinnedDiscussions}
             discussions={pinnedDiscussions}
             currentForum={currentForum}
           />
           <FeedBox
+            customTheme={themes[theme]}
             type='general'
             loading={fetchingDiscussions}
             discussions={discussions}
@@ -162,7 +166,7 @@ class ForumFeed extends Component {
         </div>
 
         <div className={'appLayout_secondaryContent'}>
-          <SideBar currentForum={currentForum} />
+          <SideBar theme={theme} currentForum={currentForum} />
         </div>
       </div>
     );

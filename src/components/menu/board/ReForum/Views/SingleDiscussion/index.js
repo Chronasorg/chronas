@@ -281,6 +281,7 @@ class SingleDiscussion extends Component {
           allowDelete={allowDelete}
           deletingDiscussion={deletingDiscussion}
           deleteAction={this.deleteDiscussion.bind(this)}
+          theme={theme}
           translate={translate}
         />
 
@@ -288,6 +289,7 @@ class SingleDiscussion extends Component {
 
         <ReplyBox
           isQA={isQA}
+          theme={theme}
           posting={postingOpinion}
           onSubmit={this.handleReplySubmit.bind(this)}
           onChange={(content) => { this.updateOpinionContent(content) }}
@@ -315,6 +317,7 @@ class SingleDiscussion extends Component {
         { opinions && opinions.map((opinion) => {
           return (
             <Opinion
+              theme={theme}
               isQA={isQA}
               key={opinion._id}
               opinionId={opinion._id}
