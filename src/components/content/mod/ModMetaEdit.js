@@ -191,7 +191,7 @@ export const ModMetaEdit = (props) => {
         <h4 className='modal-title' style={{ margin: '0 auto' }}>Which entity do you like to modify?</h4>
         <AutocompleteInput options={{ fullWidth: true }} source="select" choices={choicesRuler} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.search_name" />
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} errorText='will be changed' source="name" label="resources.areas.fields.main_ruler_name" defaultValue={defaultValues.dataName } /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
+        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Chrome"/> : null}
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl } /> : null}
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
@@ -201,7 +201,7 @@ export const ModMetaEdit = (props) => {
         <AutocompleteInput options={{ fullWidth: true }} source="select" choices={choicesReligion} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
         {(props.metadataEntity !== '') ? <AutocompleteInput options={{ fullWidth: true }} source="parentname" choices={choicesReligionGeneral} label="resources.areas.fields.main_religion_name" defaultValue={defaultValues.dataParentname} /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
+        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Chrome"/> : null}
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
@@ -210,7 +210,7 @@ export const ModMetaEdit = (props) => {
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput options={{ fullWidth: true }} source="select" choices={choicesReligionGeneral} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact"/> : null}
+        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Chrome"/> : null}
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,
@@ -219,7 +219,7 @@ export const ModMetaEdit = (props) => {
         <SelectInput source="type" choices={choicesType} onChange={(val,v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
         <AutocompleteInput options={{ fullWidth: true }} source="select" choices={choicesCulture} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.key" />
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} source="name" defaultValue={defaultValues.dataName} label="resources.areas.fields.display_name" /> : null}
-        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Compact" /> : null}
+        {(props.metadataEntity !== '') ? <ColorInput options={{ fullWidth: true }} source="color" defaultValue={defaultValues.dataColor } label="resources.areas.fields.color" picker="Chrome" /> : null}
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="url" label="resources.areas.fields.wiki_url" defaultValue={defaultValues.dataUrl} /> : null}
         {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type="url" source="icon" label="resources.areas.fields.icon_url" defaultValue={defaultValues.dataIcon } /> : null}
       </MetaForm>,

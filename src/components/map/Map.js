@@ -363,9 +363,15 @@ class Map extends Component {
     }
 
     if (selectedItem.type === TYPE_AREA && newColor !== '' && selectedProvince) {
-      const activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(newColor)]
-      const prevActiveprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(prevColor)]
+      let activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(newColor)]
+      let prevActiveprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(prevColor)]
       // TODO: do this async!
+
+      if (newColor === 'religionGeneral') {
+        activeprovinceValue = (metadata['religionGeneral'][(metadata['religion'][activeprovinceValue] || {})[3]] || {})[0]
+        prevActiveprovinceValue = (metadata['religionGeneral'][(metadata['religion'][prevActiveprovinceValue] || {})[3]] || {})[0]
+      }
+
       const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(newColor, activeprovinceValue, prevColor, prevActiveprovinceValue)
 
       if (typeof multiPolygonToOutline !== 'undefined') {

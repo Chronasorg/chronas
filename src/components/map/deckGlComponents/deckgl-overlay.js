@@ -189,7 +189,7 @@ export default class DeckGLOverlay extends Component {
             // ? [0,0,0,0] : RGBAtoArray(theme.highlightColors[0]),
           data: this._getMarker({
             ...{
-              markerData: (showCluster && nextProps.geoData.length > 0) ? [] : nextIconMarker.filter(el => el.subtype !== 'c').concat(capitalMarkers0).concat(capitalMarkers)
+              markerData: (showCluster && nextProps.geoData.length > 0) ? [] : (nextProps.activeColor === 'ruler') ? nextIconMarker.filter(el => el.subtype !== 'c').concat(capitalMarkers0).concat(capitalMarkers) : nextIconMarker.filter(el => el.subtype[0] !== 'c')
             }, // .filter(el => el.subtype !== 'c')},
             sizeScale,
             viewport,

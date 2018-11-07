@@ -37,9 +37,6 @@ import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import AddEditLinkNavigation from '../../restricted/shared/AddEditLinkNavigation'
 import SelectArrayInput from '../../restricted/shared/inputs/SelectArrayInput'
 import LinksForm from '../../restricted/shared/forms/LinksForm'
-import ModButton from '../../restricted/shared/buttons/ModButton'
-import utils from '../../map/utils/general'
-import ColorInput from 'aor-color-input'
 
 const CustomToolbar = props => <Toolbar {...props}>
   <SaveButton
