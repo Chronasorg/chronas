@@ -76,7 +76,7 @@ class FeedBox extends Component {
                 customTheme={customTheme}
                 tags={discussion.tags}
                 opinionCount={discussion.opinion_count}
-                voteCount={(discussion.favorites || {}).length || discussion.favorites}
+                voteCount={discussion.favorites}
                 link={`/community/${userProfile ? (discussion.forum || {}).forum_slug : currentForum}/discussion/${discussion.discussion_slug}`}
               />
             ) }

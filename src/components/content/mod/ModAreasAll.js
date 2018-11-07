@@ -2,6 +2,7 @@ import React from 'react'
 import {
   translate,
   BooleanField,
+  BooleanInput,
   Create,
   Datagrid,
   DateField,
@@ -30,6 +31,8 @@ import {
 } from 'admin-on-rest'
 import { Link } from 'react-router-dom'
 import {List, ListItem} from 'material-ui/List';
+
+import Checkbox from 'material-ui/Checkbox';
 import Divider from 'material-ui/Divider';
 import Subheader from 'material-ui/Subheader';
 import AssignAddEditNavigation from '../../restricted/shared/AssignAddEditNavigation'
@@ -47,12 +50,20 @@ export const ModAreasAll = (props) => {
     'dataReligion': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('religion')] || '',
     'dataCapital': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('capital')] || '',
     'dataPopulation': (props.activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor('population')] || 1000,
+    'rulerApply': false,
+    'cultureApply': false,
+    'religionApply': false,
+    'populationApply': false,
     'yearStart': props.selectedYear,
     'yearEnd': props.selectedYear,
   }
 
   const choicesRuler = Object.keys(props.metadata['ruler']).map((rulerId) => {
     return { id: rulerId, name: props.metadata['ruler'][rulerId][0]}
+  }) || {}
+
+  const choicesCulture = Object.keys(props.metadata['culture']).map((cultureId) => {
+    return { id: cultureId, name: props.metadata['culture'][cultureId][0]}
   }) || {}
 
   const choicesReligion = Object.keys(props.metadata['religion']).map((religionId) => {
@@ -62,13 +73,14 @@ export const ModAreasAll = (props) => {
   const validateValueInput = (values) => {
     const errors = {}
 
-    if (JSON.stringify(values.provinces) === JSON.stringify(defaultValues.provinces) &&
-      values.ruler === defaultValues.dataRuler &&
-      values.culture === defaultValues.dataCulture &&
-      values.religion === defaultValues.dataReligion &&
-      // values.capital === defaultValues.dataCapital &&
-      values.population === defaultValues.dataPopulation) {
-      errors.ruler = ['At least one of ruler, culture, religion, capital or population is required']
+    if (!values.rulerApply &&
+      !values.cultureApply &&
+      !values.religionApply &&
+      !values.populationApply) {
+      errors.rulerApply = ['At least one of ruler, culture, religion or population is required']
+      errors.cultureApply = ['At least one of ruler, culture, religion or population is required']
+      errors.religionApply = ['At least one of ruler, culture, religion or population is required']
+      errors.populationApply = ['At least one of ruler, culture, religion or population is required']
     }
     if (!values.start) {
       errors.start = ['Start value is required']
@@ -88,12 +100,40 @@ export const ModAreasAll = (props) => {
           <SelectArrayInput options={{ fullWidth: true }} onChange={(val,v) => { props.setModData(v) }} validation={required} elStyle={{width: '60%', minWidth: '300px'}} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.province_list" />
           <Subheader>Data</Subheader>
         {/*<TextInput source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />*/}
-          <AutocompleteInput options={{ fullWidth: true }} source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />
-          <TextInput options={{ fullWidth: true }} source="culture" defaultValue={defaultValues.dataCulture} label="resources.areas.fields.culture" />
-        {/*<TextInput source="religion" choices={choicesReligion} label="resources.areas.fields.religion" defaultValue={defaultValues.dataReligion} />*/}
-          <AutocompleteInput options={{ fullWidth: true }} source="religion" choices={choicesReligion} label="resources.areas.fields.religion" defaultValue={defaultValues.dataReligion} />
-          <TextInput options={{ fullWidth: true }} source="capital" defaultValue={defaultValues.dataCapital} label="resources.areas.fields.capital" />
-          <NumberInput options={{ fullWidth: true }} source="population" defaultValue={+defaultValues.dataPopulation} label="resources.areas.fields.population" />
+        <BooleanInput
+          source="rulerApply"
+          defaultValue={defaultValues.rulerApply}
+          label=""
+          style={{ width: 64, height: 42, marginRight: 24, padding: 0, display: 'inline-block' }}
+          iconStyle={{ width: 40, height: 40 }}
+        />
+          <AutocompleteInput style={{display: 'inline-block', width: 'calc(100% - 100px)'}}  source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />
+        <BooleanInput
+          source="cultureApply"
+          defaultValue={defaultValues.cultureApply}
+          label=""
+          style={{ width: 64, height: 42, marginRight: 24, padding: 0, display: 'inline-block' }}
+          iconStyle={{ width: 40, height: 40 }}
+        />
+          <AutocompleteInput style={{display: 'inline-block', width: 'calc(100% - 100px)'}} source="culture" choices={choicesCulture} defaultValue={defaultValues.dataCulture} label="resources.areas.fields.culture" />
+
+        <BooleanInput
+          source="religionApply"
+          defaultValue={defaultValues.religionApply}
+          label=""
+          style={{ width: 64, height: 42, marginRight: 24, padding: 0, display: 'inline-block' }}
+          iconStyle={{ width: 40, height: 40 }}
+        />
+          <AutocompleteInput style={{display: 'inline-block', width: 'calc(100% - 100px)'}} source="religion" choices={choicesReligion} label="resources.areas.fields.religion" defaultValue={defaultValues.dataReligion} />
+
+        <BooleanInput
+          source="populationApply"
+          label=""
+          defaultValue={defaultValues.populationApply}
+          style={{ width: 64, height: 42, marginRight: 24, padding: 0, display: 'inline-block' }}
+          iconStyle={{ width: 40, height: 40 }}
+        />
+          <NumberInput style={{display: 'inline-block', width: 'calc(100% - 100px)'}} source="population" defaultValue={+defaultValues.dataPopulation} label="resources.areas.fields.population" />
           <Subheader>Year Range</Subheader>
           <NumberInput style={{ width: '50%', float: 'left' }} validation={required} source="start" defaultValue={defaultValues.yearStart} label="resources.areas.fields.startYear" />
           <NumberInput style={{ width: '50%', float: 'right' }} source="end" defaultValue={defaultValues.yearEnd} label="resources.areas.fields.endYear" />

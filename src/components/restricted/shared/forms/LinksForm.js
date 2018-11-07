@@ -24,6 +24,7 @@ const styles = {
     boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
     padding: '0 1em 1em 1em',
     maxHeight: 'calc(100% - 236px)',
+    background: '#f3f3f2',
     overflow: 'auto',
     width: '100%'
   }

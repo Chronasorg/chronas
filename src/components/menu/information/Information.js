@@ -99,6 +99,9 @@ class Information extends PureComponent {
             </Toolbar>
           </div>
           <Tabs
+            inkBarStyle={{
+              backgroundColor: themes[theme].highlightColors[0]
+            }}
             value={this.state.tabForm}
             onChange={this.handleChange}
             >

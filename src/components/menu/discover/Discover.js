@@ -644,8 +644,6 @@ class Discover extends PureComponent {
               const src = event.target.src
               const tile = slidesData.filter(el => (el.original === src))[0]
 
-              console.debug('!!',tile)
-
               this.setState({ selectedImage: {
                   src: tile.src || tile.original || tile.poster,
                   year: tile.subtitle || tile.originalTitle,

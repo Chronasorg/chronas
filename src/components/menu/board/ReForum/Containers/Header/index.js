@@ -27,9 +27,12 @@ class Header extends Component {
   }
 
   render() {
-    const { updateCurrentForum,
+    const {
+      updateCurrentForum,
       handleClose,
       theme,
+      currentForum,
+      showHeader,
       history, translate } = this.props
     const {
       authenticated,
@@ -43,10 +46,13 @@ class Header extends Component {
         <div className='headerTop'>
           <Logo translate={translate} history={history} theme={theme} handleClose={handleClose} />
         </div>
-        <NavigationBar
+        { showHeader && <NavigationBar
+          currentForum={currentForum}
+          history={history}
+          theme={theme}
           updateCurrentForum={updateCurrentForum}
           navigationLinks={this.renderNavLinks()}
-        />
+        /> }
       </div>
     );
   }

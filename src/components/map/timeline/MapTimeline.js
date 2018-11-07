@@ -20,9 +20,9 @@ import './mapTimeline.scss'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
 import utilsQuery from '../utils/query'
-import {themes} from "../../../properties";
-import {tooltip} from "../../../styles/chronasStyleComponents";
-import {translate} from "admin-on-rest";
+import { themes } from '../../../properties'
+import { tooltip } from '../../../styles/chronasStyleComponents'
+import { translate } from 'admin-on-rest'
 
 const start = '-000550-01-05',
   min = '-002500-01-01T00:00:00.000Z',
@@ -212,7 +212,7 @@ const styles = {
     // width: '60px',
     position: 'fixed',
     bottom: 0,
-    left: 4,//'calc(50% - 30px)',
+    left: 4, // 'calc(50% - 30px)',
     zIndex: 10,
   }
 }
@@ -226,6 +226,8 @@ class MapTimeline extends Component {
 
     this.state = {
       isReset: true,
+      showNextYear: true,
+      nextYear: '',
       yearDialogVisible: false,
       timelineHeight: 140,
       inputYear: '',
@@ -354,21 +356,18 @@ class MapTimeline extends Component {
 
   _toggleYearDialog = (isVisible) => this.setState({ yearDialogVisible: isVisible })
 
-  _flyTo = (s,e,doReset,optId) => {
+  _flyTo = (s, e, doReset, optId) => {
     if (optId) { setTimeout(() => { this.refs.timeline.$el.setSelection(optId) }, 2000) }
-    setTimeout(() => { this.refs.timeline.$el.setWindow(s,e); setTimeout(() => {this.setState({isReset: doReset})},1000)}, 10)
+    setTimeout(() => { this.refs.timeline.$el.setWindow(s, e); setTimeout(() => { this.setState({ isReset: doReset }) }, 1000) }, 10)
     // this.refs.timeline.$el.setWindow('1050-04-01', '2050-04-01')
   }
 
   render () {
-    const { timelineOptions, timelineHeight, yearDialogVisible, isReset, customTimes } = this.state
+    const { customTimes, timelineOptions, timelineHeight, nextYear, yearDialogVisible, isReset, showNextYear } = this.state
     const { groupItems, selectedYear, setYear, theme, translate } = this.props
-
-    // console.debug('rendering maptimeline')
 
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
-
     return (
       <div className={timelineHeight === BIGTIMELINEHEIGHT ? 'extendedTimeline' : ''}>
         <Dialog open={yearDialogVisible}
@@ -406,7 +405,6 @@ class MapTimeline extends Component {
           </div>
         </Dialog>
 
-
         <IconButton
           key={'expand'}
           style={{
@@ -417,11 +415,11 @@ class MapTimeline extends Component {
             left: 64,
             position: 'fixed'
           }}
-          tooltipPosition="bottom-right"
+          tooltipPosition='bottom-right'
           tooltip={translate('pos.timeline.expand')}
           tooltipStyles={tooltip}
           onClick={() => this._toggleTimelineHeight()}
-          iconStyle={{color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%'}}
+          iconStyle={{ color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%' }}
         >
           {(timelineHeight === SMALLTIMELINEHEIGHT) ? <IconArrowUp hoverColor={themes[theme].highlightColors[0]} /> : <IconArrowDown hoverColor={themes[theme].highlightColors[0]} />}
         </IconButton>
@@ -438,35 +436,51 @@ class MapTimeline extends Component {
           }}
           disabled={isReset}
           className={'mapTimelineIcons'}
-          tooltipPosition="bottom-right"
+          tooltipPosition='bottom-right'
           tooltip={translate('pos.timeline.reset')}
           tooltipStyles={tooltip}
           onClick={() => { this._flyTo(start, '2050-04-01', true) }}
-          iconStyle={{color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%', padding: 2}}
+          iconStyle={{ color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%', padding: 2 }}
         >
           <IconReset hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
 
         <Timeline
-          ref="timeline"
+          ref='timeline'
           options={{ ...timelineOptions, height: timelineHeight }}
           groups={timelineGroups}
           items={groupItems}
           customTimes={customTimes}
+          // itemoutHandler={(event) => {
+          //   console.debug('itemout', event)
+          // }}
+          // mouseOverHandler={(event) => {
+          //   console.debug('mouseover', event)
+          //   if (showNextYear) {
+          //     this.setState({ showNextYear: !showNextYear, nextYear: '' })
+          //   } else {
+          //     this.setState({ showNextYear: !showNextYear })
+          //   }
+          // }}
+          // mouseMoveHandler={(event) => {
+          //   console.debug(event)
+          //   const year = new Date(event.time).getFullYear()
+          //   if (year && !isNaN(year)) this.setState({ nextYear: year })
+          // }}
           selectHandler={(items) => {
             const toFind = items.items[0]
             // console.debug(toFind,this.props.groupItems[0].id)
-            const selectedItem = this.props.groupItems.find((el) => el.id === toFind);
+            const selectedItem = this.props.groupItems.find((el) => el.id === toFind)
             if (selectedItem) {
               let s = new Date(selectedItem.start)
-              let e =  new Date(selectedItem.end)
+              let e = new Date(selectedItem.end)
               s.setFullYear(s.getFullYear() - 100)
               e.setFullYear(e.getFullYear() + 100)
               this._flyTo(s, e, false, toFind)
             }
           }}
-          rangechangeHandler={() => {if (freeToChange) freeToChange=false }}
-          rangechangedHandler={() => { this.setState({isReset: false}); setTimeout(() => {freeToChange=true}, 200)}}
+          rangechangeHandler={() => { if (freeToChange) freeToChange = false }}
+          rangechangedHandler={() => { this.setState({ isReset: false }); setTimeout(() => { freeToChange = true }, 200) }}
           clickHandler={(event) => { if (freeToChange) this._onClickTimeline(event) }}
         />
         <Portal node={document && document.querySelector('.vis-custom-time.selectedYear')}>
@@ -478,7 +492,12 @@ class MapTimeline extends Component {
     )
   }
 }
+//<div>
+//  <span>arrow</span>
+//  <span>{nextYear}</span>
+//</div>
 
+// style={ showNextYear ? { display: 'block' } : { display: 'block' } }
 const enhance = compose(
   connect(state => ({
     theme: state.theme,

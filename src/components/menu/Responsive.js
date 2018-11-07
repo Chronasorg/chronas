@@ -7,6 +7,7 @@ import withWidth from 'material-ui/utils/withWidth';
 
 export const Responsive = ({ small, medium, large, width, ...rest }) => {
   let component;
+  return medium
   switch (width) {
     case 1:
       component = small ? small : (medium ? medium : large);

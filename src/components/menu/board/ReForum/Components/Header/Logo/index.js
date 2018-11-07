@@ -16,20 +16,13 @@ const Logo = (props) => {
       <div className='BoardLogo_logoTitle'>Chronas Community</div>
       <div className='rightMenu'>
         <div className='BoardLogo_logoTitle'>
-          <Link
-            className='NB_links'
-            to={'/community/highscore'}
-          >
-            Member Highscore
-          </Link>
+          <FlatButton label="Board" onClick={ () => props.history.push('/community/general') } />
         </div>
         <div className='BoardLogo_logoTitle'>
-          <Link
-            className='NB_links'
-            to={'/community/user/' + username}
-          >
-            My Profile
-          </Link>
+          <FlatButton label="Member Highscore" onClick={ () => props.history.push('/community/highscore') } />
+        </div>
+        <div className='BoardLogo_logoTitle'>
+          <FlatButton label="My Profile" onClick={ () => props.history.push('/community/user/' + username) } />
         </div>
         <div className='BoardLogo_logoTitle_back' style={{ marginTop: -4 }}>
           <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => props.history.goBack()} >

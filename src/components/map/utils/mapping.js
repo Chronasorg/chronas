@@ -449,10 +449,10 @@ const utils = {
           tmpCap = areaDefs[tmpProv][3]
           tmpPop = areaDefs[tmpProv][4]
 
-          metadata.provinces.features[i].properties.c = tmpCul
-          metadata.provinces.features[i].properties.e = tmpRel
-          metadata.provinces.features[i].properties.g = tmpPop
-          metadata.provinces.features[i].properties.a = tmpCap
+          // metadata.provinces.features[i].properties.c = tmpCul
+          // metadata.provinces.features[i].properties.e = tmpRel
+          // metadata.provinces.features[i].properties.g = tmpPop
+          // metadata.provinces.features[i].properties.a = tmpCap
 
           if (this.activeTextFeat === "ruler" && metadata['ruler'][tmpRul]) {
             metadata.provinces.features[i].properties.nameLabel = metadata['ruler'][tmpRul][0]

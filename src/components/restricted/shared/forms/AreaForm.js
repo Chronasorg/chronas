@@ -12,10 +12,12 @@ import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
 import { showNotification } from 'admin-on-rest';
 import { setModType , setModData } from '../buttons/actionReducers'
 import { properties } from "../../../../properties";
+
 const formStyle = {
   boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
   padding: '0 1em 1em 1em',
   maxHeight: 'calc(100% - 236px)',
+  background: '#f3f3f2',
   overflow: 'auto',
   width: '100%'
 }
@@ -26,11 +28,10 @@ export class AreaForm extends Component {
     this.props.handleSubmit(values => {
       const { initialValues, setModType } = this.props
 
-      if (values.ruler === initialValues.ruler) delete values.ruler
-      if (values.religion === initialValues.religion) delete values.religion
-      if (values.capital === initialValues.capital) delete values.capital
-      if (values.culture === initialValues.culture) delete values.culture
-      if (values.population === initialValues.population) delete values.population
+      if (!values.rulerApply) delete values.ruler
+      if (!values.religionApply) delete values.religion
+      if (!values.cultureApply) delete values.culture
+      if (!values.populationApply) delete values.population
 
       const token = localStorage.getItem('chs_token')
       fetch(properties.chronasApiHost + "/areas", {
@@ -40,7 +41,6 @@ export class AreaForm extends Component {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        //make sure to serialize your JSON body
         body: JSON.stringify(values)
       })
       .then((res) => {

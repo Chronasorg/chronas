@@ -54,8 +54,8 @@ class QAAForum extends Component {
     localStorage.setItem('chs_dyk_question', true)
 
       getDiscussions(properties.QAID, sortingMethod, qaaEntity).then( (data) => {
-        this.setState({ fetchingDiscussions: false, discussions: data })
-        this.props.setHasQuestions((data || []).length)
+        this.setState({ fetchingDiscussions: false, discussions: (data || {})[0] })
+        this.props.setHasQuestions(((data || {})[0] || []).length)
       })
     // }
   }
@@ -77,8 +77,8 @@ class QAAForum extends Component {
         fetchingDiscussions: false,
       })
       getDiscussions(properties.QAID, sortingMethod, nextProps.qaaEntity).then((data) => {
-        this.setState({ fetchingDiscussions: false, discussions: data })
-        this.props.setHasQuestions((data || []).length)
+        this.setState({ fetchingDiscussions: false, discussions: (data || {})[0] })
+        this.props.setHasQuestions(((data || {})[0] || []).length)
       })
     }
   }
@@ -99,7 +99,7 @@ class QAAForum extends Component {
         fetchingDiscussions: false,
         sortingMethod: newSortingMethod
       })
-      getDiscussions(properties.QAID, newSortingMethod, qaaEntity).then( (data) => this.setState({ fetchingDiscussions: false, discussions: data }) )
+      getDiscussions(properties.QAID, newSortingMethod, qaaEntity).then( (data) => this.setState({ fetchingDiscussions: false, discussions: (data || {})[0] }) )
     }
   }
 

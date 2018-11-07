@@ -683,7 +683,7 @@ export const themes = {
       '#cfcfcf',
       '#cfcfcf'],
     borderColors: ['rgba(200,200,200,100)'],
-    highlightColors: ['rgba(200, 178, 115, 230)'],
+    highlightColors: ['rgb(200, 178, 115)'],
     gradientColors: ['linear-gradient(180deg,#fff 0,#F2F2F2)'],
     className: 'defaultTheme'
   },
@@ -695,7 +695,7 @@ export const themes = {
       '#F2F2F2',
       '#cbcbcb'],
     borderColors: ['rgba(200,200,200,100)'],
-    highlightColors: ['rgba(200, 178, 115, 230)'],
+    highlightColors: ['rgb(200, 178, 115)'],
     gradientColors: ['linear-gradient(180deg,#fff 0,#F2F2F2)'],
     className: 'lightTheme'
   },
