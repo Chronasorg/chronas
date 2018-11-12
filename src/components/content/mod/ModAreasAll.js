@@ -33,6 +33,7 @@ import { Link } from 'react-router-dom'
 import {List, ListItem} from 'material-ui/List';
 
 import Checkbox from 'material-ui/Checkbox';
+import FlatButton from 'material-ui/FlatButton'
 import Divider from 'material-ui/Divider';
 import Subheader from 'material-ui/Subheader';
 import AssignAddEditNavigation from '../../restricted/shared/AssignAddEditNavigation'
@@ -94,12 +95,24 @@ export const ModAreasAll = (props) => {
   return <div>
     <AssignAddEditNavigation pathname={props.location.pathname} />
     <Divider/>
-    <Create title='Assign Area' {...props}>
+    <Create title='Overwrite Area' {...props}>
       <AreaForm validate={validateValueInput} {...props} >
-          <Subheader>Provinces</Subheader>
+        <FlatButton
+          backgroundColor={"#494949"}
+          hoverColor={"rgb(200, 178, 115)"}
+          label='By Provinces'
+          containerElement={<Link to='/mod/areas' />}
+          style={{ float: 'left', color: '#ffffff', marginRight: 12 }}
+        />
+        <FlatButton
+          backgroundColor={"rgb(141, 141, 141)"}
+          hoverColor={"rgb(200, 178, 115)"}
+          label='By Value (Replace)'
+          containerElement={<Link to='/mod/areasReplace' />}
+          style={{ color: '#ffffff', marginRight: 12 }}
+        />
           <SelectArrayInput options={{ fullWidth: true }} onChange={(val,v) => { props.setModData(v) }} validation={required} elStyle={{width: '60%', minWidth: '300px'}} defaultValue={defaultValues.provinces} source="provinces" label="resources.areas.fields.province_list" />
           <Subheader>Data</Subheader>
-        {/*<TextInput source="ruler" choices={choicesRuler} defaultValue={defaultValues.dataRuler} label="resources.areas.fields.ruler" />*/}
         <BooleanInput
           source="rulerApply"
           defaultValue={defaultValues.rulerApply}

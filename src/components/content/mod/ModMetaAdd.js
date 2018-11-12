@@ -158,7 +158,7 @@ export const ModMetaAdd = (props) => {
     <AutocompleteDisallowInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.display_name' />
     <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='resources.areas.fields.color' picker='Chrome' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
-    <TextInput options={{ fullWidth: true }} validate={required} type='text' source='icon' label='resources.areas.fields.text' />
+    <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
     'religion':
   <MetaForm validate={validateValueInput} {...props} >

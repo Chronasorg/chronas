@@ -12,6 +12,7 @@ import { updateSingleMetadata } from './../../../map/data/actionReducers'
 import { properties } from '../../../../properties'
 import { showNotification } from 'admin-on-rest'
 import { TYPE_METADATA } from '../../../map/actionReducers'
+import utilsQuery from '../../../map/utils/query'
 const jsonp = require('jsonp')
 
 const styles = {
@@ -53,7 +54,7 @@ export class MetaForm extends Component {
     this.props.handleSubmit(values => {
       const { initialValues, history, metadataEntity } = this.props
 
-      if (values.color && values.color[0] === "#") {
+      if (values.color && values.color[0] === '#') {
         values.color = hexToRgb(values.color)
       }
       const wikiURL = values.url
@@ -155,7 +156,7 @@ export class MetaForm extends Component {
 
             resolve(iconURL.substring(0, beforeRes) + '/100' + iconURL.substr(afterRes))
           } else {
-            const imageName = iconURL.substr(iconURL.lastIndexOf("/")+1).replace(/File:/g, '')
+            const imageName = iconURL.substr(iconURL.lastIndexOf('/') + 1).replace(/File:/g, '')
             jsonp('https://en.wikipedia.org/w/api.php?action=query&titles=Image:' + imageName + '&prop=imageinfo&iiprop=url&iiurlwidth=100&format=json', null, (err, rulerMetadata) => {
               // 'https://commons.wikimedia.org/w/api.php?action=query&titles=' + filePath + '&prop=imageinfo&&iiprop=url&iiurlwidth=100&format=json', null, (err, rulerMetadata) => {
               if (err) {
@@ -164,7 +165,7 @@ export class MetaForm extends Component {
                 let thumbUrl = Object.values(rulerMetadata.query.pages)[0].imageinfo[0].thumburl
                 const startUrl = thumbUrl.indexOf('/thumb/') + '/thumb/'.length
                 const lastl = thumbUrl.substr(startUrl).lastIndexOf('/')
-                const endUrl = (lastl === -1) ? lastl + startUrl : lastl + startUrl //- 1
+                const endUrl = (lastl === -1) ? lastl + startUrl : lastl + startUrl // - 1
                 thumbUrl = thumbUrl.substring(startUrl, endUrl)
                 if (!thumbUrl) {
                   return reject(err)
@@ -187,7 +188,7 @@ export class MetaForm extends Component {
 
           const bodyToSend = {}
           const metadataItem = values.type
-          const fMetadataEntity = (metadataItem === "religionGeneral") ? ((this.props.metadata['religion'] || {})[metadataEntity] || {})[3] : metadataEntity
+          const fMetadataEntity = (metadataItem === 'religionGeneral') ? ((this.props.metadata['religion'] || {})[metadataEntity] || {})[3] : metadataEntity
           bodyToSend['subEntityId'] = (redirect === 'edit') ? values.select || fMetadataEntity : '_' + values.name.replace(/ /g, '_')
           bodyToSend['nextBody'] = nextBodyByType[metadataItem]
 
@@ -208,7 +209,11 @@ export class MetaForm extends Component {
                 successFullyUpdated: true
               })
               this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
-              history.goBack()
+              if (redirect === 'edit') history.goBack()
+              else {
+                if (utilsQuery.getURLParameter('value')) history.push('/article')
+                else history.push('/')
+              }
             } else {
               this.setState({
                 metaToUpdate: '',

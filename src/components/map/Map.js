@@ -240,6 +240,10 @@ class Map extends Component {
   }
 
   _getAreaViewportAndOutlines = (nextActiveColorDim, nextActiveColorValue, prevActiveColorDim = false, prevActiveColorValue = false, teams = false) => {
+    if (!nextActiveColorValue || nextActiveColorValue === "na") {
+      return {}
+    }
+
     const webMercatorViewport = new WebMercatorViewport({
       width: this.props.width || (window.innerWidth - 56),
       height: this.props.height || window.innerHeight
@@ -1094,24 +1098,26 @@ class Map extends Component {
         const { markerTheme } = this.props
         const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 238px' : '154px 224px'
         const resData = res.data
-        const battlesByWars = resData.shift()
+        const battlesByWars = (subtype.includes("ew")) ? resData.shift() : ''
         this.setState({
           epics: this.state.epics.concat(resData.map((el) => {
             let divBlocks = ''
             const pEndYear = el.data.end
             const startYear = +el.data.start
-            const endYear = pEndYear ? +pEndYear : startYear
-            const cofficient = 40 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
+            const endYear = pEndYear ? +pEndYear : (startYear + 1)
 
-            battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl) => {
-              const iconType = (Math.round(Math.random())) ? 'eb1' : 'eb2'
-              const backgroundPosition = 'url(/images/' + markerTheme + '-atlas.png) -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][iconType] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][iconType] || {}).y * cofficient)) + 'px'
+            if (subtype === "ew") {
+              const cofficient = 40 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
+              battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl) => {
+                const iconType = (Math.round(Math.random())) ? 'eb1' : 'eb2'
+                const backgroundPosition = 'url(/images/' + markerTheme + '-atlas.png) -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][iconType] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][iconType] || {}).y * cofficient)) + 'px'
 
-              const rawNext = getPercent(startYear, endYear, bEl[1])
-              const percentage = (rawNext) * 100 + '%'
+                const rawNext = getPercent(startYear, endYear, bEl[1])
+                const percentage = (rawNext) * 100 + '%'
 
-              divBlocks = divBlocks + "<img class='tsTicks' src='/images/transparent.png' style='margin-right: 0em; title=\"" + bEl[0] + '"; z-index: 5; margin-left: ' + percentage + '; height: 38px; width: 15px; background: ' + backgroundPosition + '; background-size: ' + backgroundSize + "' />"
-            })
+                divBlocks = divBlocks + "<img class='tsTicks' src='/images/transparent.png' style='margin-right: 0em; title=\"" + bEl[0] + '"; z-index: 5; margin-left: ' + percentage + '; height: 38px; width: 15px; background: ' + backgroundPosition + '; background-size: ' + backgroundSize + "' />"
+              })
+            }
 
             return {
               start: new Date(new Date(0, 1, 1).setFullYear(startYear)),

@@ -39,7 +39,7 @@ export const ModHome = () => {
       <Subheader>Area</Subheader>
       <ListItem
         containerElement={<Link to="/mod/areas/" />}
-        primaryText="Assign Area" />
+        primaryText="Overwrite Area" />
     </List>
     <Divider />
     <List>

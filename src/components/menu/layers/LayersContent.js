@@ -350,8 +350,9 @@ class LayerContent extends Component {
                             padding: '16px 72px 16px 0px',
                             whiteSpace: 'nowrap'
                           }}
-                              rightToggle={<Toggle onToggle={() => setClusterMarkers(!mapStyles.clusterMarkers)} />}
-                          defaultToggled={mapStyles.clusterMarkers} />,<hr />])
+                              rightToggle={<Toggle defaultToggled={mapStyles.clusterMarkers} onToggle={() => setClusterMarkers(!mapStyles.clusterMarkers)} />}
+                 />,
+                <hr />])
               }
         />
 

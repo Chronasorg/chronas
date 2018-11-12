@@ -587,6 +587,7 @@ export const properties = {
   metadataTypes: ['ae|ruler', /*'ae|ca',*/ 'ae|culture', 'ae|religion', 'ae|religionGeneral', 'a', 'e', 't', 'h', 'i|a', 'i|b', 'i|c', 'i|p', 'i|m', 'i|siege', 'i|war', 'ps', 'v'],
   linkedTypes: [
     { name: '[Audio]', id: 'a' },
+    { name: '[Epic] Explorations', id: 'ee' },
     { name: '[Epic] Wars', id: 'ew' },
     { name: '[HTML or Text]', id: 'h' },
     { name: '[HTML or Text] Primary Source', id: 'ps' },

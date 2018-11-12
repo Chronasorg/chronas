@@ -78,12 +78,12 @@ const styles = {
     whiteSpace: 'nowrap',
   },
   fullscreenClose: {
-    backgroundColor: '#00000073',
+    top: 4,
     position: 'fixed',
     whiteSpace: 'nowrap',
-    right: '56px',
+    right: 'calc(50% - 56px)',
     height: '56px',
-    color: '#fff'
+    color: 'rgb(107, 107, 107)'
   }
 }
 
@@ -179,7 +179,7 @@ class ArticleIframe extends React.Component {
 
   render () {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
-    const { hasChart, selectedItem, selectedWiki, theme, isEntity, customStyle, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
+    const { hasChart, selectedItem, selectedWiki, theme, isEntity, customStyle, htmlContent, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
     const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== "undefined"
@@ -232,13 +232,7 @@ class ArticleIframe extends React.Component {
       </IconButton> }
     </div>
 
-    // if (noWiki) { return <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
-    //   <span>No Wiki found for <b>{JSON.stringify((selectedItem || {}).value || "n/a")}</b>. Consider adding one <Link to={modUrl}>here</Link></span>
-    //   { modMenu }
-    // </div> // LoadingCompass
-    // }
-
-    const shouldLoad = (noWiki || iframeLoading || selectedWiki === null || +selectedWiki === -1)
+    const shouldLoad = !htmlContent && (noWiki || iframeLoading || selectedWiki === null || +selectedWiki === -1)
 
     return (
       <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
@@ -260,18 +254,21 @@ class ArticleIframe extends React.Component {
           { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%' style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }} src={'https://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' /> }
           { isFullScreen &&
           <FloatingActionButton
-            backgroundColor={'transparent'}
+            backgroundColor={'white'}
             style={styles.fullscreenClose}
             key={'close'}
             onClick={this._exitFullscreen}
+            color={'rgb(107, 107, 107)'}
+            iconStyle={{ fill: 'rgb(107, 107, 107)' }}
           >
-            <CloseIcon hoverColor={themes[theme].highlightColors[0]} color={'white'} />
+            <CloseIcon color={'rgb(107, 107, 107)'} hoverColor={themes[theme].highlightColors[0]} />
           </FloatingActionButton >
           }
         </Dialog>
         { modMenu }
         { shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} /> }
-        { (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'https://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
+        { htmlContent && <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: htmlContent}}></div> }
+        { !htmlContent && (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'https://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
       </div>
     )
   }

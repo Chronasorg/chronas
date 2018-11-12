@@ -14,7 +14,7 @@ const AssignAddEditNavigation = ({ pathname = '' }) => {
     <BottomNavigationItem
       className='bottomNavigationItem'
       containerElement={<Link to='/mod/areas' />}
-      label='Assign Area'
+      label='Overwrite Area'
       icon={<AssignIcon />}
       // onClick={() => { this.select(5) }}
     />

@@ -191,7 +191,7 @@ export class SelectArrayInput extends Component {
         "The SelectArrayInput component wasn't called within a redux-form <Field>. Did you decorate it and forget to add the addField prop to your component? See https://marmelab.com/admin-on-rest/Inputs.html#writing-your-own-input-component for details."
       );
     }
-    const { touched, error } = meta;
+    const { touched, error } = meta
 
     return (
       <ChipInput

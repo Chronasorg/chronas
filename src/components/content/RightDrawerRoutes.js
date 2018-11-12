@@ -19,6 +19,7 @@ import Content from './Content'
 import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../restricted/users'
 import { ModLinksEdit } from './mod/ModLinksEdit'
 import { ModAreasAll } from './mod/ModAreasAll'
+import { ModAreasReplace } from './mod/ModAreasReplace'
 import { ModMetaAdd } from './mod/ModMetaAdd'
 import { ModMetaEdit } from './mod/ModMetaEdit'
 import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../restricted/markers'
@@ -166,6 +167,7 @@ const selectedIndexObject = {
 
 const resources = {
   areas: { edit: ModAreasAll, permission: 1 },
+  areasReplace: { edit: ModAreasReplace, permission: 1 },
   linked: { create: LinkedCreate, edit: LinkedEdit, remove: LinkedDelete, permission: 1 },
   markers: { create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
   metadata: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
@@ -182,6 +184,7 @@ const menuIndexByLocation = {
   '/mod/metadata/create': 1,
   '/mod/metadata': 1,
   '/mod/areas': 1,
+  '/mod/areasReplace': 1
 }
 
 class RightDrawerRoutes extends PureComponent {
@@ -629,9 +632,11 @@ class RightDrawerRoutes extends PureComponent {
       // selectEpicItem(fullData.wiki, +(fullData.year || selectedYear))
     }
     else if (cType === 'marker') {
+      if (typeof ((el || {}).properties || {}).y !== "undefined") setYear(((el || {}).properties || {}).y)
       selectMarkerItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).w)
     }
     else {
+      if (typeof ((el || {}).properties || {}).y !== "undefined") setYear(((el || {}).properties || {}).y)
       selectLinkedItem(((el || {}).properties || {}).w)
     }
     history.push('/article')
@@ -952,7 +957,7 @@ class RightDrawerRoutes extends PureComponent {
                     paddingLeft: 0,
                     paddingRight: 0,
                     fontWeight: 'bolder'
-                  }}>{((partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()}</span>
+                  }}>{(((partOfEntities[0].properties || {}).y ? ((partOfEntities[0].properties || {}).y + ": ") : '') + (partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()}</span>
                   </div>} />
                   : <SelectField
                     style={{
@@ -1012,7 +1017,7 @@ class RightDrawerRoutes extends PureComponent {
                   >
                     {partOfEntities.map((el, index) => {
                       return <MenuItem key={'partOf_' + index} value={el}
-                        primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                        primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ": ") : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
                     })}
                   </SelectField>
                 }
@@ -1138,7 +1143,7 @@ class RightDrawerRoutes extends PureComponent {
 
           let finalProps
 
-          if (resourceKey === 'areas') {
+          if (resourceKey === 'areas' || resourceKey === 'areasReplace') {
             finalProps = {
               ...commonProps,
               setModData,

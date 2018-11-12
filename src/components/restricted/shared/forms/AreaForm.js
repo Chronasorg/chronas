@@ -34,7 +34,7 @@ export class AreaForm extends Component {
       if (!values.populationApply) delete values.population
 
       const token = localStorage.getItem('chs_token')
-      fetch(properties.chronasApiHost + "/areas", {
+      fetch(properties.chronasApiHost + ((typeof values.replaceWith !== "undefined") ? "/areas/replace" : "/areas"), {
         method: 'PUT',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -45,13 +45,19 @@ export class AreaForm extends Component {
       })
       .then((res) => {
         if (res.status === 200) {
+          const { start, end = start } = values
+          const waitForCompletion = (+end - +start) < 11
           console.debug(res, this.props)
-          this.props.showNotification("Area Updated")
+          if (waitForCompletion) {
+            this.props.showNotification("Area Updated")
+          } else {
+            this.props.showNotification("Updating " + (+end - +start) + " years in the background... this may take a while")
+          }
           setModType("", [], 'area')
           this.props.history.goBack()
         }
         else {
-          this.props.showNotification("Area Not Updated")
+          this.props.showNotification("Area Not Updated Or In Background")
           setModType("", [], '')
         }
       })

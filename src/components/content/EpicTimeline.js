@@ -225,7 +225,7 @@ class EpicTimeline extends React.Component {
     else {
       if (itemType === 'html') {
         const content = selectedIndexItem.content
-        return  <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: content}}></div>
+        return <ArticleIframe history={history} selectAreaItemWrapper={this._selectAreaItem} setMetadataEntity={setMetadataEntity} toggleYearByArticleDisabled={!contentDetected} yearByArticleValue={setYearByArticle} toggleYearByArticle={ this.toggleYearByArticleWrapper } hasChart={ hasChart } isEntity={ this.props.isEntity } deselectItem={deselectItem} selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} htmlContent={content} selectedWiki={ selectedWiki } />
       }
 
       return <GridList

@@ -129,7 +129,6 @@ export default class TagmapLayer extends CompositeLayer {
       };
     }
 
-    console.debug(discreteZoomLevel)
     tags = tagMap.getTags({
       bbox,
       minFontSize: (zoomFontSizes[discreteZoomLevel] || {}).minFontSize || 0,

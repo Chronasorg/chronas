@@ -43,16 +43,18 @@ export class LinkedForm extends Component {
               "wiki": values.wiki,
               "start": values.year,
               "end": values.end,
-              "poster": values.poster,
-              "participants": [
-                values.attacker.map(el => el.name),
-                values.defender.map(el => el.name),
-              ]
+              "poster": values.poster
             },
             "wiki": values.wiki,
             "subtype": values.subtype,
             "year": values.year,
             "type": "e"
+          }
+          if (values.subtype === "ew") {
+            bodyToSend.data["participants"] = [
+              values.attacker.map(el => el.name),
+              values.defender.map(el => el.name),
+            ]
           }
         }
         else {
@@ -99,15 +101,17 @@ export class LinkedForm extends Component {
               "start": values.year,
               "end": values.end,
               "poster": values.poster,
-              "participants": [
-                values.attacker.map(el => el.name),
-                values.defender.map(el => el.name),
-              ]
             },
             "wiki": values.wiki,
             "subtype": values.subtype,
             "year": values.year,
             "type": "e"
+          }
+          if (values.subtype === "ew") {
+            bodyToSend.data["participants"] = [
+              values.attacker.map(el => el.name),
+              values.defender.map(el => el.name),
+            ]
           }
         }
         else {
