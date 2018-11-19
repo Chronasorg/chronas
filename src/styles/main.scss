@@ -661,3 +661,50 @@ div.vis-tooltip {
     float: right;
   }
 }
+
+.battleIcon1 {
+  margin-right: 0em;
+  margin-left: 32.06349206349206%;
+  height: 38px;
+  width: 15px;
+  background: url(/images/abstract-atlas.png) -30px -200px; background-size: 121px 238px;
+}
+
+.battleIcon2 {
+  margin-right: 0em;
+  margin-left: 75%;
+  height: 38px;
+  width: 15px;
+  background: url(/images/abstract-atlas.png) -45px -200px;
+  background-size: 121px 238px;
+}
+
+.battleIcon1, .battleIcon2 {
+  pointer-events: all;
+  z-index: 2000000;
+  cursor: help;
+}
+.timelineIconSmall {
+  margin-top: 112px
+}
+
+.timelineIconBig {
+  margin-top: 168px
+}
+
+.timelineIconBig, .timelineIconSmall {
+  z-index: 1000000;
+  .rv-crosshair__line {
+    width: 0px !important;
+  }
+}
+
+.rv-treemap__leaf__content {
+  font-weight: bolder;
+  font-size: 16px;
+}
+
+.customLink {
+  cursor: pointer;
+  &:hover { opacity: 0.6 }
+}

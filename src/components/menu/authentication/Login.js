@@ -289,7 +289,9 @@ class Login extends Component {
           {this.state.authMode === 'signUp' ? signUpComponent : null}
           {this.state.authMode === 'passwordReset' ? passwordResetComponent : null}
 
-          <IconButton className='closeTopRight' iconStyle={{ width: 24, height: 24, color: themes[theme].foreColors[0] }} touch key={'close'} containerElement={<Link to='/' />}>
+          <IconButton
+            tooltipPosition="bottom-left"
+            tooltip={'Close'} className='closeTopRight' iconStyle={{ width: 24, height: 24, color: themes[theme].foreColors[0] }} touch key={'close'} containerElement={<Link to='/' />}>
             <CloseIcon hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
         </Card>

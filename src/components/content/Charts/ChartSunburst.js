@@ -207,7 +207,6 @@ export default class ChartSunburst extends React.Component {
           }
         }
       }
-
     }
 
     return (
@@ -233,11 +232,13 @@ export default class ChartSunburst extends React.Component {
               boxShadow: 'rgba(0, 0, 0, 0.4) -1px 2px 3px 1px'
             }
           }
-          title={<span style={{ color: themes[theme].foreColors[0] }}>Composition <span style={{ fontSize: 'inherit', color: 'inherit' }}>of {this.state.total} subjects</span></span>}
+          title={<span style={{ color: themes[theme].foreColors[0] }}>Breakdown <span style={{ fontSize: 'inherit', color: 'inherit' }}>of {this.state.total} subjects</span></span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
             ? <IconButton style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon  color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>
-            : <IconButton onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+            : <IconButton
+              tooltipPosition="bottom-left"
+              tooltip={'Minimize'} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
         <div style={styles.chartContainer}>
         { !isMinimized && (modeIndex === -1) && <Sunburst {...chartProps}>

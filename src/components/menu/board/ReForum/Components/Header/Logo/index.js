@@ -25,7 +25,9 @@ const Logo = (props) => {
           <FlatButton label="My Profile" onClick={ () => props.history.push('/community/user/' + username) } />
         </div>
         <div className='BoardLogo_logoTitle_back' style={{ marginTop: -4 }}>
-          <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => props.history.goBack()} >
+          <IconButton
+            tooltipPosition="bottom-left"
+            tooltip={'Go Back'} style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => props.history.goBack()} >
             <IconBack style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[props.theme].highlightColors[0]} />
           </IconButton>
 
@@ -38,7 +40,9 @@ const Logo = (props) => {
           {/*/>*/}
         </div>
         <div className='BoardLogo_logoTitle_back' style={{ marginLeft: 0, marginTop: -4 }}>
-          <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => props.handleClose()} >
+          <IconButton
+            tooltipPosition="bottom-left"
+            tooltip={'Close'} style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => props.handleClose()} >
             <CloseIcon style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[props.theme].highlightColors[0]} />
           </IconButton>
           {/*<FlatButton*/}

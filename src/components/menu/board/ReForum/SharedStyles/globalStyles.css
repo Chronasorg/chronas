@@ -45,3 +45,13 @@ body {
   font-size: 14px;
   line-height: 22px;
 }
+
+.home-about {
+  background: url(http://chronas.org/images/group-photo3.jpg) center bottom no-repeat #f9f9f9;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+  padding-top: 3em;
+  padding-bottom: 18em;
+}

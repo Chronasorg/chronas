@@ -170,7 +170,7 @@ export default class InfluenceChart extends React.Component {
 
   render () {
     const { series, crosshairValues, currentYearMarkerValues, crosshairStartValues, crosshairEndValues, sortedData } = this.state
-    const { rulerProps, selectedYear, epicMeta } = this.props
+    const { chartIcons, rulerProps, selectedYear, epicMeta } = this.props
 
     if (!sortedData || sortedData.length === 0) return null
 
@@ -237,6 +237,19 @@ export default class InfluenceChart extends React.Component {
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
               values={currentYearMarkerValues} />
+            { chartIcons.map((el, index) => {
+            return <Crosshair
+
+              className={(epicMeta) ? 'timelineIconBig' : 'timelineIconSmall'}
+              itemsFormat={this._formatCrosshairItems}
+              titleFormat={this._formatCrosshairTitle}
+              values={[{
+                left: +el.date,
+              }]}>
+              <div>
+                <img title={el.name} src={"/images/transparent.png"} className={(index % 3) ? 'battleIcon1' : 'battleIcon2'} />
+              </div>
+            </Crosshair>})}
           </FlexibleWidthXYPlot>
         </div>
       </div>

@@ -33,13 +33,13 @@ import {
 } from 'admin-on-rest'
 import Icon from 'material-ui/svg-icons/social/person'
 import RevertButton from './RevertButton'
+import UserTextField from '../shared/fields/UserTextField'
 import { chronasMainColor } from '../../../styles/chronasColors'
 export const RevisionIcon = Icon
 
 const RevisionFilter = (props) => (
     <Filter {...props}>
-        <TextInput label="pos.search" source="q" alwaysOn />
-        <DateInput source="last_seen_gte" />
+        <TextInput label="pos.search" source="q" value={"test123lala"} alwaysOn />
     </Filter>
 );
 
@@ -56,7 +56,7 @@ const rowStyle = (record) => {
     return { backgroundColor: '#ff0001' }
   }
   else {
-    return
+    return { maxWidth: 100 }
     // return { backgroundColor: '#25ff00' }
   }
 };
@@ -79,19 +79,17 @@ export const RevisionList = (props) => {
   // {
   //   if((record || {}).reverted) { return { color: 'red' } } else {return { color: 'green' }}
   // }
-  return <List {...props} filters={<RevisionFilter />}  sort={{field: 'name', order: 'DESC'}} perPage={25}>
-    <Datagrid bodyOptions={{ stripedRows: true, showRowHover: true }} rowStyle={rowStyle}>
-      <TextField source="id" label="resources.revisions.fields.id" />
-      <ChipField source="type" label="resources.revisions.fields.type" />
-      <TextField source="entityId" label="resources.revisions.fields.entityId" />
-      <ChipField source="resource" label="resources.revisions.fields.resource" />
-      <TextField source="user" label="resources.revisions.fields.user" />
-      <TextField source="nextBody" label="resources.revisions.fields.nextBody" style={rowStyle} />
-      <TextField source="prevBody" label="resources.revisions.fields.prevBody" elStyle={prevStyle} />
-      <BooleanField source="reverted" label="resources.revisions.fields.reverted" />
-      <DateField source="timestamp" label="resources.revisions.fields.timestamp" type="date" />
-      <RevertButton {...props} isRedo={false} />
-      <DeleteButton {...props} />
+  return <List {...props} title={"Revision History"} perPage={25}>
+    <Datagrid bodyOptions={{ overflow: 'auto', stripedRows: true, showRowHover: true }} rowStyle={rowStyle}>
+      <RevertButton style={{ overflow: 'visible', maxWidth: '1em' }} {...props} isRedo={false} />
+      <TextField style={{ maxWidth: '1em' }} source="entityId" label="resources.revisions.fields.entityId" />
+      <ChipField style={{ maxWidth: '1em' }} source="resource" label="resources.revisions.fields.resource" />
+      <UserTextField style={{ maxWidth: '1em' }} source="user" label="resources.revisions.fields.user" />
+      <TextField style={{ maxWidth: '1em' }} source="nextBody" label="resources.revisions.fields.nextBody" />
+      <TextField style={{ maxWidth: '1em' }} source="prevBody" label="resources.revisions.fields.prevBody" elStyle={prevStyle} />
+      <BooleanField style={{ maxWidth: '1em' }} source="reverted" label="resources.revisions.fields.reverted" />
+      <DateField style={{ maxWidth: '1em' }} source="timestamp" label="resources.revisions.fields.timestamp" type="date" />
+      {/*<DeleteButton style={{ maxWidth: '1em' }} {...props} />*/}
     </Datagrid>
   </List>
 };

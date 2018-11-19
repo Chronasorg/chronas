@@ -3,9 +3,9 @@ import mainLogo from '../../../public/images/logoChronasWhite.png'
 import utilsQuery from '../map/utils/query'
 
 const backgroundByYear = [
-  { year: -1300,
-    image: 'http://i.imgur.com/a1xHn0e.jpg',
-    description: '13th century BC: Pi-Ramesses, the new capital that was built on an island in the midst of the Nile\'s easternmost branch by Pharaoh Ramesses II Egypt' },
+  { year: -668,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Sculpted_reliefs_depicting_Ashurbanipal%2C_the_last_great_Assyrian_king%2C_hunting_lions%2C_gypsum_hall_relief_from_the_North_Palace_of_Nineveh_%28Irak%29%2C_c._645-635_BC%2C_British_Museum_%2816722368932%29.jpg/1024px-thumbnail.jpg',
+    description: '668 BC: Sculpted reliefs depicting Ashurbanipal, the last great Assyrian king, hunting lions' },
   { year: -479,
     image: 'https://i.redd.it/h5juk4rg56w01.jpg',
     description: '479 BC: Greeks storm the Persian encampment at the Battle of Mycale by Peter Dennis' },

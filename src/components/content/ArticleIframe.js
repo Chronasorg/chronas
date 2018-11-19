@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
 import IconEdit from 'material-ui/svg-icons/editor/mode-edit'
+import IconHistory from 'material-ui/svg-icons/action/view-list'
 import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
@@ -136,6 +137,39 @@ class ArticleIframe extends React.Component {
       this.forceUpdate()
     }
   }
+  _goToRevision = (modUrl, isProvince) => {
+    const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
+
+    let entityId = ''
+    let subentity = ''
+
+    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== "undefined"
+    const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
+
+    let fModUrl = modUrl
+
+    if (isProvince) {
+      entityId = selectedTypeId.id
+    } else if (selectedItem.type === "areas" && (selectedItem.wiki === "-1" || selectedItem.data.contentIndex === -1)) {
+      subentity = (((selectedItem || {}).data || {}).id || "").split("|")[2]
+    } else if (epicContentItem) {
+      if (((epicContentItem || {}).properties || {}).ct === 'marker') {
+        entityId = ((epicContentItem || {}).properties || {}).w
+      } else if (((epicContentItem || {}).properties || {}).ct === 'metadata') {
+        entityId = ((epicContentItem || {}).properties || {}).id
+      } else if (((epicContentItem || {}).properties || {}).ct === 'area' && ((epicContentItem || {}).properties || {}).aeId) {
+        const [ ae, colorToSelect, rulerToHold ] = ((epicContentItem || {}).properties || {}).aeId.split('|')
+        selectAreaItemWrapper(rulerToHold, colorToSelect)
+        fModUrl = '/mod/metadata'
+      }
+      // setMetadataType(selectedTypeId.type)
+    }
+    if (!entityId && !subentity) {
+      entityId = (selectedItem.value || {})._id || selectedItem.wiki || zselectedItem.value
+    }
+
+    history.push('/mod/revisions?filter=%7B%22' + (entityId ? 'entity' : 'subentity') + '%22%3A%22' + (entityId || subentity) + '%22%2C%22last_seen_gte%22%3A%222018-11-08T06%3A00%3A00.000Z%22%7D')//fModUrl)
+  }
 
   _goToMod = (modUrl, isProvince) => {
     const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
@@ -197,14 +231,6 @@ class ArticleIframe extends React.Component {
       // ? (epicContentItem.ct === "marker" ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
       // : (isMarker ?  '/mod/markers' : '/mod/metadata')
 
-    const iconEnterFullscreen = {
-      key: 'random',
-      tooltipPosition: 'bottom-right',
-      tooltip: translate('pos.goFullScreen'),
-      tooltipStyles: tooltip,
-      onClick: () => this._enterFullscreen(),
-      style: styles.fullscreenButton
-    }
     const modMenu = <div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : (isProvince) ? { ...styles.actionButtonContainer, top: 332 } : styles.actionButtonContainer } >
       { toggleYearByArticle && <Toggle
         label='Set year by article'
@@ -218,16 +244,35 @@ class ArticleIframe extends React.Component {
           top: 5
         }}
       /> }
-      <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._goToMod(modUrl, isProvince)} >
+      <IconButton
+        tooltipPosition="bottom-left"
+        tooltip={'Edit'}
+        style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._goToMod(modUrl, isProvince)} >
         <IconEdit style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton>
-      <IconButton {...iconEnterFullscreen} style={{ width: !(isEntity || isProvince) ? 32 : 'inherit' }} >
+      <IconButton
+        tooltipPosition="bottom-left"
+        tooltip={'Revision history'}
+        style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._goToRevision(modUrl, isProvince)} >
+        <IconHistory style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
+      </IconButton>
+      <IconButton
+        tooltipPosition="bottom-left"
+        tooltip={'Fullscreen Article'}
+      onClick={() => this._enterFullscreen()}
+             style={{ ...styles.fullscreenButton, width: !(isEntity || isProvince) ? 32 : 'inherit' }} >
         <FullscreenEnterIcon style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton>
-      { !(isEntity || isProvince) && <IconButton style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}}  onClick={() => this.props.history.goBack()} >
+      { !(isEntity || isProvince) && <IconButton
+        tooltipPosition="bottom-left"
+        tooltip={'Go Back'}
+        style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}}  onClick={() => this.props.history.goBack()} >
         <IconBack style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton> }
-      { !(isEntity || isProvince) && <IconButton style={{  }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._handleClose()}>
+      { !(isEntity || isProvince) && <IconButton
+        tooltipPosition="bottom-left"
+        tooltip={'Close'}
+        style={{  }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._handleClose()}>
         <IconClose style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton> }
     </div>

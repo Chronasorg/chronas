@@ -336,7 +336,9 @@ class Content extends Component {
             { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], backgroundColor: ((activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => {localStorage.setItem('chs_dyk_distribution', true); this._toggleContentMenuItem('sunburst')}} leftIcon={<CompositionChartIcon hoverColor={themes[theme].highlightColors[0]} style={{ ...styles.menuIcon, fill: themes[theme].foreColors[0]}} />} /> }
             { entityTimelineOpen && <Divider style={{ backgroundColor: themes[theme].backColors[2] }} /> }
             <MenuItem style={{ ...styles.menuItem, zIndex: 10, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
-              <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0, pointerEvents: 'none' }} >
+              <IconButton
+                tooltipPosition="bottom-left"
+                tooltip={''} iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0, pointerEvents: 'none' }} >
                 <Badge
                   badgeContent={linkedCount}
                   primary={true}

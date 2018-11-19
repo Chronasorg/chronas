@@ -55,7 +55,9 @@ class Share extends PureComponent {
                 <ToolbarTitle text={translate('pos.share')}/>
               </ToolbarGroup>
               <ToolbarGroup>
-                <IconButton touch={true} key={'close'} containerElement={<Link to="/"/>}>
+                <IconButton
+                  tooltipPosition="bottom-left"
+                  tooltip={'Close'} touch={true} key={'close'} containerElement={<Link to="/"/>}>
                   <CloseIcon />
                 </IconButton>
               </ToolbarGroup>

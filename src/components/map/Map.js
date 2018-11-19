@@ -136,9 +136,9 @@ class Map extends Component {
       epics: [],
       arcData: [],
       viewport: {
-        latitude: +utilsQuery.getURLParameter('position').split(',')[0],
-        longitude: +utilsQuery.getURLParameter('position').split(',')[1],
-        zoom: +utilsQuery.getURLParameter('position').split(',')[2],
+        latitude: utilsQuery.getURLParameter('position') ? +utilsQuery.getURLParameter('position').split(',')[0] : '37',
+        longitude: utilsQuery.getURLParameter('position') ? +utilsQuery.getURLParameter('position').split(',')[1] : '37',
+        zoom: utilsQuery.getURLParameter('position') ? +utilsQuery.getURLParameter('position').split(',')[2] : '2.5',
         minZoom: 2,
         bearing: 0,
         pitch: 0,
@@ -240,7 +240,7 @@ class Map extends Component {
   }
 
   _getAreaViewportAndOutlines = (nextActiveColorDim, nextActiveColorValue, prevActiveColorDim = false, prevActiveColorValue = false, teams = false) => {
-    if (!nextActiveColorValue || nextActiveColorValue === "na") {
+    if ((!teams || teams.length === 0 ) && (!nextActiveColorValue || nextActiveColorValue === "na")) {
       return {}
     }
 
@@ -1106,7 +1106,7 @@ class Map extends Component {
             const startYear = +el.data.start
             const endYear = pEndYear ? +pEndYear : (startYear + 1)
 
-            if (subtype === "ew") {
+            if (subtype.includes("ew")) {
               const cofficient = 40 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
               battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl) => {
                 const iconType = (Math.round(Math.random())) ? 'eb1' : 'eb2'
@@ -1115,7 +1115,7 @@ class Map extends Component {
                 const rawNext = getPercent(startYear, endYear, bEl[1])
                 const percentage = (rawNext) * 100 + '%'
 
-                divBlocks = divBlocks + "<img class='tsTicks' src='/images/transparent.png' style='margin-right: 0em; title=\"" + bEl[0] + '"; z-index: 5; margin-left: ' + percentage + '; height: 38px; width: 15px; background: ' + backgroundPosition + '; background-size: ' + backgroundSize + "' />"
+                divBlocks = divBlocks + "<img class='tsTicks' src='/images/transparent.png' title='" + bEl[0] + "'; style='margin-right: 0em; z-index: 5; margin-left: " + percentage + '; height: 38px; width: 15px; background: ' + backgroundPosition + '; background-size: ' + backgroundSize + "' />"
               })
             }
 
@@ -1205,12 +1205,12 @@ class Map extends Component {
       })
   }
 
-  _goToViewport = ({ longitude, latitude }) => {
+  _goToViewport = ({ longitude, latitude, zoomIn }) => {
     this._onViewportChange({
       ...this.state.viewport,
       longitude,
       latitude,
-      zoom: this.state.viewport.zoom, // Math.max(this.state.viewport.zoom + 1, 4.5),
+      zoom: zoomIn ? 5 : this.state.viewport.zoom, // Math.max(this.state.viewport.zoom + 1, 4.5),
       transitionInterpolator: new FlyToInterpolator(),
       transitionDuration: FLYTOANIMATIONDURATION
     })
@@ -1745,10 +1745,12 @@ class Map extends Component {
 
   render () {
     const { epics, markerData, geoData, clusterRawData, hoverInfo, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
-    const { activeArea, modActive, menuDrawerOpen, metadata, rightDrawerOpen, history, theme, mapStyles, markerTheme, selectedItem, selectedYear } = this.props
+    const { activeArea, modActive, menuDrawerOpen, metadata, rightDrawerOpen, history, location, theme, mapStyles, markerTheme, selectedItem, selectedYear } = this.props
 
     let leftOffset = isStatic ? 0 : (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.25
+
+    const infoOpen = ((location || {}).pathname || '').indexOf('/info') > -1 || ((window.location || {}).href || '').indexOf('/info') > -1
 
     let possibleHiglightedAREAitem = selectedItem.type === TYPE_AREA && ((selectedItem.data || {}).content || [])[(selectedItem.data || {}).contentIndex]
 
@@ -1790,13 +1792,13 @@ class Map extends Component {
       }}>
         <Snackbar
           selectedYear={+selectedYear}
-          open={!rightDrawerOpen}// this.state.showYear}
+          open={!rightDrawerOpen && !infoOpen}// this.state.showYear}
           message={messageYearNotification(selectedYear, (selectedYear < 1), themes[theme].foreColors[2])}
           contentStyle={styles.yearNotificationContent}
           bodyStyle={styles.yearNotificationBody}
           style={{ ...styles.yearNotification,
             background: theme === 'dark' ? 'url(/images/year-dark.png) no-repeat scroll center top transparent' : 'url(/images/year-light.png) no-repeat scroll center top transparent',
-            transform: (this.state.showYear && !rightDrawerOpen)
+            transform: (this.state.showYear && !rightDrawerOpen && !infoOpen)
             ? 'translate3d(0, 0, 0)' : 'translate3d(0, -150px, 0)' }}
           autoHideDuration={4000}
           onRequestClose={() => this.setState({ showYear: false })}
@@ -1825,6 +1827,7 @@ class Map extends Component {
         >
           <DeckGLOverlay
             activeColor={activeArea.color}
+            goToViewport={this._goToViewport}
             theme={themes[theme]}
             viewport={viewport}
             selectedItem={selectedItem.type === TYPE_MARKER ? selectedItem : (selectedItem.type === TYPE_AREA && possibleHiglightedAREAitem) ? possibleHiglightedAREAitem : {}}

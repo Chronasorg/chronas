@@ -81,7 +81,7 @@ const styles = {
 }
 
 const prefixedStyles = {}
-const isStatic = utilsQuery.getURLParameter('isStatic') === "true"
+const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
 
 class App extends Component {
 
@@ -269,6 +269,9 @@ class App extends Component {
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       localStorage.setItem('chs_token', token)
       setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar)
+    } else if (!window.location.hash || window.location.hash === "#/") {
+      // show welcome page if user is not logged in and no specific article or other page is specified
+      history.push('/info')
     }
   }
 
@@ -346,6 +349,7 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
+                  {!isStatic && <LoadingBar theme={theme} />}
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     {isLoading && !isStatic && <LoadingPage />}
                     {!isLoading && createElement(Map, { history, isLoading })}
@@ -365,11 +369,8 @@ class App extends Component {
                         <Route exact path='/login' component={Login} />
                         <Route exact path='/share' component={Share} />
                         <Route exact path='/info' render={(props) => { return (
-                            <Information theme={theme} />
+                            <Information theme={theme} history={history} />
                           )}} />
-                      </Switch>
-                      <Switch>
-                        <CrudRoute theme={theme} history={history} />
                       </Switch>
                       <Switch>
                         <Board theme={theme} history={history} />

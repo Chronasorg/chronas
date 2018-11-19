@@ -57,8 +57,10 @@ export class RevertButton extends Component {
   render() {
     const { record = {} } = this.props;
     return <IconButton
+      tooltip={record["reverted"] ? "Redo This Edit" : "Revert This Edit"}
+      tooltipPosition='center-right'
       onClick={this.save}
-      style={{ overflow: 'inherit' }}>
+      style={{ overflow: 'visible', left: -10 }}>
       {record["reverted"] ? <RedoIcon color={cyan500} /> : <UndoIcon color={cyan500} />}
         </IconButton>
   }

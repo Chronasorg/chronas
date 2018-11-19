@@ -566,7 +566,9 @@ class LinkedGallery extends React.Component {
           iconElementLeft={<div />}
           iconElementRight={isMinimized
             ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
-            : <IconButton onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}  hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+            : <IconButton
+              tooltipPosition="bottom-left"
+              tooltip={'Minimize'} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}  hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
         { !isMinimized && <div style={styles.container}>
           <div style={styles.root}>

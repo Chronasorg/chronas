@@ -131,7 +131,7 @@ export const MarkerEdit = (props) => {
     {((props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) || isContent) ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
       <SelectInput options={{ fullWidth: true }} onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' validate={required} defaultValue={props.selectedItem.value.type ? (props.selectedItem.value.type + '|' + props.selectedItem.value.subtype) : (defaultObj.type) ? (defaultObj.type + '|' + defaultObj.subtype) : "" } choices={properties.linkedTypes} label='resources.markers.fields.type' />
       <TextInput options={{ fullWidth: true }} source='name' defaultValue={props.selectedItem.value.name} label='resources.markers.fields.name' />
-      <DisabledInput options={{ fullWidth: true }} source='wiki' defaultValue={'https://en.wikipedia.org/wiki/' + (props.selectedItem.value._id || defaultObj.wiki )} label='resources.markers.fields.url' />
+      <TextInput options={{ fullWidth: true }} source='wiki' defaultValue={'https://en.wikipedia.org/wiki/' + (props.selectedItem.value._id || defaultObj.wiki )} label='resources.markers.fields.url' type='url' />
       <ModButton style={{ width: '30%', float: 'left' }} modType='marker' />
       <TextInput style={{ width: '30%', float: 'left' }} source='coo[0]' onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0]} label='resources.markers.fields.lat' />
       <TextInput style={{ width: '30%', float: 'right' }} source='coo[1]' onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1]} label='resources.markers.fields.lng' />

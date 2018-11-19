@@ -11,7 +11,7 @@ import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import axios from 'axios'
-import {Restricted, showNotification, translate} from 'admin-on-rest'
+import { Restricted, showNotification, translate } from 'admin-on-rest'
 import { toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { grey600, grey400, chronasDark } from '../../styles/chronasColors'
 import Responsive from '../menu/Responsive'
@@ -171,6 +171,7 @@ const resources = {
   linked: { create: LinkedCreate, edit: LinkedEdit, remove: LinkedDelete, permission: 1 },
   markers: { create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
   metadata: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
+  revisions: { list: RevisionList, edit: RevisionEdit, remove: RevisionDelete, permission: 1 },
   images: { create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
   users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
 }
@@ -623,20 +624,17 @@ class RightDrawerRoutes extends PureComponent {
             showNotification('No province of ' + ((el || {}).properties || {}).n + ' found in the current year: only opening article.')
           })
       }
-    }
-    else if (epicIdNameArray.map(el => el[0]).includes(((el || {}).properties || {}).t)) {
+    } else if (epicIdNameArray.map(el => el[0]).includes(((el || {}).properties || {}).t)) {
       if (activeArea.color !== 'ruler') {
         setAreaColorLabel('ruler', 'ruler')
       }
       selectEpicItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).y, ((el || {}).properties || {}).id/*, fullData */)
       // selectEpicItem(fullData.wiki, +(fullData.year || selectedYear))
-    }
-    else if (cType === 'marker') {
-      if (typeof ((el || {}).properties || {}).y !== "undefined") setYear(((el || {}).properties || {}).y)
+    } else if (cType === 'marker') {
+      if (typeof ((el || {}).properties || {}).y !== 'undefined') setYear(((el || {}).properties || {}).y)
       selectMarkerItem(((el || {}).properties || {}).w, ((el || {}).properties || {}).w)
-    }
-    else {
-      if (typeof ((el || {}).properties || {}).y !== "undefined") setYear(((el || {}).properties || {}).y)
+    } else {
+      if (typeof ((el || {}).properties || {}).y !== 'undefined') setYear(((el || {}).properties || {}).y)
       selectLinkedItem(((el || {}).properties || {}).w)
     }
     history.push('/article')
@@ -656,7 +654,7 @@ class RightDrawerRoutes extends PureComponent {
     const isMarker = (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_LINKED) && location.pathname.indexOf('/article') > -1
     const isEpic = (selectedItem.type === TYPE_EPIC) && location.pathname.indexOf('/article') > -1
     const currPrivilege = +localStorage.getItem('chs_privilege')
-    const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege)
+    const resourceList = Object.keys(resources)//.filter(resCheck => +resources[resCheck].permission <= currPrivilege)
     const modHeader = <AppBar
       className='articleHeader'
       style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }} // '#eceff1'}
@@ -685,11 +683,15 @@ class RightDrawerRoutes extends PureComponent {
       }
       iconElementRight={
         <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
+          <IconButton
+            tooltipPosition="bottom-left"
+            tooltip={'Go Back'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
             onClick={() => this.handleBack()}>
             <IconBack />
           </IconButton>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
+          <IconButton
+            tooltipPosition="bottom-left"
+            tooltip={'Close'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
             onClick={() => this.handleClose()}>
             <IconClose />
           </IconButton>
@@ -706,8 +708,7 @@ class RightDrawerRoutes extends PureComponent {
     // we need metadata to be loaded before we can render this component
     if (typeof metadata['ruler'] === 'undefined' || Object.keys(activeArea.data).length === 0) return null
 
-    let entityPop = 0,
-      totalPop = 0
+    let entityPop = 0, totalPop = 0
 
     if (activeArea.color === 'ruler') {
       Object.keys(activeArea.data).forEach((key) => {
@@ -874,14 +875,20 @@ class RightDrawerRoutes extends PureComponent {
       }
       iconElementRight={
         <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
-          <IconButton style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+          <IconButton
+            tooltipPosition="bottom-left"
+            tooltip={'Edit'} style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             containerElement={<Link to={modUrl} />}><IconEdit hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
-          <IconButton style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+          <IconButton
+            tooltipPosition="bottom-left"
+            tooltip={'Go Back'} style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleBack()}>
             <IconBack hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
-          <IconButton iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+          <IconButton
+            tooltipPosition="bottom-left"
+            tooltip={'Close'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleClose()}>
             <IconClose hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
@@ -957,7 +964,7 @@ class RightDrawerRoutes extends PureComponent {
                     paddingLeft: 0,
                     paddingRight: 0,
                     fontWeight: 'bolder'
-                  }}>{(((partOfEntities[0].properties || {}).y ? ((partOfEntities[0].properties || {}).y + ": ") : '') + (partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()}</span>
+                  }}>{(((partOfEntities[0].properties || {}).y ? ((partOfEntities[0].properties || {}).y + ': ') : '') + (partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()}</span>
                   </div>} />
                   : <SelectField
                     style={{
@@ -1017,7 +1024,7 @@ class RightDrawerRoutes extends PureComponent {
                   >
                     {partOfEntities.map((el, index) => {
                       return <MenuItem key={'partOf_' + index} value={el}
-                        primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ": ") : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                        primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ': ') : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
                     })}
                   </SelectField>
                 }
@@ -1076,167 +1083,217 @@ class RightDrawerRoutes extends PureComponent {
       return RestrictedPage
     }
 
+    const resourceElements = resourceList.map((resourceKey) => {
+      const commonProps = {
+        options,
+        hasList: !!resources[resourceKey].list,
+        hasEdit: !!resources[resourceKey].edit,
+        hasShow: !!resources[resourceKey].show,
+        hasCreate: !!resources[resourceKey].create,
+        hasDelete: !!resources[resourceKey].remove,
+        resource: resourceKey,
+      }
+
+      let finalProps
+
+      if (resourceKey === 'areas' || resourceKey === 'areasReplace') {
+        finalProps = {
+          ...commonProps,
+          setModData,
+          selectedYear,
+          selectedItem,
+          activeArea,
+          metadata,
+          handleClose: this.handleClose
+        }
+      } else if (resourceKey === 'metadata') {
+        finalProps = {
+          ...commonProps,
+          setModData,
+          selectedYear,
+          selectedItem,
+          activeArea,
+          metadata,
+          setModDataLng,
+          setModDataLat,
+          contentType: this.state.contentType,
+          contentChoice: this.state.contentChoice,
+          metadataType: this.state.metadataType,
+          defaultEpicValues: this.state.defaultEpicValues,
+          metadataEntity: this.state.metadataEntity,
+          setMetadataEntity: this.setMetadataEntity,
+          routeNotYetSetup: this.routeNotYetSetup,
+          setMetadataType: this.setMetadataType,
+          setSearchEpic: this.setSearchEpic,
+          setContentType: this.setContentType,
+          setSearchSnippet: this.setSearchSnippet,
+          epicsChoice: this.state.epicsChoice
+        }
+      } else if (resourceKey === TYPE_MARKER) {
+        finalProps = { ...commonProps,
+          metadata,
+          selectedItem,
+          selectedYear,
+          setModDataLng,
+          setModDataLat,
+          actOnRootTypeChange: this.actOnRootTypeChange }
+      } else if (resourceKey === TYPE_LINKED || resourceKey === TYPE_EPIC) {
+        finalProps = {
+          ...commonProps,
+          actOnRootTypeChange: this.actOnRootTypeChange,
+          contentTypeRaw,
+          epicsChoice: this.state.epicsChoice,
+          setSearchEpic: this.setSearchEpic,
+          selectedItem,
+          selectedYear,
+          setModDataLng,
+          setModDataLat,
+          metadata,
+          resource: 'metadata',
+          history
+        }
+      } else {
+        finalProps = commonProps
+      }
+
+      const resItems = []
+
+      if (resources[resourceKey].list) {
+        resItems.push({
+          d_path: '/mod/' + resourceKey,
+          d_el: resources[resourceKey].list,
+          d_sec: 'list',
+          d_props: {
+            ...finalProps,
+            redirect: 'list'
+          }
+        })
+      }
+
+      if (resources[resourceKey].create) {
+        resItems.push({
+          d_path: '/mod/' + resourceKey + '/create',
+          d_el: resources[resourceKey].create,
+          d_sec: 'create',
+          d_props: {
+            ...finalProps,
+            redirect: 'create'
+          }
+        })
+      }
+
+      if (resources[resourceKey].edit) {
+        resItems.push({
+          d_path: '/mod/' + resourceKey,
+          d_el: resources[resourceKey].edit,
+          d_sec: 'edit',
+          d_props: {
+            ...finalProps,
+            redirect: 'edit'
+          }
+        })
+      }
+
+      if (resources[resourceKey].show) {
+        resItems.push({
+          d_path: '/mod/' + resourceKey + '/:id/show',
+          d_el: resources[resourceKey].show,
+          d_sec: 'show',
+          d_props: {
+            ...finalProps,
+            redirect: 'show'
+          }
+        })
+      }
+
+      if (resources[resourceKey].remove) {
+        resItems.push({
+          d_path: '/mod/' + resourceKey + '/:id/delete',
+          d_el: resources[resourceKey].remove,
+          d_sec: 'delete',
+          d_props: {
+            ...finalProps,
+            redirect: 'delete'
+          }
+        })
+      }
+
+      return resItems
+    }).reduce((acc, val) => acc.concat(val), []).concat([{
+      d_path: '/article',
+      d_el: Content,
+      d_sec: '',
+      d_props: {
+        metadata,
+        influenceRawData: rulerEntity,
+        provinceEntity,
+        setMetadataEntity: this.setMetadataEntity,
+        setMetadataType: this.setMetadataType,
+        selectedYear,
+        newWidth,
+        history
+      }
+    }, {
+      d_path: '/mod',
+      d_el: ModHome,
+    }, {
+      d_path: '/mod/links',
+      d_el: ModLinksEdit,
+      d_sec: 'create',
+      d_props: {
+        options,
+        hasList: false,
+        hasEdit: false,
+        hasShow: false,
+        hasCreate: true,
+        hasDelete: false,
+        resource: 'metadata',
+        metadata,
+        selectedItem,
+        setModData,
+        newWidth,
+        // linkSetup: '',
+        // prefilledLinked: false,
+        // ensureLoadLinkedItem
+        linkedItemData: this.state.linkedItemData,
+        updateID: this.state.updateID,
+        contentChoice: this.state.contentChoice,
+        metadataEntity: this.state.metadataEntity,
+        metadataType: this.state.metadataType,
+        setLinkedItemData: this.setLinkedItemData,
+        setSearchSnippet: this.setSearchSnippet,
+        ensureLoadLinkedItem: this.ensureLoadLinkedItem,
+        setContentType: this.setContentType,
+        redirect: 'create',
+        history
+      }
+    }, ])
+
     return (
       <div>
         <Switch>
-          <Route
-            exact
-            path={'/article'}
-            render={unrestrictPage(articleHeader, Content, '', {
-              metadata,
-              influenceRawData: rulerEntity,
-              provinceEntity,
-              setMetadataEntity: this.setMetadataEntity,
-              setMetadataType: this.setMetadataType,
-              selectedYear,
-              newWidth,
-              history
-            })}
-        />
-          <Route
-            exact
-            path={'/mod'}
-            render={restrictPage(modHeader, ModHome)}
-        />
-          <Route
-            exact
-            path={'/mod/links'}
-            render={restrictPage(modHeader, ModLinksEdit, 'create', {
-              options,
-              hasList: false,
-              hasEdit: false,
-              hasShow: false,
-              hasCreate: true,
-              hasDelete: false,
-              resource: 'metadata',
-              metadata,
-              selectedItem,
-              setModData,
-              newWidth,
-          // linkSetup: '',
-          // prefilledLinked: false,
-          // ensureLoadLinkedItem
-              linkedItemData: this.state.linkedItemData,
-              updateID: this.state.updateID,
-              contentChoice: this.state.contentChoice,
-              metadataEntity: this.state.metadataEntity,
-              metadataType: this.state.metadataType,
-              setLinkedItemData: this.setLinkedItemData,
-              setSearchSnippet: this.setSearchSnippet,
-              ensureLoadLinkedItem: this.ensureLoadLinkedItem,
-              setContentType: this.setContentType,
-              redirect: 'create',
-              history
-            })}
-        />
+          { resourceElements.map((dEl, index) => {
+            if (dEl.d_path === '/article') {
+              return <Route
+                exact
+                key={('rr' + index)}
+                path={dEl.d_path}
+                render={unrestrictPage(articleHeader, dEl.d_el, dEl.d_sec, dEl.d_props)}
+              />
+            } else {
+              return <Route
+                exact
+                key={('rr' + index)}
+                path={dEl.d_path}
+                render={restrictPage(modHeader, dEl.d_el, dEl.d_sec, dEl.d_props)}
+              />
+            }
+          }
+
+          )}
+
         </Switch>
-        {resourceList.map((resourceKey) => {
-          const commonProps = {
-            options,
-            hasList: !!resources[resourceKey].list,
-            hasEdit: !!resources[resourceKey].edit,
-            hasShow: !!resources[resourceKey].show,
-            hasCreate: !!resources[resourceKey].create,
-            hasDelete: !!resources[resourceKey].remove,
-            resource: resourceKey,
-          }
 
-          let finalProps
-
-          if (resourceKey === 'areas' || resourceKey === 'areasReplace') {
-            finalProps = {
-              ...commonProps,
-              setModData,
-              selectedYear,
-              selectedItem,
-              activeArea,
-              metadata,
-              handleClose: this.handleClose
-            }
-          } else if (resourceKey === 'metadata') {
-            finalProps = {
-              ...commonProps,
-              setModData,
-              selectedYear,
-              selectedItem,
-              activeArea,
-              metadata,
-              setModDataLng,
-              setModDataLat,
-              contentType: this.state.contentType,
-              contentChoice: this.state.contentChoice,
-              metadataType: this.state.metadataType,
-              defaultEpicValues: this.state.defaultEpicValues,
-              metadataEntity: this.state.metadataEntity,
-              setMetadataEntity: this.setMetadataEntity,
-              routeNotYetSetup: this.routeNotYetSetup,
-              setMetadataType: this.setMetadataType,
-              setSearchEpic: this.setSearchEpic,
-              setContentType: this.setContentType,
-              setSearchSnippet: this.setSearchSnippet,
-              epicsChoice: this.state.epicsChoice
-            }
-          } else if (resourceKey === TYPE_MARKER) {
-            finalProps = { ...commonProps,
-              metadata,
-              selectedItem,
-              selectedYear,
-              setModDataLng,
-              setModDataLat,
-              actOnRootTypeChange: this.actOnRootTypeChange }
-          } else if (resourceKey === TYPE_LINKED || resourceKey === TYPE_EPIC) {
-            finalProps = {
-              ...commonProps,
-              actOnRootTypeChange: this.actOnRootTypeChange,
-              contentTypeRaw,
-              epicsChoice: this.state.epicsChoice,
-              setSearchEpic: this.setSearchEpic,
-              selectedItem,
-              selectedYear,
-              setModDataLng,
-              setModDataLat,
-              metadata,
-              resource: 'metadata',
-              history
-            }
-          } else {
-            finalProps = commonProps
-          }
-
-          return (<Switch key={'rightDrawer_' + resourceKey} style={{ zIndex: 20000 }}>
-            {resources[resourceKey].create && (
-            <Route
-              exact
-              path={'/mod/' + resourceKey + '/create'}
-              render={restrictPage(modHeader, resources[resourceKey].create, 'create', {
-                ...finalProps,
-                redirect: 'create'
-              })}
-              />
-            )}
-            {resources[resourceKey].edit && (
-            <Route
-              exact
-              path={'/mod/' + resourceKey}
-              render={restrictPage(modHeader, resources[resourceKey].edit, 'edit', finalProps)}
-              />
-            )}
-            {resources[resourceKey].show && (
-            <Route
-              exact
-              path={'/mod/' + resourceKey + '/:id/show'}
-              render={restrictPage(modHeader, resources[resourceKey].show, 'show', finalProps)}
-              />
-            )}
-            {resources[resourceKey].remove && (
-            <Route
-              exact
-              path={'/mod/' + resourceKey + '/:id/delete'}
-              render={restrictPage(modHeader, resources[resourceKey].remove, 'delete', finalProps)}
-              />
-            )}
-          </Switch>)
-        })}
       </div>
     )
   }

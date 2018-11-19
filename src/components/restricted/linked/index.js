@@ -157,7 +157,6 @@ export const LinkedEdit = (props) => {
 
       {isEpic && <AutocompleteInput options={{ fullWidth: true }} source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.search_name" />}
 
-      {/*{isEpic && <SelectInput onChange={(val, v) => { props.actOnRootTypeChange(v) }} source='type' choices={properties.linkedTypes} label='resources.linked.fields.type' defaultValue={props.selectedItem.value.subtype} /> }*/}
       <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
       {isEpic && <EmbeddedArrayInput options={{ fullWidth: true }} source='attacker'>
         <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.attacker' />

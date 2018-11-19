@@ -458,7 +458,7 @@ class EpicTimeline extends React.Component {
       rulerSetup: epicData.id,
       stepIndex: -1,
       influenceChartData,
-      yearsSupported: dateRange ? [+dateRange[0].left, +dateRange[dateRange.length-1].left] : [0,0],
+      yearsSupported: (dateRange && dateRange.length !== 0) ? [+dateRange[0].left, +dateRange[dateRange.length-1].left] : [0,0],
     })
 
     if ((selectedItem || {}).type === TYPE_AREA && ((epicData || {}).content || []).length > 0) {
@@ -558,7 +558,7 @@ class EpicTimeline extends React.Component {
         { linkedItems && linkedItems.id && <LinkedQAA setHasQuestions={setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qName={entityName || ''} qId={ linkedItems.id } /> }
         <LinkedGallery history={history} qName={entityName || ''} activeAreaDim={activeAreaDim} setContentMenuItem={setContentMenuItem} isMinimized={ activeContentMenuItem !== 'linked' } setWikiId={ this.setWikiIdWrapper } selectValue={ this.selectValueWrapper} linkedItems={linkedMediaItems } selectedYear={selectedYear} />
         { influenceChartData && influenceChartData.length > 0 && <div style={{ height: (!isEntity) ? '256px' : '200px', width: '100%' }}>
-          <InfluenceChart qName={entityName || ''} epicMeta={isEntity ? false : epicMeta} rulerProps={rulerProps} setYear={this.setYearWrapper} newData={influenceChartData} selectedYear={selectedYear} />
+          <InfluenceChart qName={entityName || ''} epicMeta={isEntity ? false : epicMeta} chartIcons={epicLinkedArticles.filter(el => el.type === "b" || el.type === "si")} rulerProps={rulerProps} setYear={this.setYearWrapper} newData={influenceChartData} selectedYear={selectedYear} />
         </div> }
         { contentDetected && <div style={{ width: '19%', borderRight: '1px solid ' + themes[theme].borderColors[0], boxShadow: 'rgba(0, 0, 0, 0.4) -5px 0px 6px -3px inset', maxWidth: '200px', height: 'calc(100% - 248px)', overflow: 'auto', display: 'inline-block', overflowX: 'auto', background: themes[theme].gradientColors[0] }}>
           <FlatButton backgroundColor={(rulerProps || {})[1] || 'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px', borderRadius: '0px' }} label={(epicMeta || {}).title || (rulerProps || {})[0] || 'loading'} onClick={this._selectMainArticle.bind(this)} />
@@ -567,7 +567,7 @@ class EpicTimeline extends React.Component {
             orientation='vertical'
             style={{ float: 'left', width: '100%', background:  'transparent', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
             {epicLinkedArticles.map((epicContent, i) => (
-              <div key={i} style={ styles.stepContainer}>
+              <div title={epicContent.name || epicContent.wiki} key={i} style={ styles.stepContainer}>
                 <StepButton
                   icon={
                     (epicLinkedArticles[i].type.substr(0,2) === "ae") ?
