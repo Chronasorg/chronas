@@ -113,7 +113,7 @@ class Menu extends PureComponent {
           </SVG>
         </IconButton>
         <IconButton
-          style={{ marginTop: '32px' }}
+          style={{ marginTop: '32px', padding: 0 }}
           key={'layers'}
           tooltipPosition="bottom-right"
           tooltip={translate('pos.layers')}
@@ -144,6 +144,7 @@ class Menu extends PureComponent {
           tooltipStyles={tooltip}
           onClick={() => selectAreaItem("random")}
           iconStyle={{color: themes[theme].foreColors[0]}}
+          style={{ padding: 0}}
         >
           <DiceIcon
             hoverColor={themes[theme].highlightColors[0]}/>

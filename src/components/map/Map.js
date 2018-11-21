@@ -467,7 +467,7 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { mapStyles, activeArea, selectedYear, metadata, modActive, history, activeEpics, activeMarkers, selectedItem, selectAreaItem } = this.props
+    const { mapStyles, activeArea, selectedYear, metadata, modActive, history, activeEpics, activeMarkers, selectedItem, selectAreaItem, selectMarkerItem } = this.props
 
     const contentIndex = ((selectedItem || {}).data || {}).contentIndex
     const nextContentIndex = ((nextProps.selectedItem || {}).data || {}).contentIndex
@@ -497,14 +497,23 @@ class Map extends Component {
     if (selectedItem.value !== nextProps.selectedItem.value) {
       console.debug('###### Item changed')
       if (nextProps.selectedItem.wiki === 'random') {
-        let dataPool = this.state.mapStyle
-          .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.n !== 'undefined')
 
-        const randomItem = dataPool[getRandomInt(0, dataPool.length - 1)]
-        const provinceId = randomItem.properties.name
-        if (history.location.pathname.indexOf('article') === -1) history.push('/article')
+        const { markerData } = this.state
+        const markerDataLength = markerData.filter(el => el.subtype !== 'c' && el.subtype !== 'cp').length
+        if (markerDataLength > 0) {
+          const toSelectMarker = markerData.filter(el => el.subtype !== 'c' && el.subtype !== 'cp')[getRandomInt(0, markerDataLength - 1)]
+          selectMarkerItem(toSelectMarker._id, toSelectMarker)
+          history.push('/article')
+        } else {
+          let dataPool = this.state.mapStyle
+            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.n !== 'undefined')
 
-        selectAreaItem(provinceId, provinceId) // set query url
+          const randomItem = dataPool[getRandomInt(0, dataPool.length - 1)]
+          const provinceId = randomItem.properties.name
+          if (history.location.pathname.indexOf('article') === -1) history.push('/article')
+
+          selectAreaItem(provinceId, provinceId) // set query url
+        }
       } else if ((nextProps.selectedItem.type === TYPE_AREA &&
           nextProps.selectedItem.value !== '' &&
           nextProps.activeArea.color !== '' &&

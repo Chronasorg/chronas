@@ -282,6 +282,7 @@ class App extends Component {
   render () {
     const {
       width,
+      showNotification,
       isLoading,
       store,
       theme
@@ -349,7 +350,7 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
-                  {!isStatic && <LoadingBar theme={theme} />}
+                  {!isStatic && false && <LoadingBar theme={theme} />}
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     {isLoading && !isStatic && <LoadingPage />}
                     {!isLoading && createElement(Map, { history, isLoading })}
@@ -369,7 +370,7 @@ class App extends Component {
                         <Route exact path='/login' component={Login} />
                         <Route exact path='/share' component={Share} />
                         <Route exact path='/info' render={(props) => { return (
-                            <Information theme={theme} history={history} />
+                            <Information theme={theme} history={history} showNotification={showNotification} />
                           )}} />
                       </Switch>
                       <Switch>

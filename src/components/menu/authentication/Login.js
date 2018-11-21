@@ -278,9 +278,9 @@ class Login extends Component {
     </div>
 
     return (
-      <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0]}} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
+      <Dialog bodyStyle={{ overflow: 'auto', backgroundImage: themes[theme].gradientColors[0]}} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
         contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0 }} onRequestClose={this.handleClose} >
-        <Card style={styles.card}>
+        <Card style={styles.card} >
           <div style={styles.avatar}>
             <Avatar backgroundColor={themes[theme].highlightColors[0]} icon={<LockIcon />} size={60} />
           </div>

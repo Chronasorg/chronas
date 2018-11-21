@@ -2,20 +2,25 @@ import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import YouTube from 'react-youtube'
-import { Card, CardText } from 'material-ui/Card'
+import RaisedButton from 'material-ui/RaisedButton'
+import Avatar from 'material-ui/Avatar'
 import Dialog from 'material-ui/Dialog'
 import Divider from 'material-ui/Divider'
 import IconButton from 'material-ui/IconButton'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import IconHelp from 'material-ui/svg-icons/action/help-outline'
+import IconEmail from 'material-ui/svg-icons/communication/email'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
+import Paper from 'material-ui/Paper';
+import TextField from 'material-ui/TextField';
 import { Treemap } from 'react-vis'
 import ChronasLogo from './LogoChronas';
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import { Tabs, Tab } from 'material-ui/Tabs'
 import { LoadingCircle } from '../../global/LoadingCircle'
 import nest from '../../../components/content/Charts/utilsNest'
-
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
 import {
   translate,
   BooleanField,
@@ -33,12 +38,12 @@ import {
   Restricted,
   ReferenceManyField,
   TabbedForm,
-  TextField,
   TextInput,
 } from 'admin-on-rest'
 
 import { properties, markerIdNameArray, themes } from '../../../properties'
 import axios from "axios/index";
+import {history} from "../../../store/createStore";
 
 const styles = {
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
@@ -47,6 +52,9 @@ const styles = {
     boxShadow: 'none',
     minWidth: 300,
     backgroundColor: 'transparent'
+  },
+  form: {
+    marginLeft: 20,
   },
   toolbar: {
     height: 46,
@@ -60,11 +68,44 @@ class Information extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
+      emailAddress: '',
+      emailSubject: '',
+      emailHtml: '',
       tabForm: localStorage.getItem('chs_info_section') || 'welcome',
       hiddenElement: true,
       statistics: false,
       welcomeStatistics: false,
+      prevValue: false,
       statisticsBreakdown: false
+    }
+  }
+
+  sendContactEmail = () => {
+    const {
+      emailAddress,
+      emailSubject,
+      emailHtml
+    } = this.state
+
+    if (!emailAddress || !emailSubject || !emailHtml) {
+      alert('All fields are required')
+    } else {
+      axios.post(properties.chronasApiHost + '/contact', {
+        from: emailAddress,
+        subject: emailSubject,
+        html: emailHtml
+      }, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('chs_token')}})
+        .then(() => {
+          this.props.showNotification('Email sent!')
+        })
+        .catch((err) => {
+          this.props.showNotification('Something went wrong...')
+        })
+      this.setState({
+        emailAddress: '',
+          emailSubject: '',
+          emailHtml: ''
+      })
     }
   }
 
@@ -126,6 +167,7 @@ class Information extends PureComponent {
         })
     }
     this.setState({
+      prevValue: this.state.tabForm,
       tabForm: value,
     })
   }
@@ -168,7 +210,7 @@ class Information extends PureComponent {
         </div>
       </div>
     }
-    const { translate, theme } = this.props
+    const { translate, theme, history } = this.props
     const { statistics, welcomeStatistics, statisticsBreakdown } = this.state
 
     const chartProps = (!statistics) ? false : {
@@ -189,24 +231,12 @@ class Information extends PureComponent {
 
       },
       hideRootNode: true,
-      // onValueMouseOver: this._handleMouseOver,
-      // onValueMouseOut: () => this.setState({
-      //   pathValue: defaultPathValue,
-      //   finalValue: false,
-      //   data: updateData(this.state.data, false)
-      // }),
-      // onLeafMouseOver: this._handleMouseOver,
-      // onLeafMouseOut: () => this.setState({
-      //   pathValue: defaultPathValue,
-      //   finalValue: false,
-      //   data: updateData(this.state.data, false)
-      // }),
     }
 
 
     return (
       <Dialog bodyStyle={{ background: themes[theme].backColors[0] /*backgroundImage: themes[theme].gradientColors[0]*/ }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal modalMenu'}  titleStyle={{ overflow: 'auto'}} overlayStyle={{ overflow: 'auto'}} style={{ overflow: 'auto'}}
-        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, maxWidth: '1024px' }} onRequestClose={this.handleClose}>
+        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, height: 680, maxWidth: '1024px' }} onRequestClose={this.handleClose}>
         <Card style={styles.card}>
           <div>
             <Toolbar style={styles.toolbar}>
@@ -216,7 +246,14 @@ class Information extends PureComponent {
               <ToolbarGroup>
                 <IconButton
                   tooltipPosition="bottom-left"
-                  tooltip={'Go Back'} touch key={'back'} onClick={() => this.props.history.goBack()}>
+                  tooltip={'Go Back'} touch key={'back'} onClick={() => {
+                    const { prevValue } = this.state
+                    if (prevValue) {
+                      this.handleChange(prevValue)
+                    } else {
+                      history.goBack()
+                    }
+                }}>
                   <IconBack hoverColor={themes[theme].highlightColors[0]}  />
                 </IconButton>
                 <IconButton
@@ -248,15 +285,15 @@ class Information extends PureComponent {
                   marginBottom: -40
                 }}>
                 <p>
-                  <span style={{ fontWeight: 800 }}>Chronas</span> is a history map application with over 50 million data points which every registered user can curate and contribute to (just like <a>Wikipedia</a>).
+                  <span style={{ fontWeight: 800 }}>Chronas</span> is a history map application with over <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => this.handleChange('statistics') }>50 million data points</a> which every registered user can curate and contribute to (just like <a>Wikipedia</a>).
                 </p>
                 <p>
                   Before you dive in, make sure to watch the short <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => this.handleChange('tutorial') }>Tutorial Video</a> in the How To section.
                 </p>
                 <p>
-                  <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => this.handleChange('tutorial') }>Join</a> our community of <span style={{ fontWeight: 800 }}>{welcomeStatistics ? welcomeStatistics.user : "..."}</span> members to add and edit data, earn points, ask questions about history articles and access our <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => this.handleChange('tutorial') }>Forums</a> to suggest new features and report bugs.
+                  <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => history.push('/login') }>Join</a> our community of <span style={{ fontWeight: 800 }}>{welcomeStatistics ? welcomeStatistics.user : "..."}</span> members to add and edit data, earn points, ask questions about history articles and access our <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => history.push('/community/general')}>Forums</a> to suggest new features and report bugs.
                 </p>
-                <p>Visit the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => this.handleChange('about') }>About</a> section to read more about the Chronas project and how to contact the developers.</p>
+                <p>Visit the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => this.handleChange('about') }>About</a> section to read more about the Chronas project and send the developers your inquiries, comments or questions through the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => this.handleChange('contact') }>Contact</a> form.</p>
                 { welcomeStatistics && <div style={{ position: 'absolute',
                   bottom: 18,
                   fontSize: 'small' }}>build {welcomeStatistics.build} - v{welcomeStatistics.version}</div> }
@@ -291,18 +328,34 @@ class Information extends PureComponent {
               <br />
               <div>
                 <br />
-                <p>Chronas is an initiative to collect all military history contributed and edited by volunteers - amateur and professional historians from all corners of the world. We return the entered facts
-                  to all Internet users in visualizations, i.e. on digital maps of witch the world map you see is an example, as an on-line encyclopedia for history enthusiasts and - in time - as an analysis tool and discussion forum for history experts.</p>
-                <p>We aim to support the largest and most active community of history enthusiasts in the world. Register as a volunteer and add your military history to our knowledge base as an editor, validate and correct the
-                  registered facts and moderate on-line discussions as an expert. Help us perfect our concepts, our data and our website. If your want to join our community, <a href="/login">sign up!</a></p>
-              </div>
-              <br />
-              <Divider />
-              <br />
-              <div>
-                <p>
-                    In development by Dietmar & Joachim Aumann
+                <h4>What is Chronas?</h4>
+                <br />
+                <h5>In Brief</h5>
+                <p>Chronas may be described as a mix of <a target="_blank" href="https://www.openstreetmap.org">Open Street Map</a>, <a target="_blank" href="https://www.wikipedia.org/">Wikipedia</a> and <a target="_blank" href="https://earth.google.com/web/">Google Earth</a>. It maps 4000 years of historic rulers (polictical entities), cultures, and religions on a map linking to related Wikipedia articles as well as various kinds of different markers such as people, battles, cities, castles etc. All of those can be linked to express a relation of each other (for example linking the siege of a city to the specific city marker). On top of that, other kinds of media such as videos, images or podcasts can be linked to create an even bigger knowledge web. Users can rate, edit and add new markers, area entities or media items and create links all tracked by a revision history system. They can also ask questions on specific articles and create article collections (called Epics) on major topics such as wars or explorations (all area entities are on default Epics). A video showcasing those features can be found <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => this.handleChange('tutorial') }>here</a>.</p>
+                <h5>From the beginning</h5>
+                <p>The name <b>Chronas</b> is a combination of <b>Chron</b>os and Atl<b>as</b> indicating the chronological and cartographical approach of the history application.</p>
+                <p>The initial idea in mid-2014 was to add a time slider to a Google Maps like application, making it possible to travel back in time: watching realms being founded, grow and disappear again. The goal was to get a better understanding of how the world's history is interconnected. <i>What happened in Asia when Rome dominated Europe? What happened in Arabia when Kublai Khan proclaimed himself the emperor of China?</i></p>
+                <p>The original version of Chronas was released in 2015 and attracted over 5000 registered users. It was based on a fork of <a target="_blank" href="https://umap.openstreetmap.fr/en">Open Street Map</a> and used the raster map library <a target="_blank" href="https://leafletjs.com/">Leaflet</a> with the relational <a target="_blank" href="https://www.postgresql.org/">PostgreSQL</a> database.
                 </p>
+                <p>
+                  Here is a ~5 min video showing the basic features of the original version:
+                </p>
+                <p>
+                  <YouTube
+                    className='introVideo'
+                    height={400}
+                    videoId='0yqcCK66Az4'
+                    opts={properties.YOUTUBEOPTS}
+                  />
+                </p>
+                <p>
+                  If you are interested in trying out the original version, it is still available at <a target="_blank" href="http://v0.chronas.org">http://v0.chronas.org</a>. It also includes the <a target="_blank" href="http://v0.chronas.org/blog">development blog</a> which explains in more detail the technical approach of the initial version as well as two 3D spin-off apps showing <a target="_blank" href="http://app.chronas.org/castles/#/wikidata">castles</a> and <a target="_blank" href="http://app.chronas.org/battles/#/wikidata">battles</a> by wikipedia language.
+                </p>
+                <br />
+                <p>
+                  Development of the current version of Chronas began in July 2017 and represented a complete rewrite of logic and architecture focusing on improved performance as well as easy edits, revisions and linking related articles. In place of Leaflet, the WebGL map library <a target="_blank" href="https://www.mapbox.com/mapbox-gl-js/api/">Mapbox GL</a> was used with a <a target="_blank" href="https://reactjs.org/">React JS</a> UI. For the backend a dedicated API written in <a target="_blank" href="https://expressjs.com">Express</a> <a target="_blank" href="https://nodejs.org/">Node JS</a> uses a NoSQL <a target="_blank" href="https://nodejs.org/">Mongo</a> database for complex queries and revisioning.
+                </p>
+              <p>You can find a detailed feature walkthrough of the new Chronas version in the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0]}} onClick={ () => this.handleChange('tutorial') }>How To</a> section.</p>
               </div>
             </Tab>
             <Tab label='Statistics' value='statistics'>
@@ -355,7 +408,7 @@ class Information extends PureComponent {
               <br />
               <div className=''>
                 <br />
-                <h4>The Rules For Data Curation</h4>
+                <h4>Rules For Data Curation</h4>
                 <ol>
                   <li><i>No Vandalism</i>: This is not the place to paint an alternative history map. Vandalism hurts the project immensely (costly backups) and will get you banned.</li>
                   <li><i>Watch the tutorial videos</i> before you start editing. Some controls may lead to <i>unwanted</i> results.</li>
@@ -363,7 +416,7 @@ class Information extends PureComponent {
                   <li><i>Report</i> Users That Break those Rules.</li>
                 </ol>
                 <br />
-                <h4>The Rules For The Forums</h4>
+                <h4>Rules For The Forums</h4>
                 <ol>
                   <li><i>No Vandalism</i>: No Racism, Bigotry, or Offensive Behavior.</li>
                   <li>Ask <i>Clear and Specific Questions</i>, with <i>Time and Place in Mind</i>.</li>
@@ -373,6 +426,74 @@ class Information extends PureComponent {
                 </ol>
               </div>
               <br />
+            </Tab>
+            <Tab label='Contact' value='contact'>
+              <br />
+              <div className=''>
+                <br />
+                <h4>Developers</h4>
+                  <Card>
+                    <CardHeader
+                      title="Front and Backend Development"
+                      subtitle="Dietmar Aumann"
+                      avatar={<div style={{     float: 'left' }}><Avatar
+                        src="http://res.cloudinary.com/dzx3whvwy/image/upload/c_thumb,f_auto,g_faces,h_600,w_600/v1450816972/vs5gnxlqkt8or2o5posk.jpg"
+                        size={48}
+                      /><IconButton style={{ cursor: 'help', position: 'absolute', right: 10, top: 12 }} tooltip={'dietmar.aumann [at] gmail.com'} touch={true} tooltipPosition={'center-left'}>
+                        <IconEmail />
+                        </IconButton></div>}
+                      showExpandableButton={false}
+                      expandable={false}
+                    />
+                  </Card>
+                  <Card>
+                    <CardHeader
+                      title="DevOps, QA and Integration Testing"
+                      subtitle="Joachim Aumann"
+                      avatar={<div style={{     float: 'left' }}><Avatar
+                        src="https://avatars0.githubusercontent.com/u/20481694?s=460&v=4"
+                        size={48}
+                      /><IconButton style={{ cursor: 'help', position: 'absolute', right: 10, top: 12 }} tooltip={'aumann.joachim [at] gmail.com'} touch={true} tooltipPosition={'center-left'}>
+                        <IconEmail />
+                      </IconButton></div>}
+                      showExpandableButton={false}
+                      expandable={false}
+                    />
+                  </Card>
+                <br />
+                <br />
+                <h4>Contact</h4>
+                <p>Send us an email directly (hover over the email icon to display our email addresses) or use the form below:</p>
+                <Paper zDepth={2}>
+                  <TextField hintText="Your Email Address*" style={styles.form} underlineShow={false}
+                             value={this.state.emailAddress} onChange={(e) => this.setState({ emailAddress: e.target.value })}
+                  />
+                  <Divider />
+                  <TextField hintText="Subject*" style={styles.form} underlineShow={false}
+                             value={this.state.emailSubject} onChange={(e) => this.setState({ emailSubject: e.target.value })}
+                  />
+                  <Divider />
+                  <TextField
+                    style={styles.form}
+                    hintText="Message*"
+                    underlineShow={false}
+                    multiLine={true}
+                    rows={4}
+                    value={this.state.emailHtml} onChange={(e) => this.setState({ emailHtml: e.target.value })}
+                  />
+                  <Divider />
+                  <br />
+                  <RaisedButton label="Send" style={styles.form} onClick={this.sendContactEmail} />
+                  <br />
+                </Paper>
+              <Divider />
+              <br />
+              <div>
+                <Divider />
+                <br />
+                  © 2018 Dietmar & Joachim Aumann, Chronasorg
+              </div>
+              </div>
             </Tab>
             {/*<Tab label='Terms of Use' value='impressum'>
               <br />
@@ -384,7 +505,7 @@ class Information extends PureComponent {
               <br />
               <div>
                 <p>
-                  In development by Dietmar & Joachim Aumann
+                  © 2018 Dietmar & Joachim Aumann
                 </p>
               </div>
             </Tab>*/}
