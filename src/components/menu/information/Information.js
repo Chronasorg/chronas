@@ -448,7 +448,7 @@ class Information extends PureComponent {
                   </Card>
                   <Card>
                     <CardHeader
-                      title="DevOps, QA and Integration Testing"
+                      title="DevOps and development support"
                       subtitle="Joachim Aumann"
                       avatar={<div style={{     float: 'left' }}><Avatar
                         src="https://avatars0.githubusercontent.com/u/20481694?s=460&v=4"
