@@ -539,7 +539,6 @@ class RightDrawerRoutes extends PureComponent {
     }
 
     const { rightDrawerOpen, setRightDrawerVisibility } = this.props
-    console.debug('### MAP rightDrawerOpen', this.props, nextProps)
 
     /** Acting on store changes **/
     if (rightDrawerOpen !== nextProps.rightDrawerOpen) {
@@ -567,7 +566,6 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   componentDidMount () {
-    console.debug('### RightDrawerRoutes mounted with props', this.props)
     this._handleNewData(this.props.selectedItem, this.props.activeArea)
   }
 

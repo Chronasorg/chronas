@@ -144,7 +144,7 @@ export const ModMetaAdd = (props) => {
     </EmbeddedArrayInput>
     <EmbeddedArrayInput validate={required} source='content' label='Content (shows up in left content column, if it doesnt exist yet, you can create _media/ others_ and _markers_ to be added here)'>
       <SelectInput validate={required} source='contentType' choices={contentType} onChange={(val, v) => { props.setContentType(v) }} defaultValue={props.contentType} />
-      <AutocompleteInput options={{ fullWidth: true }} validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { console.debug(val); return props.setSearchSnippet(val) }} />
+      <AutocompleteInput options={{ fullWidth: true }} validate={required} source='name' choices={props.contentChoice} label='resources.areas.fields.participant' onSearchChange={(val) => { return props.setSearchSnippet(val) }} />
     </EmbeddedArrayInput>
     <TextInput options={{ fullWidth: true }} type='text' source='title' label='resources.areas.fields.title' />
     <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />

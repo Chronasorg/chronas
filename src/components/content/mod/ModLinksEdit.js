@@ -43,7 +43,6 @@ const CustomToolbar = props => <Toolbar {...props}>
     label="Done"
     submitOnEnter={true}
     handleSubmitWithRedirect={(redirect = this.props.redirect, value) => {
-      console.debug('history')
       this.props.history.goBack()
     }} />
 </Toolbar>
@@ -69,7 +68,7 @@ export const ModLinksEdit = (props) => {
         linkedItemData={props.linkedItemData}
         choices={props.linkedItemData.linkedItemKey2choice}
         onSearchChange={(val) => {return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, "linkedItemKey2choice", false) }}
-        onChange={(val) => {  console.debug('onChange!!', val, props); return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}}
+        onChange={(val) => { return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2 ) }}  validation={required} elStyle={{width: '60%', minWidth: '300px'}}
 
         source="linkedMedia" label="resources.links.fields.media_list" />
       <Divider />

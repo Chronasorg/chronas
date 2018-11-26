@@ -64,7 +64,6 @@ export const UserList = (props) => {
 };
 
 export const UserEdit = (props) => {
-  console.debug("props",props)
   return <Edit title={<span>UserEdit</span>} {...props}>
     <SimpleForm>
       <DisabledInput source="username" />

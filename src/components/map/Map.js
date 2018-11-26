@@ -476,7 +476,6 @@ class Map extends Component {
     const rightDrawerOpen = nextProps.rightDrawerOpen
 
     let mapStyleDirty = false
-    console.debug('### MAP componentWillReceiveProps', this.props, nextProps)
 
     /** Acting on store changes **/
     if (nextProps.history.location.pathname === '/discover') {
@@ -568,7 +567,6 @@ class Map extends Component {
     }
 
     if (nextProps.selectedItem.type === TYPE_MARKER) {
-      console.debug('!nextProps.selectedItem', nextProps.selectedItem)
       if (((nextProps.selectedItem.value || {}).coo || []).length === 2) {
         this._goToViewport({
           longitude: nextProps.selectedItem.value.coo[0],

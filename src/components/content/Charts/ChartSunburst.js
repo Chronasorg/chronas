@@ -132,7 +132,6 @@ export default class ChartSunburst extends React.Component {
   }
 
   _updateModeIndex = (increment) => {
-    console.debug('update chart mode')
     const newIndex = this.state.modeIndex + (increment ? 1 : -1)
     const modeIndex = newIndex < -1 ? MODE.length - 1 : newIndex >= MODE.length ? -1 : newIndex
     this.setState({ modeIndex })

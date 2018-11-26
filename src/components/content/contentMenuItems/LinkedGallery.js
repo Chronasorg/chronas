@@ -317,7 +317,6 @@ class LinkedGallery extends React.Component {
 
   componentWillReceiveProps = (nextProps) => {
     const { linkedItems } = this.props
-    console.debug('### LinkedGallery componentWillReceiveProps', this.props)
 
     const nextMediaSrc = nextProps.linkedItems.map( el => el.src )
     if (linkedItems && nextProps.linkedItems && ((linkedItems || []).length !== (nextProps.linkedItems || []).length || (linkedItems || []).some((el => !nextMediaSrc.includes(el.src))))) {
@@ -465,7 +464,6 @@ class LinkedGallery extends React.Component {
         this.setState({ showMax: (showMax + GALLERYBATCHSIZE)})
       }
       console.debug("bottom reached!",tileLength)
-
     }
   }
 

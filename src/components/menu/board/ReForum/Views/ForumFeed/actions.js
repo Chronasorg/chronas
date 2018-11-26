@@ -42,7 +42,6 @@ const findForumId = (state, forum) => {
 export const getDiscussions = (forumId, sortingMethod, qEntity = '', offset, limit) => {
   return fetchDiscussions(forumId, sortingMethod, qEntity, offset, limit).then(
         data => {
-          // console.debug(data)
           return [data.data, +data.headers['x-total-count']]
         },
         error => []

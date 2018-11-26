@@ -24,7 +24,6 @@ export class RevertButton extends Component {
 
   save = (redirect) => {
     const { basePath = '/resources/revisions', record = {}, isRedo = false } = this.props;
-    console.debug(record, this.props)
     this.props.crudUpdate(
       this.props.resource,
       record.id,
@@ -36,7 +35,6 @@ export class RevertButton extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    console.debug(nextProps,this.props.data)
     /*
     if (this.props.data !== nextProps.data) {
       this.setState({ record: nextProps.data }); // FIXME: erases user entry when fetch response arrives late

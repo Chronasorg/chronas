@@ -51,7 +51,6 @@ const ColoredNumberField = colored(NumberField);
 ColoredNumberField.defaultProps = NumberField.defaultProps;
 
 const rowStyle = (record) => {
-  console.debug("rowStylerowStylerowStylerowStyle",record)
   if (record.reverted) {
     return { backgroundColor: '#ff0001' }
   }

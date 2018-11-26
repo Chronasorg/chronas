@@ -29,7 +29,10 @@ class Profile extends Component {
       location,
       avatarUrl,
       translate,
+      bio,
+      website,
       username,
+      education,
       profile
     } = this.props;
 
@@ -43,14 +46,16 @@ class Profile extends Component {
     const authTypeIcon = (profile.authType) === 'github' ? <i className={classnames('fa fa-github-alt', 'UserProfile_gitIcon')}></i> : (profile.authType) === 'facebook' ? <i className={classnames('fa fa-facebook', 'UserProfile_gitIcon')}></i> : (profile.authType) === 'google' ? <i className={classnames('fa fa-google', 'UserProfile_gitIcon')}></i> : (profile.authType) === 'twitter' ? <i className={classnames('fa fa-twitter', 'UserProfile_gitIcon')}></i> : <i className={classnames('fa fa-chronas-alt', 'UserProfile_gitIcon')}></i>
 
     return (
-      <div className='UserProfile_container'>
+      <div><div className='UserProfile_container'>
         <div className='UserProfile_avatarContainer'>
           {finalAvatarUrl}
         </div>
         <div className='UserProfile_infoContainer'>
-          <div className='UserProfile_name'>{ name }</div>
+          <div className='UserProfile_name'>{ name } {education ? <span style={{ fontWeight: 200, fontSize: 16}}> ({education})</span> : ''}</div>
           <div className='UserProfile_gitHandler'> { authTypeIcon } { gitHandler }</div>
-          <div className='UserProfile_location'>member since { Moment(profile.createdAt).from(Moment()) }</div>
+          { website && <div className='UserProfile_website'>
+            <a target="_blank" href={website}>{website}</a></div>}
+          <div className='UserProfile_location' style={{ whiteSpace: 'nowrap' }}>member since { Moment(profile.createdAt).from(Moment()) }</div>
         </div>
         <div className='UserProfile_infoContainer'>
           { (localStorageUsername === gitHandler) ? <FlatButton
@@ -60,6 +65,11 @@ class Profile extends Component {
             label={translate('pos.edit')}
             style={customStyles.menuButtons} /> : null}
         </div>
+        </div>
+        { bio && <p style={{ padding: '2em' }}>
+        <span style={{ fontWeight: 800, paddingRight: '1em'}}>Bio:</span>
+          {bio}
+         </p>}
       </div>
     );
   }

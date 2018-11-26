@@ -579,7 +579,7 @@ class EpicTimeline extends React.Component {
                     /> :
                     <span style={{...styles.stepLabel, color: themes[theme].foreColors[0], background: (stepIndex === i ? themes[theme].highlightColors[0] : themes[theme].backColors[0]) }}>{epicLinkedArticles[i].date}</span>
                   }
-                  onClick={() => { console.debug(i, epicLinkedArticles[i].date); this._selectStepButton(i, epicLinkedArticles[i].date) }}>
+                  onClick={() => { this._selectStepButton(i, epicLinkedArticles[i].date) }}>
                   <div style={{
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',

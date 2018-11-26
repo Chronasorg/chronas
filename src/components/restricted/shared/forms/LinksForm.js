@@ -37,7 +37,6 @@ export class LinksForm extends Component {
   }
 
   handleSubmitWithRedirect = () => {
-    console.debug('history')
     this.props.history.goBack()
     return this.props.handleSubmit(values => { })
   }

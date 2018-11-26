@@ -90,13 +90,13 @@ class Login extends Component {
   login = (auth) => {
     const { userLogin, showNotification } = this.props
     userLogin({...auth, authType: AUTH_LOGIN}, this.props.location.state ? this.props.location.state.nextPathname : '/')
-    showNotification('auth.logging_in')
+    showNotification('aor.auth.logging_in')
   }
 
   signup = (auth) => {
     const { userSignup, showNotification } = this.props
     userSignup({...auth, authType: USER_SIGNUP}, this.props.location.state ? this.props.location.state.nextPathname : '/')
-    showNotification('auth.signing_up')
+    showNotification('aor.auth.signing_up')
   }
 
   handleClose = () => {
@@ -118,10 +118,10 @@ class Login extends Component {
       <div className='modal-body'>
         <p style={{ textAlign: 'center' }}><span className='auth-form-divider-text'>with one click:</span></p>
         <div className='social-signup-buttons'>
-          <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github' className='btn btn-link-github btn-block'><span className='entypo-social entypo-github' /><span className='signup-button__text'> Github</span></a></div>
-          <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google' className='btn btn-link-google btn-block'><span className='entypo-social entypo-google' /><span className='signup-button__text'> Google</span></a></div>
-          <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook' className='btn btn-link-facebook btn-block'><span className='entypo-social entypo-facebook' /><span className='signup-button__text'> Facebook</span></a></div>
-          <div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><span className='entypo-social entypo-twitter' /><span className='signup-button__text'> Twitter</span></a></div>
+          <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github' className='btn btn-link-github btn-block'><i className="fa fa-github-square signupBig"></i><span className='signup-button__text'> Github</span></a></div>
+          <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google' className='btn btn-link-google btn-block'><i className="fa fa-google-plus-square signupBig"></i><span className='signup-button__text'> Google</span></a></div>
+          <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook' className='btn btn-link-facebook btn-block'><i className="fa fa-facebook-square signupBig"></i><span className='signup-button__text'> Facebook</span></a></div>
+          <div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div>
         </div>
         <p className='auth-form-divider'><span className='auth-form-divider-text'>or</span></p>
         <form method='post' action='/signin' role='signin' noValidate='novalidate' className='auth-form'>
@@ -172,10 +172,10 @@ class Login extends Component {
       <div className='modal-body'>
         <p style={{ textAlign: 'center' }}><span className='auth-form-divider-text'>with a few clicks:</span></p>
         <div className='social-signup-buttons'>
-          <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github' className='btn btn-link-github btn-block'><span className='entypo-social entypo-github' /><span className='signup-button__text'> Github</span></a></div>
-          <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google' className='btn btn-link-google btn-block'><span className='entypo-social entypo-google' /><span className='signup-button__text'> Google</span></a></div>
-          <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook' className='btn btn-link-facebook btn-block'><span className='entypo-social entypo-facebook' /><span className='signup-button__text'> Facebook</span></a></div>
-          <div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><span className='entypo-social entypo-twitter' /><span className='signup-button__text'> Twitter</span></a></div>
+          <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github' className='btn btn-link-github btn-block'><i className="fa fa-github-square signupBig"></i><span className='signup-button__text'> Github</span></a></div>
+          <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google' className='btn btn-link-google btn-block'><i className="fa fa-google-plus-square signupBig"></i><span className='signup-button__text'> Google</span></a></div>
+          <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook' className='btn btn-link-facebook btn-block'><i className="fa fa-facebook-square signupBig"></i><span className='signup-button__text'> Facebook</span></a></div>
+          <div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div>
         </div>
         <p className='auth-form-divider'><span className='auth-form-divider-text'>or</span></p>
         <form method='post' action='/signup' role='signup' noValidate='novalidate' className='auth-form'>
@@ -235,6 +235,23 @@ class Login extends Component {
               </div>
               <div style={styles.input}>
                 <Field
+                  name='bio'
+                  component={renderInput}
+                  floatingLabelText={translate('aor.auth.bio')} multiLine={true} rows={2}
+                  disabled={submitting}
+                />
+              </div>
+              <div style={styles.input}>
+                <Field
+                  name='avatar'
+                  type='url'
+                  component={renderInput}
+                  floatingLabelText={translate('aor.auth.avatar')}
+                  disabled={submitting}
+                />
+              </div>
+              <div style={styles.input}>
+                <Field
                   name='website'
                   type='url'
                   component={renderInput}
@@ -281,9 +298,6 @@ class Login extends Component {
       <Dialog bodyStyle={{ overflow: 'auto', backgroundImage: themes[theme].gradientColors[0]}} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
         contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0 }} onRequestClose={this.handleClose} >
         <Card style={styles.card} >
-          <div style={styles.avatar}>
-            <Avatar backgroundColor={themes[theme].highlightColors[0]} icon={<LockIcon />} size={60} />
-          </div>
 
           {this.state.authMode === 'signIn' ? signInComponent : null}
           {this.state.authMode === 'signUp' ? signUpComponent : null}

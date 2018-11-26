@@ -91,7 +91,7 @@ class Configuration extends PureComponent {
                             onClick={() => changeLocale('fr')} />
             </CardText>
             <CardText>
-              <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.goFullScreen')}</div>
+              {/*<div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.goFullScreen')}</div>*/}
               <RaisedButton style={styles.button} label={translate('pos.goFullScreen')}
                             onClick={() => setFullscreen()} />
             </CardText>
@@ -112,9 +112,10 @@ class Configuration extends PureComponent {
                   return <MenuItem value={el.id}  primaryText={el.name} />
                 })}
               </SelectField>
+            </CardText>
+            <CardText>
               <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.theme.marker')}</div>
               <SelectField
-                floatingLabelText={translate('pos.markerType')}
                 value={ markerTheme }
                 onChange={ (event, index, value) => { changeMarkerTheme(value) } }
                 style={{ ...styles.label, color: themes[theme].foreColors[0] }}
@@ -124,7 +125,7 @@ class Configuration extends PureComponent {
                 hintStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
               >
                 { properties.markerOptions.map((el) => {
-                  return <MenuItem value={el.id}  primaryText={el.name} />
+                  return <MenuItem value={el.id} primaryText={el.name} />
                 })}
               </SelectField>
             </CardText>

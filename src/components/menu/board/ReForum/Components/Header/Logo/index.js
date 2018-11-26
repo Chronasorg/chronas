@@ -10,7 +10,6 @@ import {themes} from "../../../../../../../properties";
 
 const Logo = (props) => {
   const username = localStorage.getItem('chs_username')
-  console.debug("Logo", props)
   return (
     <div className='BoardLogo_logoContainer'>
       <div className='BoardLogo_logoTitle'>Chronas Community</div>

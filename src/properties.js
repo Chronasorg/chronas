@@ -664,9 +664,9 @@ export const properties = {
   ],
   markerOptions: [
     { name: 'Abstract', id: 'abstract' },
-    { name: 'Abstract (Painted)', id: 'abstract-painted' },
+    // { name: 'Abstract (Painted)', id: 'abstract-painted' },
     { name: 'Themed', id: 'themed' },
-    { name: 'Themed (Painted)', id: 'themed-painted' }
+    // { name: 'Themed (Painted)', id: 'themed-painted' }
   ],
   markerSize: 100,
   YOUTUBEOPTS: {

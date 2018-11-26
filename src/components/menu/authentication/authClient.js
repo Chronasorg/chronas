@@ -5,7 +5,7 @@ import { properties } from '../../../properties'
 
 export default (type, params) => {
   if (type === AUTH_LOGIN) {
-    const { username, avatar, password, email, first_name, last_name, education, website, authType } = params
+    const { username, avatar, bio, password, email, first_name, last_name, education, website, authType } = params
     if (authType === AUTH_LOGIN) {
       const request = new Request(properties.chronasApiHost + '/auth/login', {
         method: 'POST',
@@ -36,7 +36,7 @@ export default (type, params) => {
     else if (authType === USER_SIGNUP) {
       const request = new Request(properties.chronasApiHost + '/auth/signup', {
         method: 'POST',
-        body: JSON.stringify({ username, password, email, first_name, last_name, education, website }),
+        body: JSON.stringify({ username, password, avatar, email, first_name, last_name, education, bio, website }),
         headers: new Headers({ 'Content-Type': 'application/json' }),
       })
 

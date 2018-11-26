@@ -708,3 +708,146 @@ div.vis-tooltip {
   cursor: pointer;
   &:hover { opacity: 0.6 }
 }
+
+
+
+.social-signup-buttons {
+  display: table;
+  margin-bottom: 20px;
+  margin-left: -5px;
+  margin-right: -5px;
+  table-layout: fixed;
+  width: 100%;
+
+  .signup-button {
+    display: table-cell;
+    margin: 0;
+    padding-left: 5px;
+    padding-right: 5px;
+
+    .entypo-social {
+      font-size: 40px;
+      vertical-align: middle;
+    }
+
+    .btn {
+      position: relative;
+    }
+    .btn:hover,
+    .btn:focus {
+      top: -1px;
+    }
+    .btn:active {
+      top: 1px;
+    }
+  }
+}
+.signup-button {
+  .signupBig {
+    font-size: 60px !important;
+  }
+}
+.signup-button__text {
+  padding: 0px 0px 30px 10px;
+
+  display: none;
+}
+@media (min-width: 1200px) {
+  .signup-button__text {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 6px;
+  }
+}
+
+
+
+.auth-form-divider {
+  color: '#999';
+  margin-bottom: 1.5em;
+  margin-top: 1em;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+
+  &:after {
+    background-color: '#eee';
+    content: "";
+    left: 0;
+    top: 50%;
+    position: absolute;
+  }
+}
+.auth-form-divider-text {
+  //background-color: @body-bg;
+  display: inline-block;
+  padding: 0 1em;
+  position: relative;
+  z-index: 1;
+
+  .modal & {
+    background-color: white;
+  }
+}
+
+.auth-form {
+  .form-groups {
+    margin-bottom: 1em;
+  }
+  .form-group {
+    margin-bottom: 0;
+  }
+  .form-control {
+    border-radius: 0;
+    box-shadow: none;
+    height: auto;
+    margin-top: -1px;
+    padding-bottom: .75em;
+    padding-top: .75em;
+    -webkit-appearance: none;
+
+
+    &:focus {
+      //box-shadow: 0 0 5px -2px fade(@link-color, 60%), 0 1px 2px '#999'er;
+      position: relative;
+    }
+  }
+  //.form-control--first {
+  //  .border-top-radius( 4px );
+  //}
+  //.form-control--last {
+  //  .border-bottom-radius( 4px );
+  //}
+}
+
+
+// social links
+
+.btn-link-github {
+    color: #242a2e;
+  &:hover {
+    color: #242a2e;
+    opacity: 0.5;
+  }
+}
+.btn-link-facebook {
+    color: #4267b2;
+  &:hover {
+    color: #4267b2;
+    opacity: 0.5;
+  }
+}
+.btn-link-google {
+    color: #ea4735;
+  &:hover {
+    color: #ea4735;
+    opacity: 0.5;
+  }
+}
+.btn-link-twitter {
+    color: #1ea1f2;
+  &:hover {
+    color: #1ea1f2;
+    opacity: 0.5;
+  }
+}

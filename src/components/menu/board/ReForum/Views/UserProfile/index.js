@@ -85,6 +85,9 @@ class UserProfile extends Component {
       username,
       avatar,
       github,
+      website,
+      bio,
+      education,
       discussions,
       opinions,
     } = profile;
@@ -105,18 +108,21 @@ class UserProfile extends Component {
             gitHandler={username}
             avatarUrl={avatar}
             profile={profile}
+            website={website}
+            bio={bio}
+            education={education}
           />
           <div className='user_stats'>
-            { profile.karma && statItem('Total Points', profile.karma) }
-            { profile.karma && statItem('Login Count', profile.loginCount) }
-            { profile.karma && statItem('Vote Count', profile.count_voted) }
-            { profile.karma && statItem('Create Count', profile.count_created) }
-            { profile.karma && statItem('Edit Count', profile.count_updated) }
-            { profile.karma && statItem('Delete Count', profile.count_deleted) }
-            { profile.karma && statItem('Mistakes Count', profile.count_mistakes) }
-            { profile.karma && statItem('Revert Count', profile.count_reverted) }
-            { profile.karma && statItem('Linked Count', profile.count_linked) }
-            { profile.karma && statItem('Vote Count', profile.count_voted) }
+            { (typeof profile.karma !== "undefined") && statItem('Total Points', profile.karma) }
+            { (typeof profile.loginCount !== "undefined") && statItem('Login Count', profile.loginCount) }
+            { (typeof profile.count_voted !== "undefined") && statItem('Vote Count', profile.count_voted) }
+            { (typeof profile.count_created !== "undefined") && statItem('Create Count', profile.count_created) }
+            { (typeof profile.count_updated !== "undefined") && statItem('Edit Count', profile.count_updated) }
+            { (typeof profile.count_deleted !== "undefined") && statItem('Delete Count', profile.count_deleted) }
+            { (typeof profile.count_mistakes !== "undefined") && statItem('Mistakes Count', profile.count_mistakes) }
+            { (typeof profile.count_reverted !== "undefined") && statItem('Revert Count', profile.count_reverted) }
+            { (typeof profile.count_linked !== "undefined") && statItem('Linked Count', profile.count_linked) }
+            { (typeof profile.count_voted !== "undefined") && statItem('Vote Count', profile.count_voted) }
           </div>
           <FeedBox
             customTheme={themes[theme]}

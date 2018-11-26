@@ -47,7 +47,6 @@ export class AreaForm extends Component {
         if (res.status === 200) {
           const { start, end = start } = values
           const waitForCompletion = (+end - +start) < 11
-          console.debug(res, this.props)
           if (waitForCompletion) {
             this.props.showNotification("Area Updated")
           } else {

@@ -34,7 +34,6 @@ export class ModGeoInput extends Component {
   };
 
   handleChange = (eventOrValue, val) => {
-    console.debug("geooo handleChange", eventOrValue, val)
     this.props.onChange(eventOrValue);
     this.props.input.onChange(eventOrValue);
 
@@ -43,10 +42,6 @@ export class ModGeoInput extends Component {
 
     this.props.setModData(prevLatLng)
   };
-
-  componentWillReceiveProps(nextProps) {
-    console.debug("geooo componentWillReceiveProps", nextProps,this.props)
-  }
 
   render() {
     const {
@@ -62,7 +57,6 @@ export class ModGeoInput extends Component {
       type,
     } = this.props;
 
-    console.debug(this.props)
     const meta={ touched: true, error: false }
     if (typeof meta === 'undefined') {
       throw new Error(

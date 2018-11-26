@@ -252,7 +252,6 @@ class App extends Component {
       delete parsedQuery.target
 
       const decodedToken = decodeJwt(token)
-      console.debug('decodedToken',decodedToken)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)

@@ -15,14 +15,8 @@ import Counts from '../../Components/Dashboard/Counts';
 import ForumBox from '../../Components/Dashboard/ForumBox';
 
 class Dashboard extends Component {
-  componentDidMount() {
-    console.debug("admindashboard")
-    // get information needed for dashboard
-    // this.props.getAdminDashboardInfo();
-  }
 
   render() {
-    console.debug("admindashboard")
     const {
       discussionCount,
       opinionCount,

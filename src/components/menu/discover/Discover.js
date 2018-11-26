@@ -266,7 +266,6 @@ class Discover extends PureComponent {
   }
 
   componentWillMount = () => {
-    console.debug('componentWillMountcomponentWillMount')
     if (this.props.selectedYear !== this.state.currentYearLoaded) {
       this._updateImages(this.props.selectedYear)
     }
@@ -278,7 +277,6 @@ class Discover extends PureComponent {
 
   componentWillReceiveProps = (nextProps) => {
     const { selectedYear } = this.props
-    console.debug('### DISCOVER componentWillReceiveProps', this.props)
 
     /** Acting on store changes **/
     if (nextProps.selectedYear !== selectedYear) {
@@ -722,7 +720,6 @@ class Discover extends PureComponent {
                       <img src={tile.thumbnail || tile.src}
                         onError={() => this._removeTile(tabKey[0], tile.src)}
                         onClick={() => {
-                          console.debug('!!!',tile)
                           this.setState({ selectedImage: {
                               src: tile.src || tile.original || tile.poster,
                               year: tile.subtitle || tile.originalTitle,
@@ -777,7 +774,6 @@ class Discover extends PureComponent {
                         <img src={tile.poster || '/images/placeholder-epic.png'}
                           onError={() => this._removeTile(tabKey[0], tile.src)}
                           onClick={() => {
-                            console.debug(tile)
                             this.setState({ selectedImage: {
                               src: tile.src,
                               poster: tile.poster,

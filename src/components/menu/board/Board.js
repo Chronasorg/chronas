@@ -100,7 +100,26 @@ class Board extends PureComponent {
   }
 
   componentDidMount = () => {
-    this.setState({ hiddenElement: false })
+    let toUpdateState = { hiddenElement: false }
+    const potentialNewForum = (((this.props.history || {}).location || {}).pathname || '').substr(11) || ((this.props.location || {}).pathname || '').substr(11)
+    if (potentialNewForum === 'features' || potentialNewForum === 'issues') {
+      toUpdateState.currentForum = potentialNewForum
+    } else {
+      toUpdateState.currentForum = 'general'
+    }
+    this.setState(toUpdateState)
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    const { location, history } = nextProps
+    const { currentForum } = this.state
+
+    const potentialNewForum = (((history || {}).location || {}).pathname || '').substr(11) || ((location || {}).pathname || '').substr(11)
+
+    if (currentForum !== potentialNewForum && (potentialNewForum === 'features' || potentialNewForum === 'issues')) {
+      this.setState({ currentForum: potentialNewForum })
+    }
+
   }
 
   componentWillUnmount = () => {
@@ -136,6 +155,7 @@ class Board extends PureComponent {
     }
 
     const restrictPage = (component, commonProps, customProps) => {
+      const { theme } = this.props
       const RestrictedPage = routeProps => (
         <Restricted location={{ pathname: 'community' }} authParams={{ routeProps }} {...routeProps}>
           <Dialog
@@ -147,8 +167,9 @@ class Board extends PureComponent {
             style={{ backgroundColor: 'transparent', overflow: 'auto' }}
             titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
             autoScrollBodyContent={false}
-
-            bodyStyle={{ backgroundImage: '#fff' }}
+            bodyStyle={{
+              backgroundImage: themes[theme].gradientColors[0]
+            }}
             open
             // contentStyle={styles.dialogStyle}
             onRequestClose={this.handleClose}>

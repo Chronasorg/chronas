@@ -129,7 +129,6 @@ export class SelectArrayInput extends Component {
   };
 
   handleUpdateInput = searchText => {
-    console.debug(searchText)
     this.setState({ searchText });
     this.props.onSearchChange(searchText);
     const { setFilter } = this.props;

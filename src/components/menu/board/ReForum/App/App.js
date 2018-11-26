@@ -37,11 +37,6 @@ class AppContainer extends Component {
     updateCurrentForum(currentForum);
   }
 
-  componentWillReceiveProps(nextProps) {
-    console.debug(nextProps)
-    console.debug(this.props)
-  }
-
   // componentDidUpdate() {
   //   const {
   //     forums,
@@ -59,7 +54,6 @@ class AppContainer extends Component {
   // }
 
   render() {
-    console.debug('rendering community wrapper with props:', this.props)
     const { forums, users, updateCurrentForum } = this.props;
 
     // render only if we get the forum lists

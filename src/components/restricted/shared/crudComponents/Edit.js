@@ -28,7 +28,6 @@ export class Edit extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.debug("willreceiveprops", nextProps)
     if (this.props.data !== nextProps.data) {
       this.setState({ record: nextProps.data }); // FIXME: erases user entry when fetch response arrives late
       if (this.fullRefresh) {
@@ -57,12 +56,10 @@ export class Edit extends Component {
   }
 
   updateData(resource = this.props.resource, id = this.props.id) {
-    console.debug("updateData with props", this.props)
     // this.props.crudGetOne(resource, id, this.getBasePath());
   }
 
   save = (record, redirect) => {
-    console.debug("savedata with record/props", record,redirect,this.props)
     // this.props.crudUpdate(
     //   this.props.resource,
     //   this.props.id,
@@ -74,7 +71,6 @@ export class Edit extends Component {
   };
 
   render() {
-    console.debug("render with props",this.props)
     const {
       actions = <EditActions />,
       children,
@@ -142,11 +138,6 @@ export class Edit extends Component {
 
 
 function mapStateToProps(state, props) {
-  console.debug(state.admin.resources[props.resource]
-    ? console.debug(JSON.stringify(state.admin.resources[props.resource].data[
-      decodeURIComponent(props.match.params.id)
-      ]))
-    : null)
   return {
     id: decodeURIComponent(props.match.params.id),
     data: state.admin.resources[props.resource]

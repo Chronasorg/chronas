@@ -18,7 +18,7 @@ class AdminHeader extends Component {
   }
 
   render () {
-    const { translate, updateCurrentForum, history } = this.props
+    const { translate, updateCurrentForum, theme, history } = this.props
     // const {
     //   authenticated,
     //   name,
@@ -30,10 +30,11 @@ class AdminHeader extends Component {
     return (
       <div className={classnames('appLayout_constraintWidth')}>
         <div className='headerTop'>
-          <Logo translate={translate} history={history} />
+          <Logo translate={translate}  theme={theme} history={history} />
           Welcome Admin
         </div>
         <NavigationBar
+          theme={theme}
           // updateCurrentForum={updateCurrentForum}
           navigationLinks={this.renderNavLinks()}
         />

@@ -246,10 +246,6 @@ class LinkedQAA extends React.Component {
     this.setState({ hiddenElement: true })
   }
 
-  componentWillReceiveProps = (nextProps) => {
-    console.debug('### LinkedQAA componentWillReceiveProps', this.props, nextProps)
-  }
-
   _minimize = () => {
     this.props.setContentMenuItem('')
   }

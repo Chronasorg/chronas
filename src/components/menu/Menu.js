@@ -82,7 +82,7 @@ class Menu extends PureComponent {
     localStorage.removeItem('chs_avatar')
     localStorage.removeItem('chs_privilege')
     localStorage.removeItem('chs_id')
-    showNotification("auth.logged_out")
+    showNotification("aor.auth.logged_out")
     logout()
   }
 
@@ -251,7 +251,7 @@ class Menu extends PureComponent {
           </IconButton>
           <IconButton
             tooltipPosition="bottom-right"
-            tooltip={translate(isLoggedIn ? 'auth.logout' : 'auth.login')}
+            tooltip={translate(isLoggedIn ? 'aor.auth.logout' : 'aor.auth.login')}
             tooltipStyles={tooltip}
             onClick={isLoggedIn ? this.handleLogout : userLogout }
             className="logout"

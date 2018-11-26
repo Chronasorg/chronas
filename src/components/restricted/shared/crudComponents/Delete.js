@@ -75,7 +75,7 @@ class Delete extends Component {
       (resource === 'metadata') ? '/discover' : this.getBasePath()
     )
     if (account) {
-      showNotification("auth.logged_out")
+      showNotification("aor.auth.logged_out")
       logout()
     }
     else if (resource === 'markers') {
