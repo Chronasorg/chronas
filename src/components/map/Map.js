@@ -1114,15 +1114,13 @@ class Map extends Component {
             const endYear = pEndYear ? +pEndYear : (startYear + 1)
 
             if (subtype.includes("ew")) {
-              const cofficient = 40 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
-              battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl) => {
-                const iconType = (Math.round(Math.random())) ? 'eb1' : 'eb2'
-                const backgroundPosition = 'url(/images/' + markerTheme + '-atlas.png) -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][iconType] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][iconType] || {}).y * cofficient)) + 'px'
+              battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl, index) => {
+                const iconType = (index % 3) ? 'battleIcon1' : 'battleIcon2'
 
                 const rawNext = getPercent(startYear, endYear, bEl[1])
                 const percentage = (rawNext) * 100 + '%'
 
-                divBlocks = divBlocks + "<img class='tsTicks' src='/images/transparent.png' title='" + bEl[0] + "'; style='margin-right: 0em; z-index: 5; margin-left: " + percentage + '; height: 38px; width: 15px; background: ' + backgroundPosition + '; background-size: ' + backgroundSize + "' />"
+                divBlocks = divBlocks + "<img class='tsTicks " + iconType + "' src='/images/transparent.png' title='" + bEl[0] + "'; style='margin-left: " + percentage + "; ' />"
               })
             }
 

@@ -45,7 +45,8 @@ body {
   //top: 5px!important;
 }
 
-.tsTicks { display: none }
+.tsTicks {
+  display: none }
 .vis-item:hover {
   .tsTicks { display: block }
 }
@@ -642,7 +643,7 @@ svg.LoadingCircle_rotate {
   //border-right: 1px solid #42adec;
   position: absolute;
   height: 36px;
-  margin-top: -38px;
+  margin-top: -30px;
 }
 
 .vis-item .vis-item-overflow {
