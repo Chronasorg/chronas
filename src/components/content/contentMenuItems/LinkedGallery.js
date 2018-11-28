@@ -258,16 +258,16 @@ class LinkedGallery extends React.Component {
       hiddenElement: true,
       tileData: [],
       categories: [
-       'artefacts',
-       'articles',
-       'stories',
-       'people',
-       'cities',
-       'battles',
-       'misc',
-       'v',
-       'audios',
-        'ps'
+          ['artefacts','Artefacts'],
+          ['articles','Articles'],
+          ['stories','Stories'],
+          ['people','People'],
+          ['cities','Cities'],
+          ['battles','Battles'],
+          ['misc','Misc'],
+          ['v','Video'],
+          ['audios','Audio'],
+          ['ps','Primary Sources (text)']
       ]
     }
   }
@@ -542,6 +542,7 @@ class LinkedGallery extends React.Component {
         zDepth={3} style={{
         position: 'fixed',
         left:  (isMinimized ? '-52px' : '-574px'),
+        zIndex: 2147483647,
         top: '4px',
         padding: '0em',
         transition: 'all .3s ease-in-out',
@@ -578,7 +579,7 @@ class LinkedGallery extends React.Component {
                 value={filtered}
                 multiple={true}
               >
-                {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category} primaryText={category} disabled={!tileData || !tileData.some(linkedItem => linkedItem.subtype === category)} />)}
+                {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category[0]} primaryText={category[1]} disabled={!tileData || !tileData.some(linkedItem => linkedItem.subtype === category[0])} />)}
               </IconMenu>
               <IconMenu
                 iconButtonElement={<IconButton tooltip='Add Media'><ContentLink /></IconButton>}
@@ -602,7 +603,7 @@ class LinkedGallery extends React.Component {
                     subtitleStyle={styles.subtitle}
                     title={tile.subtitle}
                     subtitle={tile.title}
-                    actionIcon={slideButtons(tile.subtype, tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0])}
+                    actionIcon={slideButtons(tile.subtype, tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0][0])}
                     actionPosition='right'
                     titlePosition='bottom'
                     titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
@@ -629,7 +630,7 @@ class LinkedGallery extends React.Component {
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
                       subtitle={tile.title}
-                      actionIcon={slideButtons(tile.subtype, tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
+                      actionIcon={slideButtons(tile.subtype, tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0])}
                       actionPosition='right'
                       titlePosition='bottom'
                       titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
@@ -654,7 +655,7 @@ class LinkedGallery extends React.Component {
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
                       subtitle={tile.title}
-                      actionIcon={slideButtons(tile.subtype, tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories)}
+                      actionIcon={slideButtons(tile.subtype, tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), categories[0])}
                       actionPosition='right'
                       titlePosition='bottom'
                       titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'

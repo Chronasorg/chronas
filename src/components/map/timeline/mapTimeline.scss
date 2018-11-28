@@ -100,6 +100,17 @@
   height: 24px;
 }
 
+
+.mapTimeline {
+  &.discoverActive {
+    .vis-text {
+      text-shadow: none;
+      font-weight: 600;
+      color: white;
+    }
+  }
+}
+
 .mapTimeline {
 
   .vis-text {

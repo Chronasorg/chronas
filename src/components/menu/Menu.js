@@ -102,7 +102,7 @@ class Menu extends PureComponent {
           tooltipPosition="bottom-right"
           tooltip={translate("pos.about")}
           tooltipStyles={tooltip}
-          onClick={() => localStorage.setItem('chs_info_section', 'about')}
+          onClick={() => localStorage.setItem('chs_info_section', 'welcome')}
           iconStyle={styles.mainLogo}
         >
           <SVG

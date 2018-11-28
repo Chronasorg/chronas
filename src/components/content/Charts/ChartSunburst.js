@@ -213,6 +213,7 @@ export default class ChartSunburst extends React.Component {
         position: 'fixed',
         left:  (isMinimized ? '-52px' : '-574px'),
         top: '4px',
+        zIndex: 2147483647,
         padding: '0em',
         transition: 'all .3s ease-in-out',
         background: (isMinimized ? 'white' : themes[theme].backColors[1]),

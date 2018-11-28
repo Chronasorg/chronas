@@ -53,7 +53,7 @@ class FeedBox extends Component {
       customTheme
     } = this.props;
 
-    const discussionBoxTitle = (currentForum === properties.QAID) ? 'Questions' : (type === 'pinned') ? 'Pinned' : 'Threads'
+    const discussionBoxTitle = (currentForum === properties.QAID) ? ((type === 'pinned') ? 'Pinned' : 'Questions') : (type === 'pinned') ? 'Pinned' : 'Threads'
 
     return (
       <div className='FeedBox_container'>

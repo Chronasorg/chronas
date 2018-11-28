@@ -215,6 +215,7 @@ class Discover extends PureComponent {
       slideIndex: 0,
       currentYearLoaded: 3000,
       hiddenElement: true,
+      isFetchingImages: true,
       slidesData: [],
       tileData: {
         tilesHighlightData: [],
@@ -318,6 +319,7 @@ class Discover extends PureComponent {
   }
 
   _updateImages = (selectedYear) => {
+    this.setState({ isFetchingImages: true })
     // Load slides data
     axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&type=i&end=150&discover=artefacts,people,cities,battles,misc,ps,v,e')
       .then((allData) => {
@@ -391,6 +393,7 @@ class Discover extends PureComponent {
         tileData['tilesEpicsData'] = newEpicData.sort((a, b) => (+b.score || 0) - (+a.score || 0))
 
         this.setState({
+          isFetchingImages: false,
           slidesData: newSlideData,
           currentYearLoaded: selectedYear,
           tileData
@@ -538,7 +541,7 @@ class Discover extends PureComponent {
 
   render () {
     const { selectedYear, translate, rightDrawerOpen, theme, setRightDrawerVisibility } = this.props
-    const { slidesData, selectedImage, slideIndex, tileData, tabDataKeys } = this.state
+    const { slidesData, selectedImage, slideIndex, tileData, tabDataKeys, isFetchingImages } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
 
     const hasSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
@@ -812,7 +815,7 @@ class Discover extends PureComponent {
                               </Player>
                             }
                         </GridTile>
-                    )) : <LoadingCircle theme={theme} title={translate('pos.loading')} />}
+                    )) : ( isFetchingImages ? <LoadingCircle theme={theme} title={translate('pos.loading')} /> : <span>No items found</span>)}
                 </GridList>
               </div> : <div />
             ))}

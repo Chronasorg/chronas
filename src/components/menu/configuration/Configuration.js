@@ -61,7 +61,7 @@ class Configuration extends PureComponent {
             <div>
               <Toolbar style={styles.toolbar}>
                 <ToolbarGroup>
-                  <ToolbarTitle style={{ ...styles.label, color: themes[theme].foreColors[0] }} text={translate('pos.configuration')} />
+                  <ToolbarTitle style={{ ...styles.label, color: themes[theme].foreColors[0], minWidth: 400 }} text={translate('pos.configuration')} />
                 </ToolbarGroup>
                 <ToolbarGroup>
                   <IconButton
@@ -91,12 +91,12 @@ class Configuration extends PureComponent {
                             onClick={() => changeLocale('fr')} />
             </CardText>
             <CardText>
-              {/*<div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.goFullScreen')}</div>*/}
-              <RaisedButton style={styles.button} label={translate('pos.goFullScreen')}
+              <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.goFullScreen')}</div>
+              <RaisedButton style={styles.button} label={'Toggle'}
                             onClick={() => setFullscreen()} />
             </CardText>
 
-            <CardText>
+            <CardText style={{ float: 'left' }}>
               <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.theme.font')}</div>
               <SelectField
                 floatingLabelText={translate('pos.fontType')}
@@ -113,12 +113,12 @@ class Configuration extends PureComponent {
                 })}
               </SelectField>
             </CardText>
-            <CardText>
+            <CardText style={{ float: 'right', marginTop: 14 }}>
               <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.theme.marker')}</div>
               <SelectField
                 value={ markerTheme }
                 onChange={ (event, index, value) => { changeMarkerTheme(value) } }
-                style={{ ...styles.label, color: themes[theme].foreColors[0] }}
+                style={{ ...styles.label, color: themes[theme].foreColors[0], top: 10 }}
                 floatingLabelStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
                 inputStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
                 textareaStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
@@ -130,19 +130,19 @@ class Configuration extends PureComponent {
               </SelectField>
             </CardText>
 
-            TEXT FONT SELECT
+            {/*TEXT FONT SELECT*/}
 
-            * add locked feature toggle (automatically detect timestamped waypoints to wiki article)
+            {/* add locked feature toggle (automatically detect timestamped waypoints to wiki article)*/}
 
-            default markers/ area/ year (will be overwritten by url)
-            cluster
-            show population/ desnsity
-            image marker size
-            marker size
+            {/*default markers/ area/ year (will be overwritten by url)*/}
+            {/*cluster*/}
+            {/*show population/ desnsity*/}
+            {/*image marker size*/}
+            {/*marker size*/}
 
-            LOCKED SECTION
+            {/*LOCKED SECTION*/}
 
-            theme google earth + artsandculture.google.com + material ui 1.0
+            {/*theme google earth + artsandculture.google.com + material ui 1.0*/}
           </Card>
         </Dialog>
     )

@@ -267,6 +267,7 @@ class LinkedQAA extends React.Component {
       <Paper zDepth={3} style={{
         position: 'fixed',
         left:  (isMinimized ? '-52px' : '-574px'),
+        zIndex: 2147483647,
         top: '4px',
         padding: '0em',
         transition: 'all .3s ease-in-out',

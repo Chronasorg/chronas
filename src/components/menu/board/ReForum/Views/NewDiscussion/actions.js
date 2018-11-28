@@ -47,8 +47,8 @@ export const postDiscussion = (userId, forumId, currentForum, currentDiscussion,
     }
 
     if (!qId && (tags === null || tags.length === 0)) {
-      validated = false;
-      return 'Please provide some tags.'
+      // validated = false;
+      // return 'Please provide some tags.'
     }
     else if (qId) {
       tags.push(qId)

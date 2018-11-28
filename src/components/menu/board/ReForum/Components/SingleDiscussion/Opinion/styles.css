@@ -176,7 +176,7 @@
   width: 200px;
 }
 
-.user_stats .FeedBox_discussionsSmall { text-align: right; width: 180px; }
+.user_stats .FeedBox_discussionsSmall { text-align: right; width: 150px; }
 .user_stats .FeedBox_title {
   font-weight: 700;
   letter-spacing: .5px;

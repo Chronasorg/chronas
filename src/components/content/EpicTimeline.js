@@ -408,7 +408,7 @@ class EpicTimeline extends React.Component {
         title: imageItem.name || imageItem.title || (imageItem.data || {}).title || ((imageItem || {}).properties || {}).n,
         subtype: imageItem.subtype || imageItem.properties.t,
         source: imageItem.source || (imageItem.data || {}).source || ((imageItem || {}).properties || {}).src,
-        subtitle: imageItem.subtitle || imageItem.year || ((imageItem || {}).properties || {}).n,
+        subtitle: ((imageItem || {}).properties || {}).y || imageItem.year || imageItem.subtitle || ((imageItem || {}).properties || {}).n,
         score: ((imageItem || {}).properties || {}).s || imageItem.score,
         date:  ((imageItem || {}).properties || {}).y || imageItem.year
       }

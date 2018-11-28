@@ -198,7 +198,7 @@ export default class DeckGLOverlay extends Component {
             geoData: nextProps.geoData,
             showCluster,
           }),
-          opacity: 0.8,
+          opacity: 1,
           pickable: true,
           iconAtlas: showCluster
             ? ('/images/themed-cluster-atlas.png')// ('/images/' + markerTheme + '-cluster-atlas.png')
@@ -211,7 +211,7 @@ export default class DeckGLOverlay extends Component {
           getColor: (d) => {
             return d.subtype === 'cp' ? RGBAtoArray((metadata['ruler'][(d.capital.find((ell) => {
               return ell[0] <= +selectedYear && ell[1] >= +selectedYear
-            }) || [])[2]] || [])[1]) || [0, 0, 0, 100] : [0, 0, 0, 100]
+            }) || [])[2]] || [])[1]) || [0, 0, 0, 255] : [0, 0, 0, 255]
           },
           onHover: e => onHover(e),
           onClick: onMarkerClick,
@@ -265,7 +265,7 @@ export default class DeckGLOverlay extends Component {
           getColor: (d) => {
             return d.subtype === 'cp' ? RGBAtoArray((metadata['ruler'][(d.capital.find((ell) => {
               return ell[0] <= +selectedYear && ell[1] >= +selectedYear
-            }) || [])[2]] || [])[1]) || [0, 0, 0, 100] : [0, 0, 0, 100]
+            }) || [])[2]] || [])[1]) || [0, 0, 0, 255] : [0, 0, 0, 255]
           },
           onHover: e => onHover(e),
           onClick: onMarkerClick,
@@ -300,7 +300,7 @@ export default class DeckGLOverlay extends Component {
           )),
           // outline: true,
           radiusScale: 10000,
-          opacity: 0.6,
+          opacity: 1,
           // strokeWidth: 3,
           autoHighlight: true,
           highlightColor: RGBAtoArray(theme.highlightColors[0]),

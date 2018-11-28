@@ -270,6 +270,7 @@ class Content extends Component {
                 subtype: imageItem.subtype || imageItem.properties.t,
                 source: (imageItem.data || {}).source || imageItem.properties.src,
                 subtitle: imageItem.year || imageItem.properties.n,
+                year: imageItem.year || imageItem.properties.y,
                 score: imageItem.score || imageItem.properties.s,
               })
             })

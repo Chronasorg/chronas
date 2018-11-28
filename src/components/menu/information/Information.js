@@ -204,11 +204,9 @@ class Information extends PureComponent {
           <span className='FeedBox_title'>{title}</span>
         </div>
         <div className='FeedBox_discussionsSmall'>
-          { tooltip && <IconButton style={{ marginTop: -10, top: -4 }} tooltip={tooltip} touch tooltipPosition={tooltipPosition}>
+          { tooltip && <IconButton style={{ margin: '-10px 0px -18px', top: -38, left: 12 }} tooltip={tooltip} touch tooltipPosition={tooltipPosition}>
             <IconHelp />
           </IconButton>}
-          <br />
-          <br />
           <h3>{ value }</h3>
         </div>
       </div>
@@ -237,8 +235,8 @@ class Information extends PureComponent {
     }
 
     return (
-      <Dialog bodyStyle={{ background: themes[theme].backColors[0] /* backgroundImage: themes[theme].gradientColors[0] */ }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal modalMenu'} titleStyle={{ overflow: 'auto' }} overlayStyle={{ overflow: 'auto' }} style={{ overflow: 'auto' }}
-        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, height: 680, maxWidth: '1024px' }} onRequestClose={this.handleClose}>
+      <Dialog bodyStyle={{ maxHeight: 800, background: themes[theme].backColors[0] /* backgroundImage: themes[theme].gradientColors[0] */ }} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal modalMenu'} titleStyle={{ overflow: 'auto' }} overlayStyle={{ overflow: 'auto' }} style={{ overflow: 'auto' }}
+        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, height: 680, maxHeight: 800, minWidth: 900, maxWidth: '1024px' }} onRequestClose={this.handleClose}>
         <Card style={styles.card}>
           <div>
             <Toolbar style={styles.toolbar}>
@@ -272,6 +270,8 @@ class Information extends PureComponent {
             inkBarStyle={{
               backgroundColor: themes[theme].highlightColors[0]
             }}
+            contentContainerStyle={{ maxHeight: 800}}
+            tabTemplateStyle={{ maxHeight: 801}}
             value={this.state.tabForm}
             onChange={this.handleChange}
             >

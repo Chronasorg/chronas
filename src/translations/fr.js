@@ -1,13 +1,18 @@
 export default {
     pos: {
         search: 'Rechercher',
-        configuration: 'Configuration2',
+        configuration: 'Pas encore implémenté!',
         discover: 'Discover2',
         language: 'Langue',
+      goFullscreen: 'Plein écran',
+      fontType: 'type de police',
         theme: {
             name: 'Theme',
             light: 'Clair',
             dark: 'Obscur',
+            luther: 'Concordia',
+            font: 'Fonte',
+            marker: 'Marqueur'
         },
         dashboard: {
             monthly_revenue: 'CA à 30 jours',

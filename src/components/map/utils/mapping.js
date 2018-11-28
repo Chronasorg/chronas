@@ -17,8 +17,8 @@ const utils = {
   relStops: [],
 
   _scaleLogText: scale.scaleLog()
-    .domain([1, 10000])
-    .range([0, 5000]),
+    .domain([1, 100000])
+    .range([0, 50000]),
 
   isTouching: function (array1, array2) {
     for (var i = 0; i < array1.length; i++) {
@@ -309,8 +309,8 @@ const utils = {
         }
 
         multiLine.properties.n = tmpName
-        multiLine.properties.d = (this._scaleLogText(turf.lineDistance(multiLine)) / Math.pow(tmpName.length, .2))
-        // console.debug('tmpName', tmpName, (this._scaleLogText(turf.lineDistance(multiLine)) / Math.pow(tmpName.length, .2)), this._scaleLogText(turf.lineDistance(multiLine)),Math.pow(tmpName.length, .2))
+        multiLine.properties.d = (/*this._scaleLogText*/(turf.lineDistance(multiLine)) / Math.pow(tmpName.length, .2))
+        console.debug('tmpName', tmpName, multiLine.properties.d)
         // console.debug('----spaceforletter----', turf.lineDistance(multiLine)/ tmpName.length)
         myLineColl.features.push(multiLine)
 

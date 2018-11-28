@@ -120,7 +120,7 @@ export default {
     edit: 'Edit',
     fontType: 'Font Type',
     markerType: 'Marker Type',
-    goFullScreen: 'Toggle Fullscreen Mode',
+    goFullScreen: 'Fullscreen',
     noLinkedContents: 'There are no linked media items yet, consider adding and linking one.',
     downvote: 'Inappropriate, broken or inaccurate',
     feedbackSuccess: 'Thanks for curating the data!',
@@ -150,6 +150,7 @@ export default {
     theme: {
       name: 'Theme',
       dark: 'Dark',
+      luther: 'Concordia',
       marker: 'Marker',
       light: 'Light',
       font: 'Font'
