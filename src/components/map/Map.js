@@ -790,7 +790,7 @@ class Map extends Component {
                       // return el
                     })
 
-                  if (allEpicFeatures && allEpicFeatures.length > 0) this.setState({ geoData: allEpicFeatures })
+                  if (allEpicFeatures && allEpicFeatures.length > 0) this.setState({ geoData: allEpicFeatures.filter(el => (el.coo || []).length === 2) })
                   args.shift()
                 }
                 this.props.setData({
@@ -1090,9 +1090,9 @@ class Map extends Component {
           //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
           // this.setState({ mapStyle })
           if (newYear) {
-            this.setState({ markerData: features.data.filter(p => p.coo) })
+            this.setState({ markerData: features.data.filter(p => (p.coo || []).length === 2) })
           } else {
-            this.setState({ markerData: this.state.markerData.concat(features.data.filter(p => p.coo)) })
+            this.setState({ markerData: this.state.markerData.concat(features.data.filter(p => (p.coo || []).length === 2)) })
           }
         })
     }

@@ -310,7 +310,7 @@ const utils = {
 
         multiLine.properties.n = tmpName
         multiLine.properties.d = (/*this._scaleLogText*/(turf.lineDistance(multiLine)) / Math.pow(tmpName.length, .2))
-        console.debug('tmpName', tmpName, multiLine.properties.d)
+        // console.debug('tmpName', tmpName, multiLine.properties.d)
         // console.debug('----spaceforletter----', turf.lineDistance(multiLine)/ tmpName.length)
         myLineColl.features.push(multiLine)
 

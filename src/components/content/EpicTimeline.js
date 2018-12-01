@@ -71,6 +71,7 @@ const styles = {
     // whiteSpace: 'nowrap'
   },
   stepContainer: {
+    marginTop: -16,
     maxHeight: '40px'
     // whiteSpace: 'nowrap',
     // textOverflow: 'ellipsis',
