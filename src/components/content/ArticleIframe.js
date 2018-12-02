@@ -296,7 +296,7 @@ class ArticleIframe extends React.Component {
           autoScrollBodyContent={false}>
           { (selectedWiki !== '') && shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} /> }
           { (selectedWiki === '') && <span>no wiki article found, consider adding one by clicking the edit button...</span> }
-          { (+selectedWiki !== -1) && (selectedWiki !== '')  && (selectedWiki !== null) && <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%' style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }} src={'https://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' /> }
+          { (+selectedWiki !== -1) && (selectedWiki !== '') && (selectedWiki !== null) && <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%' style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }} src={'https://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' /> }
           { isFullScreen &&
           <FloatingActionButton
             backgroundColor={'white'}
@@ -313,7 +313,7 @@ class ArticleIframe extends React.Component {
         { modMenu }
         { shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} /> }
         { htmlContent && <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: htmlContent}}></div> }
-        { !htmlContent && (+selectedWiki !== -1) && (selectedWiki !== '') && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'https://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
+        { !htmlContent && (+selectedWiki !== -1) && (selectedWiki !== '') && (selectedWiki !== null) && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'https://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
       </div>
     )
   }
