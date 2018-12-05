@@ -164,8 +164,12 @@ class Information extends PureComponent {
     } else if (value === 'welcome' && !this.state.welcomeStatistics) {
       axios.get(properties.chronasApiHost + '/version/welcome')
         .then((welcomeSatistics) => {
+          const welcomeStatistics = welcomeSatistics.data
+          welcomeStatistics.build = new Date(welcomeStatistics.build).toLocaleDateString()
+          welcomeStatistics.lastDataEdit = new Date(welcomeStatistics.lastDataEdit).toLocaleDateString()
+
           this.setState({
-            welcomeStatistics: welcomeSatistics.data,
+            welcomeStatistics
           })
         })
     }
@@ -181,8 +185,12 @@ class Information extends PureComponent {
     if (!tabForm || tabForm === 'welcome') {
       axios.get(properties.chronasApiHost + '/version/welcome')
         .then((welcomeSatistics) => {
+          const welcomeStatistics = welcomeSatistics.data
+          welcomeStatistics.build = new Date(welcomeStatistics.build).toLocaleDateString()
+          welcomeStatistics.lastDataEdit = new Date(welcomeStatistics.lastDataEdit).toLocaleDateString()
+
           this.setState({
-            welcomeStatistics: welcomeSatistics.data,
+            welcomeStatistics
           })
         })
     }
@@ -298,8 +306,11 @@ class Information extends PureComponent {
                 <p>Visit the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('about')}>About</a> section to read more about the Chronas project and send the developers your inquiries, comments or questions through the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('contact')}>Contact</a> form.</p>
                 <p>We believe in the potential of this project to become a popular history tool alongside Wikipedia. If you share our enthusiasm and want to see the project succeed, please consider becoming a sustainer. For more information on <b>support</b> and the <b>future of Chronas</b>, visit the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('pro')}>New Features</a> section.</p>
                 { welcomeStatistics && <div style={{ position: 'absolute',
-                  bottom: 18,
+                  bottom: 34,
                   fontSize: 'small' }}>build {welcomeStatistics.build} - v{welcomeStatistics.version}</div> }
+                { welcomeStatistics && <div style={{ position: 'absolute',
+                  bottom: 18,
+                  fontSize: 'small' }}>last data edit at {welcomeStatistics.lastDataEdit}</div> }
               </div>
             </Tab>
             <Tab label='How To' value='tutorial'>
