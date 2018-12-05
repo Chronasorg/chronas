@@ -326,13 +326,12 @@ class MapTimeline extends Component {
       })
     }
   }
-  //
-  // shouldComponentUpdate (nextProps) {
-  //   return true
-  //   // if (nextProps.groupItems.length > this.props.groupItems.length) {
-  //   //   return true
-  //   // }
-  // }
+
+  shouldComponentUpdate (nextProps) {
+    if (nextProps.groupItems.length !== this.props.groupItems.length || nextProps.selectedYear !== this.props.selectedYear) {
+      return true
+    } else return false
+  }
 
   _toggleTimelineHeight = () => {
     const { timelineHeight, timelineOptions } = this.state
@@ -352,9 +351,13 @@ class MapTimeline extends Component {
         timelineOptions
       })
     }
+    this.forceUpdate()
   }
 
-  _toggleYearDialog = (isVisible) => this.setState({ yearDialogVisible: isVisible })
+  _toggleYearDialog = (isVisible) => {
+    this.setState({ yearDialogVisible: isVisible })
+    this.forceUpdate()
+  }
 
   _flyTo = (s, e, doReset, optId) => {
     if (optId) { setTimeout(() => { this.refs.timeline.$el.setSelection(optId) }, 2000) }

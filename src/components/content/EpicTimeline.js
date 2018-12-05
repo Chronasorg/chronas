@@ -566,7 +566,7 @@ class EpicTimeline extends React.Component {
           <Stepper linear={false}
             activeStep={stepIndex}
             orientation='vertical'
-            style={{ float: 'left', width: '100%', background:  'transparent', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
+            style={{ float: 'left', paddingTop: 16, width: '100%', background:  'transparent', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset' }}>
             {epicLinkedArticles.map((epicContent, i) => (
               <div title={epicContent.name || epicContent.wiki} key={i} style={ styles.stepContainer}>
                 <StepButton

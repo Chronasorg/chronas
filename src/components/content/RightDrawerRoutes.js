@@ -353,12 +353,12 @@ class RightDrawerRoutes extends PureComponent {
               linkedItemData.linkedContent = []
 
               linkedItemResult['map'].forEach((el) => {
-                linkedItemData.linkedContent.push(el.properties.w + '||' + el.properties.t)
+                linkedItemData.linkedContent.push(((el.properties.t || '').indexOf('ae|') > -1) ? (el.properties.aeId.split('|')[2] + '||' + el.properties.t) : el.properties.w + '||' + (el.properties.ct === "marker" ? "w|" : "") + el.properties.t)
                 // linkedItemData.linkedMedia.push({ name: (el.properties.w  + '(' + el.properties.t + ')'), id: el.properties.w })
               })
 
               linkedItemResult.media.forEach((el) => {
-                linkedItemData.linkedMedia.push(el.properties.w + '||' + el.properties.t)
+                linkedItemData.linkedMedia.push(((el.properties.t || '').indexOf('ae|') > -1) ? (el.properties.aeId.split('|')[2] + '||' + el.properties.t) : el.properties.w + '||' + (el.properties.ct === "marker" ? "w|" : "") + el.properties.t)
                 // linkedItemData.linkedContent.push({ name: (el.properties.w  + '(' + el.properties.t + ')'), id: el.properties.w })
               })
 // linkedItemKey1

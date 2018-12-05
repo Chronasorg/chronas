@@ -34,7 +34,7 @@ class NewDiscussion extends Component {
         title: '',
         content: '',
         tags: [],
-        pinned: false,
+        pinned: true,
       }
     }
   }

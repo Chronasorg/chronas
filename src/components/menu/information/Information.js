@@ -283,7 +283,7 @@ class Information extends PureComponent {
               <br />
               <div style={{
                 background: 'url(/images/compass.jpg) center bottom no-repeat #f9f9f9',
-                minHeight: 436,
+                minHeight: 512,
                 marginBottom: -40
               }}>
                 <p>
@@ -296,6 +296,7 @@ class Information extends PureComponent {
                   <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => history.push('/login')}>Join</a> our community of <span style={{ fontWeight: 800 }}>{welcomeStatistics ? welcomeStatistics.user : '...'}</span> members to add and edit data, earn points, ask questions about history articles and access our <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => history.push('/community/general')}>Forums</a> to suggest new features and report bugs.
                 </p>
                 <p>Visit the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('about')}>About</a> section to read more about the Chronas project and send the developers your inquiries, comments or questions through the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('contact')}>Contact</a> form.</p>
+                <p>We believe in the potential of this project to become a popular history tool alongside Wikipedia. If you share our enthusiasm and want to see the project succeed, please consider becoming a sustainer. For more information on <b>support</b> and the <b>future of Chronas</b>, visit the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('pro')}>New Features</a> section.</p>
                 { welcomeStatistics && <div style={{ position: 'absolute',
                   bottom: 18,
                   fontSize: 'small' }}>build {welcomeStatistics.build} - v{welcomeStatistics.version}</div> }
@@ -431,29 +432,35 @@ class Information extends PureComponent {
               </div>
               <br />
             </Tab>
-            <Tab label='Pro Version' value='pro'>
+            <Tab label='New Features' value='pro'>
               <br />
               <div className=''>
                 <br />
-                <p><i>Disclaimer:
-                  <ol>
-                    <li>There will always be a completely free version with at least the amount of features you can use now. Nothing will be cut.</li>
-                    <li>The pro version helps to sustain the free version and funds improvements and extensions.</li>
-                    <li>The history data this application is based on (and is user contributed/ curated) will never be locked away as a pro feature. Pro features will be advanced or extended features which build on top of free features.</li>
-                    <li>There is no pro version yet and its features will depend on demand and requests by the community.</li></ol></i></p>
+                <h4>Support</h4>
+                <p>
+                  There are a couple of ways to finance the upkeep and the development of new features and fixing of issues. For example Wikipedia or public broadcasters use reoccurring campaigns to raise donations (<b>pledge drives</b>), many web applications use <b>advertisements</b> (which can decrease the useability/ enojoyment of the app). Another way is to introduce a <b>pro version</b> or try to find <b>venture capital investors</b>.</p>
+                <p>
+                  We decided to try out yet another funding model which gives the <b>sustaining users</b> who ensure the future of Chronas also the ability to decide where the journey is headed. If you believe in our project, please consider supporting us on <a className='customLink'  target='_blank' href='https://www.patreon.com/user?u=7565305'>Patreon</a> where we will have regular <b>votes</b> on the priority of proposed <b>new features</b> as well as <b>major design decisions</b>.
+                </p>
+                  {/*<ol>*/}
+                    {/*<li>There will always be a completely free version with at least the amount of features you can use now. Nothing will be cut.</li>*/}
+                    {/*<li>The pro version helps to sustain the free version and funds improvements and extensions.</li>*/}
+                    {/*<li>The history data this application is based on (and is user contributed/ curated) will never be locked away as a pro feature. Pro features will be advanced or extended features which build on top of free features.</li>*/}
+                    {/*<li>There is no pro version yet and its features will depend on demand and requests by the community.</li></ol>*/}
                 <br />
                 <Divider />
                 <br />
-                <h4>Features</h4>
+                <h4>New Features</h4>
                 <p><b>You can propose features in the feature request <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => history.push('/community/features')}>forum</a> or by directly <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('contact')}>contacting</a> the developers.</b> Accepted features will be listed here.</p>
-                <ol>
+                <ul>
+                  <li>New dimension <b>General Ruler</b>: Similar to general religions, it may make sense to have optional general rulers to be able to show umbrella entities like the ancient <b>Delian League</b>, the medieval <b>Holy Roman Empire</b> or the modern <b>European Union</b>. This new dimension will be a new option next to already existing ones <i>(Ruler, Culture, Religion, General Religion)</i>.</li>
                   <li><b>Article lists and collections</b>: Users can create article lists containing any article types (marker, area, media or epics), name them and optional share them with the community.</li>
                   <li><b>Bookmarks and History</b>: Users can bookmark and write notes on selected articles which only they can see. Also, any article which is viewed by the user will be marked as read and a counter of read articles is incremented - if a user visits the same article again it will display the time and date this artilce was last viewed.</li>
                   <li><b>Full database search</b>: Free text search and filters available to find and browse any article in our database</li>
                   <li><b>Managed accounts</b>: This feature allows users to create and manage accounts with limited scope (such as limiting the managed users to a selection of markers and time ranges) as well as viewing articles read by the managed user accounts (classroom setting)</li>
                   <li><b>Full localisation</b>: Chronas in a different language will not only support a complete GUI translation but will also be viewing the articles in its according Wikipedia subsite</li>
                   <li><i>Your feature here...</i></li>
-                </ol>
+                </ul>
                 <br />
                 <Divider />
                 <br />
