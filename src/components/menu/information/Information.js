@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import YouTube from 'react-youtube'
+import Moment from 'moment'
 import RaisedButton from 'material-ui/RaisedButton'
 import Avatar from 'material-ui/Avatar'
 import Dialog from 'material-ui/Dialog'
@@ -166,7 +167,7 @@ class Information extends PureComponent {
         .then((welcomeSatistics) => {
           const welcomeStatistics = welcomeSatistics.data
           welcomeStatistics.build = new Date(welcomeStatistics.build).toLocaleDateString()
-          welcomeStatistics.lastDataEdit = new Date(welcomeStatistics.lastDataEdit).toLocaleDateString()
+          welcomeStatistics.lastDataEdit =  Moment(welcomeStatistics.lastDataEdit).from(Moment())
 
           this.setState({
             welcomeStatistics
@@ -187,7 +188,7 @@ class Information extends PureComponent {
         .then((welcomeSatistics) => {
           const welcomeStatistics = welcomeSatistics.data
           welcomeStatistics.build = new Date(welcomeStatistics.build).toLocaleDateString()
-          welcomeStatistics.lastDataEdit = new Date(welcomeStatistics.lastDataEdit).toLocaleDateString()
+          welcomeStatistics.lastDataEdit =  Moment(welcomeStatistics.lastDataEdit).from(Moment())
 
           this.setState({
             welcomeStatistics
@@ -310,7 +311,7 @@ class Information extends PureComponent {
                   fontSize: 'small' }}>build {welcomeStatistics.build} - v{welcomeStatistics.version}</div> }
                 { welcomeStatistics && <div style={{ position: 'absolute',
                   bottom: 18,
-                  fontSize: 'small' }}>last data edit at {welcomeStatistics.lastDataEdit}</div> }
+                  fontSize: 'small' }}>last data edit {welcomeStatistics.lastDataEdit}</div> }
               </div>
             </Tab>
             <Tab label='How To' value='tutorial'>
