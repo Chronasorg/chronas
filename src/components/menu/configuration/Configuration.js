@@ -50,7 +50,7 @@ class Configuration extends PureComponent {
 
 
   render() {
-    const {theme, locale, changeTheme, changeLocale, changeMarkerTheme, markerTheme, menuItemActive, setBodyFont, setFullscreen, translate} = this.props;
+    const {theme, locale, changeTheme, changeLocale, changeMarkerTheme, markerTheme, setBodyFont, setFullscreen, translate} = this.props;
 
     const currBodyClasses = Array.from(document.body.classList) || []
     const selectedFontValue = ((properties.markerOptions.filter(el => currBodyClasses.includes(el.id)) || [])[0] || {}).id
@@ -153,8 +153,7 @@ const mapStateToProps = state => ({
   theme: state.theme,
   locale: state.locale,
   markerTheme: state.markerTheme,
-  menuItemActive: state.menuItemActive,
-});
+})
 
 export default connect(mapStateToProps, {
   changeLocale: changeLocaleAction,

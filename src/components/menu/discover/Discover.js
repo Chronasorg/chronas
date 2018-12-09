@@ -389,7 +389,7 @@ class Discover extends PureComponent {
           newEpicData.push(epicTile)
         })
 
-        tileData['tilesHighlightData'] = newEpicData.sort((a, b) => (+b.score || 0) - (+a.score || 0)).slice(0, 5).concat([].concat(...Object.values(tileData)).sort((a, b) => (+b.score || 0) - (+a.score || 0)).slice(0, 5))
+        tileData['tilesHighlightData'] = newEpicData.filter(e => e.poster).sort((a, b) => (+b.score || 0) - (+a.score || 0)).slice(0, 5).concat([].concat(...Object.values(tileData)).sort((a, b) => (+b.score || 0) - (+a.score || 0)).slice(0, 5))
         tileData['tilesEpicsData'] = newEpicData.sort((a, b) => (+b.score || 0) - (+a.score || 0))
 
         this.setState({

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { RadialChart } from 'react-vis'
 
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
@@ -28,18 +27,17 @@ import _ from 'lodash'
 import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
 import WebMercatorViewport from 'viewport-mercator-project'
 import { setYear } from './timeline/actionReducers'
-import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import DeckGLOverlay from './deckGlComponents/deckgl-overlay.js'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import { setModData as setModDataAction, setModToUpdate, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
-import { RulerIcon, CultureIcon, ReligionIcon, ReligionGeneralIcon, ProvinceIcon } from './assets/placeholderIcons'
+import { RulerIcon, CultureIcon, ReligionGeneralIcon, ProvinceIcon } from './assets/placeholderIcons'
 import {
   TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectEpicItem,
   selectAreaItem as selectAreaItemAction, setEpicContentIndex,
   selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
 } from './actionReducers'
-import { getFullIconURL, markerIdNameObject, markerIdNameArray, properties, getPercent, themes, iconMapping } from '../../properties'
-import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, highlightLayerIndex, basemapLayerIndex, populationColorScale, areaColorLayerIndex } from './mapStyles/map-style.js'
+import { getFullIconURL, markerIdNameArray, properties, getPercent, themes, iconMapping } from '../../properties'
+import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, basemapLayerIndex, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
 import Timeline from './timeline/MapTimeline'
@@ -48,7 +46,6 @@ import utils from './utils/general'
 const turf = require('@turf/turf')
 const FLYTOANIMATIONDURATION = 2000
 const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A'
-const flagHost = 'https://upload.wikimedia.org/wikipedia/commons/thumb/'
 
 const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
 
@@ -1865,14 +1862,9 @@ class Map extends Component {
   }
 }
 
-Map.defaultProps = {
-  onMenuTap: () => null,
-}
-
 const enhance = compose(
   connect(state => ({
     theme: state.theme,
-    locale: state.locale,
     location: state.location,
     mapStyles: state.mapStyles,
     activeArea: state.activeArea,
@@ -1899,7 +1891,6 @@ const enhance = compose(
     setModData: setModDataAction,
     removeModData: removeModDataAction,
     addModData: addModDataAction,
-    changeAreaData: changeAreaDataAction,
   }),
   pure,
   translate,

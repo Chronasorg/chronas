@@ -30,7 +30,6 @@ import {
 import InfluenceChart from './Charts/ChartArea'
 import ArticleIframe from './ArticleIframe'
 import { getYoutubeId, epicIdNameArray, aeIdNameArray, getFullIconURL, itemTypeToName, themes, properties } from '../../properties'
-import utilsQuery from "../map/utils/query";
 import utils from "../map/utils/general";
 
 /**

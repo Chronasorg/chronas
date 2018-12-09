@@ -24,10 +24,10 @@ import Notification from './components/overwrites/Notification'
 import Menu from './components/menu/Menu'
 import Map from './components/map/Map'
 import LayerContent from './components/menu/layers/LayersContent'
-import CrudRoute from './components/restricted/shared/CrudRoute'
 import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import LoadingBar from './components/global/LoadingBar'
+import PledgeDialog from './components/pledgeDialog/PledgeDialog'
 import LoadingPage from './components/loadingPage/LoadingPage'
 import messages from './translations'
 import { history } from './store/createStore'
@@ -80,6 +80,7 @@ const styles = {
   },
 }
 
+const PLEDGEREMINDERDURATION = 1800000
 const prefixedStyles = {}
 const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
 
@@ -89,6 +90,7 @@ class App extends Component {
     super(props)
     this.state = {
       drawerOpen: false,
+      pledgeOpen: false,
       isFullScreen: localStorage.getItem('chs_fullscreen') === 'true' || false
     }
   }
@@ -202,6 +204,19 @@ class App extends Component {
       showNotification(didYouKnows[selectedIndex][1])
     }, 500)
 
+    if (!localStorage.getItem('chs_pledge_closed')) {
+      setTimeout(() => {
+        this.setState({ pledgeOpen: true })
+        // this.forceUpdate();
+      }, PLEDGEREMINDERDURATION)
+    }
+
+    setTimeout(() => {
+      const selectedIndex = Math.floor(Math.random() * didYouKnows.length)
+      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex][0], true)
+      showNotification(didYouKnows[selectedIndex][1])
+    }, 500)
+
     axios.get(properties.chronasApiHost + '/metadata?type=g&f=provinces,ruler,culture,religion,capital,province,religionGeneral')
       .then((metadata) => {
         setMetadata(metadata.data)
@@ -289,6 +304,7 @@ class App extends Component {
 
     const {
       drawerOpen,
+      pledgeOpen,
       isFullScreen,
       selectedFontClass
     } = this.state
@@ -354,6 +370,18 @@ class App extends Component {
                     {isLoading && !isStatic && <LoadingPage />}
                     {!isLoading && createElement(Map, { history, isLoading })}
                     {!isLoading && !isStatic && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
+                      <PledgeDialog theme={theme} open={pledgeOpen} snooze={() => {
+                        setTimeout(() => {
+                          this.setState({ pledgeOpen: true })
+                          this.forceUpdate();
+                        }, PLEDGEREMINDERDURATION)
+                        this.setState({ pledgeOpen: false })
+                        this.forceUpdate();
+                      }} closePledge={() => {
+                        localStorage.setItem('chs_pledge_closed', 'true')
+                        this.setState({ pledgeOpen: false })
+                        this.forceUpdate();
+                      }} />
                       <Switch>
                         <Route exact path='/' />
                         <Route exact path='/configuration' render={(props) => {

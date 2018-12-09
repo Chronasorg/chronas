@@ -1,6 +1,5 @@
 import React, { createElement, PureComponent } from 'react'
 import { BrowserRouter as Router,  Route, Switch, NavLink } from 'react-router-dom'
-import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import pure from 'recompose/pure'
@@ -31,18 +30,9 @@ import {
 } from 'admin-on-rest'
 import { Card } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
-import Toolbar from 'material-ui/Toolbar'
-import FlatButton from 'material-ui/FlatButton'
-import { tooltip } from '../../../styles/chronasStyleComponents'
-import { chronasMainColor } from '../../../styles/chronasColors'
-
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
 
 // app views
-import AppContainer from './ReForum/App/App';
 import AdminContainer from './ReForum/App/Admin';
-import AdminDashboard from './ReForum/Views/AdminDashboard';
 import Header from './ReForum/Containers/Header';
 import Footer from './ReForum/Components/Footer';
 import ForumFeed from './ReForum/Views/ForumFeed';
@@ -50,6 +40,7 @@ import SingleDiscussion from './ReForum/Views/SingleDiscussion';
 import NewDiscussion from './ReForum/Views/NewDiscussion';
 import UserProfile from './ReForum/Views/UserProfile';
 import Highscore from './ReForum/Views/Highscore';
+import Sustainers from  './ReForum/Views/Sustainers';
 import NotFound from './ReForum/Views/NotFound';
 
 import { getForums, updateCurrentForum, getUser } from './ReForum/App/actions'
@@ -231,6 +222,7 @@ class Board extends PureComponent {
       </Route>
       <Route exact path="/community" render={restrictPageForumWrapper(true, ForumFeed, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
       <Route exact path="/community/highscore" render={restrictPageForumWrapper(false, Highscore, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
+      <Route exact path="/community/sustainers" render={restrictPageForumWrapper(false, Sustainers, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
       <Route exact path="/community/:forum/discussion/:discussion/:qId?" render={restrictPageForumWrapper(true, SingleDiscussion, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
       <Route exact path="/community/:forum/new_discussion/:qId?" render={restrictPageForumWrapper(true, NewDiscussion, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
       <Route exact path="/community/:forum" render={restrictPageForumWrapper(true, ForumFeed, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />

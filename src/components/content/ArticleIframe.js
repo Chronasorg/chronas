@@ -3,7 +3,6 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import {showNotification, translate} from 'admin-on-rest'
-import { Link } from 'react-router-dom'
 import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
 import IconEdit from 'material-ui/svg-icons/editor/mode-edit'
@@ -14,8 +13,6 @@ import FloatingActionButton from 'material-ui/FloatingActionButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import FullscreenEnterIcon from 'material-ui/svg-icons/navigation/fullscreen'
 import Toggle from 'material-ui/Toggle'
-import { tooltip } from '../../styles/chronasStyleComponents'
-import {chronasMainColor, grey600} from '../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
 import { LoadingCircle } from '../global/LoadingCircle'
 import { setRightDrawerVisibility } from '../content/actionReducers'
@@ -25,8 +22,6 @@ import {
   setData, selectMarkerItem, selectLinkedItem, TYPE_AREA, TYPE_EPIC, TYPE_MARKER, TYPE_LINKED,
   WIKI_PROVINCE_TIMELINE, selectEpicItem
 } from "../map/actionReducers";
-import {toggleRightDrawer as toggleRightDrawerAction} from "./actionReducers";
-import {resetModActive, setFullModActive} from "../restricted/shared/buttons/actionReducers";
 
 const styles = {
   closeButton: {

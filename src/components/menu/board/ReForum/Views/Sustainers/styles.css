@@ -1,0 +1,20 @@
+@value largeBP from '../../SharedStyles/globalStyles.css';
+
+.UP_container {
+  margin-top: 20px;
+  display: flex;
+  @media largeBP { flex-flow: row nowrap; }
+}
+
+.UP_loadingMsg {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.UP_errorMsg {
+  margin-top: 20px;
+  color: rgba(231, 76, 60,1.0);
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+}

@@ -18,7 +18,10 @@ const Logo = (props) => {
           <FlatButton label="Board" onClick={ () => props.history.push('/community/general') } />
         </div>
         <div className='BoardLogo_logoTitle'>
-          <FlatButton label="Member Highscore" onClick={ () => props.history.push('/community/highscore') } />
+          <FlatButton label="Member Data Highscore" onClick={ () => props.history.push('/community/highscore') } />
+        </div>
+        <div className='BoardLogo_logoTitle'>
+          <FlatButton label="Supporting Members" onClick={ () => props.history.push('/community/sustainers') } />
         </div>
         <div className='BoardLogo_logoTitle'>
           <FlatButton label="My Profile" onClick={ () => props.history.push('/community/user/' + username) } />

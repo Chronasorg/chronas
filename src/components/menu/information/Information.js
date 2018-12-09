@@ -111,6 +111,9 @@ class Information extends PureComponent {
   }
 
   handleChange = (value) => {
+    if (value === 'tutorial') {
+      localStorage.setItem('chs_tutorialVisited', 'true')
+    }
     if (value === 'statistics' && !this.state.statistics) {
       axios.get(properties.chronasApiHost + '/statistics')
         .then((statistics) => {
@@ -318,22 +321,22 @@ class Information extends PureComponent {
               <br />
               <div>
                 <br />
-                <h4>Watch 30 sec intro video</h4>
+                <h4>How to use in about 5 minutes</h4>
                 <p>
                   <YouTube
                     className='introVideo'
                     height={600}
-                    videoId='5mJliez-Jlw'
+                    videoId='Ah3qSNJpj4Q'
                     opts={properties.YOUTUBEOPTS}
                     />
                 </p>
                 <br />
-                <h4>Watch 3 min in depth video</h4>
+                <h4>How to edit data in about 6 minutes (with commentary)</h4>
                 <p>
                   <YouTube
                     className='introVideo'
                     height='600px'
-                    videoId='5mJliez-Jlw'
+                    videoId='r4x4aYfQNp4'
                     opts={properties.YOUTUBEOPTS}
                     />
                 </p>
@@ -452,7 +455,7 @@ class Information extends PureComponent {
                 <p>
                   There are a couple of ways to finance the upkeep and the development of new features and fixing of issues. For example Wikipedia or public broadcasters use reoccurring campaigns to raise donations (<b>pledge drives</b>), many web applications use <b>advertisements</b> (which can decrease the useability/ enojoyment of the app). Another way is to introduce a <b>pro version</b> or try to find <b>venture capital investors</b>.</p>
                 <p>
-                  We decided to try out yet another funding model which gives the <b>sustaining users</b> who ensure the future of Chronas also the ability to decide where the journey is headed. If you believe in our project, please consider supporting us on <a className='customLink'  target='_blank' href='https://www.patreon.com/user?u=7565305'>Patreon</a> where we will have regular <b>votes</b> on the priority of proposed <b>new features</b> as well as <b>major design decisions</b>.
+                  We decided to try out yet another funding model which gives the <b>sustaining users</b> who ensure the future of Chronas also the ability to decide where the journey is headed. If you believe in our project, please consider supporting us on <a className='customLink'  target='_blank' href='https://www.patreon.com/chronas'>Patreon</a> where we will have regular <b>votes</b> on the priority of proposed <b>new features</b> as well as <b>major design decisions</b>.
                 </p>
                   {/*<ol>*/}
                     {/*<li>There will always be a completely free version with at least the amount of features you can use now. Nothing will be cut.</li>*/}

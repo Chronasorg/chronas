@@ -120,6 +120,7 @@ export default {
     edit: 'Edit',
     fontType: 'Font Type',
     markerType: 'Marker Type',
+    pledgeTitle: 'Hey there traveler!',
     goFullScreen: 'Fullscreen',
     noLinkedContents: 'There are no linked media items yet, consider adding and linking one.',
     downvote: 'Inappropriate, broken or inaccurate',
