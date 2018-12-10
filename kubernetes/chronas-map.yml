@@ -36,10 +36,10 @@ metadata:
 spec:  
   tls:
   - hosts:
-    - map-dev.chronas.org
-    secretName: https-map-crt
+    - chronas.org
+    secretName: https-map
   rules:
-  - host: map-dev.chronas.org
+  - host: chronas.org
     http:
       paths:
       - path: /
