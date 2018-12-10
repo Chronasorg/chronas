@@ -1877,7 +1877,8 @@ const enhance = compose(
     menuDrawerOpen: state.menuDrawerOpen,
     modActive: state.modActive,
     rightDrawerOpen: state.rightDrawerOpen,
-  }), {
+  }), {,
+    changeAreaData: changeAreaDataAction,
     setData,
     setRightDrawerVisibility,
     selectAreaItem: selectAreaItemAction,
