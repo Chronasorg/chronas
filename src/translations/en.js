@@ -181,13 +181,15 @@ export default {
         main_ruler_name: 'Main Ruler Name',
         color: 'Area Color',
         main_religion_name: 'Main Religion Name',
-        wiki_url: 'Full Wikipedia URL',
+        icon_url: 'Icon (Full commons.wikimedia or Wikipedia URL)',
+        wiki_url: 'Article (Full Wikipedia URL)',
         ruler: 'Ruler',
         culture: 'Culture',
         religion: 'Religion',
         capital: 'Capital',
         population: 'Population',
         startYear: 'From Year',
+        key: 'Entity Key',
         endYear: 'Until Year'
       }
     },

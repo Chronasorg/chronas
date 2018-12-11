@@ -156,7 +156,7 @@ export const ModMetaAdd = (props) => {
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.display_name' />
-    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='resources.areas.fields.color' picker='Chrome' />
+    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='Area Color' picker='Chrome' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
@@ -165,7 +165,7 @@ export const ModMetaAdd = (props) => {
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput options={{ fullWidth: true }} validate={required} source='name' choices={choicesReligion} label='resources.areas.fields.display_name' />
     <AutocompleteInput options={{ fullWidth: true }} validate={required} source='parentname' choices={choicesReligionGeneral} label='resources.areas.fields.main_religion_name' />
-    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='resources.areas.fields.color' picker='Chrome' />
+    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='Area Color' picker='Chrome' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
@@ -173,7 +173,7 @@ export const ModMetaAdd = (props) => {
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput options={{ fullWidth: true }} validate={required} source='name' choices={choicesReligionGeneral} label='resources.areas.fields.display_name' />
-    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='resources.areas.fields.color' picker='Chrome' />
+    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='Area Color' picker='Chrome' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,
@@ -181,7 +181,7 @@ export const ModMetaAdd = (props) => {
   <MetaForm validate={validateValueInput} {...props} >
     <SelectInput validate={required} source='type' choices={choicesType} onChange={(val, v) => { props.setMetadataType(v) }} defaultValue={props.metadataType} />
     <AutocompleteDisallowInput options={{ fullWidth: true }} validate={required} source='name' choices={choicesCulture} label='resources.areas.fields.display_name' />
-    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='resources.areas.fields.color' picker='Chrome' />
+    <ColorInput options={{ fullWidth: true }} validate={required} source='color' label='Area Color' picker='Chrome' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='url' label='resources.areas.fields.wiki_url' />
     <TextInput options={{ fullWidth: true }} validate={required} type='url' source='icon' label='resources.areas.fields.icon_url' />
   </MetaForm>,

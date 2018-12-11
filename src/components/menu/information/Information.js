@@ -290,7 +290,12 @@ class Information extends PureComponent {
             <Tab label='Welcome' value='welcome'>
               <br />
               <div className='modal-header'>
-                <h4 className='modal-title' style={{ fontSize: 33, margin: '0 auto' }}>Welcome to <ChronasLogo height={50} vheight={360} width={160} vwidth={1000} color={themes[theme].foreColors[0]} style={{ marginLeft: -22, marginTop: -9 }} /></h4>
+                <h4 className='modal-title' style={{ fontSize: 33, margin: '0 auto' }}>Welcome to <ChronasLogo height={50} vheight={360} width={160} vwidth={1000} color={themes[theme].foreColors[0]} style={{ marginLeft: -22, marginTop: -9 }} />
+                  <span className='modal-title' style={{ fontSize: 20, fontWeight: 200 ,
+                    top: 36,
+                    marginLeft: -16,
+                    position: 'absolute'
+                  }}>BETA</span></h4>
               </div>
               <br />
               <div style={{
