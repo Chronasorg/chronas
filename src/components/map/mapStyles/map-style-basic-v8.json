@@ -219,6 +219,8 @@
       "type": "symbol",
       "source": "area-outlines",
       "layout": {
+        "text-padding": 2000,
+        "text-optional": true,
         "text-allow-overlap": false,
         "symbol-placement": "line-center",
         "text-field": "{n}",

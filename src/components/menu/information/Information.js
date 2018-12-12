@@ -111,9 +111,6 @@ class Information extends PureComponent {
   }
 
   handleChange = (value) => {
-    if (value === 'tutorial') {
-      localStorage.setItem('chs_tutorialVisited', 'true')
-    }
     if (value === 'statistics' && !this.state.statistics) {
       axios.get(properties.chronasApiHost + '/statistics')
         .then((statistics) => {
@@ -178,7 +175,7 @@ class Information extends PureComponent {
         })
     }
     this.setState({
-      prevValue: this.state.tabForm,
+      prevValue: this.state.prevValue ? false : this.state.tabForm,
       tabForm: value,
     })
   }
@@ -224,7 +221,7 @@ class Information extends PureComponent {
       </div>
     }
     const { translate, theme, history } = this.props
-    const { statistics, welcomeStatistics, statisticsBreakdown } = this.state
+    const { statistics, welcomeStatistics, statisticsBreakdown, tabForm } = this.state
 
     const chartProps = (!statistics) ? false : {
       animation: {
@@ -284,7 +281,7 @@ class Information extends PureComponent {
             }}
             contentContainerStyle={{ maxHeight: 800}}
             tabTemplateStyle={{ maxHeight: 801}}
-            value={this.state.tabForm}
+            value={tabForm}
             onChange={this.handleChange}
             >
             <Tab label='Welcome' value='welcome'>

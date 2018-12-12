@@ -5,9 +5,12 @@ import compose from 'recompose/compose'
 import AppBar from 'material-ui/AppBar'
 import Avatar from 'material-ui/Avatar'
 import Drawer from 'material-ui/Drawer'
+import Divider from 'material-ui/Divider'
 import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton'
+import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left';
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
+import { Toolbar, ToolbarTitle, ToolbarGroup } from 'material-ui/Toolbar';
 import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import axios from 'axios'
@@ -58,6 +61,7 @@ import { tooltip } from '../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../styles/chronasColors'
 import utils from '../map/utils/general'
 import { properties, epicIdNameArray, themes } from '../../properties'
+import {setActiveMenu as setActiveMenuAction} from "../menu/actionReducers";
 
 const nearbyIcon = <EditIcon />
 
@@ -1073,9 +1077,71 @@ class RightDrawerRoutes extends PureComponent {
     }
 
     const restrictPage = (headerComponent, component, route, commonProps) => {
+      const username = localStorage.getItem('chs_username')
       const RestrictedPage = routeProps => (
         <Restricted location={{ pathname: 'mod/areas' }} authParams={{ foo: 'bar' }} {...routeProps}>
-          { CoreContent(headerComponent, component, route, commonProps, routeProps) }
+          { (localStorage.getItem('chs_newToMod') === 'true') ? CoreContent(headerComponent, component, route, commonProps, routeProps) : CoreContent(<AppBar
+              className='articleHeader'
+              style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }} // '#eceff1'}
+              iconElementRight={
+                <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
+                  <IconButton
+                    tooltipPosition="bottom-left"
+                    tooltip={'Go Back'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
+                    onClick={() => this.handleBack()}>
+                    <IconBack />
+                  </IconButton>
+                  <IconButton
+                    tooltipPosition="bottom-left"
+                    tooltip={'Close'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
+                    onClick={() => this.handleClose()}>
+                    <IconClose />
+                  </IconButton>
+                </div>
+              }
+            />, () => <Card style={styles.card}>
+          <div>
+            <Toolbar style={styles.toolbar}>
+              <ToolbarGroup>
+                <ToolbarTitle style={{ ...styles.label, color: themes[theme].foreColors[0], minWidth: 400 }} text={'Thank you for becoming part of the Chronas Data Club!'} />
+              </ToolbarGroup>
+            </Toolbar>
+          </div>
+
+          <CardText>
+            <p>The great strength of this project is that every registered user can curate and extend the dataset, thank you for choosing to be a part of it!</p>
+            <p>Every edit or addition will earn you points which you can view in your <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => history.push((username) ? ("/community/user/" + username) : "/account")}>profile</a> and compare those points to the top 10 data contributors <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => history.push("/community/highscore") }>highscore</a>.</p>
+            <p>
+              Before you start, please first have a <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => {
+              localStorage.setItem('chs_newToMod', 'true')
+              localStorage.setItem('chs_info_section', 'tutorial')
+            }}>quick look at a short tutorial video</a> to see how it works, then <b>come
+              }right back</b> to this page by clicking the back icon <ChevronLeft style={{ paddingRight: 2 }} /> and start editing!
+            </p>
+            <Divider />
+            <p>
+              <br />
+              <span>Last but not least, here are the most important rules for contributing:</span>
+              <ol>
+                <li><i>No Vandalism</i>: This is not the place to paint an alternative history map. Vandalism hurts the project immensely (costly backups) and will get you banned.</li>
+                <li>Your data inputs should be based on <i>accepted history</i> and you should be ready to cite sources if asked.</li>
+                <li><i>Report</i> users that break those rules in the  <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => history.push('/community/issues')}>forum</a>.</li>
+              </ol>
+            </p>
+          </CardText>
+          <CardActions>
+            <FlatButton
+              onClick={() => {
+                localStorage.setItem('chs_newToMod', 'true')
+                localStorage.setItem('chs_info_section', 'tutorial')
+              }} label='Go to Tutorial' />
+            <FlatButton
+              onClick={() => {
+                localStorage.setItem('chs_newToMod', 'true')
+                this.forceUpdate()
+              }} label='I know what I am doing (skip tutorial)' />
+          </CardActions>
+        </Card>, route, commonProps, routeProps) }
         </Restricted>
         )
       return RestrictedPage
@@ -1312,6 +1378,7 @@ const enhance = compose(
   connect(mapStateToProps,
     {
       setAreaColorLabel,
+      setActiveMenu: setActiveMenuAction,
       changeColor,
       setWikiId,
       selectEpicItem,
