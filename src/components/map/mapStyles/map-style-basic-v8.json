@@ -219,8 +219,6 @@
       "type": "symbol",
       "source": "area-outlines",
       "layout": {
-        "text-padding": 2000,
-        "text-optional": true,
         "text-allow-overlap": false,
         "symbol-placement": "line-center",
         "text-field": "{n}",
@@ -236,7 +234,7 @@
             ["linear"],
             ["get", "d"],
             1500,
-            10,
+            8,
             3500,
             30
           ],
@@ -246,7 +244,7 @@
             ["linear"],
             ["get", "d"],
             1500,
-            100,
+            80,
             3500,
             300
           ]

@@ -376,6 +376,19 @@ class Information extends PureComponent {
                   Development of the current version of Chronas began in July 2017 and represented a complete rewrite of logic and architecture focusing on improved performance as well as easy edits, revisions and linking related articles. In place of Leaflet, the WebGL map library <a target='_blank' href='https://www.mapbox.com/mapbox-gl-js/api/'>Mapbox GL</a> was used with a <a target='_blank' href='https://reactjs.org/'>React JS</a> UI. For the backend a dedicated API written in <a target='_blank' href='https://expressjs.com'>Express</a> <a target='_blank' href='https://nodejs.org/'>Node JS</a> uses a NoSQL <a target='_blank' href='https://nodejs.org/'>Mongo</a> database for complex queries and revisioning.
                 </p>
                 <p>You can find a detailed feature walkthrough of the new Chronas version in the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('tutorial')}>How To</a> section.</p>
+
+                <Divider />
+                <br />
+                <p>
+                  <b>World Physical map tiles</b> by <a href="https://www.arcgis.com/home/item.html?id=6cec161c9acc4b9abf97f6b7d65801b3">ArcGIS Online / ESRI</a>, under <a href="https://www.esri.com/en-us/legal/terms/full-master-agreement">Esri Master License Agreement</a>. Data by <a href="https://www.usa.gov/federal-agencies/national-park-service">U.S. National Park Service</a>.
+                  </p>
+                <p>
+                  <b>Watercolor map tiles</b> by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.
+                </p>
+                <p>
+                  <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => history.push('/tos')}>Terms of Service</a>
+                  <a className='customLink' style={{ paddingLeft: 16, fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => history.push('/privacy')}>Privacy Policy</a>
+                </p>
               </div>
             </Tab>
             <Tab label='Statistics' value='statistics'>

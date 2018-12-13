@@ -34,6 +34,7 @@ import { history } from './store/createStore'
 import Account from './components/menu/account/Account'
 import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
+import TOS from './components/menu/tos/TOS'
 import Information from './components/menu/information/Information'
 import Share from './components/menu/share/Share'
 import RightDrawerRoutes from './components/content/RightDrawerRoutes'
@@ -107,7 +108,6 @@ class App extends Component {
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 4000) - 2000)
-    utilsQuery.updateQueryStringParameter('year', selectedYear)
     axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
       .then((areaDefsRequest) => {
         const activeArea = {
@@ -390,6 +390,24 @@ class App extends Component {
                               setFullscreen={this._setFullscreen}
                               setBodyFont={this._setBodyFont}
                               {...props}
+                            />
+                          )
+                        }} />
+                        <Route exact path='/tos' render={() => {
+                          return (
+                            <TOS
+                              history={history}
+                              theme={theme}
+                              activeSection={'tos'}
+                            />
+                          )
+                        }} />
+                        <Route exact path='/privacy' render={() => {
+                          return (
+                            <TOS
+                              history={history}
+                              theme={theme}
+                              activeSection={'privacy'}
                             />
                           )
                         }} />

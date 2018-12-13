@@ -6,9 +6,9 @@ const backgroundByYear = [
   { year: -668,
     image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Sculpted_reliefs_depicting_Ashurbanipal%2C_the_last_great_Assyrian_king%2C_hunting_lions%2C_gypsum_hall_relief_from_the_North_Palace_of_Nineveh_%28Irak%29%2C_c._645-635_BC%2C_British_Museum_%2816722368932%29.jpg/1024px-thumbnail.jpg',
     description: '668 BC: Sculpted reliefs depicting Ashurbanipal, the last great Assyrian king, hunting lions' },
-  { year: -479,
-    image: 'https://i.redd.it/h5juk4rg56w01.jpg',
-    description: '479 BC: Greeks storm the Persian encampment at the Battle of Mycale by Peter Dennis' },
+  { year: -519,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Cincinato_abandona_el_arado_para_dictar_leyes_a_Roma%2C_c.1806_de_Juan_Antonio_Ribera.jpg/1280px-Cincinato_abandona_el_arado_para_dictar_leyes_a_Roma%2C_c.1806_de_Juan_Antonio_Ribera.jpg',
+    description: '519 BC: Lucius Quinctius became a legendary Roman opponent of the rights of the plebeians (the common citizens)' },
   { year: -620,
     image: 'https://upload.wikimedia.org/wikipedia/commons/d/d1/Sappho_and_Alcaeus.jpg',
     description: '620-570 BCE: Sappho and Alcaeus' },
@@ -35,7 +35,10 @@ const backgroundByYear = [
     description: 'Young Roman emperor Elagabalus (203-222 AD) hosting a banquet' },
   { year: 1832,
     image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Le_Pont-Neuf_et_la_Cit%C3%A9_Paris_1832%2C_Giuseppe_Canella%2C_Mus%C3%A9e_Carnavalet_-_Flickr.jpg/1280px-Le_Pont-Neuf_et_la_Cit%C3%A9_Paris_1832%2C_Giuseppe_Canella%2C_Mus%C3%A9e_Carnavalet_-_Flickr.jpg',
-    description: '1832: Pont Neuf bridge in Paris' }
+    description: '1832: Pont Neuf bridge in Paris' },
+  { year: 1862,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Confederate_prisoners_captured_in_the_Battle_of_Front_Royal_being_guarded_in_a_Union_camp_in_the_Shenandoah_Valley%2Cjpg.jpg/1024px-Confederate_prisoners_captured_in_the_Battle_of_Front_Royal_being_guarded_in_a_Union_camp_in_the_Shenandoah_Valley%2Cjpg.jpg',
+    description: '1862: Confederate prisoners captured in the Battle of Front Royal' }
 ]
 
 const styles = {
