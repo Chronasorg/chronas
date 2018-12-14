@@ -332,7 +332,7 @@ class Map extends Component {
     const { activeArea, mapStyles, metadata, selectedItem } = this.props
     let mapStyle = this.state.mapStyle
 
-    if (mapStyles.popOpacity) {
+    if (mapStyles.popOpacity || newColor === "population") {
       const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
         return (provValue !== null) ? +provValue[4] : 0
       }))
@@ -1082,7 +1082,7 @@ class Map extends Component {
       //   })))
       // this.setState({ mapStyle })
     } else if (entityId.toString() !== '') {
-      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + (newYear || this.props.selectedYear) + '&count=' + (newLimit || this.props.activeMarkers.limit))
+      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + (newYear || this.props.selectedYear) + '&count=' + (!isNaN(newLimit) ? newLimit : this.props.activeMarkers.limit))
         .then(features => {
           // const mapStyle = this.state.mapStyle
           //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))

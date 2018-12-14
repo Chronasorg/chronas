@@ -236,7 +236,10 @@ if (__PROD__) {
         join_vars: true,
       },
     }),
-    new LodashModuleReplacementPlugin
+    new LodashModuleReplacementPlugin({
+      'collections': true,
+      'shorthands': true
+    })
   )
 }
 

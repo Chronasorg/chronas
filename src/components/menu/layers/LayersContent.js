@@ -100,7 +100,7 @@ class LayerContent extends Component {
     super(props)
     this.state = {
       basemapId: 0,
-      markerLimit: localStorage.getItem('chs_markerLimit') ? +localStorage.getItem('chs_markerLimit') : 3000,
+      markerLimit: localStorage.getItem('chs_markerLimit') !== "undefined" ? +localStorage.getItem('chs_markerLimit') : 3000,
       locked: true,
       selectedBasemap: "topographic",
     }

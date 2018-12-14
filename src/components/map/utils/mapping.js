@@ -276,18 +276,6 @@ const utils = {
       }
 
       for (var i = 0; i < groups[key].length; i++) {  // tmpLength
-        //
-        // console.debug(i)
-        // try {
-        //   polyArray.push(turf.union.apply( this, polyGroups[key][i] ));
-        //   console.debug("turf, this",turf, this)
-        //   console.debug("polyArray",polyArray)
-        //   polyArray[polyArray.length-1].properties.n = key
-        // }
-        // catch (err) {
-        //
-        // }
-
         var lineCoordinates = this.getCoordsForMultiPolyLine(groups[key][i])
 
         var point = {
@@ -299,27 +287,16 @@ const utils = {
           'properties': {}
         }
 
+        const bareLine = turf.lineString(lineCoordinates, { sharpness: 1, resolution: 3 } )
         try {
-          var multiLine = turf.bezier(turf.lineString(lineCoordinates, { sharpness: 1, resolution: 10 } ))  // EXTREMACENTROIDLINE    200MS
-
-          // turfUnion.apply( this, polyGroups[key][i] );
-          // console.debug(JSON.stringify(polyGroups[key][i]),"->", JSON.stringify(multiLine))
+          var multiLine = turf.bezier(bareLine)  // EXTREMACENTROIDLINE    200MS
         } catch (err) {
 
         }
 
         multiLine.properties.n = tmpName
-        multiLine.properties.d = (/*this._scaleLogText*/(turf.lineDistance(multiLine)) / Math.pow(tmpName.length, .2))
-        // console.debug('tmpName', tmpName, multiLine.properties.d)
-        // console.debug('----spaceforletter----', turf.lineDistance(multiLine)/ tmpName.length)
+        multiLine.properties.d = ((turf.lineDistance(bareLine)) / Math.pow(tmpName.length, .2))
         myLineColl.features.push(multiLine)
-
-        // var angleDeg = Math.atan2(lineCoordinates[2][1] - lineCoordinates[0][1], lineCoordinates[2][0] - lineCoordinates[0][0]) * 180 / Math.PI
-        // var line = turf.lineString(lineCoordinates)
-        // point.properties.n = tmpName
-        // point.properties.d = Math.round(Math.sqrt(turf.lineDistance(line))) * 10
-        // point.properties.ro = -1 * angleDeg
-
         myColl.features.push(point)
       }
     }

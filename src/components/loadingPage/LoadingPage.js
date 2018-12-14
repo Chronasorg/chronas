@@ -4,7 +4,7 @@ import utilsQuery from '../map/utils/query'
 
 const backgroundByYear = [
   { year: -668,
-    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Sculpted_reliefs_depicting_Ashurbanipal%2C_the_last_great_Assyrian_king%2C_hunting_lions%2C_gypsum_hall_relief_from_the_North_Palace_of_Nineveh_%28Irak%29%2C_c._645-635_BC%2C_British_Museum_%2816722368932%29.jpg/1024px-thumbnail.jpg',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/4/49/Siege_of_Paris_%28885%E2%80%93886%29.jpeg',
     description: '668 BC: Sculpted reliefs depicting Ashurbanipal, the last great Assyrian king, hunting lions' },
   { year: -519,
     image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Cincinato_abandona_el_arado_para_dictar_leyes_a_Roma%2C_c.1806_de_Juan_Antonio_Ribera.jpg/1280px-Cincinato_abandona_el_arado_para_dictar_leyes_a_Roma%2C_c.1806_de_Juan_Antonio_Ribera.jpg',

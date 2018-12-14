@@ -193,8 +193,8 @@
           "type": "identity",
           "default": "#bc0000"
         },
-        "line-width": 10,
-        "line-blur": 5
+        "line-width": 20,
+        "line-blur": 15
       }
     },
     {

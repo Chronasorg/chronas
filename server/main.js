@@ -6,6 +6,7 @@ const webpackConfig = require('../build/webpack.config')
 const project = require('../project.config')
 const compress = require('compression')
 
+const oneDay = 86400000
 const app = express()
 app.use(compress())
 
@@ -33,7 +34,7 @@ if (project.env === 'development') {
   // these files. This middleware doesn't need to be enabled outside
   // of development since this directory will be copied into ~/dist
   // when the application is compiled.
-  app.use(express.static(path.resolve(project.basePath, 'public')))
+  app.use(express.static(path.resolve(project.basePath, 'public'), { maxAge: oneDay }))
 
   // This rewrites all routes requests to the root /index.html file
   // (ignoring file requests). If you want to implement universal
