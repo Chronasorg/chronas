@@ -248,15 +248,15 @@ div.vis-tooltip {
   margin: 0;
   overflow: hidden;
   z-index: 1000000;
-  height: 8px !important;
+  height: 6px !important;
   position: fixed;
   background-color: rgba(0, 0, 0, 0) !important;
   pointer-events: none;
 
   div {
-    height: 5px!important;
+    height: 4px!important;
     transition: width .5s ease-out,height .5s ease-out;
-    box-shadow: 0 2px 3px 0 rgba(1,2,3,.4)!important;
+    box-shadow: 0 1px 2px 0 rgba(1,2,3,.4)!important;
 
     //background-color: rgb(212, 0, 18) !important;
     -webkit-transition: width 500ms ease-out, height 500ms ease-out;
