@@ -108,21 +108,33 @@ class App extends Component {
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 4000) - 2000)
+    const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,m,op,p,r,s,si')
+    const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ew')
+    const activeArea = {
+      data: {},
+      color: (utilsQuery.getURLParameter('fill') || 'ruler'),
+      label: (utilsQuery.getURLParameter('label') || 'ruler')
+    }
+    const selectedItem = {
+      wiki: '',
+      type: (utilsQuery.getURLParameter('type') || ''),
+      value: (utilsQuery.getURLParameter('value') || ''),
+    }
+
+    // initialize queryparameters
+    window.history.pushState('', '',
+      '?year=' + selectedYear +
+      '&epics=' + selectedEpics +
+      '&markers=' + selectedMarker +
+      '&type=' + selectedItem.type +
+      '&fill=' + activeArea.color +
+      '&label=' + activeArea.label +
+      '&value=' + selectedItem.value +
+      '&position=' + (utilsQuery.getURLParameter('position') || '37,37,2.5') +
+      window.location.hash)
+
     axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
       .then((areaDefsRequest) => {
-        const activeArea = {
-          data: {},
-          color: (utilsQuery.getURLParameter('fill') || 'ruler'),
-          label: (utilsQuery.getURLParameter('label') || 'ruler')
-        }
-        const selectedItem = {
-          wiki: '',
-          type: (utilsQuery.getURLParameter('type') || ''),
-          value: (utilsQuery.getURLParameter('value') || ''),
-        }
-        const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,m,op,p,r,s,si')
-        const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ew')
-
         setYear(selectedYear)
         if (selectedMarker !== '') setMarker(selectedMarker.split(','))
         if (selectedEpics !== '') setEpic(selectedEpics.split(','))
@@ -132,20 +144,7 @@ class App extends Component {
         } else if (selectedItem.type === TYPE_MARKER) {
           selectMarkerItem(selectedItem.value, selectedItem.value)
         }
-
         setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
-
-        // initialize queryparameters
-        window.history.pushState('', '',
-          '?year=' + selectedYear +
-          '&epics=' + selectedEpics +
-          '&markers=' + selectedMarker +
-          '&type=' + selectedItem.type +
-          '&fill=' + activeArea.color +
-          '&label=' + activeArea.label +
-          '&value=' + selectedItem.value +
-          '&position=' + (utilsQuery.getURLParameter('position') || '37,37,2.5') +
-          window.location.hash)
     })
   }
 
