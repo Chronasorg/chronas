@@ -110,7 +110,6 @@ class App extends Component {
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 4000) - 2000)
     const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,m,op,p,r,s,si')
     const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ew')
-    const selectedToken = utilsQuery.getURLParameter('token')
     const activeArea = {
       data: {},
       color: (utilsQuery.getURLParameter('fill') || 'ruler'),
@@ -122,32 +121,36 @@ class App extends Component {
       value: (utilsQuery.getURLParameter('value') || ''),
     }
 
-    // initialize queryparameters
-    window.history.pushState('', '',
-      '?year=' + selectedYear +
-      '&epics=' + selectedEpics +
-      '&markers=' + selectedMarker +
-      '&type=' + selectedItem.type +
-      '&fill=' + activeArea.color +
-      '&label=' + activeArea.label +
-      (selectedToken ? ('&token=' + selectedToken) : '') +
-      '&value=' + selectedItem.value +
-      '&position=' + (utilsQuery.getURLParameter('position') || '37,37,2.5') +
-      window.location.hash)
+    const selectedToken = utilsQuery.getURLParameter('token')
 
-    axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
-      .then((areaDefsRequest) => {
-        setYear(selectedYear)
-        if (selectedMarker !== '') setMarker(selectedMarker.split(','))
-        if (selectedEpics !== '') setEpic(selectedEpics.split(','))
-        // if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
-        if (selectedItem.type === TYPE_AREA) {
-          selectAreaItem('-1', selectedItem.value)
-        } else if (selectedItem.type === TYPE_MARKER) {
-          selectMarkerItem(selectedItem.value, selectedItem.value)
-        }
-        setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
-    })
+    if (selectedToken) {
+      // initialize queryparameters
+      window.history.pushState('', '',
+        '?year=' + selectedYear +
+        '&epics=' + selectedEpics +
+        '&markers=' + selectedMarker +
+        '&type=' + selectedItem.type +
+        '&fill=' + activeArea.color +
+        '&label=' + activeArea.label +
+        (selectedToken ? ('&token=' + selectedToken) : '') +
+        '&value=' + selectedItem.value +
+        '&position=' + (utilsQuery.getURLParameter('position') || '37,37,2.5') +
+        window.location.hash)
+
+      axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
+        .then((areaDefsRequest) => {
+          setYear(selectedYear)
+          if (selectedMarker !== '') setMarker(selectedMarker.split(','))
+          if (selectedEpics !== '') setEpic(selectedEpics.split(','))
+          // if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
+          if (selectedItem.type === TYPE_AREA) {
+            selectAreaItem('-1', selectedItem.value)
+          } else if (selectedItem.type === TYPE_MARKER) {
+            selectMarkerItem(selectedItem.value, selectedItem.value)
+          }
+          setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
+        })
+    }
   }
 
   _launchFullscreen = (element) => {
