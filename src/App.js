@@ -123,7 +123,7 @@ class App extends Component {
 
     const selectedToken = utilsQuery.getURLParameter('token')
 
-    if (selectedToken) {
+    if (!selectedToken) {
       // initialize queryparameters
       window.history.pushState('', '',
         '?year=' + selectedYear +
