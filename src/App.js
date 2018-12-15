@@ -110,6 +110,7 @@ class App extends Component {
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 4000) - 2000)
     const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,m,op,p,r,s,si')
     const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ew')
+    const selectedToken = utilsQuery.getURLParameter('token')
     const activeArea = {
       data: {},
       color: (utilsQuery.getURLParameter('fill') || 'ruler'),
@@ -129,6 +130,7 @@ class App extends Component {
       '&type=' + selectedItem.type +
       '&fill=' + activeArea.color +
       '&label=' + activeArea.label +
+      (selectedToken ? ('&token=' + selectedToken) : '') +
       '&value=' + selectedItem.value +
       '&position=' + (utilsQuery.getURLParameter('position') || '37,37,2.5') +
       window.location.hash)
