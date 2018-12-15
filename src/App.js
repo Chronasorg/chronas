@@ -122,6 +122,7 @@ class App extends Component {
     }
 
     const selectedToken = utilsQuery.getURLParameter('token')
+    if (selectedToken) localStorage.setItem('chs_token', selectedToken)
 
     // initialize queryparameters
     window.history.pushState('', '',
@@ -131,7 +132,7 @@ class App extends Component {
       '&type=' + selectedItem.type +
       '&fill=' + activeArea.color +
       '&label=' + activeArea.label +
-      (selectedToken ? ('&token=' + selectedToken) : '') +
+      // (selectedToken ? ('&token=' + selectedToken) : '') +
       '&value=' + selectedItem.value +
       '&position=' + (utilsQuery.getURLParameter('position') || '37,37,2.5') +
       window.location.hash)
@@ -261,7 +262,7 @@ class App extends Component {
       })
 
     const parsedQuery = queryString.parse(location.search)
-    let token = parsedQuery.token
+    let token = localStorage.getItem('chs_token')
 
     if (typeof token !== 'undefined') {
       delete parsedQuery.token
