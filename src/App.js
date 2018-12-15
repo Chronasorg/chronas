@@ -263,7 +263,7 @@ class App extends Component {
       })
 
     // const parsedQuery = queryString.parse(location.search)
-    let token = localStorage.getItem('chs_temptoken')
+    let token = (localStorage.getItem('chs_temptoken') !== null) ? localStorage.getItem('chs_temptoken') : undefined
 
     if (typeof token !== 'undefined') {
       // delete parsedQuery.token
