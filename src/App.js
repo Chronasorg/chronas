@@ -122,7 +122,8 @@ class App extends Component {
     }
 
     const selectedToken = utilsQuery.getURLParameter('token')
-    if (selectedToken) localStorage.setItem('chs_token', selectedToken)
+    if (selectedToken) localStorage.setItem('chs_temptoken', selectedToken)
+    else localStorage.removeItem('chs_temptoken')
 
     // initialize queryparameters
     window.history.pushState('', '',
@@ -261,20 +262,20 @@ class App extends Component {
         this.forceUpdate()
       })
 
-    const parsedQuery = queryString.parse(location.search)
-    let token = localStorage.getItem('chs_token')
+    // const parsedQuery = queryString.parse(location.search)
+    let token = localStorage.getItem('chs_temptoken')
 
     if (typeof token !== 'undefined') {
-      delete parsedQuery.token
-      let target = parsedQuery.target
-      delete parsedQuery.target
+      // delete parsedQuery.token
+      // let target = parsedQuery.target
+      // delete parsedQuery.target
 
       const decodedToken = decodeJwt(token)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       localStorage.setItem('chs_token', token)
-      window.history.pushState(null, null, (target ? (target + '/') : '') + queryString.stringify(parsedQuery) || '/')
+      // window.history.pushState(null, null, (target ? (target + '/') : '') + queryString.stringify(parsedQuery) || '/')
     } else {
       token = localStorage.getItem('chs_token')
     }
