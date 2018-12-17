@@ -121,7 +121,7 @@ class Login extends Component {
           <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github' className='btn btn-link-github btn-block'><i className="fa fa-github-square signupBig"></i><span className='signup-button__text'> Github</span></a></div>
           <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google' className='btn btn-link-google btn-block'><i className="fa fa-google-plus-square signupBig"></i><span className='signup-button__text'> Google</span></a></div>
           <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook' className='btn btn-link-facebook btn-block'><i className="fa fa-facebook-square signupBig"></i><span className='signup-button__text'> Facebook</span></a></div>
-          <div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div>
+          {/*<div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div>*/}
         </div>
         <p className='auth-form-divider'><span className='auth-form-divider-text'>or</span></p>
         <form method='post' action='/signin' role='signin' noValidate='novalidate' className='auth-form'>
@@ -175,7 +175,7 @@ class Login extends Component {
           <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github' className='btn btn-link-github btn-block'><i className="fa fa-github-square signupBig"></i><span className='signup-button__text'> Github</span></a></div>
           <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google' className='btn btn-link-google btn-block'><i className="fa fa-google-plus-square signupBig"></i><span className='signup-button__text'> Google</span></a></div>
           <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook' className='btn btn-link-facebook btn-block'><i className="fa fa-facebook-square signupBig"></i><span className='signup-button__text'> Facebook</span></a></div>
-          <div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div>
+          {/*<div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div>*/}
         </div>
         <p className='auth-form-divider'><span className='auth-form-divider-text'>or</span></p>
         <form method='post' action='/signup' role='signup' noValidate='novalidate' className='auth-form'>

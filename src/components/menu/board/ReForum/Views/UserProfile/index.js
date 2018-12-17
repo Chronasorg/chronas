@@ -122,7 +122,6 @@ class UserProfile extends Component {
             { (typeof profile.count_mistakes !== "undefined") && statItem('Mistakes Count', profile.count_mistakes) }
             { (typeof profile.count_reverted !== "undefined") && statItem('Revert Count', profile.count_reverted) }
             { (typeof profile.count_linked !== "undefined") && statItem('Linked Count', profile.count_linked) }
-            { (typeof profile.count_voted !== "undefined") && statItem('Vote Count', profile.count_voted) }
           </div>
           <FeedBox
             customTheme={themes[theme]}
