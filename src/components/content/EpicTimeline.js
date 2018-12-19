@@ -29,7 +29,9 @@ import {
 } from '../map/actionReducers'
 import InfluenceChart from './Charts/ChartArea'
 import ArticleIframe from './ArticleIframe'
-import { getYoutubeId, epicIdNameArray, aeIdNameArray, getFullIconURL, itemTypeToName, themes, properties } from '../../properties'
+import {
+  getYoutubeId, epicIdNameArray, aeIdNameArray, getFullIconURL, itemTypeToColor, itemTypeToName, themes, properties
+} from '../../properties'
 import utils from "../map/utils/general";
 
 /**
@@ -70,7 +72,8 @@ const styles = {
     // whiteSpace: 'nowrap'
   },
   stepContainer: {
-    marginTop: -16,
+    marginTop: -12,
+    marginBottom: 4,
     maxHeight: '40px'
     // whiteSpace: 'nowrap',
     // textOverflow: 'ellipsis',
@@ -577,7 +580,7 @@ class EpicTimeline extends React.Component {
                             backgroundColor={themes[theme].foreColors[0]}
                             {...(epicLinkedArticles[i].icon ? (epicLinkedArticles[i].icon[0] === '/' ? { src: epicLinkedArticles[i].icon } : { src: getFullIconURL(decodeURIComponent(epicLinkedArticles[i].icon)) }) : { icon: <RulerIcon viewBox={'0 0 64 64'} /> })}
                     /> :
-                    <span style={{...styles.stepLabel, color: themes[theme].foreColors[0], background: (stepIndex === i ? themes[theme].highlightColors[0] : themes[theme].backColors[0]) }}>{epicLinkedArticles[i].date}</span>
+                    <span style={{...styles.stepLabel, color: (stepIndex === i ? themes[theme].backColors[0] : themes[theme].foreColors[0]), background: (stepIndex === i ? themes[theme].highlightColors[0] : themes[theme].backColors[0]) }}>{epicLinkedArticles[i].date}</span>
                   }
                   onClick={() => { this._selectStepButton(i, epicLinkedArticles[i].date) }}>
                   <div style={{
@@ -602,7 +605,9 @@ class EpicTimeline extends React.Component {
                     left: '50px',
                     top: '32px',
                     fontSize: '12px',
-                    color: themes[theme].foreColors[1]
+                    color: themes[theme].foreColors[1],
+                    textDecoration: 'none',
+                    borderBottom: '2px solid ' +  itemTypeToColor[epicContent.type],
                   }}>
                     {itemTypeToName[epicContent.type]}
                   </div>

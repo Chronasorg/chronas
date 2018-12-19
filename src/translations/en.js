@@ -195,7 +195,13 @@ export default {
     },
     linked: {
       fields: {
-        description: 'Description or content (if HTML type selected)',
+        description: 'Title',
+        content: 'Description',
+        subtype: 'Type',
+        source: 'Link to source',
+        wiki: 'Associated Wikipedia Article',
+        year: 'Year',
+        geojson: 'Geojson (for epics)',
         poster: 'Link to poster image',
         onlyEpicContent: 'Only used as linked part of another article (you will be forwarded to the link form upon saving)',
         src: 'Link to source/ ID'

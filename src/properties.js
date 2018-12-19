@@ -21,9 +21,9 @@ export const didYouKnows = [
   [ 'link',<div>You can link any articles together to show up in a content section (articles) or the media section</div>],
 ]
 
-const arrayToObject = (array) =>
+const arrayToObject = (array, ind = 1) =>
   array.reduce((obj, item) => {
-    obj[item[0]] = item[1]
+    obj[item[0]] = item[ind]
     return obj
   }, {})
 
@@ -47,21 +47,23 @@ export const markerIdNameArray = [
 ]
 
 export const epicIdNameArray = [
-  ['ebio', 'Biography', 'rgba(0, 128, 0, 0.5)'],
-  ['ec', 'Conflicts', 'rgba(255, 165, 0, 0.5)'],
-  ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)'],
-  ['ew', 'War', 'rgba(214, 0, 0, 0.5)'],
-  ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)']
+  ['ebio', 'Biography', 'rgba(0, 128, 0, 0.5)', false, 'rgb(0, 128, 0)'],
+  ['ec', 'Conflicts', 'rgba(255, 165, 0, 0.5)', false, 'rgb(255, 165, 0)'],
+  ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)', false, 'rgb(0, 0, 255)'],
+  ['ew', 'War', 'rgba(214, 0, 0, 0.5)', false, 'rgb(214, 0, 0)'],
+  ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)', false, 'rgb(255, 255, 255)']
 ]
 
 export const aeIdNameArray = [
-  ['ae|ruler', 'Ruler', 'rgba(0, 128, 0, 0.5)'],
-  ['ae|culture', 'Culture', 'rgba(255, 165, 0, 0.5)'],
-  ['ae|religion', 'Religion', 'rgba(0, 0, 255, 0.5)'],
-  ['ae|religionGeneral', 'Religion General', 'rgba(214, 0, 0, 0.5)'],
+  ['ae|ruler', 'Ruler', 'rgba(0, 128, 0, 0.5)', false, 'rgb(0, 128, 0)'],
+  ['ae|culture', 'Culture', 'rgba(255, 165, 0, 0.5)', false, 'rgb(255, 165, 0)'],
+  ['ae|religion', 'Religion', 'rgba(0, 0, 255, 0.5)', false, 'rgb(0, 0, 255)'],
+  ['ae|religionGeneral', 'Religion General', 'rgba(214, 0, 0, 0.5)', false, 'rgb(214, 0, 0)'],
 ]
 
 export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray))
+
+export const itemTypeToColor = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray), 4)
 
 const iconWidthModern = 128
 const iconHeightModern = 169

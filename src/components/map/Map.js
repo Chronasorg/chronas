@@ -1856,7 +1856,7 @@ class Map extends Component {
           {this._renderPopup()}
         </MapGL>
         { !isStatic && <div className={mapTimelineContainerClass}>
-          <Timeline groupItems={mapTimelineContainerClass !== 'mapTimeline discoverActive' ? epics : []} />
+          <Timeline history={history} groupItems={mapTimelineContainerClass !== 'mapTimeline discoverActive' ? epics : []} />
         </div> }
       </div>
     )

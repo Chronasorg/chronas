@@ -280,7 +280,7 @@ class MapTimeline extends Component {
   }
 
   _onClickTimeline = (event) => {
-    const { selectEpicItem, groupItems, setYear } = this.props
+    const { selectEpicItem, groupItems, setYear, history } = this.props
 
     if (event.event.target.className === 'currentYearLabel') {
       // open input
@@ -291,6 +291,8 @@ class MapTimeline extends Component {
     const selectedItemId = event.item
 
     if (selectedItemId) {
+      history.push('/article')
+
       const selectedItem = groupItems.filter(el => el.id === selectedItemId)[0]
       const selectedItemDate = selectedItem.start.getFullYear()
       selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear, selectedItem.id)
@@ -495,12 +497,7 @@ class MapTimeline extends Component {
     )
   }
 }
-//<div>
-//  <span>arrow</span>
-//  <span>{nextYear}</span>
-//</div>
 
-// style={ showNextYear ? { display: 'block' } : { display: 'block' } }
 const enhance = compose(
   connect(state => ({
     theme: state.theme,
