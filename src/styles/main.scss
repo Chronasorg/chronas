@@ -51,6 +51,14 @@ body {
   .tsTicks { display: block }
 }
 
+.nofocus:focus {
+  outline: none !important;
+}
+
+.signup-button:focus {
+  outline: none !important;
+}
+
 div.vis-tooltip {
   //backgroundColor: theme.palette.grey[700],
   padding: 4px 8px !important;

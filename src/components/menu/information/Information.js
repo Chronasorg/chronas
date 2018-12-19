@@ -311,6 +311,27 @@ class Information extends PureComponent {
                 </p>
                 <p>Visit the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('about')}>About</a> section to read more about the Chronas project and send the developers your inquiries, comments or questions through the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('contact')}>Contact</a> form.</p>
                 <p>We believe in the potential of this project to become a popular history tool alongside Wikipedia. If you share our enthusiasm and want to see the project succeed, please consider becoming a sustainer. For more information on <b>support</b> and the <b>future of Chronas</b>, visit the <a className='customLink' style={{ fontWeight: 800, color: themes[theme].highlightColors[0] }} onClick={() => this.handleChange('pro')}>New Features</a> section.</p>
+                <div style={{
+                  zIndex: 2,
+                  background: 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 50%)',
+                  bottom: 0,
+                  right: 0,
+                  width: 400,
+                  height: 200,
+                  position: 'absolute'
+                }}>
+
+                </div>
+                <div className='nofocus'  style={{ position: 'absolute',
+                  bottom: 36,
+                  zIndex: 4,
+                  right: 0,
+                  fontSize: 'small' }}><div className='signup-button'><a href={'https://twitter.com/Chronasorg'} target={'_blank'} title='Chronas on Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square"></i><span className=''>  Follow us on Twitter</span></a></div></div>
+                <div className='nofocus' style={{ position: 'absolute',
+                  bottom: 14,
+                  right: 0,
+                  zIndex: 4,
+                  fontSize: 'small' }}><div className='signup-button'><a href={'https://www.facebook.com/Chronas-581410425542785'} target={'_blank'} title='Chronas on Facebook' className='btn btn-link-facebook btn-block'><i className="fa fa-facebook-square"></i><span className=''>  Follow us on Facebook</span></a></div></div>
                 { welcomeStatistics && <div style={{ position: 'absolute',
                   bottom: 34,
                   fontSize: 'small' }}>build {welcomeStatistics.build} - v{welcomeStatistics.version}</div> }
