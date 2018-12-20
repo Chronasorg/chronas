@@ -297,6 +297,7 @@ class Information extends PureComponent {
               <br />
               <div style={{
                 background: 'url(/images/compass.jpg) center bottom no-repeat #f9f9f9',
+                backgroundColor: themes[theme].backColors[0];
                 minHeight: 512,
                 marginBottom: -40
               }}>
@@ -326,7 +327,7 @@ class Information extends PureComponent {
                   bottom: 36,
                   zIndex: 4,
                   right: 0,
-                  fontSize: 'small' }}><div className='signup-button'><a href={'https://twitter.com/chronasorg'} target={'_blank'} title='Chronas on Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square"></i><span className=''>  Follow us on Twitter</span></a></div></div>
+                  fontSize: 'small' }}><div className='signup-button'><a href={'https://twitter.com/Chronasorg'} target={'_blank'} title='Chronas on Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square"></i><span className=''>  Follow us on Twitter</span></a></div></div>
                 <div className='nofocus' style={{ position: 'absolute',
                   bottom: 14,
                   right: 0,
