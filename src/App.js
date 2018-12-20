@@ -107,7 +107,7 @@ class App extends Component {
 
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
-    const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 2000) - 2000)
+    const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 2000))
     const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,m,op,p,r,s,si')
     const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ew')
     const activeArea = {

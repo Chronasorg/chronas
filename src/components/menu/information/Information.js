@@ -326,12 +326,12 @@ class Information extends PureComponent {
                   bottom: 36,
                   zIndex: 4,
                   right: 0,
-                  fontSize: 'small' }}><div className='signup-button'><a href={'https://twitter.com/Chronasorg'} target={'_blank'} title='Chronas on Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square"></i><span className=''>  Follow us on Twitter</span></a></div></div>
+                  fontSize: 'small' }}><div className='signup-button'><a href={'https://twitter.com/chronasorg'} target={'_blank'} title='Chronas on Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square"></i><span className=''>  Follow us on Twitter</span></a></div></div>
                 <div className='nofocus' style={{ position: 'absolute',
                   bottom: 14,
                   right: 0,
                   zIndex: 4,
-                  fontSize: 'small' }}><div className='signup-button'><a href={'https://www.facebook.com/Chronas-581410425542785'} target={'_blank'} title='Chronas on Facebook' className='btn btn-link-facebook btn-block'><i className="fa fa-facebook-square"></i><span className=''>  Follow us on Facebook</span></a></div></div>
+                  fontSize: 'small' }}><div className='signup-button'><a href={'https://www.facebook.com/chronasorg'} target={'_blank'} title='Chronas on Facebook' className='btn btn-link-facebook btn-block'><i className="fa fa-facebook-square"></i><span className=''>  Follow us on Facebook</span></a></div></div>
                 { welcomeStatistics && <div style={{ position: 'absolute',
                   bottom: 34,
                   fontSize: 'small' }}>build {welcomeStatistics.build} - v{welcomeStatistics.version}</div> }
