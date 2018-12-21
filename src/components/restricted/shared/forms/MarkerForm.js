@@ -36,6 +36,7 @@ export class MarkerForm extends Component {
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
       if (wikiIndex > -1) values.wiki = wikiURL.substring(wikiIndex + 20, wikiURL.length)
       if (values.type.substr(0, 2) === 'w|') values.type = values.type.substr(2)
+      if (values.type === 'cp') values.type = 'c'
       const markerItem = decodeURIComponent(values._id)
 
       fetch(properties.chronasApiHost + '/markers/' + ((redirect === 'edit') ? markerItem : ''), {

@@ -181,6 +181,7 @@ export default {
       fields: {
         province_list: 'Click on provinces to selecect/ deselect',
         display_name: 'Display Name',
+        replaceWith: 'Replace With',
         search_name: 'Select By Name',
         main_ruler_name: 'Main Ruler Name',
         color: 'Area Color',
@@ -244,7 +245,10 @@ export default {
       fields: {
         name: 'Name',
         url: 'URL',
+        capitalStart: 'Start Year',
+        capitalEnd: 'End Year',
         coo: 'Coordinates',
+        capitalOwner: 'Capital Ruler',
         type: 'Type',
         lat: 'Latitude',
         lng: 'Longitude',
