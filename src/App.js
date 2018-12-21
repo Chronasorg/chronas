@@ -369,7 +369,7 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
-                  {!isStatic && false && <LoadingBar theme={theme} />}
+                  {!isStatic && <LoadingBar theme={theme} />}
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     {isLoading && !isStatic && <LoadingPage />}
                     {!isLoading && createElement(Map, { history, isLoading })}
