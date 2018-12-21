@@ -241,16 +241,16 @@ class Menu extends PureComponent {
           <IconButton
             key={'help'}
             containerElement={<Link to="/info" />}
-            tooltipPosition="bottom-right"
-            tooltip={translate('pos.help')}
-            tooltipStyles={tooltip}
+            // tooltipPosition="bottom-right"
+            // tooltip={translate('pos.help')}
+            // tooltipStyles={tooltip}
             onClick={() => setActiveMenu('info')}
             iconStyle={{color: themes[theme].foreColors[0]}}
           >
             <HelpIcon hoverColor={themes[theme].highlightColors[0]}/>
           </IconButton>
           <IconButton
-            tooltipPosition="bottom-right"
+            tooltipPosition="bottom-center"
             tooltip={translate(isLoggedIn ? 'aor.auth.logout' : 'aor.auth.login')}
             tooltipStyles={tooltip}
             onClick={isLoggedIn ? this.handleLogout : userLogout }

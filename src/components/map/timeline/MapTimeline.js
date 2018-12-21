@@ -13,6 +13,7 @@ import TextField from 'material-ui/TextField'
 import IconArrowUp from 'material-ui/svg-icons/navigation/expand-less'
 import IconArrowDown from 'material-ui/svg-icons/navigation/expand-more'
 import IconReset from 'material-ui/svg-icons/av/replay'
+import SearchEpicAutocomplete from '../../overwrites/SearchEpicAutocomplete'
 import { setYear } from './actionReducers'
 import { selectEpicItem, TYPE_EPIC } from '../actionReducers'
 import Timeline from 'react-visjs-timeline'
@@ -226,10 +227,11 @@ class MapTimeline extends Component {
 
     this.state = {
       isReset: true,
+      showEpicSearch: false,
       showNextYear: true,
       nextYear: '',
       yearDialogVisible: false,
-      timelineHeight: 140,
+      timelineHeight: SMALLTIMELINEHEIGHT,
       inputYear: '',
       timelineOptions: {
 
@@ -368,9 +370,8 @@ class MapTimeline extends Component {
   }
 
   render () {
-    const { customTimes, timelineOptions, timelineHeight, nextYear, yearDialogVisible, isReset, showNextYear } = this.state
-    const { groupItems, selectedYear, setYear, theme, translate } = this.props
-
+    const { customTimes, timelineOptions, timelineHeight, nextYear, yearDialogVisible, isReset, showEpicSearch, showNextYear } = this.state
+    const { groupItems, history, selectedYear, selectEpicItem, setYear, theme, translate } = this.props
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
     return (
@@ -449,29 +450,69 @@ class MapTimeline extends Component {
         >
           <IconReset hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
+        <div className={'searchEpicContainer'}>
+        <IconButton
+          key={'search'}
+          style={{
+            zIndex: 1,
+            width: 48,
+            height: 48,
+            bottom: 80,
+            left: 64,
+            position: 'fixed'
+          }}
+          className={'mapTimelineIcons'}
+          tooltipPosition='bottom-right'
+          tooltip={translate('pos.timeline.searchEpics')}
+          tooltipStyles={tooltip}
+          onClick={() => { this.setState({ showEpicSearch: !showEpicSearch }); this.forceUpdate() }}
+          iconStyle={{ color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%', padding: 2 }}
+        >
+          <IconSearch hoverColor={themes[theme].highlightColors[0]} />
+        </IconButton>
+        { showEpicSearch && <SearchEpicAutocomplete
+          key={'searchInput'}
+          // targetOrigin={'top'}
+          hintText="Search Epics"
+          maxSearchResults={200}
+          onNewRequest={(val) => {
+            selectEpicItem(val.wiki, val.start.getFullYear(), val.value)
+            this.setState({ showEpicSearch: false })
+            history.push('/article')
+            let s = new Date(val.start)
+            let e = new Date(val.end)
+            s.setFullYear(s.getFullYear() - 100)
+            e.setFullYear(e.getFullYear() + 100)
 
+            this._flyTo(s, e, false, val.value)
+            this.forceUpdate()
+          }}
+          filter={SearchEpicAutocomplete.caseInsensitiveFilter}
+          dataSource={groupItems.map(el => { return { value: el.id, text: el.title + " (" + el.start.getFullYear() + ")", wiki: el.wiki, start: el.start, end: el.end }})}
+          textFieldStyle={{
+            borderRadius: 14,
+            paddingLeft: 12,
+            height: 26,
+            overflow: 'hidden',
+            backgroundColor: themes[theme].backColors[0],
+            foreColor: themes[theme].foreColors[0]
+          }}
+          style={{
+            zIndex: 1,
+            width: 48,
+            height: 48,
+            bottom: 69,
+            left: 105,
+            position: 'fixed'
+          }}
+        /> }
+        </div>
         <Timeline
           ref='timeline'
           options={{ ...timelineOptions, height: timelineHeight }}
           groups={timelineGroups}
           items={groupItems}
           customTimes={customTimes}
-          // itemoutHandler={(event) => {
-          //   console.debug('itemout', event)
-          // }}
-          // mouseOverHandler={(event) => {
-          //   console.debug('mouseover', event)
-          //   if (showNextYear) {
-          //     this.setState({ showNextYear: !showNextYear, nextYear: '' })
-          //   } else {
-          //     this.setState({ showNextYear: !showNextYear })
-          //   }
-          // }}
-          // mouseMoveHandler={(event) => {
-          //   console.debug(event)
-          //   const year = new Date(event.time).getFullYear()
-          //   if (year && !isNaN(year)) this.setState({ nextYear: year })
-          // }}
           selectHandler={(items) => {
             const toFind = items.items[0]
             // console.debug(toFind,this.props.groupItems[0].id)

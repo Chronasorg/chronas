@@ -110,7 +110,11 @@ export default {
     sign_up: 'Join'
   },
   pos: {
-    timeline: { expand: 'Expand Timeline', reset: 'Reset Timeline View' },
+    timeline: {
+      expand: 'Expand Timeline',
+      reset: 'Reset Timeline View',
+      searchEpics: 'Search Epics'
+    },
     about: 'About Chronas',
     account: 'Manage Account',
     back: 'Back',
