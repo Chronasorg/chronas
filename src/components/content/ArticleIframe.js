@@ -114,8 +114,23 @@ class ArticleIframe extends React.Component {
     this.setState({ iframeLoading: false })
     const currSrc = document.getElementById('articleIframe').getAttribute('src')
     if (currSrc.indexOf('?printable=yes') === 1) {
-      document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
+      this.__setIFrameSource('articleIframe', currSrc + '?printable=yes')
+      // document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
     } // TODO: do this with ref
+    this.forceUpdate()
+  }
+
+  __setIFrameSource = (cid, url) => {
+    const myframe = document.getElementById(cid);
+    if(myframe !== null){
+      if(myframe.src){
+        myframe.src = url; }
+      else if(myframe.contentWindow !== null && myframe.contentWindow.location !== null){
+        myframe.contentWindow.location = url; }
+      else{
+        myframe.setAttribute('src', url);
+      }
+    }
   }
 
   _handleClose = () => {

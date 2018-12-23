@@ -1833,7 +1833,7 @@ class Map extends Component {
             goToViewport={this._goToViewport}
             theme={themes[theme]}
             viewport={viewport}
-            selectedItem={selectedItem.type === TYPE_MARKER ? selectedItem : (selectedItem.type === TYPE_AREA && possibleHiglightedAREAitem) ? possibleHiglightedAREAitem : {}}
+            selectedItem={selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_EPIC  ? selectedItem : (selectedItem.type === TYPE_AREA && possibleHiglightedAREAitem) ? possibleHiglightedAREAitem : {}}
             updateLine={this._updateLine}
             geoData={geoData}
             clusterRawData={activeCluster ? Array.isArray(possibleClusterRaw) ? possibleClusterRaw.length === 1 ? -1 : possibleClusterRaw : [] : []}

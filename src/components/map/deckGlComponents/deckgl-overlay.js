@@ -101,6 +101,9 @@ export default class DeckGLOverlay extends Component {
     const size = /* showCluster ? 1 : */ Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
     const updateTrigger = z * showCluster
 
+    const wasEpic = (selectedItem || {}).type === "epic"
+    const isEpic = (nextProps.selectedItem || {}).type === "epic"
+
     const viewportChange = viewport.latitude !== oldViewport.latitude || viewport.longitude !== oldViewport.longitude || viewport.zoom !== oldViewport.zoom
     let isDirty = viewportChange
 
@@ -134,7 +137,7 @@ export default class DeckGLOverlay extends Component {
       nextProps.selectedItem.wiki !== selectedItem.wiki) {
       // let nextIconMarker = nextProps.geoData.length !== 0 ? nextProps.geoData : []
       // if ( nextProps.contentIndex !== contentIndex) {
-      let nextIconMarker = nextProps.geoData.length !== 0 ? ((nextProps.contentIndex === contentIndex) ? nextProps.geoData : nextProps.geoData.map((el) => {
+      let nextIconMarker = (nextProps.geoData.length !== 0 || isEpic) ? ((nextProps.contentIndex === contentIndex) ? nextProps.geoData : nextProps.geoData.map((el) => {
         if (el.index === nextProps.contentIndex) {
           el.isActive = true
           if (el.coo && el.coo.length > 0) goToViewport({ longitude: el.coo[0], latitude: el.coo[1], zoomIn: true })
@@ -146,7 +149,7 @@ export default class DeckGLOverlay extends Component {
       })) : nextProps.markerData
       // }
       const nextTextMarker = nextProps.markerData.filter(el => el.subtype === 'c')
-      const iconMarker = geoData.length !== 0 ? geoData : markerData
+      const iconMarker = (geoData.length !== 0 || wasEpic) ? geoData : markerData
       const textMarker = markerData.filter(el => el.subtype === 'c')
 
       let capitalMarkers = []
