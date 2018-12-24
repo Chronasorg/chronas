@@ -119,7 +119,7 @@ class Content extends Component {
     selectedWiki: null,
     hasQuestions: false,
     sunburstData: [],
-    activeContentMenuItem: (localStorage.getItem('chs_activeContentMenuItem') !== null) ? localStorage.getItem('chs_activeContentMenuItem') : 'sunburst'
+    activeContentMenuItem: (localStorage.getItem('chs_activeContentMenuItem') !== null) ? localStorage.getItem('chs_activeContentMenuItem') : ''
   }
 
   componentDidMount = () => {
