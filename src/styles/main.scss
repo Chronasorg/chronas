@@ -672,6 +672,17 @@ div.vis-tooltip {
     float: right;
   }
 }
+.discoveryIcon {
+  margin-right: 0em;
+  margin-left: 32.06349206349206%;
+  height: 38px;
+  width: 15px;
+  background: url(/images/abstract-atlas.png) -30px -200px; background-size: 121px 238px;
+
+  &.tsTicks {
+    display: inherit
+  }
+}
 
 .battleIcon1 {
   margin-right: 0em;
