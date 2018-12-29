@@ -1101,15 +1101,14 @@ class Map extends Component {
       axios.get(properties.chronasApiHost + '/metadata?type=e&end=3000&subtype=' + subtype)
       .then(res => {
         const { markerTheme } = this.props
-        const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 238px' : '154px 224px'
         const resData = res.data
         const battlesByWars = (subtype.includes("ew")) ? resData.shift() : ''
         this.setState({
-          epics: this.state.epics.concat(resData.map((el) => {
+          epics: this.state.epics.concat(resData.map((el, index) => {
             let divBlocks = ''
-            const pEndYear = el.data.end
-            const startYear = +el.data.start
-            const endYear = pEndYear ? +pEndYear : (startYear + 1)
+            const pEndYear = +el.data.end
+            const startYear = +el.data.start || +el.year
+            const endYear = pEndYear ? pEndYear : (startYear + 1)
 
             if (subtype.includes("ew")) {
               battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl, index) => {
@@ -1122,15 +1121,19 @@ class Map extends Component {
               })
             }
 
+            const elsubtype = el.subtype
+            const elTitle = el.name || el.data.title
+
             return {
               start: new Date(new Date(0, 1, 1).setFullYear(startYear)),
-              className: 'timelineItem_' + el.subtype,
+              className: 'timelineItem_' + elsubtype,
               editable: false,
               subtype: el.subtype,
-              end: pEndYear ? new Date(new Date(0, 1, 1).setFullYear(+pEndYear)) : undefined,
-              content: '<div class="warContainer">' + (el.name || el.data.title) + '</div>' + divBlocks + '</div>',
-              title: el.name || el.data.title,
-              wiki: el.data.wiki,
+              end: pEndYear ? new Date(new Date(0, 1, 1).setFullYear(+pEndYear)) : undefined, //new Date(new Date(0, 1, 1).setFullYear(+startYear+1)),
+              content: '<div class="warContainer">' + ((elsubtype === "ei") ? '<img class="tsTicks discoveryIcon" src="/images/transparent.png">' : (elsubtype === "ps") ? '<img class="tsTicks esIcon' + ((index % 3 === 0) ? 1 : 2) + '" src="/images/transparent.png">' : elTitle) +  divBlocks + '</div>',
+              title: ((elsubtype === "ew") ? ('<img class="tsTicks warIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '-' + pEndYear + ' </span>: ') : (elsubtype === "ei") ? ('<img class="tsTicks discoveryIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : (elsubtype === "ps") ? ('<img class="tsTicks esIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : '') + '<b>'+elTitle+'</b>',
+              wiki: el.data.wiki || el.wiki,
+              source: el.data.source,
               id: el._id,
               group: 1
             }
@@ -1533,7 +1536,7 @@ class Map extends Component {
                     const fSubtype = (subtype === 'cp' || subtype === 'c0') ? 'cp' : subtype
                     const cofficient = 40 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
                     const backgroundPosition = 'url(/images/' + markerTheme + '-atlas.png) -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][fSubtype] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][fSubtype] || {}).y * cofficient)) + 'px'
-                    const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 238px' : '154px 224px'
+                    const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 278px' : '154px 224px'
                     return (<Step key={i} style={styles.stepContainer}>
                       <StepButton
                         iconContainerStyle={{ background:  'inherit' }}
@@ -1544,7 +1547,6 @@ class Map extends Component {
                             height: 30,
                             width: 30,
                             background: backgroundPosition + ' / ' + backgroundSize,
-                            // backgroundSize:
                           }} src='/images/transparent.png' /></div>
                           }
                         onClick={() => {
@@ -1600,7 +1602,7 @@ class Map extends Component {
                 const fSubtype = (subtype === 'cp' || subtype === 'c0') ? 'cp' : subtype
                 const cofficient = 80 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
                 const backgroundPosition = 'url(/images/' + markerTheme + '-atlas.png) -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][fSubtype] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][fSubtype] || {}).y * cofficient)) + 'px'
-                const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '242px 476px' : '308px 448px'
+                const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '242px 556px' : '308px 448px'
 
                 return (
                   <div key={name}>

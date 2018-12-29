@@ -15,7 +15,7 @@ import IconArrowDown from 'material-ui/svg-icons/navigation/expand-more'
 import IconReset from 'material-ui/svg-icons/av/replay'
 import SearchEpicAutocomplete from '../../overwrites/SearchEpicAutocomplete'
 import { setYear } from './actionReducers'
-import { selectEpicItem, TYPE_EPIC } from '../actionReducers'
+import { selectEpicItem, selectMarkerItem, TYPE_EPIC } from '../actionReducers'
 import Timeline from 'react-visjs-timeline'
 import './mapTimeline.scss'
 import { chronasMainColor } from '../../../styles/chronasColors'
@@ -282,7 +282,7 @@ class MapTimeline extends Component {
   }
 
   _onClickTimeline = (event) => {
-    const { selectEpicItem, groupItems, setYear, history } = this.props
+    const { selectEpicItem, selectMarkerItem, groupItems, setYear, history } = this.props
 
     if (event.event.target.className === 'currentYearLabel') {
       // open input
@@ -293,13 +293,19 @@ class MapTimeline extends Component {
     const selectedItemId = event.item
 
     if (selectedItemId) {
-      history.push('/article')
 
       const selectedItem = groupItems.filter(el => el.id === selectedItemId)[0]
       const selectedItemDate = selectedItem.start.getFullYear()
-      selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear, selectedItem.id)
+
+      if (selectedItem.subtype === 'ei' || selectedItem.subtype === 'ps' ) {
+        selectMarkerItem(selectedItem.wiki,selectedItem)
+      } else {
+        selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear, selectedItem.id)
+      }
       // utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
       // utilsQuery.updateQueryStringParameter('value', selectedItem.wiki)
+
+      history.push('/article')
     } else {
       setYear(clickedYear)
       const selectedYear = event.time.getFullYear()
@@ -314,7 +320,7 @@ class MapTimeline extends Component {
   };
 
   componentWillReceiveProps = (nextProps) => {
-    const { selectedItemType, groupItems, selectedYear, selectEpicItem } = this.props
+    const { selectedItemType, groupItems, selectedYear } = this.props
     const { customTimes } = this.state
 
     if (nextProps.selectedItemType !== selectedItemType && selectedItemType === TYPE_EPIC) {
@@ -364,6 +370,7 @@ class MapTimeline extends Component {
   }
 
   _flyTo = (s, e, doReset, optId) => {
+    if (isNaN(new Date(e).getFullYear())) return
     if (optId) { setTimeout(() => { this.refs.timeline.$el.setSelection(optId) }, 2000) }
     setTimeout(() => { this.refs.timeline.$el.setWindow(s, e); setTimeout(() => { this.setState({ isReset: doReset }) }, 1000) }, 10)
     // this.refs.timeline.$el.setWindow('1050-04-01', '2050-04-01')
@@ -371,7 +378,7 @@ class MapTimeline extends Component {
 
   render () {
     const { customTimes, timelineOptions, timelineHeight, nextYear, yearDialogVisible, isReset, showEpicSearch, showNextYear } = this.state
-    const { groupItems, history, selectedYear, selectEpicItem, setYear, theme, translate } = this.props
+    const { groupItems, history, selectedYear, selectMarkerItem, selectEpicItem, setYear, theme, translate } = this.props
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
     return (
@@ -476,6 +483,11 @@ class MapTimeline extends Component {
           hintText="Search Epics"
           maxSearchResults={200}
           onNewRequest={(val) => {
+            if (val.subtype === 'ei') {
+              selectMarkerItem(val.wiki,val)
+            } else {
+              selectEpicItem(val.wiki, val.start.getFullYear(), val.value)
+            }
             selectEpicItem(val.wiki, val.start.getFullYear(), val.value)
             this.setState({ showEpicSearch: false })
             history.push('/article')
@@ -488,7 +500,7 @@ class MapTimeline extends Component {
             this.forceUpdate()
           }}
           filter={SearchEpicAutocomplete.caseInsensitiveFilter}
-          dataSource={groupItems.map(el => { return { value: el.id, text: el.title + " (" + el.start.getFullYear() + ")", wiki: el.wiki, start: el.start, end: el.end }})}
+          dataSource={groupItems.map(el => { return { value: el.id, text: el.wiki.replace(/_/g, " ") + " (" + el.start.getFullYear() + ")", wiki: el.wiki, start: el.start, end: el.end }})}
           textFieldStyle={{
             borderRadius: 14,
             paddingLeft: 12,
@@ -546,7 +558,8 @@ const enhance = compose(
     selectedYear: state.selectedYear,
   }), {
     setYear,
-    selectEpicItem
+    selectEpicItem,
+    selectMarkerItem
   }),
 translate
 )

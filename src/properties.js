@@ -47,9 +47,9 @@ export const markerIdNameArray = [
 ]
 
 export const epicIdNameArray = [
-  ['ebio', 'Biography', 'rgba(0, 128, 0, 0.5)', false, 'rgb(0, 128, 0)'],
-  ['ec', 'Conflicts', 'rgba(255, 165, 0, 0.5)', false, 'rgb(255, 165, 0)'],
+  ['ei', 'Discovery', 'rgba(255, 216, 0, 0.5)', false, 'rgb(255, 165, 0)'],
   ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)', false, 'rgb(0, 0, 255)'],
+  ['es', 'Primary Sources', 'rgba(175, 124, 90, 0.5)', false, 'rgb(0, 128, 0)'],
   ['ew', 'War', 'rgba(214, 0, 0, 0.5)', false, 'rgb(214, 0, 0)'],
   ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)', false, 'rgb(255, 255, 255)']
 ]

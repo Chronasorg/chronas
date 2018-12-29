@@ -7,9 +7,11 @@ import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
 import IconEdit from 'material-ui/svg-icons/editor/mode-edit'
 import IconHistory from 'material-ui/svg-icons/action/view-list'
+import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
+import FlatButton from 'material-ui/FlatButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import FullscreenEnterIcon from 'material-ui/svg-icons/navigation/fullscreen'
 import Toggle from 'material-ui/Toggle'
@@ -63,12 +65,19 @@ const styles = {
     right: '8px',
     padding: '38px 8px 0px'
   },
+  epicInfoContainer: {
+    position: 'fixed',
+    whiteSpace: 'nowrap',
+    left: '16px',
+    top: '0px',
+    height: '56px',
+  },
   actionButtonContainer: {
     position: 'fixed',
     whiteSpace: 'nowrap',
     right: '4px',
-    top: '0px',
-    height: '56px',
+    top: '6px',
+    height: '42px',
   },
   fullscreenButton: {
     whiteSpace: 'nowrap',
@@ -113,7 +122,7 @@ class ArticleIframe extends React.Component {
   _handleUrlChange = (e) => {
     this.setState({ iframeLoading: false })
     const currSrc = document.getElementById('articleIframe').getAttribute('src')
-    if (currSrc.indexOf('?printable=yes') === 1) {
+    if (currSrc.indexOf('printable=yes') === 1) {
       this.__setIFrameSource('articleIframe', currSrc + '?printable=yes')
       // document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
     } // TODO: do this with ref
@@ -231,6 +240,9 @@ class ArticleIframe extends React.Component {
     const isMedia = selectedItem.type === TYPE_LINKED
     const isArea = selectedItem.type === TYPE_AREA
     const isEpic = selectedItem.type === TYPE_EPIC
+    const isEpicInfo = selectedItem.value.subtype === 'ei'
+    const potentialSource = ((selectedItem.value || {}).data || {}).source || (selectedItem.value || {}).source
+    const isPsWithSource = selectedItem.value.subtype === 'ps' && (potentialSource || '').indexOf('wikisource') > -1
     const isProvince = selectedItem.wiki === WIKI_PROVINCE_TIMELINE
     const noWiki = (!selectedItem || !selectedWiki || selectedWiki === -1)
     const modUrl = isEpic || isArea
@@ -241,7 +253,19 @@ class ArticleIframe extends React.Component {
       // ? (epicContentItem.ct === "marker" ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
       // : (isMarker ?  '/mod/markers' : '/mod/metadata')
 
-    const modMenu = <div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : (isProvince) ? { ...styles.actionButtonContainer, top: 332 } : styles.actionButtonContainer } >
+    const modMenu = <div>{ isEpicInfo ? <div style={ styles.epicInfoContainer }> <img className="tsTicks discoveryIcon articleEpic" src="/images/transparent.png"/><h6 style={{ paddingLeft: 40, paddingTop: 22 }}>Discovery</h6></div> : isPsWithSource ? <div style={ styles.epicInfoContainer }>
+
+      <FlatButton
+        backgroundColor={themes[theme].highlightColors[0]}
+        hoverColor={themes[theme].foreColors[0]}
+        color={themes[theme].backColors[0]}
+        style={{ margin: 12, marginLeft: -8, marginTop: 8, color: themes[theme].backColors[0] }}
+        label="Read Document"
+        labelPosition="before"
+        primary={true}
+        onClick={() => window.open(decodeURIComponent(potentialSource), '_blank').focus()}
+        icon={<IconOutbound color={themes[theme].backColors[0]} />}
+      /></div> : null}<div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : (isProvince) ? { ...styles.actionButtonContainer, top: 332 } : { ...styles.actionButtonContainer, backgroundColor: themes[theme].backColors[0] } } >
       { toggleYearByArticle && <Toggle
         label='Set year by article'
         disabled={toggleYearByArticleDisabled}
@@ -285,7 +309,7 @@ class ArticleIframe extends React.Component {
         style={{  }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._handleClose()}>
         <IconClose style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
       </IconButton> }
-    </div>
+    </div></div>
 
     const shouldLoad = !htmlContent && (noWiki || iframeLoading || selectedWiki === null || +selectedWiki === -1)
 

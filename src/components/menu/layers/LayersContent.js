@@ -305,7 +305,7 @@ class LayerContent extends Component {
               nestedItems={markerIdNameArray.map(id => {
                 const cofficient = 40 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
                 const backgroundPosition = 'url(/images/' + markerTheme + '-atlas.png) -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][id[0]] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][id[0]] || {}).y * cofficient)) + 'px'
-                const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 238px' : '154px 224px'
+                const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 278px' : '154px 224px'
                 //((iconMapping['abst'][id[0]] || {}).width) + 'px ' + ((iconMapping['abst'][id[0]] || {}).height) + 'px'
                 return <ListItem value={id[0]}
                             // style={{ display: (id[0] === 'c' ? 'none' : 'inherit') }}

@@ -544,7 +544,8 @@ class Discover extends PureComponent {
     const { slidesData, selectedImage, slideIndex, tileData, tabDataKeys, isFetchingImages } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
 
-    const hasSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
+    const hasNoSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
+    const hasNoImage = typeof selectedImage.src === 'undefined' || selectedImage.src === ''
     const hasNoWiki = typeof selectedImage.wiki === 'undefined' || selectedImage.wiki === '' || (selectedImage.wiki || []).length === 0
 
     const slideButtons = (score, id, source, stateData) => {
@@ -573,7 +574,7 @@ class Discover extends PureComponent {
           tooltip={translate('pos.downvote')}
         ><IconThumbDown hoverColor={themes[theme].highlightColors[0]} color={downvoteColor} /></IconButton>
         <div style={styles.scoreLabel}>{ score} </div>
-        {(stateData[2] === 'audios' || stateData[2] === 'articles' || stateData[2] === 'ps' || stateData[2] === 'v') ? <IconButton
+        {(stateData[2] === 'audios' || stateData[2] === 'articles' || (stateData[2] === 'ps' && (sourceSelected || '').indexOf('http') > -1) || stateData[2] === 'v') ? <IconButton
           style={styles.sourceButton}
           tooltipPosition='bottom-center'
           tooltip={sourceSelected}
@@ -646,7 +647,7 @@ class Discover extends PureComponent {
               const tile = slidesData.filter(el => (el.original === src))[0]
 
               this.setState({ selectedImage: {
-                  src: tile.src || tile.original || tile.poster,
+                  src: tile.subtype === "ps" ? tile.thumbnail : (tile.src || tile.original || tile.poster),
                   year: tile.subtitle || tile.originalTitle,
                   title: tile.title || tile.description,
                   wiki: tile.subtype === "ps" && [tile.wiki],
@@ -724,7 +725,7 @@ class Discover extends PureComponent {
                         onError={() => this._removeTile(tabKey[0], tile.src)}
                         onClick={() => {
                           this.setState({ selectedImage: {
-                              src: tile.src || tile.original || tile.poster,
+                              src: tile.subtype === "ps" ? tile.thumbnail : (tile.src || tile.original || tile.poster),
                               year: tile.subtitle || tile.originalTitle,
                               title: tile.title || tile.description,
                               wiki: tile.subtype === "ps" && [tile.wiki],
@@ -877,10 +878,10 @@ class Discover extends PureComponent {
               { selectedImage.src && <IconButton
                 style={styles.buttonOpenArticle}
                 tooltipPosition='bottom-center'
-                tooltip={hasNoWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
+                tooltip={hasNoWiki ? translate('pos.discover_component.hasNoImage') : translate('pos.discover_component.openSource')}>
                 <RaisedButton
                   hoverColor={themes[theme].highlightColors[0]}
-                  disabled={hasSource}
+                  disabled={hasNoImage}
                   label='Open Image'
                   primary
                   onClick={() => this._handleOpenSource(selectedImage.src)} >
@@ -893,7 +894,7 @@ class Discover extends PureComponent {
                 tooltip={hasNoWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
                 <RaisedButton
                   hoverColor={themes[theme].highlightColors[0]}
-                  disabled={hasSource}
+                  disabled={hasNoSource}
                   label='Open Source'
                   primary
                   onClick={() => this._handleOpenSource(selectedImage.source)} >
