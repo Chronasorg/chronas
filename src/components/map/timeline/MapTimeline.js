@@ -260,7 +260,8 @@ class MapTimeline extends Component {
       groups: [{
         id: 1,
         content: 'Epics',
-      }]
+      }],
+      epicSearchOptions: []
     }
   }
 
@@ -336,6 +337,10 @@ class MapTimeline extends Component {
         }
       })
     }
+
+    if (groupItems.length !== nextProps.groupItems) {
+      this.setState({ epicSearchOptions: groupItems.map(el => { return { value: el.id, text: el.wiki.replace(/_/g, " ") + " (" + el.start.getFullYear() + ")", wiki: el.wiki, start: el.start, end: el.end }}) })
+    }
   }
 
   shouldComponentUpdate (nextProps) {
@@ -378,7 +383,7 @@ class MapTimeline extends Component {
   }
 
   render () {
-    const { customTimes, timelineOptions, timelineHeight, nextYear, yearDialogVisible, isReset, showEpicSearch, showNextYear } = this.state
+    const { customTimes, timelineOptions, timelineHeight, nextYear, yearDialogVisible, isReset, showEpicSearch, epicSearchOptions, showNextYear } = this.state
     const { groupItems, history, selectedYear, selectMarkerItem, selectEpicItem, setYear, theme, translate } = this.props
     let leftOffset = (this.props.menuDrawerOpen) ? 156 : 56
     if (this.props.rightDrawerOpen) leftOffset -= 228
@@ -501,7 +506,7 @@ class MapTimeline extends Component {
             this.forceUpdate()
           }}
           filter={SearchEpicAutocomplete.caseInsensitiveFilter}
-          dataSource={groupItems.map(el => { return { value: el.id, text: el.wiki.replace(/_/g, " ") + " (" + el.start.getFullYear() + ")", wiki: el.wiki, start: el.start, end: el.end }})}
+          dataSource={epicSearchOptions}
           textFieldStyle={{
             borderRadius: 14,
             paddingLeft: 12,
