@@ -298,7 +298,8 @@ class MapTimeline extends Component {
       const selectedItemDate = selectedItem.start.getFullYear()
 
       if (selectedItem.subtype === 'ei' || selectedItem.subtype === 'ps' ) {
-        selectMarkerItem(selectedItem.wiki,selectedItem)
+        selectMarkerItem(selectedItem.wiki, selectedItem)
+        setYear(selectedItem.start.getFullYear())
       } else {
         selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear, selectedItem.id)
       }
