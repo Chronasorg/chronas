@@ -16,7 +16,7 @@ import IconReset from 'material-ui/svg-icons/av/replay'
 import SearchEpicAutocomplete from '../../overwrites/SearchEpicAutocomplete'
 import { setYear } from './actionReducers'
 import { selectEpicItem, selectMarkerItem, TYPE_EPIC } from '../actionReducers'
-import Timeline from 'react-visjs-timeline'
+import TimelinePlus from './TimelinePlus'
 import './mapTimeline.scss'
 import { chronasMainColor } from '../../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
@@ -295,13 +295,19 @@ class MapTimeline extends Component {
 
     if (selectedItemId) {
 
-      const selectedItem = groupItems.filter(el => el.id === selectedItemId)[0]
+      const selectedItem = groupItems.find((el) => el.id === selectedItemId)
       const selectedItemDate = selectedItem.start.getFullYear()
 
       if (selectedItem.subtype === 'ei' || selectedItem.subtype === 'ps' ) {
         selectMarkerItem(selectedItem.wiki, selectedItem)
         setYear(selectedItem.start.getFullYear())
       } else {
+        let s = new Date(selectedItem.start)
+        let e = new Date(selectedItem.end)
+        s.setFullYear(s.getFullYear() - 100)
+        e.setFullYear(e.getFullYear() + 100)
+        this._flyTo(s, e, false, selectedItemId)
+
         selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear, selectedItem.id)
       }
       // utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
@@ -344,6 +350,9 @@ class MapTimeline extends Component {
   }
 
   shouldComponentUpdate (nextProps) {
+
+    // return false;
+
     if (nextProps.groupItems.length !== this.props.groupItems.length || nextProps.selectedYear !== this.props.selectedYear) {
       return true
     } else return false
@@ -525,26 +534,26 @@ class MapTimeline extends Component {
           }}
         /> }
         </div>
-        <Timeline
+        <TimelinePlus
           ref='timeline'
           options={{ ...timelineOptions, height: timelineHeight }}
           groups={timelineGroups}
           items={groupItems}
           customTimes={customTimes}
-          selectHandler={(items) => {
-            const toFind = items.items[0]
-            // console.debug(toFind,this.props.groupItems[0].id)
-            const selectedItem = this.props.groupItems.find((el) => el.id === toFind)
-            if (selectedItem) {
-              let s = new Date(selectedItem.start)
-              let e = new Date(selectedItem.end)
-              s.setFullYear(s.getFullYear() - 100)
-              e.setFullYear(e.getFullYear() + 100)
-              this._flyTo(s, e, false, toFind)
-            }
-          }}
+          // selectHandler={(items) => {
+          //   const toFind = items.items[0]
+          //   // console.debug(toFind,this.props.groupItems[0].id)
+          //   const selectedItem = this.props.groupItems.find((el) => el.id === toFind)
+          //   if (selectedItem) {
+          //     let s = new Date(selectedItem.start)
+          //     let e = new Date(selectedItem.end)
+          //     s.setFullYear(s.getFullYear() - 100)
+          //     e.setFullYear(e.getFullYear() + 100)
+          //     this._flyTo(s, e, false, toFind)
+          //   }
+          // }}
           rangechangeHandler={() => { if (freeToChange) freeToChange = false }}
-          rangechangedHandler={() => { this.setState({ isReset: false }); setTimeout(() => { freeToChange = true }, 200) }}
+          rangechangedHandler={() => { if (isReset) this.setState({ isReset: false }); setTimeout(() => { freeToChange = true }, 200) }}
           clickHandler={(event) => { if (freeToChange) this._onClickTimeline(event) }}
         />
         <Portal node={document && document.querySelector('.vis-custom-time.selectedYear')}>

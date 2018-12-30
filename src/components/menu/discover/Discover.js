@@ -510,7 +510,7 @@ class Discover extends PureComponent {
   }
 
   _handleEdit = (id, dataKey = false) => {
-    const selectedItem = (dataKey) ? this.state.tileData[dataKey].filter(el => (el.src === decodeURIComponent(id)))[0] : this.state.selectedImage
+    const selectedItem = (dataKey) ? this.state.tileData[dataKey].find(el => (el.src === decodeURIComponent(id))) : this.state.selectedImage
     this.props.selectLinkedItem(selectedItem, { ...selectedItem,
       ...selectedItem.fullData,
       participants: (((selectedItem.fullData || {}).data || {}).participants || []).map((pT) => { return { 'participantTeam': pT.map((pp) => { return { 'name': pp } }) } }) })
@@ -644,7 +644,7 @@ class Discover extends PureComponent {
             items={slidesData}
             onClick={(event) => {
               const src = event.target.src
-              const tile = slidesData.filter(el => (el.original === src))[0]
+              const tile = slidesData.find(el => (el.original === src))
 
               this.setState({ selectedImage: {
                   src: tile.subtype === "ps" ? tile.thumbnail : (tile.src || tile.original || tile.poster),

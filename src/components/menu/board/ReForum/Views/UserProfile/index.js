@@ -136,7 +136,7 @@ class UserProfile extends Component {
             <div className='FeedBox_discussions'>
               { opinions && opinions.length === 0 && <div className='FeedBox_loading'>No comments...</div> }
               { opinions && opinions.map((opinion) => {
-                const forum = (forums.filter(f => opinion.forum_id === f._id) || {})[0]
+                const forum = forums.find(f => opinion.forum_id === f._id)
                 return (
                   <Opinion
                     theme={theme}

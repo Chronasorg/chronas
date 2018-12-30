@@ -432,7 +432,7 @@ class LinkedGallery extends React.Component {
   }
 
   _handleEdit = (id) => {
-    const selectedItem = this.state.tileData.filter(el => (el.src === decodeURIComponent(id)))[0]
+    const selectedItem = this.state.tileData.find(el => (el.src === decodeURIComponent(id)))
     this.props.selectLinkedItem(selectedItem)
     this.props.history.push('/mod/linked')
   }

@@ -50,7 +50,7 @@ export const epicIdNameArray = [
   ['ei', 'Discovery', 'rgba(255, 216, 0, 0.5)', false, 'rgb(255, 165, 0)'],
   ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)', false, 'rgb(0, 0, 255)'],
   ['es', 'Primary Sources', 'rgba(175, 124, 90, 0.5)', false, 'rgb(0, 128, 0)'],
-  ['ew', 'War', 'rgba(214, 0, 0, 0.5)', false, 'rgb(214, 0, 0)'],
+  ['ew', 'War', 'rgba(158, 50, 36, 0.5)', false, 'rgb(158, 50, 36)'],
   ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)', false, 'rgb(255, 255, 255)']
 ]
 
@@ -688,18 +688,6 @@ export const properties = {
 }
 
 export const themes = {
-  default: {
-    foreColors: ['#110617',
-      '#383B32',
-      '#383B32'],
-    backColors: ['#ababab',
-      '#cfcfcf',
-      '#cfcfcf'],
-    borderColors: ['rgba(200,200,200,100)'],
-    highlightColors: ['rgb(173, 135, 27)'],
-    gradientColors: ['linear-gradient(180deg,#fff 0,#F2F2F2)'],
-    className: 'defaultTheme'
-  },
   light: {
     foreColors: ['#6a6a6a',
       '#494949',

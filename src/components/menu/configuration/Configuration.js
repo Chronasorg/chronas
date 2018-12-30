@@ -53,7 +53,7 @@ class Configuration extends PureComponent {
     const {theme, locale, changeTheme, changeLocale, changeMarkerTheme, markerTheme, setBodyFont, setFullscreen, translate} = this.props;
 
     const currBodyClasses = Array.from(document.body.classList) || []
-    const selectedFontValue = ((properties.markerOptions.filter(el => currBodyClasses.includes(el.id)) || [])[0] || {}).id
+    const selectedFontValue = (properties.markerOptions.find(el => currBodyClasses.includes(el.id)) || {}).id
 
     return (
         <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open={true} contentClassName={(this.state.hiddenElement) ? '' : "classReveal"} contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}} onRequestClose={this.handleClose}>

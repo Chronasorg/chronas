@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Timeline from 'react-visjs-timeline'
 import ArticleIframe from './ArticleIframe'
+import TimelinePlus from '../map/timeline/TimelinePlus'
 
 const start = '0000-01-01',
   min = '-002500-01-01T00:00:00.000Z',
@@ -172,7 +172,7 @@ class ProvinceTimeline extends React.Component {
 
     return (
       <div className='ProvinceTimeline' style={{ width: '100%', height: '100%', overflow: 'auto', display: 'inline-table' }}>
-        <Timeline
+        <TimelinePlus
           options={timelineOptions}
           customTimes={new Date(new Date(0, 1, 1).setFullYear(+selectedYear))}
           groups={groups}

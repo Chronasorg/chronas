@@ -41,7 +41,7 @@ import { getFullIconURL, markerIdNameArray, properties, getPercent, themes, icon
 import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, basemapLayerIndex, areaColorLayerIndex } from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
-import Timeline from './timeline/MapTimeline'
+import MapTimeline from './timeline/MapTimeline'
 import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
 const turf = require('@turf/turf')
@@ -405,7 +405,7 @@ class Map extends Component {
 
         const content = ((selectedItem || {}).data || {}).content || []
         const selectedIndex = ((selectedItem || {}).data || {}).contentIndex || -1
-        const selectedFeature = content.filter(f => f.index === selectedIndex)[0]
+        const selectedFeature = content.find(f => f.index === selectedIndex)
 
         if ((((selectedFeature || {}).geometry || {}).coordinates || []).length > 0) {
           delete stateToUpdate.viewport
@@ -496,7 +496,7 @@ class Map extends Component {
       if (nextProps.selectedItem.wiki === 'random') {
 
         const { markerData } = this.state
-        const markerDataLength = markerData.filter(el => el.subtype !== 'c' && el.subtype !== 'cp').length
+        const markerDataLength = markerData.find(el => el.subtype !== 'c' && el.subtype !== 'cp').length
         if (markerDataLength > 0) {
           const toSelectMarker = markerData.filter(el => el.subtype !== 'c' && el.subtype !== 'cp')[getRandomInt(0, markerDataLength - 1)]
           selectMarkerItem(toSelectMarker._id, toSelectMarker)
@@ -581,7 +581,7 @@ class Map extends Component {
         nextContentIndex !== contentIndex) {
         this._updateEpicGeo(nextContentIndex)
         const content = this.state.geoData// ((nextProps.selectedItem || {}).data || {}).content || ((((nextProps.selectedItem || {}).data || {}).data || {}).data || {}).content || []
-        const selectedFeature = content.filter(f => f.index === nextContentIndex)[0]
+        const selectedFeature = content.find(f => f.index === nextContentIndex)
         let prevFeature
         for (let i = +nextContentIndex - 1; i > -1; i--) {
           const currCoords = (content[i] || {}).coo || ((content[i] || {}).geometry || {}).coordinates || []
@@ -1143,7 +1143,8 @@ class Map extends Component {
     }
   }
 
-  _removeEpic = (subtype) => {
+  _removeEpic = (preSuptype) => {
+    const subtype = (preSuptype === 'es') ? 'ps' : preSuptype
     this.setState({
       epics: this.state.epics.filter(el => el.subtype !== subtype)
     })
@@ -1858,7 +1859,7 @@ class Map extends Component {
           {this._renderPopup()}
         </MapGL>
         { !isStatic && <div className={mapTimelineContainerClass}>
-          <Timeline history={history} groupItems={mapTimelineContainerClass !== 'mapTimeline discoverActive' ? epics : []} />
+          <MapTimeline history={history} groupItems={mapTimelineContainerClass !== 'mapTimeline discoverActive' ? epics : []} />
         </div> }
       </div>
     )

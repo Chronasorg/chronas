@@ -148,6 +148,7 @@ export const LinkedEdit = (props) => {
     }
   }
 
+  const potentialYear = typeof (((props.selectedItem || {}).value || {}).start || {}).getFullYear === 'function' && (((props.selectedItem || {}).value || {}).start || {}).getFullYear()
   return <div>
     <AddEditLinkNavigation pathname={props.location.pathname} />
     <Divider />
@@ -157,26 +158,26 @@ export const LinkedEdit = (props) => {
 
       {isEpic && <AutocompleteInput options={{ fullWidth: true }} source="select" choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val,v) => { props.setMetadataEntity(v) }} label="resources.areas.fields.search_name" />}
 
-      <DisabledInput source='src' defaultValue={props.selectedItem.value.src || ''} label='resources.linked.fields.src' />
+      <DisabledInput source='src' defaultValue={props.selectedItem.value.src || props.selectedItem.value._id || props.selectedItem.value.id || ''} label='resources.linked.fields.src' />
       {isEpic && <EmbeddedArrayInput options={{ fullWidth: true }} source='attacker'>
         <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.attacker' />
       </EmbeddedArrayInput> }
       {isEpic && <EmbeddedArrayInput options={{ fullWidth: true }} source='defender'>
         <AutocompleteInput options={{ fullWidth: true }} source='name' choices={choicesRuler} label='resources.areas.fields.defender' />
       </EmbeddedArrayInput> }
-      <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={props.selectedItem.value.title || (props.selectedItem.value.data || {}).title || ''} />
-      { !isEpic && <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ''} />}
+      <LongTextInput source='description' label='resources.linked.fields.description' defaultValue={(!props.selectedItem.value.className && props.selectedItem.value.title) || (props.selectedItem.value.data || {}).title || ''} />
+      { !isEpic && <LongTextInput source='source' label='resources.linked.fields.source' type='url' defaultValue={props.selectedItem.value.source || ((props.selectedItem.value || {}).data || {}).source || ''} />}
       <LongTextInput source='poster' label='resources.linked.fields.poster' type='url' defaultValue={(props.selectedItem.value.data || {}).poster || ''} />
-      <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.value.wiki || ''} />
+      <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' defaultValue={props.selectedItem.wiki || props.selectedItem.value.wiki || ''} />
       {/*<h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4>*/}
-      <NumberInput style={ isEpic ? { width: '50%', float: 'left' } : {}} validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle} source='year' label='resources.linked.fields.year' type='number' />
+      <NumberInput style={ isEpic ? { width: '50%', float: 'left' } : {}} validate={required} defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle || potentialYear} source='year' label='resources.linked.fields.year' type='number' />
       { isEpic && <NumberInput style={{ width: '50%', float: 'right' }} source="end" defaultValue={(props.selectedItem.value.data || {}).end || props.selectedItem.value.year || props.selectedItem.value.subtitle} label="resources.areas.fields.endYear" /> }
       { !isEpic && <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />}
       { !isEpic && <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => { props.setModDataLng(+v) }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} source='coo[0]' label='resources.markers.fields.lat' />}
       { !isEpic && <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => { props.setModDataLat(+v) }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} source='coo[1]' label='resources.markers.fields.lng' />}
       { !isEpic && <LongTextInput source='geojson' label='resources.linked.fields.geojson' defaultValue={props.selectedItem.value.geojson || ''} />}
       { !isEpic && <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />}
-      <DeleteButton id={encodeURIComponent((epicDefaults || {}).src || props.selectedItem.value.src)} {...props} />
+      <DeleteButton id={encodeURIComponent((epicDefaults || {}).src || props.selectedItem.value.src || props.selectedItem.value._id  || props.selectedItem.value.id)} {...props} />
     </LinkedForm>
     </Create>
   </div>

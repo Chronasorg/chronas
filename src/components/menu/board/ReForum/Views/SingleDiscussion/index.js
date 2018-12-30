@@ -118,7 +118,7 @@ class SingleDiscussion extends Component {
       discussion,
     } = this.state
 
-    const forumId = forums.filter(f => f.forum_slug === currentForum)[0]._id
+    const forumId = forums.find(f => f.forum_slug === currentForum)._id
     const discussion_slug = this.props.match.params.discussion
 
     postOpinion(

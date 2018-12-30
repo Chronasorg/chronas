@@ -544,6 +544,7 @@ class EpicTimeline extends React.Component {
     const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
     const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
     const contentDetected = epicLinkedArticles.length !== 0
+    const isNotAreaRuler = typeof (rulerProps || {})[1] !== "string"
 
     const entityName = (epicMeta || {}).title || (rulerProps || {})[0]
 
@@ -563,8 +564,19 @@ class EpicTimeline extends React.Component {
         { influenceChartData && influenceChartData.length > 0 && <div style={{ height: (!isEntity) ? '256px' : '200px', width: '100%' }}>
           <InfluenceChart qName={entityName || ''} epicMeta={isEntity ? false : epicMeta} chartIcons={epicLinkedArticles.filter(el => el.type === "b" || el.type === "si")} rulerProps={rulerProps} setYear={this.setYearWrapper} newData={influenceChartData} selectedYear={selectedYear} />
         </div> }
-        { contentDetected && <div style={{ width: '19%', borderRight: '1px solid ' + themes[theme].borderColors[0], boxShadow: 'rgba(0, 0, 0, 0.4) -5px 0px 6px -3px inset', maxWidth: '200px', height: 'calc(100% - 248px)', overflow: 'auto', display: 'inline-block', overflowX: 'auto', background: themes[theme].gradientColors[0] }}>
-          <FlatButton backgroundColor={(rulerProps || {})[1] || 'grey'} hoverColor={'grey'} labelStyle={{ padding: '4px', color: 'white' }} style={{ width: '100%', height: '64px', borderRadius: '0px' }} label={(epicMeta || {}).title || (rulerProps || {})[0] || 'loading'} onClick={this._selectMainArticle.bind(this)} />
+        { contentDetected && <div style={{ width: '19%', maxWidth: '200px', height: 'calc(100% - 248px)', display: 'inline-block', background: themes[theme].gradientColors[0] }}>
+          <FlatButton backgroundColor={isNotAreaRuler ? themes[theme].backColors[0] : (rulerProps || {})[1] } hoverColor={isNotAreaRuler ? themes[theme].backColors[1] : themes[theme].highlightColors[0]} labelStyle={{ padding: '4px', color: isNotAreaRuler ? themes[theme].foreColors[0] : themes[theme].backColors[0], textTransform: 'inherit', fontWeight: 600 }} style={{ width: '100%', height: '64px', borderRadius: '0px', border: 'none', lineHeight: '26px', padding: '6px',
+
+            borderTop: isNotAreaRuler ? '1px solid ' + themes[theme].borderColors[0] : 'none',
+            borderRight: isNotAreaRuler ? '1px solid ' + themes[theme].borderColors[0] : 'none',
+
+          }} label={(epicMeta || {}).title || (rulerProps || {})[0] || 'loading'} onClick={this._selectMainArticle.bind(this)} />
+          <div style={{
+            borderRight: '1px solid ' + themes[theme].borderColors[0],
+            width: '100%',
+            overflow: 'auto',
+            height: 'calc(100% - 64px)'
+          }}>
           <Stepper linear={false}
             activeStep={stepIndex}
             orientation='vertical'
@@ -627,7 +639,7 @@ class EpicTimeline extends React.Component {
                 </FlatButton>}
               </div>
             ))}
-          </Stepper>
+          </Stepper></div>
         </div> }
         <div style={{
           width: (contentDetected ? '80%' : '100%'),

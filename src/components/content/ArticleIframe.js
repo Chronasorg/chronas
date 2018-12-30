@@ -226,6 +226,10 @@ class ArticleIframe extends React.Component {
         fModUrl = '/mod/metadata'
       }
       // setMetadataType(selectedTypeId.type)
+    } else if ((selectedItem.value || {}).type === 'i' || (selectedItem.value || {}).subtype === 'ps') {
+      fModUrl = '/mod/linked'
+    } else if ((selectedItem.value || {}).subtype === 'ei') {
+      fModUrl = '/mod/linked'
     }
     history.push(fModUrl)
   }

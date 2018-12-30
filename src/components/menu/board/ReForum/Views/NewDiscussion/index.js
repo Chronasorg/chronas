@@ -112,7 +112,7 @@ class NewDiscussion extends Component {
     const { forums } = this.props
     const { qId } = this.props.match.params
 
-    const finalForumId = (forumId) || ((forums.filter(f => f.forum_slug === properties.QAID) || [])[0] || {})._id
+    const finalForumId = (forumId) || (forums.filter(f => f.forum_slug === properties.QAID) || {})._id
     const res = postDiscussion(userId, finalForumId, currentForum || properties.QAID, currentDiscussion, qId)
     if (res === 'OK') {
       // Success

@@ -135,7 +135,7 @@ export default class InfluenceChart extends React.Component {
           .data.map(y => +y.left).reduce(function (prev, curr) {
           return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
         },Infinity).toString()
-        const topObj = s[0].data.filter(f => f.left === nearestYear)[0]
+        const topObj = s[0].data.find(f => f.left === nearestYear)
         return {
           left: selectedYear,
           top: topObj ? (topObj.top + ((i !== 2) ? '' : '%')) : ''
@@ -145,7 +145,7 @@ export default class InfluenceChart extends React.Component {
         const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
           return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
         }).toString()
-        const topObj = s.data.filter(f => f.left === nearestYear)[0]
+        const topObj = s.data.find(f => f.left === nearestYear)
         return {
           left: selectedYear,
           top: topObj ? (topObj.top + ((i !== 2) ? '' : '%')) : ''

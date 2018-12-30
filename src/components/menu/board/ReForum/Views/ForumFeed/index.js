@@ -46,7 +46,7 @@ class ForumFeed extends Component {
       offset
     } = this.state
 
-    const forumId = ((forums.filter(f => f.forum_slug === currentForum) || {})[0] || {})._id
+    const forumId = (forums.find(f => f.forum_slug === currentForum) || {})._id
 
     if (!forumId) {
       setForums()
