@@ -592,7 +592,7 @@ export const properties = {
     { name: '[Epic] Biography', id: 'eb', color: '#a63932' },
     { name: '[Epic] Explorations', id: 'ee', color: '#a63932' },
     { name: '[Epic] Wars', id: 'ew', color: '#a63932' },
-    { name: '[Epic] Discoveries', id: 'es', color: 'rgb(175, 124, 90)' },
+    { name: '[Epic] Discoveries', id: 'ei', color: 'rgb(175, 124, 90)' },
     { name: '[Epic] Other', id: 'eo', color: '#a63932' },
     { name: '[HTML or Text]', id: 'h', color: '#005386' },
     { name: '[Link] Primary Source', id: 'ps', color: '#005386' },
