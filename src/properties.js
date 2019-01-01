@@ -49,7 +49,7 @@ export const markerIdNameArray = [
 export const epicIdNameArray = [
   ['ei', 'Discovery', 'rgba(255, 216, 0, 0.5)', false, 'rgb(255, 165, 0)'],
   ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)', false, 'rgb(0, 0, 255)'],
-  ['es', 'Primary Sources', 'rgba(175, 124, 90, 0.5)', false, 'rgb(0, 128, 0)'],
+  ['es', 'Primary Sources', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)'],
   ['ew', 'War', 'rgba(158, 50, 36, 0.5)', false, 'rgb(158, 50, 36)'],
   ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)', false, 'rgb(255, 255, 255)']
 ]
@@ -61,9 +61,9 @@ export const aeIdNameArray = [
   ['ae|religionGeneral', 'Religion General', 'rgba(214, 0, 0, 0.5)', false, 'rgb(214, 0, 0)'],
 ]
 
-export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray))
+export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray).concat([['ps', 'Primary Sources', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)']]))
 
-export const itemTypeToColor = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray), 4)
+export const itemTypeToColor = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray).concat([['ps', 'Primary Sources', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)']]), 4)
 
 const iconWidthModern = 128
 const iconHeightModern = 169
@@ -634,6 +634,7 @@ export const properties = {
     'a': '[Podcast & Audio]',
     'audios': '[Podcast & Audio]',
     'e': '[Epic]',
+    'e|ei': '[Discovery]',
     'e|ew': '[War Epic]',
     't': '[External Article or Primary Source]',
     'h': '[HTML or Text]',
@@ -649,6 +650,7 @@ export const properties = {
     'i|m': '[Image] Other',
     'i|misc': '[Image] Other',
     'i|v': '[Video]',
+    'i|ps': '[Primary Source]',
     'ps': '[Primary Source]',
     'v': '[Video]',
     'w|ar': '[Wiki Article] Artifacts',

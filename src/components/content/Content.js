@@ -248,7 +248,7 @@ class Content extends Component {
       // const selectedProvince = selectedItem.value
       const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
       let activeprovinceValue = utils.getAreaDimKey(metadata, activeArea, selectedItem)
-      const linkId = (isMarker ? '0:' : '1:') + (isArea ? ('ae|' + activeAreaDim + '|' + activeprovinceValue) : selectedWiki)
+      const linkId = ((((selectedItem || {}).value || {}).subtype === 'ei') ? '1:e_' : isMarker ? '0:' : '1:') + (isArea ? ('ae|' + activeAreaDim + '|' + activeprovinceValue) : selectedWiki)
 
       // look for linked linked items based on wiki
       // ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0])

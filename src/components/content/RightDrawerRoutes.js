@@ -530,7 +530,7 @@ class RightDrawerRoutes extends PureComponent {
           const activeprovinceValue = utils.getAreaDimKey(metadata, nextProps.activeArea, nextProps.selectedItem)
           prefilledId = activeprovinceValue + '||ae|' + activeAreaDim
         } else {
-          prefilledId = ((nextProps.selectedItem.type === TYPE_EPIC) ? nextProps.selectedItem.value : nextProps.selectedItem.wiki) + '||' + (nextProps.selectedItem.value.type || nextProps.selectedItem.type)
+          prefilledId = ((((nextProps.selectedItem || {}).value || {}).subtype === 'ei') ? ((nextProps.selectedItem || {}).value || {}).id : (nextProps.selectedItem.type === TYPE_EPIC) ? nextProps.selectedItem.value : nextProps.selectedItem.wiki) + '||' + (nextProps.selectedItem.value.type || nextProps.selectedItem.type)
         }
         this.ensureLoadLinkedItem(prefilledId, true) // adopt to new standard
       } else if (location.pathname === '/mod/links') {

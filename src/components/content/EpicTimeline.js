@@ -220,7 +220,7 @@ class EpicTimeline extends React.Component {
       const wikiUrl = selectedIndexItem.wiki || ((selectedItem || {}).data || {}).wiki || (rulerProps || {})[2] || -1
       return  <ArticleIframe history={history} selectAreaItemWrapper={this._selectAreaItem} toggleYearByArticleDisabled={!contentDetected} yearByArticleValue={setYearByArticle} toggleYearByArticle={ this.toggleYearByArticleWrapper } hasChart={ hasChart } isEntity={ this.props.isEntity } deselectItem={deselectItem} selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} selectedWiki={ selectedWiki || wikiUrl} />
     }
-    else if (epicIdNameArray.map(el => el[0]).includes(itemType)) {
+    else if (epicIdNameArray.map(el => el[0]).includes(itemType) || itemType === 'ps') {
       // add hyperlink here
       const wikiUrl = selectedIndexItem.wiki || ((selectedItem || {}).data || {}).wiki || (rulerProps || {})[2] || -1
       return  <ArticleIframe history={history} selectAreaItemWrapper={this._selectAreaItem} setMetadataEntity={setMetadataEntity} toggleYearByArticleDisabled={!contentDetected} yearByArticleValue={setYearByArticle} toggleYearByArticle={ this.toggleYearByArticleWrapper } hasChart={ hasChart } isEntity={ this.props.isEntity } deselectItem={deselectItem} selectedItem={ selectedItem } customStyle={{ ...styles.iframe, height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)')) }} selectedWiki={ selectedWiki || wikiUrl} />
@@ -261,7 +261,7 @@ class EpicTimeline extends React.Component {
              } })}}
           />
         </GridTile>
-        : (itemType === 'articles' || itemType === 'ps')
+        : (itemType === 'articles')
           ? <GridTile
             key={selectedIndexItem.wiki}
             style={{border: '0px solid black', cursor: 'pointer', pointerEvents: 'none'}}
@@ -624,7 +624,7 @@ class EpicTimeline extends React.Component {
                     {itemTypeToName[epicContent.type]}
                   </div>
                 </StepButton>
-                { epicIdNameArray.concat(aeIdNameArray).map(el => el[0]).includes(epicContent.type) &&
+                { epicIdNameArray.concat(aeIdNameArray).map(el => el[0]).includes(epicContent.type) && epicContent.type !== "ei" &&
                 <FlatButton
                   onClick={(event) => this._selectStepButton(i, epicLinkedArticles[i].date, true, event) }
                   style={{height: 36, minWidth: 36, marginTop: -64, zIndex: 100, float: 'right', position: 'relative'}}
