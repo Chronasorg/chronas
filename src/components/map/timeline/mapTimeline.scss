@@ -3,7 +3,7 @@
   transition: all .5s;
   transition-timing-function: ease-in-out;
   .vis-panel.vis-bottom {
-    top: 62px!important;
+    top: 82px!important;
     pointer-events: none;
   }
 }
@@ -55,7 +55,8 @@
   cursor: ew-resize;
   border: none;
   position: fixed;
-  bottom: -8px !important;
+  bottom: -2px !important;
+  height: 132px !important;
   //height: 120px !important;
   width: 100%;
   max-height: 90% !important;
