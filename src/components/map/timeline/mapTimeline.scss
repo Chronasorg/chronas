@@ -51,7 +51,8 @@
   position: absolute;
 }
 
-.mapTimeline { .vis-timeline {
+.mapTimeline {
+  .vis-timeline {
   cursor: ew-resize;
   border: none;
   position: fixed;
@@ -61,6 +62,15 @@
   width: 100%;
   max-height: 90% !important;
 }}
+
+
+.mapTimeline {
+    .extendedTimeline {
+      .vis-timeline {
+        height: 400px !important;
+      }
+    }
+}
 
 .vis-panel {
   &.vis-center {
