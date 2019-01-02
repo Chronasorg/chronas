@@ -52,6 +52,10 @@
 }
 
 .mapTimeline {
+  .vis-item {
+    &.vis-range {
+      background-color: #ffffff40;
+    }}
   .vis-timeline {
   cursor: ew-resize;
   border: none;
@@ -80,6 +84,12 @@
 
 .mapTimeline {
 
+  .vis-time-axis {
+    &.vis-foreground {
+      pointer-events: all;
+      cursor: ew-resize;
+    }
+  }
   .vis-time-axis .vis-grid.vis-vertical {
     position: absolute;
     border-left: 1px solid;
@@ -123,7 +133,6 @@
 }
 
 .mapTimeline {
-
   .vis-text {
     text-shadow: 0.03em 0 4px #fff, 0.03em 0 4px #fff;
     font-weight: 600;

@@ -49,7 +49,7 @@ export const markerIdNameArray = [
 export const epicIdNameArray = [
   ['ei', 'Discovery', 'rgba(255, 216, 0, 0.5)', false, 'rgb(255, 165, 0)'],
   ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)', false, 'rgb(0, 0, 255)'],
-  ['es', 'Primary Sources', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)'],
+  ['es', 'Primary Source', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)'],
   ['ew', 'War', 'rgba(158, 50, 36, 0.5)', false, 'rgb(158, 50, 36)'],
   ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)', false, 'rgb(255, 255, 255)']
 ]
@@ -61,9 +61,9 @@ export const aeIdNameArray = [
   ['ae|religionGeneral', 'Religion General', 'rgba(214, 0, 0, 0.5)', false, 'rgb(214, 0, 0)'],
 ]
 
-export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray).concat([['ps', 'Primary Sources', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)']]))
+export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray).concat([['ps', 'Primary Source', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)']]))
 
-export const itemTypeToColor = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray).concat([['ps', 'Primary Sources', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)']]), 4)
+export const itemTypeToColor = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray).concat([['ps', 'Primary Source', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)']]), 4)
 
 const iconWidthModern = 128
 const iconHeightModern = 169
@@ -584,7 +584,7 @@ export const properties = {
   areaColorLayers: ['ruler', 'religion', 'religionGeneral', 'culture', 'population'],
   areaLabelLayers: ['ruler', 'religion', 'religionGeneral', 'culture'],
   provinceThreshold: 4,
-  chronasApiHost: 'http://localhost:4040/v1',
+  chronasApiHost: 'http://localhost:4040/v1', //
   markersTypes: ['w', 'w|b', 'w|si', 'w|c', 'w|ca', 'w|m', 'w|p', 'w|e', 'w|s', 'w|a', 'w|r', 'w|at', 'w|op', 'w|ai', 'w|o'],
   // metadataTypes: ['ae|ruler', /*'ae|ca',*/ 'ae|culture', 'ae|religion', 'ae|religionGeneral', 'a', 'e', 't', 'h', 'i|a', 'i|b', 'i|c', 'i|p', 'i|m', 'i|siege', 'i|war', 'ps', 'v'],
 

@@ -32,6 +32,8 @@ body {
   margin-left: -40px;
   .vis-panel.vis-center {
     top: 30px !important;
+    height: 100px !important;
+    z-index: 5;
   }
 }
 
@@ -101,6 +103,7 @@ div.vis-tooltip {
   .vis-panel {
     &.vis-center {
       cursor: move;
+      height: 400px !important;
     }
   }
 }
@@ -111,29 +114,33 @@ div.vis-tooltip {
   cursor: pointer;
 
   &.timelineItem_war {
-    border: 2px solid rgba(214, 0, 0, 0.2);
+    border: 1px solid rgba(214, 0, 0, 0.2);
   }
   &.timelineItem_ee {
     border: 2px solid rgba(0, 140, 36, 0.2);
     &:hover {
       border-color: transparent;
       background: white !important;
+      z-index: 1000;
       box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 45px, rgba(0, 0, 0, 0.22) 0px 10px 18px;
     }
     &.vis-selected {
       border: 2px solid rgb(0, 140, 36) !important;
       background: white !important;
+      z-index: 1000;
     }
   }
   &.timelineItem_ew {
-    border: 2px solid rgba(214, 0, 0, 0.2);
+    border: 1px solid rgba(122, 0, 0, 0.28);
     &:hover {
       border-color: transparent;
+      z-index: 1000;
       background: white !important;
       box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 45px, rgba(0, 0, 0, 0.22) 0px 10px 18px;
     }
     &.vis-selected {
-      border: 2px solid rgb(214, 0, 0)  !important;
+      z-index: 1000;
+      border: 1px solid rgb(214, 0, 0)  !important;
       background: white !important;
     }
   }
@@ -158,12 +165,14 @@ div.vis-tooltip {
     background: transparent;
   }
   &.timelineItem_ei {
+    pointer-events: none;
     border-color: transparent;
     &.vis-selected {
       border-color: transparent !important;
     }
   }
   &.timelineItem_ps {
+    pointer-events: none;
     border-color: transparent;
     &.vis-selected {
       border-color: transparent !important;
@@ -717,6 +726,7 @@ div.vis-tooltip {
 }
 
 .esIcon1 {
+  pointer-events: all;
   margin-right: 0;
   height: 15px;
   width: 8px;
@@ -728,6 +738,7 @@ div.vis-tooltip {
 }
 
 .esIcon2 {
+  pointer-events: all;
   margin-right: 0;
   height: 15px;
   width: 8px;
@@ -771,7 +782,15 @@ div.vis-tooltip {
   }
 }
 
+.warContainer {
+  .discoveryIcon {
+    -webkit-filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+    filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+  }
+}
+
 .discoveryIcon {
+  pointer-events: all;
   margin-right: 0;
   height: 20px;
   width: 16px;
