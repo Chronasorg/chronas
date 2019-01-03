@@ -1,6 +1,9 @@
 import React from 'react'
+import { Card, CardText } from 'material-ui/Card';
+import Dialog from 'material-ui/Dialog';
 import mainLogo from '../../../public/images/logoChronasWhite.png'
 import utilsQuery from '../map/utils/query'
+import {themes} from "../../properties";
 
 const backgroundByYear = [
 { year: -2000,
@@ -76,6 +79,11 @@ const styles = {
     // backgroundPosition: 'center',
     // backgroundAttachment: 'fixed'
   },
+  card: {
+    boxShadow: 'none',
+    minWidth: 300,
+    backgroundColor: 'transparent'
+  },
   mainLogo: {
     position: 'absolute',
     left: '10%',
@@ -92,11 +100,22 @@ const closest = (preArr, closestTo) => {
   return preArr.find(el => el.year === closestYear)
 }
 
-const LoadingPage = () => {
+const LoadingPage = (props) => {
   const selectedYear = +utilsQuery.getURLParameter('year') || 1000
   const closestImage = closest(backgroundByYear, selectedYear)
   return <div className="loadingPage" style={{ ...styles.parent, background: `url("/images/logoChronasWhite.png") no-repeat 80% 20% fixed, url("${closestImage.image}") center center/cover fixed` }}>
-    <div className="splash_description">{closestImage.description}</div>
+    { !props.failAndNotify && <div className="splash_description">{closestImage.description}</div> }
+    { props.failAndNotify && <Dialog bodyStyle={{ backgroundImage: themes['light'].gradientColors[0] }} open={true} contentClassName={"classReveal"} contentStyle={{transform: '', transition: 'opacity 1s', opacity: 0}}>
+    <Card style={styles.card}>
+      <div><h1>There is something wrong...</h1>
+        <br/>
+        <p>
+          Chronas seems to be under too much load right now.
+          Please try again in a couple of minutes.
+        </p>
+      </div>
+    </Card>
+  </Dialog>}
   </div>
 }
 

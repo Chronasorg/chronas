@@ -86,11 +86,11 @@ const prefixedStyles = {}
 const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
 
 class App extends Component {
-
   constructor (props) {
     super(props)
     this.state = {
       drawerOpen: false,
+      failAndNotify: false,
       pledgeOpen: false,
       isFullScreen: localStorage.getItem('chs_fullscreen') === 'true' || false
     }
@@ -103,7 +103,7 @@ class App extends Component {
   }
 
   componentWillMount () {
-    const { setArea, setYear, setMarker, setEpic, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
+    const { setArea, setYear, setMarker, setMetadata, setLoadStatus, setEpic, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
 
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
@@ -138,95 +138,13 @@ class App extends Component {
       '&position=' + (utilsQuery.getURLParameter('position') || '37,37,2.5') +
       window.location.hash)
 
-    axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
-      .then((areaDefsRequest) => {
-        setYear(selectedYear)
-        if (selectedMarker !== '') setMarker(selectedMarker.split(','))
-        if (selectedEpics !== '') setEpic(selectedEpics.split(','))
-        // if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
-        if (selectedItem.type === TYPE_AREA) {
-          selectAreaItem('-1', selectedItem.value)
-        } else if (selectedItem.type === TYPE_MARKER) {
-          selectMarkerItem(selectedItem.value, selectedItem.value)
-        }
-        setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
-      })
-  }
-
-  _launchFullscreen = (element) => {
-    if(element.requestFullscreen) {
-      element.requestFullscreen();
-    } else if(element.mozRequestFullScreen) {
-      element.mozRequestFullScreen();
-    } else if(element.webkitRequestFullscreen) {
-      element.webkitRequestFullscreen();
-    } else if(element.msRequestFullscreen) {
-      element.msRequestFullscreen();
-    }
-  }
-
-  _exitFullscreen = () => {
-    if(document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if(document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
-    } else if(document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    }
-  }
-
-  _setFullscreen = () => {
-    const goFullscreen = typeof (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) === "undefined"
-    if (goFullscreen) {
-      this._launchFullscreen(document.documentElement)
-    } else {
-      this._exitFullscreen()
-    }
-    localStorage.setItem('chs_fullscreen', goFullscreen)
-    this.setState({ isFullScreen: goFullscreen })
-  }
-
-  _setBodyFont = (newFont) => {
-    if (properties.fontOptions.map(el => el.id).includes(newFont)) {
-      const currBodyClasses = Array.from(document.body.classList)
-      properties.fontOptions.forEach((el) => {
-        if (currBodyClasses.includes(el.id)) {
-          document.body.classList.remove(el.id)
-        }
-      })
-      document.body.classList.add(newFont)
-      localStorage.setItem('chs_font', newFont)
-    }
-  }
-
-  componentDidMount () {
-    const { setMetadata, setLoadStatus, setUser, showNotification } = this.props
-
-    setTimeout(() => {
-      const selectedIndex = Math.floor(Math.random() * didYouKnows.length)
-      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex][0], true)
-      showNotification(didYouKnows[selectedIndex][1])
-    }, 500)
-
-    if (!localStorage.getItem('chs_pledge_closed')) {
-      setTimeout(() => {
-        this.setState({ pledgeOpen: true })
-        // this.forceUpdate();
-      }, PLEDGEREMINDERDURATION)
-    }
-
-    setTimeout(() => {
-      const selectedIndex = Math.floor(Math.random() * didYouKnows.length)
-      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex][0], true)
-      showNotification(didYouKnows[selectedIndex][1])
-    }, 500)
-
-    axios.get(properties.chronasApiHost + '/metadata?type=g&f=provinces,ruler,culture,religion,capital,province,religionGeneral')
-      .then((metadata) => {
+    axios.all([
+      axios.get(properties.chronasApiHost + '/metadata?type=g&f=provinces,ruler,culture,religion,capital,province,religionGeneral'),
+      axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
+    ])
+      .then(axios.spread((metadata, areaDefsRequest) => {
+        if (this.state.failAndNotify) return
         setMetadata(metadata.data)
-      })
-      .then(() => {
-        setLoadStatus(false)
 
         const didYouKnowInterval = setInterval(() => {
           let selectedItem
@@ -259,8 +177,105 @@ class App extends Component {
           else return clearInterval(didYouKnowInterval)
         }, 30000)
 
+        setYear(selectedYear)
+        if (selectedMarker !== '') setMarker(selectedMarker.split(','))
+        if (selectedEpics !== '') setEpic(selectedEpics.split(','))
+        // if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
+        if (selectedItem.type === TYPE_AREA) {
+          selectAreaItem('-1', selectedItem.value)
+        } else if (selectedItem.type === TYPE_MARKER) {
+          selectMarkerItem(selectedItem.value, selectedItem.value)
+        }
+        setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
+
+        setLoadStatus(false)
+        this.forceUpdate()
+      }))
+      .catch(() => {
+        this.setState({ failAndNotify: true })
         this.forceUpdate()
       })
+  }
+
+  _launchFullscreen = (element) => {
+    if (element.requestFullscreen) {
+      element.requestFullscreen()
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen()
+    } else if (element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen()
+    } else if (element.msRequestFullscreen) {
+      element.msRequestFullscreen()
+    }
+  }
+
+  _exitFullscreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen()
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen()
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen()
+    }
+  }
+
+  _setFullscreen = () => {
+    const goFullscreen = typeof (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) === 'undefined'
+    if (goFullscreen) {
+      this._launchFullscreen(document.documentElement)
+    } else {
+      this._exitFullscreen()
+    }
+    localStorage.setItem('chs_fullscreen', goFullscreen)
+    this.setState({ isFullScreen: goFullscreen })
+  }
+
+  _setBodyFont = (newFont) => {
+    if (properties.fontOptions.map(el => el.id).includes(newFont)) {
+      const currBodyClasses = Array.from(document.body.classList)
+      properties.fontOptions.forEach((el) => {
+        if (currBodyClasses.includes(el.id)) {
+          document.body.classList.remove(el.id)
+        }
+      })
+      document.body.classList.add(newFont)
+      localStorage.setItem('chs_font', newFont)
+    }
+  }
+
+  componentDidMount () {
+    const { setUser, showNotification } = this.props
+    const { failAndNotify } = this.state
+
+    // enable for time based error out
+    //
+    // setTimeout(() => {
+    //   if (this.props.isLoading) {
+    //     this.setState({ failAndNotify: true })
+    //     this.forceUpdate()
+    //   }
+    // }, 25000)
+
+    setTimeout(() => {
+      if (failAndNotify) return
+      const selectedIndex = Math.floor(Math.random() * didYouKnows.length)
+      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex][0], true)
+      showNotification(didYouKnows[selectedIndex][1])
+    }, 500)
+
+    if (!localStorage.getItem('chs_pledge_closed')) {
+      setTimeout(() => {
+        this.setState({ pledgeOpen: true })
+        // this.forceUpdate();
+      }, PLEDGEREMINDERDURATION)
+    }
+
+    setTimeout(() => {
+      if (failAndNotify) return
+      const selectedIndex = Math.floor(Math.random() * didYouKnows.length)
+      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex][0], true)
+      showNotification(didYouKnows[selectedIndex][1])
+    }, 500)
 
     // const parsedQuery = queryString.parse(location.search)
     let token = (localStorage.getItem('chs_temptoken') !== null) ? localStorage.getItem('chs_temptoken') : undefined
@@ -287,7 +302,7 @@ class App extends Component {
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       localStorage.setItem('chs_token', token)
       setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar)
-    } else if (!window.location.hash || window.location.hash === "#/") {
+    } else if (!window.location.hash || window.location.hash === '#/') {
       // show welcome page if user is not logged in and no specific article or other page is specified
       history.push('/info')
     }
@@ -309,6 +324,7 @@ class App extends Component {
     const {
       drawerOpen,
       pledgeOpen,
+      failAndNotify,
       isFullScreen,
       selectedFontClass
     } = this.state
@@ -324,9 +340,7 @@ class App extends Component {
     customTheme.palette.canvasColor = themes[theme].backColors[1]
     customTheme.palette.accent1Color = themes[theme].highlightColors[0]
 
-
-
-      customTheme.tabs = {
+    customTheme.tabs = {
       backgroundColor: 'transparent',
       selectedTextColor:  themes[theme].foreColors[1],
       textColor: themes[theme].foreColors[0]
@@ -369,22 +383,22 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
-                  {!isStatic && <LoadingBar theme={theme} />}
+                  {!isStatic && <LoadingBar failAndNotify={failAndNotify} theme={theme} />}
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
-                    {isLoading && !isStatic && <LoadingPage />}
-                    {!isLoading && createElement(Map, { history, isLoading })}
-                    {!isLoading && !isStatic && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
+                    {(isLoading || failAndNotify) && !isStatic && <LoadingPage failAndNotify={failAndNotify} />}
+                    {!isLoading && !failAndNotify && createElement(Map, { history, isLoading })}
+                    {!isLoading && !failAndNotify && !isStatic && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <PledgeDialog theme={theme} open={pledgeOpen} snooze={() => {
                         setTimeout(() => {
                           this.setState({ pledgeOpen: true })
-                          this.forceUpdate();
+                          this.forceUpdate()
                         }, PLEDGEREMINDERDURATION)
                         this.setState({ pledgeOpen: false })
-                        this.forceUpdate();
+                        this.forceUpdate()
                       }} closePledge={() => {
                         localStorage.setItem('chs_pledge_closed', 'true')
                         this.setState({ pledgeOpen: false })
-                        this.forceUpdate();
+                        this.forceUpdate()
                       }} />
                       <Switch>
                         <Route exact path='/' />
@@ -418,9 +432,11 @@ class App extends Component {
                         <Route exact path='/discover' component={Discover} />
                         <Route exact path='/login' component={Login} />
                         <Route exact path='/share' component={Share} />
-                        <Route exact path='/info' render={(props) => { return (
+                        <Route exact path='/info' render={(props) => {
+                          return (
                             <Information theme={theme} history={history} showNotification={showNotification} />
-                          )}} />
+                          )
+                        }} />
                       </Switch>
                       <Switch>
                         <Board theme={theme} history={history} />
@@ -432,10 +448,10 @@ class App extends Component {
                         <RightDrawerRoutes history={history} />
                       </Switch>
                     </div>}
-                    {!isLoading && !isStatic && <MenuDrawer muiTheme={customTheme}>
+                    {!isLoading && !failAndNotify && !isStatic && <MenuDrawer muiTheme={customTheme}>
                       {createElement(LayerContent)}
                     </MenuDrawer>}
-                    {!isLoading && !isStatic && <Sidebar open muiTheme={customTheme}>
+                    {!isLoading && !failAndNotify && !isStatic && <Sidebar open muiTheme={customTheme}>
                       {createElement(Menu)}
                     </Sidebar>}
                   </div>

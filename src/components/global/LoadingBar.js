@@ -65,6 +65,7 @@ export default class LoadingBar extends React.Component {
       this._startLoadingBar()
       return config
     })
+    this._startLoadingBar()
   }
 
   _setupStopProgress = () => {
@@ -96,6 +97,13 @@ export default class LoadingBar extends React.Component {
 
     loaded = 0
     this.setState({ isLoadingInterval: setInterval(() => this._load(), 500) })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.failAndNotify === true) {
+      clearInterval(this.state.isLoadingInterval)
+      this._errorOut()
+    }
   }
 
   componentWillUnmount() {

@@ -1,17 +1,16 @@
-import React, { Children, Component } from 'react';
-;
-import { reduxForm } from 'redux-form';
-import { connect } from 'react-redux';
-import compose from 'recompose/compose';
+import React, { Children, Component } from 'react'
+import { reduxForm } from 'redux-form'
+import { connect } from 'react-redux'
+import compose from 'recompose/compose'
 // import getDefaultValues from './getDefaultValues';
 // import FormInput from './FormInput';
 // import Toolbar from './Toolbar';
-import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
-import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
-import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
-import { showNotification } from 'admin-on-rest';
-import { setModType , setModData } from '../buttons/actionReducers'
-import { properties } from "../../../../properties";
+import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
+import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
+import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
+import { showNotification } from 'admin-on-rest'
+import { setModType, setModData } from '../buttons/actionReducers'
+import { properties } from "../../../../properties"
 
 const formStyle = {
   boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
