@@ -10,7 +10,7 @@ class Notification extends React.Component {
     this.props.hideNotification()
   };
 
-  render() {
+  render () {
     const style = {}
     const { type, translate, theme, message, doTranslate = true } = this.props
     const primary1Color = themes[theme].foreColors[0]
@@ -32,11 +32,13 @@ class Notification extends React.Component {
         message={!!message && (doTranslate ? translate(message) : message)}
         autoHideDuration={4000}
         onRequestClose={this.handleRequestClose}
-        bodyStyle={{ ...style,
+        bodyStyle={{
+          ...style,
           maxWidth: '100%',
         }}
         contentStyle={style}
-        style={{ ...style,
+        style={{
+          ...style,
           boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 45px, rgba(0, 0, 0, 0.22) 0px 10px 18px',
           maxWidth: '70%',
           whiteSpace: 'nowrap',
@@ -44,32 +46,32 @@ class Notification extends React.Component {
           textOverflow: 'ellipsis'
         }}
       />
-    );
+    )
   }
 }
 
-Notification.propTypes = {
-  message: PropTypes.string,
-  theme: PropTypes.object,
-  doTranslate: PropTypes.bool,
-  type: PropTypes.string.isRequired,
-  hideNotification: PropTypes.func.isRequired,
-  translate: PropTypes.func.isRequired,
-};
+// Notification.propTypes = {
+//   message: PropTypes.string,
+//   theme: PropTypes.object,
+//   doTranslate: PropTypes.bool,
+//   type: PropTypes.string.isRequired,
+//   hideNotification: PropTypes.func.isRequired,
+//   translate: PropTypes.func.isRequired,
+// }
 
 Notification.defaultProps = {
   type: 'info',
-};
+}
 
 Notification.contextTypes = {
   muiTheme: PropTypes.object.isRequired,
-};
+}
 
 const mapStateToProps = state => ({
   message: state.admin.notification.text,
   type: state.admin.notification.type,
   theme: state.theme
-});
+})
 
 export default translate(
   connect(mapStateToProps, {

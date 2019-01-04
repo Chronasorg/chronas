@@ -18,7 +18,7 @@ let render = () => {
   // const routes = require('./routes/index').default(store)
 
   ReactDOM.render(
-    <App store={store}/>,
+    <App store={store} />,
     MOUNT_NODE
   )
 }
@@ -45,12 +45,12 @@ if (__DEV__) {
 
     // Setup hot module replacement
     module.hot.accept([
-        './App',
-      ], () =>
-        setImmediate(() => {
-          ReactDOM.unmountComponentAtNode(MOUNT_NODE)
-          render()
-        })
+      './App',
+    ], () =>
+      setImmediate(() => {
+        ReactDOM.unmountComponentAtNode(MOUNT_NODE)
+        render()
+      })
     )
   }
 }

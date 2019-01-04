@@ -6,10 +6,7 @@ import compose from 'recompose/compose'
 import Dialog from 'material-ui/Dialog'
 import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconSearch from 'material-ui/svg-icons/action/search'
-import FlatButton from 'material-ui/FlatButton'
-import FloatingActionButton from 'material-ui/FloatingActionButton'
 import IconButton from 'material-ui/IconButton'
-import TextField from 'material-ui/TextField'
 import IconArrowUp from 'material-ui/svg-icons/navigation/expand-less'
 import IconArrowDown from 'material-ui/svg-icons/navigation/expand-more'
 import IconReset from 'material-ui/svg-icons/av/replay'
@@ -18,9 +15,7 @@ import { setYear } from './actionReducers'
 import { selectEpicItem, selectMarkerItem, TYPE_EPIC } from '../actionReducers'
 import TimelinePlus from './TimelinePlus'
 import './mapTimeline.scss'
-import { chronasMainColor } from '../../../styles/chronasColors'
 import { red400 } from 'material-ui/styles/colors'
-import utilsQuery from '../utils/query'
 import { themes } from '../../../properties'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { translate } from 'admin-on-rest'
@@ -221,6 +216,120 @@ const styles = {
 let freeToChange = true
 
 class MapTimeline extends Component {
+  _onClickTimeline = (event) => {
+    const { selectEpicItem, selectMarkerItem, groupItems, setYear, history } = this.props
+
+    if (event.event.target.className === 'currentYearLabel') {
+      // open input
+      return
+    }
+    const currentDate = event.time
+    const clickedYear = new Date(currentDate).getFullYear()
+    const selectedItemId = event.item
+
+    if (selectedItemId) {
+      const selectedItem = groupItems.find((el) => el.id === selectedItemId)
+      const selectedItemDate = selectedItem.start.getFullYear()
+
+      if (selectedItem.subtype === 'ei' || selectedItem.subtype === 'ps') {
+        selectMarkerItem(selectedItem.wiki, selectedItem)
+        setYear(selectedItem.start.getFullYear())
+      } else {
+        let s = new Date(selectedItem.start)
+        let e = new Date(selectedItem.end)
+        s.setFullYear(s.getFullYear() - 100)
+        e.setFullYear(e.getFullYear() + 100)
+        this._flyTo(s, e, false, selectedItemId)
+
+        selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear, selectedItem.id)
+      }
+      // utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
+      // utilsQuery.updateQueryStringParameter('value', selectedItem.wiki)
+
+      history.push('/article')
+    } else {
+      setYear(clickedYear)
+      const selectedYear = event.time.getFullYear()
+      if (selectedYear < 2001 && selectedYear > -2001) {
+        this.setState({
+          customTimes: {
+            selectedYear: new Date(new Date(0, 1, 1).setFullYear(selectedYear)).toISOString()
+          }
+        })
+      }
+    }
+  };
+  componentWillReceiveProps = (nextProps) => {
+    const { selectedItemType, groupItems, selectedYear } = this.props
+    const { customTimes } = this.state
+
+    if (nextProps.selectedItemType !== selectedItemType && selectedItemType === TYPE_EPIC) {
+      this.refs.timeline.$el.setSelection()
+    }
+
+    /** Acting on store changes **/
+    if (nextProps.selectedYear !== selectedYear && new Date(customTimes.selectedYear).getFullYear() !== nextProps.selectedYear) {
+      this.setState({
+        customTimes: {
+          selectedYear: new Date(new Date(0, 1, 1).setFullYear(nextProps.selectedYear)).toISOString()
+        }
+      })
+    }
+
+    if (groupItems.length !== nextProps.groupItems) {
+      this.setState({
+        epicSearchOptions: groupItems.map(el => {
+          return {
+            value: el.id,
+            text: el.wiki.replace(/_/g, ' ') + ' (' + el.start.getFullYear() + ')',
+            wiki: el.wiki,
+            start: el.start,
+            end: el.end
+          }
+        })
+      })
+    }
+  }
+  _toggleTimelineHeight = () => {
+    const { timelineHeight, timelineOptions } = this.state
+    // timelineOptions.start = '500-01-01'
+    // timelineOptions.end = '510-01-01'
+
+    if (timelineHeight !== SMALLTIMELINEHEIGHT) {
+      timelineOptions.stack = false
+      this.setState({
+        timelineHeight: SMALLTIMELINEHEIGHT,
+        timelineOptions
+      })
+    } else {
+      timelineOptions.stack = true
+      this.setState({
+        timelineHeight: BIGTIMELINEHEIGHT,
+        timelineOptions
+      })
+    }
+    this.forceUpdate()
+  }
+  _toggleYearDialog = (isVisible) => {
+    this.setState({ yearDialogVisible: isVisible })
+    this.forceUpdate()
+  }
+  _flyTo = (s, e, doReset, optId) => {
+    if (isNaN(new Date(e).getFullYear())) return
+    if (optId) {
+      setTimeout(() => {
+        this.refs.timeline.$el.setSelection(optId)
+      }, 2000)
+    }
+    setTimeout(() => {
+      this.refs.timeline.$el.setWindow(s, e)
+      setTimeout(() => {
+        this.setState({ isReset: doReset })
+      }, 1000)
+    }, 10)
+    // this.refs.timeline.$el.setWindow('1050-04-01', '2050-04-01')
+  }
+
   constructor (props) {
     super(props)
     this._onClickTimeline = this._onClickTimeline.bind(this)
@@ -250,7 +359,7 @@ class MapTimeline extends Component {
         stack: false, // true
         // stackSubgroups: true,
         showCurrentTime: false
-          // showMajorLabels: false
+        // showMajorLabels: false
       },
       // animation: { duration: 1000, easingFunction: 'linear' },
       customTimes: {
@@ -282,113 +391,12 @@ class MapTimeline extends Component {
     // this.props.ready();
   }
 
-  _onClickTimeline = (event) => {
-    const { selectEpicItem, selectMarkerItem, groupItems, setYear, history } = this.props
-
-    if (event.event.target.className === 'currentYearLabel') {
-      // open input
-      return
-    }
-    const currentDate = event.time
-    const clickedYear = new Date(currentDate).getFullYear()
-    const selectedItemId = event.item
-
-    if (selectedItemId) {
-
-      const selectedItem = groupItems.find((el) => el.id === selectedItemId)
-      const selectedItemDate = selectedItem.start.getFullYear()
-
-      if (selectedItem.subtype === 'ei' || selectedItem.subtype === 'ps' ) {
-        selectMarkerItem(selectedItem.wiki, selectedItem)
-        setYear(selectedItem.start.getFullYear())
-      } else {
-        let s = new Date(selectedItem.start)
-        let e = new Date(selectedItem.end)
-        s.setFullYear(s.getFullYear() - 100)
-        e.setFullYear(e.getFullYear() + 100)
-        this._flyTo(s, e, false, selectedItemId)
-
-        selectEpicItem(selectedItem.wiki, selectedItemDate || +clickedYear, selectedItem.id)
-      }
-      // utilsQuery.updateQueryStringParameter('type', TYPE_EPIC)
-      // utilsQuery.updateQueryStringParameter('value', selectedItem.wiki)
-
-      history.push('/article')
-    } else {
-      setYear(clickedYear)
-      const selectedYear = event.time.getFullYear()
-      if (selectedYear < 2001 && selectedYear > -2001) {
-        this.setState({
-          customTimes: {
-            selectedYear: new Date(new Date(0, 1, 1).setFullYear(selectedYear)).toISOString()
-          }
-        })
-      }
-    }
-  };
-
-  componentWillReceiveProps = (nextProps) => {
-    const { selectedItemType, groupItems, selectedYear } = this.props
-    const { customTimes } = this.state
-
-    if (nextProps.selectedItemType !== selectedItemType && selectedItemType === TYPE_EPIC) {
-      this.refs.timeline.$el.setSelection()
-    }
-
-    /** Acting on store changes **/
-    if (nextProps.selectedYear !== selectedYear && new Date(customTimes.selectedYear).getFullYear() !== nextProps.selectedYear) {
-      this.setState({
-        customTimes: {
-          selectedYear: new Date(new Date(0, 1, 1).setFullYear(nextProps.selectedYear)).toISOString()
-        }
-      })
-    }
-
-    if (groupItems.length !== nextProps.groupItems) {
-      this.setState({ epicSearchOptions: groupItems.map(el => { return { value: el.id, text: el.wiki.replace(/_/g, " ") + " (" + el.start.getFullYear() + ")", wiki: el.wiki, start: el.start, end: el.end }}) })
-    }
-  }
-
   shouldComponentUpdate (nextProps) {
-
     // return false;
 
     if (nextProps.groupItems.length !== this.props.groupItems.length || nextProps.selectedYear !== this.props.selectedYear) {
       return true
     } else return false
-  }
-
-  _toggleTimelineHeight = () => {
-    const { timelineHeight, timelineOptions } = this.state
-    // timelineOptions.start = '500-01-01'
-    // timelineOptions.end = '510-01-01'
-
-    if (timelineHeight !== SMALLTIMELINEHEIGHT) {
-      timelineOptions.stack = false
-      this.setState({
-        timelineHeight: SMALLTIMELINEHEIGHT,
-        timelineOptions
-      })
-    } else {
-      timelineOptions.stack = true
-      this.setState({
-        timelineHeight: BIGTIMELINEHEIGHT,
-        timelineOptions
-      })
-    }
-    this.forceUpdate()
-  }
-
-  _toggleYearDialog = (isVisible) => {
-    this.setState({ yearDialogVisible: isVisible })
-    this.forceUpdate()
-  }
-
-  _flyTo = (s, e, doReset, optId) => {
-    if (isNaN(new Date(e).getFullYear())) return
-    if (optId) { setTimeout(() => { this.refs.timeline.$el.setSelection(optId) }, 2000) }
-    setTimeout(() => { this.refs.timeline.$el.setWindow(s, e); setTimeout(() => { this.setState({ isReset: doReset }) }, 1000) }, 10)
-    // this.refs.timeline.$el.setWindow('1050-04-01', '2050-04-01')
   }
 
   render () {
@@ -414,7 +422,8 @@ class MapTimeline extends Component {
             <button className='searchForm__close' onClick={() => this._toggleYearDialog(false)}>
               <IconClose color='rgb(255,255,255)' style={{
                 height: '48px',
-                width: '48px' }} />
+                width: '48px'
+              }} />
             </button>
             <form onSubmit={(e, val) => {
               e.preventDefault()
@@ -428,7 +437,9 @@ class MapTimeline extends Component {
                   marginLeft: '2em'
                 }} />
               </button>
-              <input className='searchForm__input mt_color--white' placeholder='Year' autoComplete='off' title='search' type='number' min='-2000' max='2000' step='1' name='y' onChange={(e) => this.setState({ inputYear: +e.target.value })} />
+              <input className='searchForm__input mt_color--white' placeholder='Year' autoComplete='off' title='search'
+                type='number' min='-2000' max='2000' step='1' name='y'
+                onChange={(e) => this.setState({ inputYear: +e.target.value })} />
             </form>
           </div>
         </Dialog>
@@ -449,7 +460,8 @@ class MapTimeline extends Component {
           onClick={() => this._toggleTimelineHeight()}
           iconStyle={{ color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%' }}
         >
-          {(timelineHeight === SMALLTIMELINEHEIGHT) ? <IconArrowUp hoverColor={themes[theme].highlightColors[0]} /> : <IconArrowDown hoverColor={themes[theme].highlightColors[0]} />}
+          {(timelineHeight === SMALLTIMELINEHEIGHT) ? <IconArrowUp hoverColor={themes[theme].highlightColors[0]} />
+            : <IconArrowDown hoverColor={themes[theme].highlightColors[0]} />}
         </IconButton>
 
         <IconButton
@@ -467,72 +479,87 @@ class MapTimeline extends Component {
           tooltipPosition='bottom-right'
           tooltip={translate('pos.timeline.reset')}
           tooltipStyles={tooltip}
-          onClick={() => { this._flyTo(start, '2050-04-01', true) }}
-          iconStyle={{ color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%', padding: 2 }}
+          onClick={() => {
+            this._flyTo(start, '2050-04-01', true)
+          }}
+          iconStyle={{
+            color: themes[theme].foreColors[0],
+            background: themes[theme].backColors[0],
+            borderRadius: '50%',
+            padding: 2
+          }}
         >
           <IconReset hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
         <div className={'searchEpicContainer'}>
-        <IconButton
-          key={'search'}
-          style={{
-            zIndex: 1,
-            width: 48,
-            height: 48,
-            bottom: 80,
-            left: 64,
-            position: 'fixed'
-          }}
-          className={'mapTimelineIcons'}
-          tooltipPosition='bottom-right'
-          tooltip={translate('pos.timeline.searchEpics')}
-          tooltipStyles={tooltip}
-          onClick={() => { this.setState({ showEpicSearch: !showEpicSearch }); this.forceUpdate() }}
-          iconStyle={{ color: themes[theme].foreColors[0], background: themes[theme].backColors[0], borderRadius: '50%', padding: 2 }}
-        >
-          <IconSearch hoverColor={themes[theme].highlightColors[0]} />
-        </IconButton>
-        { showEpicSearch && <SearchEpicAutocomplete
-          key={'searchInput'}
-          // targetOrigin={'top'}
-          hintText="Search Epics"
-          maxSearchResults={200}
-          onNewRequest={(val) => {
-            if (val.subtype === 'ei') {
-              selectMarkerItem(val.wiki,val)
-            } else {
+          <IconButton
+            key={'search'}
+            style={{
+              zIndex: 1,
+              width: 48,
+              height: 48,
+              bottom: 80,
+              left: 64,
+              position: 'fixed'
+            }}
+            className={'mapTimelineIcons'}
+            tooltipPosition='bottom-right'
+            tooltip={translate('pos.timeline.searchEpics')}
+            tooltipStyles={tooltip}
+            onClick={() => {
+              this.setState({ showEpicSearch: !showEpicSearch })
+              this.forceUpdate()
+            }}
+            iconStyle={{
+              color: themes[theme].foreColors[0],
+              background: themes[theme].backColors[0],
+              borderRadius: '50%',
+              padding: 2
+            }}
+          >
+            <IconSearch hoverColor={themes[theme].highlightColors[0]} />
+          </IconButton>
+          {showEpicSearch && <SearchEpicAutocomplete
+            key={'searchInput'}
+            // targetOrigin={'top'}
+            hintText='Search Epics'
+            maxSearchResults={200}
+            onNewRequest={(val) => {
+              if (val.subtype === 'ei') {
+                selectMarkerItem(val.wiki, val)
+              } else {
+                selectEpicItem(val.wiki, val.start.getFullYear(), val.value)
+              }
               selectEpicItem(val.wiki, val.start.getFullYear(), val.value)
-            }
-            selectEpicItem(val.wiki, val.start.getFullYear(), val.value)
-            this.setState({ showEpicSearch: false })
-            history.push('/article')
-            let s = new Date(val.start)
-            let e = new Date(val.end)
-            s.setFullYear(s.getFullYear() - 100)
-            e.setFullYear(e.getFullYear() + 100)
+              this.setState({ showEpicSearch: false })
+              history.push('/article')
+              let s = new Date(val.start)
+              let e = new Date(val.end)
+              s.setFullYear(s.getFullYear() - 100)
+              e.setFullYear(e.getFullYear() + 100)
 
-            this._flyTo(s, e, false, val.value)
-            this.forceUpdate()
-          }}
-          filter={SearchEpicAutocomplete.caseInsensitiveFilter}
-          dataSource={epicSearchOptions}
-          textFieldStyle={{
-            borderRadius: 14,
-            paddingLeft: 12,
-            height: 26,
-            overflow: 'hidden',
-            backgroundColor: themes[theme].backColors[0],
-            foreColor: themes[theme].foreColors[0]
-          }}
-          style={{
-            zIndex: 1,
-            width: 48,
-            height: 48,
-            bottom: 69,
-            left: 105,
-            position: 'fixed'
-          }}
-        /> }
+              this._flyTo(s, e, false, val.value)
+              this.forceUpdate()
+            }}
+            filter={SearchEpicAutocomplete.caseInsensitiveFilter}
+            dataSource={epicSearchOptions}
+            textFieldStyle={{
+              borderRadius: 14,
+              paddingLeft: 12,
+              height: 26,
+              overflow: 'hidden',
+              backgroundColor: themes[theme].backColors[0],
+              foreColor: themes[theme].foreColors[0]
+            }}
+            style={{
+              zIndex: 1,
+              width: 48,
+              height: 48,
+              bottom: 69,
+              left: 105,
+              position: 'fixed'
+            }}
+          />}
         </div>
         <TimelinePlus
           ref='timeline'
@@ -552,12 +579,24 @@ class MapTimeline extends Component {
           //     this._flyTo(s, e, false, toFind)
           //   }
           // }}
-          rangechangeHandler={() => { if (freeToChange) freeToChange = false }}
-          rangechangedHandler={() => { if (isReset) this.setState({ isReset: false }); setTimeout(() => { freeToChange = true }, 200) }}
-          clickHandler={(event) => { if (freeToChange) this._onClickTimeline(event) }}
+          rangechangeHandler={() => {
+            if (freeToChange) freeToChange = false
+          }}
+          rangechangedHandler={() => {
+            if (isReset) this.setState({ isReset: false })
+            setTimeout(() => {
+              freeToChange = true
+            }, 200)
+          }}
+          clickHandler={(event) => {
+            if (freeToChange) this._onClickTimeline(event)
+          }}
         />
         <Portal node={document && document.querySelector('.vis-custom-time.selectedYear')}>
-          <button className='currentYearLabel' title='click to select exact year' onClick={(event) => { event.stopPropagation(); this._toggleYearDialog(true) }}>
+          <button className='currentYearLabel' title='click to select exact year' onClick={(event) => {
+            event.stopPropagation()
+            this._toggleYearDialog(true)
+          }}>
             {selectedYear}
           </button>
         </Portal>
@@ -576,7 +615,7 @@ const enhance = compose(
     selectEpicItem,
     selectMarkerItem
   }),
-translate
+  translate
 )
 
 export default enhance(MapTimeline)

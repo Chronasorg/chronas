@@ -7,11 +7,12 @@ import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import axios from 'axios'
-import { setModType, setModData } from '../buttons/actionReducers'
+import { setModData, setModType } from '../buttons/actionReducers'
 import { updateSingleMetadata } from './../../../map/data/actionReducers'
 import { properties } from '../../../../properties'
 import { showNotification } from 'admin-on-rest'
 import { TYPE_METADATA } from '../../../map/actionReducers'
+
 const jsonp = require('jsonp')
 
 const styles = {
@@ -38,7 +39,8 @@ export class LinksForm extends Component {
 
   handleSubmitWithRedirect = () => {
     this.props.history.goBack()
-    return this.props.handleSubmit(values => { })
+    return this.props.handleSubmit(values => {
+    })
   }
 
   componentWillUnmount () {
@@ -53,9 +55,11 @@ export class LinksForm extends Component {
       .then(() => {
         setModType('', [], metaToUpdate)
       })
-      .catch((err) => setModType(''))
+      .catch((err) => {
+        console.error(err)
+        setModType('')
+      })
   }
-
 
   componentDidMount () {
     const { setModType, selectedItem, setModData } = this.props
@@ -65,8 +69,12 @@ export class LinksForm extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) { this.props.change('coo[0]', nextProps.modActive.data[0]) }
-    if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) { this.props.change('coo[1]', nextProps.modActive.data[1]) }
+    if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) {
+      this.props.change('coo[0]', nextProps.modActive.data[0])
+    }
+    if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) {
+      this.props.change('coo[1]', nextProps.modActive.data[1])
+    }
   }
 
   render () {
@@ -82,7 +90,7 @@ export class LinksForm extends Component {
     } = this.props
 
     return (
-      <form className='simple-form' style={styles.drawerForm} >
+      <form className='simple-form' style={styles.drawerForm}>
         <div style={styles.formStyle} key={version}>
           {Children.map(children, input => (
             <FormInput
@@ -93,7 +101,7 @@ export class LinksForm extends Component {
             />
           ))}
         </div>
-        { toolbar &&
+        {toolbar &&
         React.cloneElement(toolbar, {
           handleSubmitWithRedirect: this.handleSubmitWithRedirect,
           invalid,
@@ -116,13 +124,13 @@ const enhance = compose(
     selectedYear: state.selectedYear,
     selectedItem: state.selectedItem,
   }),
-    {
-      // crudUpdate: crudUpdateAction,
-      setModType,
-      setModData,
-      updateSingleMetadata,
-      showNotification
-    }),
+  {
+    // crudUpdate: crudUpdateAction,
+    setModType,
+    setModData,
+    updateSingleMetadata,
+    showNotification
+  }),
   reduxForm({
     form: 'record-form',
     enableReinitialize: true,

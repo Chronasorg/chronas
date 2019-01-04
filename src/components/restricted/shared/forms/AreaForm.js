@@ -9,8 +9,8 @@ import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import { showNotification } from 'admin-on-rest'
-import { setModType, setModData } from '../buttons/actionReducers'
-import { properties } from "../../../../properties"
+import { setModData, setModType } from '../buttons/actionReducers'
+import { properties } from '../../../../properties'
 
 const formStyle = {
   boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
@@ -22,7 +22,6 @@ const formStyle = {
 }
 
 export class AreaForm extends Component {
-
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
       const { initialValues, setModType } = this.props
@@ -33,7 +32,7 @@ export class AreaForm extends Component {
       if (!values.populationApply) delete values.population
 
       const token = localStorage.getItem('chs_token')
-      fetch(properties.chronasApiHost + ((typeof values.replaceWith !== "undefined") ? "/areas/replace" : "/areas"), {
+      fetch(properties.chronasApiHost + ((typeof values.replaceWith !== 'undefined') ? '/areas/replace' : '/areas'), {
         method: 'PUT',
         headers: {
           'Authorization': 'Bearer ' + token,
@@ -42,46 +41,46 @@ export class AreaForm extends Component {
         },
         body: JSON.stringify(values)
       })
-      .then((res) => {
-        if (res.status === 200) {
-          const { start, end = start } = values
-          const waitForCompletion = (+end - +start) < 11
-          if (waitForCompletion) {
-            this.props.showNotification("Area Updated")
+        .then((res) => {
+          if (res.status === 200) {
+            const { start, end = start } = values
+            const waitForCompletion = (+end - +start) < 11
+            if (waitForCompletion) {
+              this.props.showNotification('Area Updated')
+            } else {
+              this.props.showNotification('Updating ' + (+end - +start) + ' years in the background... this may take a while')
+            }
+            setModType('', [], 'area')
+            this.props.history.goBack()
           } else {
-            this.props.showNotification("Updating " + (+end - +start) + " years in the background... this may take a while")
+            this.props.showNotification('Area Not Updated Or In Background')
+            setModType('', [], '')
           }
-          setModType("", [], 'area')
-          this.props.history.goBack()
-        }
-        else {
-          this.props.showNotification("Area Not Updated Or In Background")
-          setModType("", [], '')
-        }
-      })
+        })
     });
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.modActive.type === "areas" && this.props.modActive.data.length !== nextProps.modActive.data.length) {
-      this.props.change ("provinces" , nextProps.modActive.data )
+  componentWillReceiveProps (nextProps) {
+    if (this.props.modActive.type === 'areas' && this.props.modActive.data.length !== nextProps.modActive.data.length) {
+      this.props.change('provinces', nextProps.modActive.data)
     }
-    if (this.props.selectedYear !== nextProps.selectedYear)
-      this.props.change ("start" , nextProps.selectedYear )
+    if (this.props.selectedYear !== nextProps.selectedYear) {
+      this.props.change('start', nextProps.selectedYear)
+    }
   }
 
   componentWillUnmount () {
     const { setModType } = this.props
-    setModType("")
+    setModType('')
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { setModType, selectedItem, setModData } = this.props
     const selectedProvince = selectedItem.value
     if (selectedProvince) setModData([selectedProvince])
-    setModType("areas", selectedProvince ? [selectedProvince] : [])
+    setModType('areas', selectedProvince ? [selectedProvince] : [])
   }
 
-  render() {
+  render () {
     const {
       basePath,
       children,
@@ -94,7 +93,7 @@ export class AreaForm extends Component {
     } = this.props
 
     return (
-      <form className="simple-form">
+      <form className='simple-form'>
         <div style={formStyle} key={version}>
           {Children.map(children, input => (
             <FormInput
@@ -119,21 +118,21 @@ export class AreaForm extends Component {
 AreaForm.defaultProps = {
   submitOnEnter: true,
   toolbar: <Toolbar />,
-};
+}
 
 const enhance = compose(
   connect((state, props) => ({
-      initialValues: getDefaultValues(state, props),
-      modActive: state.modActive,
-      selectedYear: state.selectedYear,
-      selectedItem: state.selectedItem,
-    }),
-    {
-      // crudUpdate: crudUpdateAction,
-      setModType,
-      setModData,
-      showNotification
-    }),
+    initialValues: getDefaultValues(state, props),
+    modActive: state.modActive,
+    selectedYear: state.selectedYear,
+    selectedItem: state.selectedItem,
+  }),
+  {
+    // crudUpdate: crudUpdateAction,
+    setModType,
+    setModData,
+    showNotification
+  }),
   reduxForm({
     form: 'record-form',
     enableReinitialize: true,

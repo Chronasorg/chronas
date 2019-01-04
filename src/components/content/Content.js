@@ -10,7 +10,7 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import IconButton from 'material-ui/IconButton'
 import compose from 'recompose/compose'
-import { translate, defaultTheme, showNotification } from 'admin-on-rest'
+import { defaultTheme, showNotification, translate } from 'admin-on-rest'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
 import ContentMovie from 'material-ui/svg-icons/maps/local-movies'
 import ContentImage from 'material-ui/svg-icons/image/image'
@@ -18,13 +18,17 @@ import ContentAudio from 'material-ui/svg-icons/image/audiotrack'
 import ContentLink from 'material-ui/svg-icons/content/link'
 import QAAIcon from 'material-ui/svg-icons/action/question-answer'
 import { setRightDrawerVisibility, toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
-import { setFullModActive, resetModActive } from '../restricted/shared/buttons/actionReducers'
+import { resetModActive, setFullModActive } from '../restricted/shared/buttons/actionReducers'
 import {
-  TYPE_AREA, TYPE_MARKER, TYPE_LINKED, TYPE_EPIC, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE,
-  deselectItem as deselectItemAction, selectValue, setData
+  deselectItem as deselectItemAction,
+  selectValue,
+  setData,
+  TYPE_AREA,
+  TYPE_EPIC,
+  TYPE_LINKED,
+  TYPE_MARKER,
+  WIKI_PROVINCE_TIMELINE
 } from '../map/actionReducers'
-import { chronasMainColor } from '../../styles/chronasColors'
-import { tooltip } from '../../styles/chronasStyleComponents'
 import LinkedGallery from './contentMenuItems/LinkedGallery'
 import LinkedQAA from './contentMenuItems/LinkedQAA'
 import utils from '../map/utils/general'
@@ -161,7 +165,7 @@ class Content extends Component {
   _toggleContentMenuItem = (preContentMenuItem) => {
     const newContentMenuItem = (preContentMenuItem === this.state.activeContentMenuItem) ? '' : preContentMenuItem
     localStorage.setItem('chs_activeContentMenuItem', newContentMenuItem)
-    this.setState({ activeContentMenuItem:  newContentMenuItem })
+    this.setState({ activeContentMenuItem: newContentMenuItem })
   }
 
   _handleNewData = (selectedItem, metadata, activeArea, doCleanup = false) => {
@@ -291,7 +295,7 @@ class Content extends Component {
             // }
 
             setData(linkedItems)
-            //this.setState({ linkedItems })
+            // this.setState({ linkedItems })
           } else {
             showNotification('No linked items found, consider adding one') // TODO: notifications don't seem to work on this page
           }
@@ -304,9 +308,9 @@ class Content extends Component {
   componentWillReceiveProps (nextProps) {
     if (this.props.selectedYear !== nextProps.selectedYear ||
       this.props.selectedItem.value !== nextProps.selectedItem.value ||
-        this.props.selectedItem.wiki !== nextProps.selectedItem.wiki ||
-        this.props.selectedItem.type !== nextProps.selectedItem.type ||
-        this.props.activeArea.color !== nextProps.activeArea.color) {
+      this.props.selectedItem.wiki !== nextProps.selectedItem.wiki ||
+      this.props.selectedItem.type !== nextProps.selectedItem.type ||
+      this.props.activeArea.color !== nextProps.activeArea.color) {
       this._handleNewData(nextProps.selectedItem, nextProps.metadata, nextProps.activeArea, nextProps.selectedItem.value === '')
     }
   }
@@ -315,7 +319,11 @@ class Content extends Component {
     const { activeContentMenuItem, hasQuestions, sunburstData, iframeLoading, selectedWiki } = this.state
     const { activeArea, deselectItem, selectedItem, influenceRawData, provinceEntity, selectedYear, setMetadataType, theme, metadata, newWidth, history, setMetadataEntity } = this.props
 
-    const finalLinkedItems = /*(linkedItems || {}).id ? linkedItems : */selectedItem.data || { media: [], content: [], id: '' }
+    const finalLinkedItems = /* (linkedItems || {}).id ? linkedItems : */selectedItem.data || {
+      media: [],
+      content: [],
+      id: ''
+    }
     const shouldLoad = (iframeLoading || selectedWiki === null)
 
     const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
@@ -331,39 +339,81 @@ class Content extends Component {
     const hasLinkedOther = (finalLinkedItems.media || []).length > 0
 
     return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
-      { (entityTimelineOpen || epicTimelineOpen || isMarker || isMedia) && <div>
-        <Paper style={{ ...styles.contentLeftMenu, backgroundColor: themes[theme].backColors[0], color: themes[theme].foreColors[0] }}>
+      {(entityTimelineOpen || epicTimelineOpen || isMarker || isMedia) && <div>
+        <Paper style={{
+          ...styles.contentLeftMenu,
+          backgroundColor: themes[theme].backColors[0],
+          color: themes[theme].foreColors[0]
+        }}>
           <Menu desktop>
-            { entityTimelineOpen && <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], backgroundColor: ((activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => {localStorage.setItem('chs_dyk_distribution', true); this._toggleContentMenuItem('sunburst')}} leftIcon={<CompositionChartIcon hoverColor={themes[theme].highlightColors[0]} style={{ ...styles.menuIcon, fill: themes[theme].foreColors[0]}} />} /> }
-            { entityTimelineOpen && <Divider style={{ backgroundColor: themes[theme].backColors[2] }} /> }
-            <MenuItem style={{ ...styles.menuItem, zIndex: 10, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
+            {entityTimelineOpen && <MenuItem style={{
+              ...styles.menuItem,
+              color: themes[theme].backColors[0],
+              backgroundColor: ((activeContentMenuItem === 'sunburst') ? 'rgba(0,0,0,0.2)' : 'inherit')
+            }} onClick={() => {
+              localStorage.setItem('chs_dyk_distribution', true)
+              this._toggleContentMenuItem('sunburst')
+            }} leftIcon={<CompositionChartIcon hoverColor={themes[theme].highlightColors[0]}
+              style={{ ...styles.menuIcon, fill: themes[theme].foreColors[0] }} />} />}
+            {entityTimelineOpen && <Divider style={{ backgroundColor: themes[theme].backColors[2] }} />}
+            <MenuItem style={{
+              ...styles.menuItem,
+              zIndex: 10,
+              color: themes[theme].backColors[0],
+              top: 0,
+              backgroundColor: ((activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit')
+            }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
               <IconButton
-                tooltipPosition="bottom-left"
-                tooltip={''} iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0, pointerEvents: 'none' }} >
+                tooltipPosition='bottom-left'
+                tooltip={''} iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0, pointerEvents: 'none' }}>
                 <Badge
                   badgeContent={linkedCount}
-                  primary={true}
+                  primary
                   badgeStyle={{ top: -22, fontWeight: 'bolder', right: 10, opacity: (linkedCount > 0) ? 1 : 0.5 }}
-                ><div style={{ position: 'absolute',
-                  top: -12,
-                  left: -9 }}>
-                  <ContentImage hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer1, fill: (hasLinkedImage ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
-                  <ContentMovie hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer2, fill: (hasLinkedMovie ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
-                  <ContentAudio hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer3, fill: (hasLinkedAudio ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
-                  <ContentLink hoverColor={themes[theme].highlightColors[0]} style={{...styles.menuIconBadgeContainer4, fill: (hasLinkedOther ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
-                </div></Badge>
+                >
+                  <div style={{
+                    position: 'absolute',
+                    top: -12,
+                    left: -9
+                  }}>
+                    <ContentImage hoverColor={themes[theme].highlightColors[0]} style={{
+                      ...styles.menuIconBadgeContainer1,
+                      fill: (hasLinkedImage ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])
+                    }} />
+                    <ContentMovie hoverColor={themes[theme].highlightColors[0]} style={{
+                      ...styles.menuIconBadgeContainer2,
+                      fill: (hasLinkedMovie ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])
+                    }} />
+                    <ContentAudio hoverColor={themes[theme].highlightColors[0]} style={{
+                      ...styles.menuIconBadgeContainer3,
+                      fill: (hasLinkedAudio ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])
+                    }} />
+                    <ContentLink hoverColor={themes[theme].highlightColors[0]} style={{
+                      ...styles.menuIconBadgeContainer4,
+                      fill: (hasLinkedOther ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])
+                    }} />
+                  </div>
+                </Badge>
               </IconButton>
             } />
-            { entityTimelineOpen && <Divider style={{ backgroundColor: themes[theme].backColors[2] }} /> }
-            <MenuItem style={{ ...styles.menuItem, color: themes[theme].backColors[0], top: 0, backgroundColor: ((activeContentMenuItem === 'qaa') ? 'rgba(0,0,0,0.2)' : 'inherit') }} onClick={() => this._toggleContentMenuItem('qaa')} leftIcon={
+            {entityTimelineOpen && <Divider style={{ backgroundColor: themes[theme].backColors[2] }} />}
+            <MenuItem style={{
+              ...styles.menuItem,
+              color: themes[theme].backColors[0],
+              top: 0,
+              backgroundColor: ((activeContentMenuItem === 'qaa') ? 'rgba(0,0,0,0.2)' : 'inherit')
+            }} onClick={() => this._toggleContentMenuItem('qaa')} leftIcon={
               <Badge
                 style={{ top: -18, margin: 0, left: 10 }}
                 badgeStyle={{ left: 28, fontWeight: 'bolder', top: 13, opacity: (hasQuestions > 0) ? 1 : 0.5 }}
-              badgeContent={hasQuestions || 0}
-              primary={true}
-            >
-              <QAAIcon hoverColor={themes[theme].highlightColors[0]} style={{...styles.qaaIcon, fill: (hasQuestions ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])}} />
-            </Badge> } />
+                badgeContent={hasQuestions || 0}
+                primary
+              >
+                <QAAIcon hoverColor={themes[theme].highlightColors[0]} style={{
+                  ...styles.qaaIcon,
+                  fill: (hasQuestions ? themes[theme].highlightColors[0] : themes[theme].foreColors[0])
+                }} />
+              </Badge>} />
           </Menu>
         </Paper>
       </div>}
@@ -386,12 +436,22 @@ class Content extends Component {
           // linkedItems={finalLinkedItems}
         />
         : provinceTimelineOpen
-          ? <ProvinceTimeline deselectItem={deselectItem} history={history} selectedItem={selectedItem} metadata={metadata} setMetadataType={setMetadataType} selectedYear={selectedYear} provinceEntity={provinceEntity} activeArea={activeArea} />
+          ? <ProvinceTimeline deselectItem={deselectItem} history={history} selectedItem={selectedItem}
+            metadata={metadata} setMetadataType={setMetadataType} selectedYear={selectedYear}
+            provinceEntity={provinceEntity} activeArea={activeArea} />
           : <div style={{ height: '100%' }}>
-              <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={ activeContentMenuItem !== 'qaa' } qId={ ((selectedItem || {}).data || {}).id || '' } qName={ selectedWiki || '' } />
-              <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper} linkedItems={((selectedItem || {}).data || {}).media || []} selectedYear={selectedYear} qName={ selectedWiki || '' } />
-              <ArticleIframe history={history} deselectItem={deselectItem} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={ selectedWiki} selectedItem={selectedItem} />
-            </div>
+            <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim}
+              setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'qaa'}
+              qId={((selectedItem || {}).data || {}).id || ''} qName={selectedWiki || ''} />
+            <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem}
+              isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper}
+              selectValue={this.selectValueWrapper}
+              linkedItems={((selectedItem || {}).data || {}).media || []} selectedYear={selectedYear}
+              qName={selectedWiki || ''} />
+            <ArticleIframe history={history} deselectItem={deselectItem}
+              customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki}
+              selectedItem={selectedItem} />
+          </div>
       }
     </div>
   }

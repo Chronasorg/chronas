@@ -1,24 +1,25 @@
 import React, { Component } from 'react'
-;
+
 import { connect } from 'react-redux'
-import { Card, CardText, CardActions } from 'material-ui/Card'
+import { Card, CardActions, CardText } from 'material-ui/Card'
 import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
 import RaisedButton from 'material-ui/RaisedButton'
 import ActionCheck from 'material-ui/svg-icons/action/check-circle'
 import AlertError from 'material-ui/svg-icons/alert/error-outline'
 import compose from 'recompose/compose'
 import inflection from 'inflection'
-import { Title,
-  ListButton,
-  translate,
-  crudGetOne as crudGetOneAction,
+import {
   crudDelete as crudDeleteAction,
+  crudGetOne as crudGetOneAction,
+  ListButton,
   showNotification,
+  Title,
+  translate,
   ViewTitle
 } from 'admin-on-rest'
 import { logout } from '../../../menu/authentication/actionReducers'
-import {setModType} from "../buttons/actionReducers";
-import { TYPE_MARKER, deselectItem } from "../../../map/actionReducers";
+import { setModType } from '../buttons/actionReducers'
+import { deselectItem, TYPE_MARKER } from '../../../map/actionReducers'
 
 const styles = {
   actions: { zIndex: 2, display: 'inline-block', float: 'right' },
@@ -75,16 +76,14 @@ class Delete extends Component {
       (resource === 'metadata') ? '/discover' : this.getBasePath()
     )
     if (account) {
-      showNotification("aor.auth.logged_out")
+      showNotification('aor.auth.logged_out')
       logout()
-    }
-    else if (resource === 'markers') {
-      showNotification("resources.markers.deleted")
+    } else if (resource === 'markers') {
+      showNotification('resources.markers.deleted')
       setModType('', [], data.type)
       deselectItem()
-    }
-    else if (resource === 'metadata') {
-      showNotification("resources.metadata.deleted")
+    } else if (resource === 'metadata') {
+      showNotification('resources.metadata.deleted')
       setModType('', [], '')
       deselectItem()
     }
@@ -117,7 +116,7 @@ class Delete extends Component {
       <div>
         <Card style={{ opacity: isLoading ? 0.8 : 1 }}>
           <CardActions style={styles.actions}>
-            {/*<ListButton basePath={basePath} />*/}
+            {/* <ListButton basePath={basePath} /> */}
           </CardActions>
           <ViewTitle title={titleElement} />
           <form onSubmit={this.handleSubmit}>
@@ -148,14 +147,13 @@ class Delete extends Component {
   }
 }
 
-
 function mapStateToProps (state, props) {
   return {
     id: props.match.params.id,
     data:
       state.admin.resources[props.resource].data[
         props.match.params.id
-        ],
+      ],
     isLoading: state.admin.loading > 0,
   }
 }

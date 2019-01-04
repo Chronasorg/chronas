@@ -1,13 +1,5 @@
-import { fetchUtils } from 'admin-on-rest';
-import {
-    GET_LIST,
-    GET_ONE,
-    GET_MANY,
-    GET_MANY_REFERENCE,
-    CREATE,
-    UPDATE,
-    DELETE,
-} from './types';
+import { fetchUtils } from 'admin-on-rest'
+import { CREATE, DELETE, GET_LIST, GET_MANY, GET_MANY_REFERENCE, GET_ONE, UPDATE, } from './types'
 
 /**
  * Maps admin-on-rest queries to a json-server powered REST API
@@ -22,118 +14,118 @@ import {
  * DELETE       => DELETE http://my.api.url/posts/123
  */
 export default (apiUrl, httpClient = fetchUtils.fetchJson) => {
-    /**
-     * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
-     * @param {String} resource Name of the resource to fetch, e.g. 'posts'
-     * @param {Object} params The REST request params, depending on the type
-     * @returns {Object} { url, options } The HTTP request parameters
-     */
-    const convertRESTRequestToHTTP = (type, resource, params) => {
-        let url = '';
-        const options = {};
-        switch (type) {
-        case GET_LIST: {
-            const { page, perPage } = params.pagination;
-            const { field, order } = params.sort;
-            const query = {
-                filter: JSON.stringify(params.filter),
-                sort: field,
-                order: order,
-                start: (page - 1) * perPage,
-                end: page * perPage,
-                count: 1,
-            };
-            url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`;
-            break;
+  /**
+   * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
+   * @param {String} resource Name of the resource to fetch, e.g. 'posts'
+   * @param {Object} params The REST request params, depending on the type
+   * @returns {Object} { url, options } The HTTP request parameters
+   */
+  const convertRESTRequestToHTTP = (type, resource, params) => {
+    let url = ''
+    const options = {}
+    switch (type) {
+      case GET_LIST: {
+        const { page, perPage } = params.pagination
+        const { field, order } = params.sort
+        const query = {
+          filter: JSON.stringify(params.filter),
+          sort: field,
+          order: order,
+          start: (page - 1) * perPage,
+          end: page * perPage,
+          count: 1,
         }
-        case GET_ONE:
-            url = `${apiUrl}/${resource}/${params["id"]}`;
-            break;
-        case GET_MANY_REFERENCE: {
-            const { page, perPage } = params.pagination;
-            const { field, order } = params.sort;
-            const query = {
-                filter: JSON.stringify(params.filter),
-                [params.target]: params["id"],
-                sort: field,
-                order: order,
-                start: (page - 1) * perPage,
-                end: page * perPage,
-                count: 1,
-            };
-            url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`;
-            break;
+        url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`
+        break
+      }
+      case GET_ONE:
+        url = `${apiUrl}/${resource}/${params['id']}`
+        break
+      case GET_MANY_REFERENCE: {
+        const { page, perPage } = params.pagination
+        const { field, order } = params.sort
+        const query = {
+          filter: JSON.stringify(params.filter),
+          [params.target]: params['id'],
+          sort: field,
+          order: order,
+          start: (page - 1) * perPage,
+          end: page * perPage,
+          count: 1,
         }
-        case UPDATE:
-            url = `${apiUrl}/${resource}/${params["id"]}`;
-            options.method = 'PUT';
-            if (resource === 'areas') params.data.data = saveParse(params.data.data);
-            options.body = JSON.stringify(params.data);
-            break;
-        case CREATE:
-            url = `${apiUrl}/${resource}`;
-            options.method = 'POST';
-            options.body = JSON.stringify(params.data);
-            break;
-        case DELETE:
-            url = `${apiUrl}/${resource}/${params["id"]}`;
-            options.method = 'DELETE';
-            break;
-        default:
-            throw new Error(`Unsupported fetch action type ${type}`);
-        }
-        return { url, options };
-    };
+        url = `${apiUrl}/${resource}?${fetchUtils.queryParameters(query)}`
+        break
+      }
+      case UPDATE:
+        url = `${apiUrl}/${resource}/${params['id']}`
+        options.method = 'PUT'
+        if (resource === 'areas') params.data.data = saveParse(params.data.data)
+        options.body = JSON.stringify(params.data)
+        break
+      case CREATE:
+        url = `${apiUrl}/${resource}`
+        options.method = 'POST'
+        options.body = JSON.stringify(params.data)
+        break
+      case DELETE:
+        url = `${apiUrl}/${resource}/${params['id']}`
+        options.method = 'DELETE'
+        break
+      default:
+        throw new Error(`Unsupported fetch action type ${type}`)
+    }
+    return { url, options }
+  }
 
-    /**
-     * @param {Object} response HTTP response from fetch()
-     * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
-     * @param {String} resource Name of the resource to fetch, e.g. 'posts'
-     * @param {Object} params The REST request params, depending on the type
-     * @returns {Object} REST response
-     */
-    const convertHTTPResponseToREST = (response, type, resource, params) => {
-        const headers = response.headers
-        const json = ensureId(response.json)
-        switch (type) {
-            case GET_LIST:
-            case GET_MANY_REFERENCE:
-                if (!headers.has('x-total-count')) {
-                    throw new Error(
-                        'The X-Total-Count header is missing in the HTTP Response. The jsonServer REST client expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?'
-                    );
-                }
-                return {
-                    data: json,
-                    total: parseInt(headers.get('x-total-count').split('/').pop(), 10),
-                };
-            case CREATE:
-                return { data: { ...params.data, id: json.id } };
-            default:
-                if (json && json.data && typeof json.data === 'object') json.data = saveStringify(json.data)
-                return { data: json };
+  /**
+   * @param {Object} response HTTP response from fetch()
+   * @param {String} type One of the constants appearing at the top if this file, e.g. 'UPDATE'
+   * @param {String} resource Name of the resource to fetch, e.g. 'posts'
+   * @param {Object} params The REST request params, depending on the type
+   * @returns {Object} REST response
+   */
+  const convertHTTPResponseToREST = (response, type, resource, params) => {
+    const headers = response.headers
+    const json = ensureId(response.json)
+    switch (type) {
+      case GET_LIST:
+      case GET_MANY_REFERENCE:
+        if (!headers.has('x-total-count')) {
+          throw new Error(
+            'The X-Total-Count header is missing in the HTTP Response. The jsonServer REST client expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?'
+          )
         }
-    };
-
-    /**
-     * @param {string} type Request type, e.g GET_LIST
-     * @param {string} resource Resource name, e.g. "posts"
-     * @param {Object} payload Request parameters. Depends on the request type
-     * @returns {Promise} the Promise for a REST response
-     */
-    return (type, resource, params) => {
-        // json-server doesn't handle WHERE IN requests, so we fallback to calling GET_ONE n times instead
-        if (type === GET_MANY) {
-            return Promise.all(params.ids.map(id => httpClient(`${apiUrl}/${resource}/${id}`)))
-                .then(responses => ({ data: responses.map(response => ensureId(response.json)) }));
+        return {
+          data: json,
+          total: parseInt(headers.get('x-total-count').split('/').pop(), 10),
         }
-        const { url, options } = convertRESTRequestToHTTP(type, resource, params);
-        return httpClient(url, options)
-            .then(response => convertHTTPResponseToREST(response, type, resource, params));
-    };
-};
+      case CREATE:
+        return { data: { ...params.data, id: json.id } }
+      default:
+        if (json && json.data && typeof json.data === 'object') json.data = saveStringify(json.data)
+        return { data: json }
+    }
+  }
 
-function saveParse(str) {
+  /**
+   * @param {string} type Request type, e.g GET_LIST
+   * @param {string} resource Resource name, e.g. "posts"
+   * @param {Object} payload Request parameters. Depends on the request type
+   * @returns {Promise} the Promise for a REST response
+   */
+  return (type, resource, params) => {
+    // json-server doesn't handle WHERE IN requests, so we fallback to calling GET_ONE n times instead
+    if (type === GET_MANY) {
+      return Promise.all(params.ids.map(id => httpClient(`${apiUrl}/${resource}/${id}`)))
+        .then(responses => ({ data: responses.map(response => ensureId(response.json)) }))
+    }
+    const { url, options } = convertRESTRequestToHTTP(type, resource, params)
+    return httpClient(url, options)
+      .then(response => convertHTTPResponseToREST(response, type, resource, params))
+  }
+}
+
+function saveParse (str) {
   try {
     return JSON.parse(str)
   } catch (e) {
@@ -141,7 +133,7 @@ function saveParse(str) {
   }
 }
 
-function saveStringify(str) {
+function saveStringify (str) {
   try {
     return JSON.stringify(str)
   } catch (e) {
@@ -150,14 +142,14 @@ function saveStringify(str) {
 }
 
 function ensureId (obj) {
-  if (typeof obj === "undefined") return
-  if (typeof obj === "object" && obj.constructor !== Array) {
+  if (typeof obj === 'undefined') return
+  if (typeof obj === 'object' && obj.constructor !== Array) {
     if (obj.hasOwnProperty('_id')) {
       obj.id = obj['_id']
       delete obj['_id']
     }
   } else {
-    for (let i = 0; i < obj.length; i++){
+    for (let i = 0; i < obj.length; i++) {
       if (obj[i].hasOwnProperty('_id')) {
         obj[i].id = obj[i]['_id']
         delete obj[i]['_id']

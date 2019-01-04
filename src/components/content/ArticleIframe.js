@@ -2,7 +2,7 @@ import React from 'react'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import {showNotification, translate} from 'admin-on-rest'
+import { showNotification, translate } from 'admin-on-rest'
 import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
 import IconEdit from 'material-ui/svg-icons/editor/mode-edit'
@@ -18,12 +18,19 @@ import Toggle from 'material-ui/Toggle'
 import { red400 } from 'material-ui/styles/colors'
 import { LoadingCircle } from '../global/LoadingCircle'
 import { setRightDrawerVisibility } from '../content/actionReducers'
-import utilsQuery from "../map/utils/query";
-import {epicIdNameArray, themes} from '../../properties'
+import utilsQuery from '../map/utils/query'
+import { epicIdNameArray, themes } from '../../properties'
 import {
-  setData, selectMarkerItem, selectLinkedItem, TYPE_AREA, TYPE_EPIC, TYPE_MARKER, TYPE_LINKED,
-  WIKI_PROVINCE_TIMELINE, selectEpicItem
-} from "../map/actionReducers";
+  selectEpicItem,
+  selectLinkedItem,
+  selectMarkerItem,
+  setData,
+  TYPE_AREA,
+  TYPE_EPIC,
+  TYPE_LINKED,
+  TYPE_MARKER,
+  WIKI_PROVINCE_TIMELINE
+} from '../map/actionReducers'
 
 const styles = {
   closeButton: {
@@ -36,7 +43,7 @@ const styles = {
   },
   discoverDialogStyle: {
     width: '100%',
-    height:'100%',
+    height: '100%',
     // maxWidth: 'none',
     transform: '',
     transition: 'all .3s',
@@ -56,12 +63,12 @@ const styles = {
     transition: 'all .3s',
     background: 'rgba(0,0,0,.8)',
     pointerEvents: 'none',
-    height:'100%',
+    height: '100%',
     width: '100%'
   },
   iframe: {
     width: '100%',
-    height:'100%',
+    height: '100%',
     right: '8px',
     padding: '38px 8px 0px'
   },
@@ -93,32 +100,19 @@ const styles = {
 }
 
 class ArticleIframe extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      isFullScreen: false,
-      iframeLoading: true,
-      iframeLoadingFull: true,
-    }
-  }
-
   componentDidMount = () => {
     this.setState({ iframeLoading: true })
     this.setState({ iframeLoadingFull: true })
   }
-
   _exitFullscreen = () => {
     this.setState({ isFullScreen: false })
   }
-
   _enterFullscreen = () => {
     this.setState({ isFullScreen: true })
   }
-
   _handlFullURLChange = (e) => {
     this.setState({ iframeLoadingFull: false })
   }
-
   _handleUrlChange = (e) => {
     this.setState({ iframeLoading: false })
     const currSrc = document.getElementById('articleIframe').getAttribute('src')
@@ -128,20 +122,18 @@ class ArticleIframe extends React.Component {
     } // TODO: do this with ref
     this.forceUpdate()
   }
-
   __setIFrameSource = (cid, url) => {
-    const myframe = document.getElementById(cid);
-    if(myframe !== null){
-      if(myframe.src){
-        myframe.src = url; }
-      else if(myframe.contentWindow !== null && myframe.contentWindow.location !== null){
-        myframe.contentWindow.location = url; }
-      else{
-        myframe.setAttribute('src', url);
+    const myframe = document.getElementById(cid)
+    if (myframe !== null) {
+      if (myframe.src) {
+        myframe.src = url
+      } else if (myframe.contentWindow !== null && myframe.contentWindow.location !== null) {
+        myframe.contentWindow.location = url
+      } else {
+        myframe.setAttribute('src', url)
       }
     }
   }
-
   _handleClose = () => {
     this.props.history.push('/')
     this.props.deselectItem()
@@ -149,51 +141,43 @@ class ArticleIframe extends React.Component {
     utilsQuery.updateQueryStringParameter('type', '')
     utilsQuery.updateQueryStringParameter('value', '')
   }
-
-  componentWillReceiveProps (nextProps) {
-    if (this.props.selectedWiki !== nextProps.selectedWiki) {
-      this.setState({ iframeLoading: true })
-      this.forceUpdate()
-    }
-  }
   _goToRevision = (modUrl, isProvince) => {
     const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
 
     let entityId = ''
     let subentity = ''
 
-    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== "undefined"
+    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== 'undefined'
     const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
 
     let fModUrl = modUrl
 
     if (isProvince) {
       entityId = selectedTypeId.id
-    } else if (selectedItem.type === "areas" && (selectedItem.wiki === "-1" || selectedItem.data.contentIndex === -1)) {
-      subentity = (((selectedItem || {}).data || {}).id || "").split("|")[2]
+    } else if (selectedItem.type === 'areas' && (selectedItem.wiki === '-1' || selectedItem.data.contentIndex === -1)) {
+      subentity = (((selectedItem || {}).data || {}).id || '').split('|')[2]
     } else if (epicContentItem) {
       if (((epicContentItem || {}).properties || {}).ct === 'marker') {
         entityId = ((epicContentItem || {}).properties || {}).w
       } else if (((epicContentItem || {}).properties || {}).ct === 'metadata') {
         entityId = ((epicContentItem || {}).properties || {}).id
       } else if (((epicContentItem || {}).properties || {}).ct === 'area' && ((epicContentItem || {}).properties || {}).aeId) {
-        const [ ae, colorToSelect, rulerToHold ] = ((epicContentItem || {}).properties || {}).aeId.split('|')
+        const [ae, colorToSelect, rulerToHold] = ((epicContentItem || {}).properties || {}).aeId.split('|')
         selectAreaItemWrapper(rulerToHold, colorToSelect)
         fModUrl = '/mod/metadata'
       }
       // setMetadataType(selectedTypeId.type)
     }
     if (!entityId && !subentity) {
-      entityId = (selectedItem.value || {})._id || selectedItem.wiki || zselectedItem.value
+      entityId = (selectedItem.value || {})._id || selectedItem.wiki || selectedItem.value
     }
 
-    history.push('/mod/revisions?filter=%7B%22' + (entityId ? 'entity' : 'subentity') + '%22%3A%22' + (entityId || subentity) + '%22%2C%22last_seen_gte%22%3A%222018-11-08T06%3A00%3A00.000Z%22%7D')//fModUrl)
+    history.push('/mod/revisions?filter=%7B%22' + (entityId ? 'entity' : 'subentity') + '%22%3A%22' + (entityId || subentity) + '%22%2C%22last_seen_gte%22%3A%222018-11-08T06%3A00%3A00.000Z%22%7D')// fModUrl)
   }
-
   _goToMod = (modUrl, isProvince) => {
     const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
 
-    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== "undefined"
+    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== 'undefined'
     const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
 
     let fModUrl = modUrl
@@ -205,11 +189,11 @@ class ArticleIframe extends React.Component {
       if (((epicContentItem || {}).properties || {}).ct === 'marker') {
         fModUrl = '/mod/markers'
         selectMarkerItem(((epicContentItem || {}).properties || {}).w, {
-          "_id": ((epicContentItem || {}).properties || {}).w,
-          "name": ((epicContentItem || {}).properties || {}).n,
-          "type": ((epicContentItem || {}).properties || {}).t,
-          "year": ((epicContentItem || {}).properties || {}).y,
-          "coo": (epicContentItem.geometry || {}).coordinates
+          '_id': ((epicContentItem || {}).properties || {}).w,
+          'name': ((epicContentItem || {}).properties || {}).n,
+          'type': ((epicContentItem || {}).properties || {}).t,
+          'year': ((epicContentItem || {}).properties || {}).y,
+          'coo': (epicContentItem.geometry || {}).coordinates
         })
       } else if (((epicContentItem || {}).properties || {}).ct === 'metadata') {
         // setMetadataEntity(((epicContentItem || {}).properties || {}).id, true)
@@ -219,9 +203,8 @@ class ArticleIframe extends React.Component {
         if (epicIdNameArray.map(el => el[0]).includes(((epicContentItem || {}).properties || {}).t)) fModUrl = '/mod/linked'
         // selectLinkedItem(epicContentItem.wiki)
         // setData({ id: epicContentItem.wiki })
-
       } else if (((epicContentItem || {}).properties || {}).ct === 'area' && ((epicContentItem || {}).properties || {}).aeId) {
-        const [ ae, colorToSelect, rulerToHold ] = ((epicContentItem || {}).properties || {}).aeId.split('|')
+        const [ae, colorToSelect, rulerToHold] = ((epicContentItem || {}).properties || {}).aeId.split('|')
         selectAreaItemWrapper(rulerToHold, colorToSelect)
         fModUrl = '/mod/metadata'
       }
@@ -234,12 +217,28 @@ class ArticleIframe extends React.Component {
     history.push(fModUrl)
   }
 
+  constructor (props) {
+    super(props)
+    this.state = {
+      isFullScreen: false,
+      iframeLoading: true,
+      iframeLoadingFull: true,
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.selectedWiki !== nextProps.selectedWiki) {
+      this.setState({ iframeLoading: true })
+      this.forceUpdate()
+    }
+  }
+
   render () {
     const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
     const { hasChart, selectedItem, selectedWiki, theme, isEntity, customStyle, htmlContent, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
-    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== "undefined"
+    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== 'undefined'
     const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
     const isMedia = selectedItem.type === TYPE_LINKED
     const isArea = selectedItem.type === TYPE_AREA
@@ -250,70 +249,85 @@ class ArticleIframe extends React.Component {
     const isProvince = selectedItem.wiki === WIKI_PROVINCE_TIMELINE
     const noWiki = (!selectedItem || !selectedWiki || selectedWiki === -1)
     const modUrl = isEpic || isArea
-      ? (((epicContentItem || {}).properties || {}).ct === "marker" ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
-      : (isMarker ?  '/mod/markers' : '/mod/metadata')
+      ? (((epicContentItem || {}).properties || {}).ct === 'marker' ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
+      : (isMarker ? '/mod/markers' : '/mod/metadata')
 
-      // epicContentItem
-      // ? (epicContentItem.ct === "marker" ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
-      // : (isMarker ?  '/mod/markers' : '/mod/metadata')
+    // epicContentItem
+    // ? (epicContentItem.ct === "marker" ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
+    // : (isMarker ?  '/mod/markers' : '/mod/metadata')
 
-    const modMenu = <div>{ isEpicInfo ? <div style={ styles.epicInfoContainer }> <img className="tsTicks discoveryIcon articleEpic" src="/images/transparent.png"/><h6 style={{ paddingLeft: 40, paddingTop: 22 }}>Discovery</h6></div> : isPsWithSource ? <div style={ styles.epicInfoContainer }>
+    const modMenu = <div>{isEpicInfo
+      ? <div style={styles.epicInfoContainer}><img className='tsTicks discoveryIcon articleEpic'
+        src='/images/transparent.png' /><h6
+          style={{ paddingLeft: 40, paddingTop: 22 }}>Discovery</h6></div> : isPsWithSource
+        ? <div style={styles.epicInfoContainer}>
 
-      <FlatButton
-        backgroundColor={themes[theme].highlightColors[0]}
-        hoverColor={themes[theme].foreColors[0]}
-        color={themes[theme].backColors[0]}
-        style={{ margin: 12, marginLeft: -8, marginTop: 8, color: themes[theme].backColors[0] }}
-        label="Read Document"
-        labelPosition="before"
-        primary={true}
-        onClick={() => window.open(decodeURIComponent(potentialSource), '_blank').focus()}
-        icon={<IconOutbound color={themes[theme].backColors[0]} />}
-      /></div> : null}<div style={ !(isMarker || isMedia || !hasChart) ? { ...styles.actionButtonContainer, top: 254 } : (isProvince) ? { ...styles.actionButtonContainer, top: 332 } : { ...styles.actionButtonContainer, backgroundColor: themes[theme].backColors[0] } } >
-      { toggleYearByArticle && <Toggle
-        label='Set year by article'
-        disabled={toggleYearByArticleDisabled}
-        onToggle={toggleYearByArticle}
-        defaultToggled={yearByArticleValue}
-        style={{
+          <FlatButton
+            backgroundColor={themes[theme].highlightColors[0]}
+            hoverColor={themes[theme].foreColors[0]}
+            color={themes[theme].backColors[0]}
+            style={{ margin: 12, marginLeft: -8, marginTop: 8, color: themes[theme].backColors[0] }}
+            label='Read Document'
+            labelPosition='before'
+            primary
+            onClick={() => window.open(decodeURIComponent(potentialSource), '_blank').focus()}
+            icon={<IconOutbound color={themes[theme].backColors[0]} />}
+          /></div> : null}
+      <div style={!(isMarker || isMedia || !hasChart) ? {
+      ...styles.actionButtonContainer,
+      top: 254
+    } : (isProvince) ? { ...styles.actionButtonContainer, top: 332 } : {
+      ...styles.actionButtonContainer,
+      backgroundColor: themes[theme].backColors[0]
+    }}>
+        {toggleYearByArticle && <Toggle
+          label='Set year by article'
+          disabled={toggleYearByArticleDisabled}
+          onToggle={() => toggleYearByArticle()}
+          defaultToggled={yearByArticleValue}
+          style={{
           width: 'inherit',
           display: 'inline-block',
           position: 'relative',
           top: 5
         }}
-      /> }
-      <IconButton
-        tooltipPosition="bottom-left"
-        tooltip={'Edit'}
-        style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._goToMod(modUrl, isProvince)} >
-        <IconEdit style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
-      </IconButton>
-      <IconButton
-        tooltipPosition="bottom-left"
-        tooltip={'Revision history'}
-        style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._goToRevision(modUrl, isProvince)} >
-        <IconHistory style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
-      </IconButton>
-      <IconButton
-        tooltipPosition="bottom-left"
-        tooltip={'Fullscreen Article'}
-      onClick={() => this._enterFullscreen()}
-             style={{ ...styles.fullscreenButton, width: !(isEntity || isProvince) ? 32 : 'inherit' }} >
-        <FullscreenEnterIcon style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
-      </IconButton>
-      { !(isEntity || isProvince) && <IconButton
-        tooltipPosition="bottom-left"
-        tooltip={'Go Back'}
-        style={{ width: 32 }} iconStyle={{textAlign: 'right', fontSize: '12px'}}  onClick={() => this.props.history.goBack()} >
-        <IconBack style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
-      </IconButton> }
-      { !(isEntity || isProvince) && <IconButton
-        tooltipPosition="bottom-left"
-        tooltip={'Close'}
-        style={{  }} iconStyle={{textAlign: 'right', fontSize: '12px'}} onClick={() => this._handleClose()}>
-        <IconClose style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
-      </IconButton> }
-    </div></div>
+      />}
+        <IconButton
+          tooltipPosition='bottom-left'
+          tooltip={'Edit'}
+          style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px' }}
+          onClick={() => this._goToMod(modUrl, isProvince)}>
+          <IconEdit style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
+        </IconButton>
+        <IconButton
+          tooltipPosition='bottom-left'
+          tooltip={'Revision history'}
+          style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px' }}
+          onClick={() => this._goToRevision(modUrl, isProvince)}>
+          <IconHistory style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
+        </IconButton>
+        <IconButton
+          tooltipPosition='bottom-left'
+          tooltip={'Fullscreen Article'}
+          onClick={() => this._enterFullscreen()}
+          style={{ ...styles.fullscreenButton, width: !(isEntity || isProvince) ? 32 : 'inherit' }}>
+          <FullscreenEnterIcon style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
+        </IconButton>
+        {!(isEntity || isProvince) && <IconButton
+          tooltipPosition='bottom-left'
+          tooltip={'Go Back'}
+          style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px' }}
+          onClick={() => this.props.history.goBack()}>
+          <IconBack style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
+        </IconButton>}
+        {!(isEntity || isProvince) && <IconButton
+          tooltipPosition='bottom-left'
+          tooltip={'Close'}
+          style={{}} iconStyle={{ textAlign: 'right', fontSize: '12px' }} onClick={() => this._handleClose()}>
+          <IconClose style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
+        </IconButton>}
+      </div>
+    </div>
 
     const shouldLoad = !htmlContent && (noWiki || iframeLoading || selectedWiki === null || +selectedWiki === -1)
 
@@ -332,10 +346,14 @@ class ArticleIframe extends React.Component {
           style={{ zIndex: 15000, height: '100%', width: '100%', backgroundColor: 'transparent', overflow: 'auto' }}
           titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
           autoScrollBodyContent={false}>
-          { (selectedWiki !== '') && shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} /> }
-          { (selectedWiki === '') && <span>no wiki article found, consider adding one by clicking the edit button...</span> }
-          { (+selectedWiki !== -1) && (selectedWiki !== '') && (selectedWiki !== null) && <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%' style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }} src={'https://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' /> }
-          { isFullScreen &&
+          {(selectedWiki !== '') && shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} />}
+          {(selectedWiki === '') &&
+          <span>no wiki article found, consider adding one by clicking the edit button...</span>}
+          {(+selectedWiki !== -1) && (selectedWiki !== '') && (selectedWiki !== null) &&
+          <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%'
+            style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }}
+            src={'https://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' />}
+          {isFullScreen &&
           <FloatingActionButton
             backgroundColor={'white'}
             style={styles.fullscreenClose}
@@ -345,17 +363,22 @@ class ArticleIframe extends React.Component {
             iconStyle={{ fill: 'rgb(107, 107, 107)' }}
           >
             <CloseIcon color={'rgb(107, 107, 107)'} hoverColor={themes[theme].highlightColors[0]} />
-          </FloatingActionButton >
+          </FloatingActionButton>
           }
         </Dialog>
-        { modMenu }
-        { shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} /> }
-        { htmlContent && <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{__html: htmlContent}}></div> }
-        { !htmlContent && (+selectedWiki !== -1) && (selectedWiki !== '') && (selectedWiki !== null) && <iframe id='articleIframe' onLoad={this._handleUrlChange} style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }} src={'https://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%' frameBorder='0' /> }
+        {modMenu}
+        {shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} />}
+        {htmlContent && <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />}
+        {!htmlContent && (+selectedWiki !== -1) && (selectedWiki !== '') && (selectedWiki !== null) &&
+        <iframe id='articleIframe' onLoad={this._handleUrlChange}
+          style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }}
+          src={'https://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%'
+          frameBorder='0' />}
       </div>
     )
   }
 }
+
 //
 const enhance = compose(
   connect(state => ({

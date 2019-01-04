@@ -3,12 +3,8 @@ import React, { Component } from 'react'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import { translate, defaultTheme } from 'admin-on-rest'
-import {
-  Step,
-  Stepper,
-  StepButton,
-} from 'material-ui/Stepper'
+import { defaultTheme, translate } from 'admin-on-rest'
+import { Step, StepButton, Stepper, } from 'material-ui/Stepper'
 import Snackbar from '../overwrites/SnackbarNoAwayClick'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import ClusterIcon from 'material-ui/svg-icons/action/view-headline'
@@ -24,26 +20,52 @@ import axios from 'axios'
 import { easeCubic } from 'd3-ease'
 import { fromJS } from 'immutable'
 import _ from 'lodash'
-import MapGL, { Marker, Popup, FlyToInterpolator } from 'react-map-gl'
+import MapGL, { FlyToInterpolator, Marker, Popup } from 'react-map-gl'
 import WebMercatorViewport from 'viewport-mercator-project'
 import { setYear } from './timeline/actionReducers'
 import DeckGLOverlay from './deckGlComponents/deckgl-overlay.js'
 import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import { setRightDrawerVisibility } from '../content/actionReducers'
-import { setModData as setModDataAction, setModToUpdate, addModData as addModDataAction, removeModData as removeModDataAction } from './../restricted/shared/buttons/actionReducers'
-import { RulerIcon, CultureIcon, ReligionGeneralIcon, ProvinceIcon } from './assets/placeholderIcons'
 import {
-  TYPE_MARKER, TYPE_METADATA, TYPE_AREA, TYPE_LINKED, TYPE_EPIC, selectValue, setWikiId, setData, selectEpicItem,
-  selectAreaItem as selectAreaItemAction, setEpicContentIndex,
-  selectMarkerItem as selectMarkerItemAction, WIKI_PROVINCE_TIMELINE, WIKI_RULER_TIMELINE
+  addModData as addModDataAction,
+  removeModData as removeModDataAction,
+  setModData as setModDataAction,
+  setModToUpdate
+} from './../restricted/shared/buttons/actionReducers'
+import { CultureIcon, ProvinceIcon, ReligionGeneralIcon, RulerIcon } from './assets/placeholderIcons'
+import {
+  selectAreaItem as selectAreaItemAction,
+  selectEpicItem,
+  selectMarkerItem as selectMarkerItemAction,
+  selectValue,
+  setData,
+  setEpicContentIndex,
+  setWikiId,
+  TYPE_AREA,
+  TYPE_EPIC,
+  TYPE_LINKED,
+  TYPE_MARKER,
+  TYPE_METADATA,
+  WIKI_PROVINCE_TIMELINE,
+  WIKI_RULER_TIMELINE
 } from './actionReducers'
-import { getFullIconURL, markerIdNameArray, properties, getPercent, themes, iconMapping } from '../../properties'
-import { defaultMapStyle, provincesLayer, markerLayer, clusterLayer, markerCountLayer, provincesHighlightedLayer, basemapLayerIndex, areaColorLayerIndex } from './mapStyles/map-style.js'
+import { getFullIconURL, getPercent, iconMapping, markerIdNameArray, properties, themes } from '../../properties'
+import {
+  areaColorLayerIndex,
+  basemapLayerIndex,
+  clusterLayer,
+  defaultMapStyle,
+  markerCountLayer,
+  markerLayer,
+  provincesHighlightedLayer,
+  provincesLayer
+} from './mapStyles/map-style.js'
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
 import MapTimeline from './timeline/MapTimeline'
 import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
+
 const turf = require('@turf/turf')
 const FLYTOANIMATIONDURATION = 2000
 const MAPBOX_TOKEN = 'pk.eyJ1IjoidmVyZGljbyIsImEiOiJjajVhb3E1MnExeTRpMndvYTdubnQzODU2In0.qU_Ybv3UX70fFGo79pAa0A'
@@ -62,8 +84,7 @@ let animationInterval = -1
 let areaActive = true
 
 const styles = {
-  chip: {
-  },
+  chip: {},
   stepLabel: {
     fontWeight: 'bold',
     background: '#9e9e9e',
@@ -78,17 +99,21 @@ const styles = {
     // textOverflow: 'ellipsis',
     // overflow: 'hidden'
   },
-  yearNotificationBody: { backgroundColor: 'transparent',
+  yearNotificationBody: {
+    backgroundColor: 'transparent',
     pointerEvents: 'none',
     width: 105,
     maxWidth: 105,
     minWidth: 105,
     padding: '0px 12px',
-    textAlign: 'center' },
-  yearNotificationContent: { backgroundColor: 'transparent',
+    textAlign: 'center'
+  },
+  yearNotificationContent: {
+    backgroundColor: 'transparent',
     marginTop: -54,
     fontSize: 28,
-    pointerEvents: 'none' },
+    pointerEvents: 'none'
+  },
   yearNotification: {
     top: 0,
     zIndex: 100000,
@@ -111,51 +136,16 @@ const messageYearNotification = (year, isBC, foreColor) => <div><span style={{
   color: foreColor,
   opacity: 1,
   position: 'relative',
-  top: 24 }}>{isBC ? '(BC)' : '(AD)'}</span><br /><span style={{ color: foreColor }}>{year}</span></div>
+  top: 24
+}}>{isBC ? '(BC)' : '(AD)'}</span><br /><span style={{ color: foreColor }}>{year}</span></div>
 
 class Map extends Component {
-  constructor (props) {
-    super(props)
-    this._onMarkerClick = this._onMarkerClick.bind(this)
-    this._onDeckHover = this._onDeckHover.bind(this)
-    this.state = {
-      categories: markerIdNameArray,
-      filtered: defaultFilters,
-      mapStyle: defaultMapStyle,
-      mapTimelineContainerClass: 'mapTimeline',
-      year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
-      searchMarkerText: '',
-      data: null,
-      showYear: true,
-      expanded: false,
-      markerData: [],
-      geoData: [],
-      clusterRawData: [],
-      epics: [],
-      arcData: [],
-      viewport: {
-        latitude: utilsQuery.getURLParameter('position') ? +utilsQuery.getURLParameter('position').split(',')[0] : '37',
-        longitude: utilsQuery.getURLParameter('position') ? +utilsQuery.getURLParameter('position').split(',')[1] : '37',
-        zoom: utilsQuery.getURLParameter('position') ? +utilsQuery.getURLParameter('position').split(',')[2] : '2.5',
-        minZoom: 2,
-        bearing: 0,
-        pitch: 0,
-        width: 500,
-        height: 500
-      },
-      hoveredItems: [],
-      activatedTooltip: true,
-      hoverInfo: null,
-    }
-  }
-
   componentDidMount = () => {
     this._addGeoJson(TYPE_MARKER, this.props.activeMarkers.list)
     this._addEpic(this.props.activeEpics)
     window.addEventListener('resize', this._resize)
     this._resize()
   }
-
   _initializeMap = () => {
     console.log('### initializing map')
     const { metadata, activeArea, changeAreaData, selectedYear, selectedItem } = this.props
@@ -169,7 +159,6 @@ class Map extends Component {
       selectEpicItem((utilsQuery.getURLParameter('value') || ''), +(utilsQuery.getURLParameter('year') || selectedYear), (utilsQuery.getURLParameter('value') || ''))
     }
   }
-
   _updateMetaMapStyle = (shouldReset = false) => {
     console.log('### updating metadata mapstyles')
     const { metadata, setModToUpdate } = this.props
@@ -236,9 +225,8 @@ class Map extends Component {
     if (shouldReset) setModToUpdate('')
     this.setState({ mapStyle })
   }
-
   _getAreaViewportAndOutlines = (nextActiveColorDim, nextActiveColorValue, prevActiveColorDim = false, prevActiveColorValue = false, teams = false) => {
-    if ((!teams || teams.length === 0 ) && (!nextActiveColorValue || nextActiveColorValue === "na")) {
+    if ((!teams || teams.length === 0) && (!nextActiveColorValue || nextActiveColorValue === 'na')) {
       return {}
     }
 
@@ -277,8 +265,7 @@ class Map extends Component {
 
         return { viewport, multiPolygonToOutlines }
       }
-    }
-    else {
+    } else {
       // from epic ruler (single entity)
       const activeColorDim = (nextActiveColorDim === 'population' && prevActiveColorDim) ? prevActiveColorDim : nextActiveColorDim
       const activeColorValue = (nextActiveColorDim === 'population' && prevActiveColorValue) ? prevActiveColorValue : nextActiveColorValue
@@ -289,28 +276,28 @@ class Map extends Component {
       if (activeColorValue && typeof activeColorValue !== 'undefined' && activeColorValue !== '' && activeColorValue !== 'undefined' && activeColorValue !== 'null') {
         if (activeColorDim === 'ruler') {
           geometryToOutline = this.state.mapStyle
-              .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.r === activeColorValue)
+            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.r === activeColorValue)
         } else if (activeColorDim === 'culture') {
           geometryToOutline = this.state.mapStyle
-              .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.c === activeColorValue)
+            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.c === activeColorValue)
         } else if (activeColorDim === 'religion') {
           geometryToOutline = this.state.mapStyle
-              .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.e === activeColorValue)
+            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.e === activeColorValue)
         } else if (activeColorDim === 'religionGeneral') {
           geometryToOutline = this.state.mapStyle
-              .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.g === activeColorValue)
+            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.g === activeColorValue)
         }
       }
-          // turf.unkinkPolygon.apply(null,geometryToOutline)
+      // turf.unkinkPolygon.apply(null,geometryToOutline)
       if (typeof geometryToOutline !== 'undefined' && geometryToOutline.length !== 0) {
         const multiPolygonToOutline = turf.union.apply(null, geometryToOutline.map((f) => turf.unkinkPolygon(f).features).reduce((acc, val) => acc.concat(val), []))
 
         const bbox = turf.bbox(multiPolygonToOutline)
 
         const bounds = webMercatorViewport.fitBounds(
-              [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
-              { padding: 20, offset: [0, -40] }
-            )
+          [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
+          { padding: 20, offset: [0, -40] }
+        )
 
         const viewport = {
           ...this.state.viewport,
@@ -327,12 +314,11 @@ class Map extends Component {
     console.error('We got something wrong with the turf.union or turf.unkinkPolygon')
     return {}
   }
-
   _changeArea = (areaDefs, newLabel, newColor, selectedProvince, prevColor = false) => {
     const { activeArea, mapStyles, metadata, selectedItem } = this.props
     let mapStyle = this.state.mapStyle
 
-    if (mapStyles.popOpacity || newColor === "population") {
+    if (mapStyles.popOpacity || newColor === 'population') {
       const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
         return (provValue !== null) ? +provValue[4] : 0
       }))
@@ -379,10 +365,14 @@ class Map extends Component {
       if (typeof multiPolygonToOutline !== 'undefined') {
         let newMapStyle = mapStyle
           .setIn(['sources', 'entity-outlines', 'data'],
-            fromJS({ ...multiPolygonToOutline,
-              properties: { color: (newColor === 'population')
+            fromJS({
+              ...multiPolygonToOutline,
+              properties: {
+                color: (newColor === 'population')
                   ? (metadata[prevColor][prevActiveprovinceValue] || [])[1]
-                  : (metadata[newColor][activeprovinceValue] || [])[1] } }))
+                  : (metadata[newColor][activeprovinceValue] || [])[1]
+              }
+            }))
 
         if (newColor === 'population' && prevColor && prevColor !== 'population') {
           const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
@@ -390,12 +380,12 @@ class Map extends Component {
           }))
 
           newMapStyle = newMapStyle
-          .setIn(['layers', areaColorLayerIndex[newColor], 'paint', 'fill-opacity'], fromJS(
-            ['interpolate', ['linear'], ['get', 'p'],
-              0, opacityPopBounds[0],
-              populationMax / 20, opacityPopBounds[1]
-            ]
-          ))
+            .setIn(['layers', areaColorLayerIndex[newColor], 'paint', 'fill-opacity'], fromJS(
+              ['interpolate', ['linear'], ['get', 'p'],
+                0, opacityPopBounds[0],
+                populationMax / 20, opacityPopBounds[1]
+              ]
+            ))
         }
 
         const stateToUpdate = {
@@ -412,16 +402,17 @@ class Map extends Component {
         }
         this.setState(stateToUpdate)
       } else {
-        this.setState({ mapStyle: mapStyle.setIn(['sources', 'entity-outlines', 'data'], fromJS({
-          'type': 'FeatureCollection',
-          'features': [ ]
-        })) })
+        this.setState({
+          mapStyle: mapStyle.setIn(['sources', 'entity-outlines', 'data'], fromJS({
+            'type': 'FeatureCollection',
+            'features': []
+          }))
+        })
       }
     } else {
       this.setState({ mapStyle })
     }
   }
-
   _simulateYearChange = (areaDefs) => {
     const { religionGeneral, religion } = this.props.metadata
     const { activeArea, mapStyles } = this.props
@@ -454,12 +445,355 @@ class Map extends Component {
 
     this.setState({ mapStyle })
   }
-
   _getDirtyOrOriginalMapStyle = (mapStyleDirty) => {
     if (mapStyleDirty) {
       return mapStyleDirty
     } else {
       return this.state.mapStyle
+    }
+  }
+  _resize = () => {
+    const newWidth = (isStatic) ? window.innerWidth : (this.props.width || (window.innerWidth - 56))
+    this.setState({
+      viewport: {
+        ...this.state.viewport,
+        width: newWidth,
+        height: (this.props.height || window.innerHeight)
+      }
+    })
+  };
+  _updateLine = (sourceData) => {
+    // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
+    const prevMapStyle = this.state.mapStyle
+    let mapStyle = prevMapStyle
+      .setIn(['sources', 'epicroute', 'data', 'features'], [{
+        'type': 'Feature',
+        'properties': {},
+        'geometry': {
+          'type': 'LineString',
+          'coordinates': sourceData
+        }
+      }])
+    this.setState({ mapStyle })
+  };
+  _loadGeoJson = (sourceId, sourceData) => {
+    // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
+    const prevMapStyle = this.state.mapStyle
+    let mapStyle = prevMapStyle
+      .setIn(['sources', sourceId, 'data', 'features'], sourceData.features)
+    this.setState({ mapStyle })
+  };
+  _addGeoJson = (sourceId, entityId, fullData = false, newYear = false, newLimit) => {
+    if (fullData) {
+      // const mapStyle = this.state.mapStyle
+      //   .updateIn(['sources', TYPE_MARKER, 'data', 'features'], list => list.concat(fullData.map((feature) => {
+      //     feature.properties.isEpic = true
+      //     return feature
+      //   })))
+      // this.setState({ mapStyle })
+    } else if (entityId.toString() !== '') {
+      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + (newYear || this.props.selectedYear) + '&count=' + (!isNaN(newLimit) ? newLimit : this.props.activeMarkers.limit))
+        .then(features => {
+          // const mapStyle = this.state.mapStyle
+          //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
+          // this.setState({ mapStyle })
+          if (newYear) {
+            this.setState({ markerData: features.data.filter(p => (p.coo || []).length === 2) })
+          } else {
+            this.setState({ markerData: this.state.markerData.concat(features.data.filter(p => (p.coo || []).length === 2)) })
+          }
+        })
+    }
+  }
+  _addEpic = (subtype) => {
+    if (subtype.toString() !== '') {
+      axios.get(properties.chronasApiHost + '/metadata?type=e&end=3000&subtype=' + subtype)
+        .then(res => {
+          const { markerTheme } = this.props
+          const resData = res.data
+          const battlesByWars = (subtype.includes('ew')) ? resData.shift() : ''
+          this.setState({
+            epics: this.state.epics.concat(resData.map((el, index) => {
+              let divBlocks = ''
+              const pEndYear = +el.data.end
+              const startYear = +el.data.start || +el.year
+              const endYear = pEndYear || (startYear + 1)
+
+              if (subtype.includes('ew')) {
+                battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl, index) => {
+                  const iconType = (index % 3) ? 'battleIcon1' : 'battleIcon2'
+
+                  const rawNext = getPercent(startYear, endYear, bEl[1])
+                  const percentage = (rawNext) * 100 + '%'
+
+                  divBlocks = divBlocks + "<img class='tsTicks " + iconType + "' src='/images/transparent.png' title='" + bEl[0] + "'; style='margin-left: " + percentage + "; ' />"
+                })
+              }
+
+              const elsubtype = el.subtype
+              const elTitle = el.name || el.data.title
+
+              return {
+                start: new Date(new Date(0, 1, 1).setFullYear(startYear)),
+                className: 'timelineItem_' + elsubtype,
+                editable: false,
+                subtype: el.subtype,
+                end: pEndYear ? new Date(new Date(0, 1, 1).setFullYear(+pEndYear)) : undefined, // new Date(new Date(0, 1, 1).setFullYear(+startYear+1)),
+                content: '<div class="warContainer">' + ((elsubtype === 'ei') ? '<img class="tsTicks discoveryIcon" src="/images/transparent.png">' : (elsubtype === 'ps') ? '<img class="tsTicks esIcon' + ((index % 3 === 0) ? 1 : 2) + '" src="/images/transparent.png">' : elTitle) + divBlocks + '</div>',
+                title: ((elsubtype === 'ew') ? ('<img class="tsTicks warIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '-' + pEndYear + ' </span>: ') : (elsubtype === 'ei') ? ('<img class="tsTicks discoveryIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : (elsubtype === 'ps') ? ('<img class="tsTicks esIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : '') + '<b>' + elTitle + '</b>',
+                wiki: el.data.wiki || el.wiki,
+                source: el.data.source,
+                id: el._id,
+                group: 1
+              }
+            }))
+          })
+        })
+    }
+  }
+  _removeEpic = (preSuptype) => {
+    const subtype = (preSuptype === 'es') ? 'ps' : preSuptype
+    this.setState({
+      epics: this.state.epics.filter(el => el.subtype !== subtype)
+    })
+  }
+  _removeGeoJson = (prevMapStyle, sourceId, entityId) => {
+    if (entityId === TYPE_EPIC) {
+      return prevMapStyle
+        .updateIn(['sources', TYPE_MARKER, 'data', 'features'], list => list.filter(function (obj) {
+          return (obj.properties.isEpic !== true)
+        })).setIn(['sources', 'area-hover', 'data'], fromJS({
+          'type': 'FeatureCollection',
+          'features': []
+        })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
+          'type': 'FeatureCollection',
+          'features': []
+        }))
+    } else {
+      this.setState({
+        markerData: this.state.markerData.filter(function (obj) {
+          return ((obj.properties || {}).t !== entityId) && (obj.subtype !== entityId)
+          // return ((obj.properties || {}).t !== entityId)
+        })
+      })
+      return prevMapStyle
+    }
+  }
+  _updateGeoJson = (sourceId, entityId) => {
+    setTimeout(() => {
+      this._removeGeoJson(sourceId, entityId)
+      this._addGeoJson(sourceId, entityId)
+    }, 500)
+  }
+  _updateEpicGeo = (selectedIndex) => {
+    this.setState((prevState) => {
+      return {
+        geoData: prevState.geoData.map((f) => {
+          if (selectedIndex !== -1 && f.index >= selectedIndex) {
+            f.hidden = true
+          } else {
+            f.hidden = false
+          }
+          return f
+        })
+      }
+    })
+  }
+  _changeYear = (year) => {
+    const { activeArea, activeMarkers, changeAreaData, selectedItem, setYear } = this.props
+    // TODO: reset selected marker pools
+    if (year > 2000) {
+      return setYear(2000)
+    } else if (year < -2000) {
+      return setYear(-2000)
+    }
+
+    this._addGeoJson(TYPE_MARKER, activeMarkers.list, false, year)
+    axios.get(properties.chronasApiHost + '/areas/' + year)
+      .then((areaDefsRequest) => {
+        changeAreaData(areaDefsRequest.data)
+        this._simulateYearChange(areaDefsRequest.data)
+        this._changeArea(areaDefsRequest.data, activeArea.label, activeArea.color, selectedItem.value)
+        utilsQuery.updateQueryStringParameter('year', year)
+        this.setState({ showYear: true })
+      })
+  }
+  _goToViewport = ({ longitude, latitude, zoomIn }) => {
+    this._onViewportChange({
+      ...this.state.viewport,
+      longitude,
+      latitude,
+      zoom: zoomIn ? 5 : this.state.viewport.zoom, // Math.max(this.state.viewport.zoom + 1, 4.5),
+      transitionInterpolator: new FlyToInterpolator(),
+      transitionDuration: FLYTOANIMATIONDURATION
+    })
+  };
+  _onViewportChange = viewport => this.setState({ viewport });
+  _updateSettings = (name, value) => {
+    if (name === 'year') {
+      this.setState({ year: value })
+
+      const { data, mapStyle } = this.state
+      if (data) {
+        // utilsMapping.updatePercentiles(data, f => f.properties.income[value]);
+        const newMapStyle = mapStyle.setIn(['sources', 'incomeByState', 'data'], fromJS(data))
+        this.setState({ mapStyle: newMapStyle })
+      }
+    }
+  };
+  _onHover = event => {
+    if (event.stopPropagation) event.stopPropagation()
+
+    const { expanded, hoveredItems } = this.state
+
+    // console.debug('mapboxgl hover')
+    if (/* expanded || */ hoveredItems.length > 0 || this.props.modActive.type !== '') return
+
+    let provinceName = ''
+    let hoverInfo = null
+
+    const layerHovered = event.features && event.features[0]
+    if (layerHovered) {
+      hoverInfo = {
+        lngLat: event.lngLat,
+        feature: layerHovered.properties
+      }
+      provinceName = layerHovered.properties.name
+
+      this.setState({
+        mapStyle: this.state.mapStyle
+          .setIn(['sources', 'area-hover', 'data', 'features'], [{
+            'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
+          }])
+      })
+    } else {
+      const prevMapStyle = this.state.mapStyle
+      let mapStyle = prevMapStyle
+        .setIn(['sources', 'area-hover', 'data'], fromJS({
+          'type': 'FeatureCollection',
+          'features': []
+        }))
+      this.setState({ mapStyle })
+    }
+
+    this.setState({
+      hoverInfo
+    })
+  }
+  _onClick = event => {
+    if (event.stopPropagation) event.stopPropagation()
+
+    if (!areaActive) return
+
+    const { modActive, selectedItem } = this.props
+    const { expanded, hoveredItems } = this.state
+
+    // we want to click on marker and ignore mapgl layer
+    if (/* expanded || */hoveredItems.length > 0) return
+
+    let itemName = ''
+    let wikiId = ''
+
+    if ((modActive.type === TYPE_MARKER || modActive.type === TYPE_METADATA) && modActive.selectActive) {
+      this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
+      return
+    } else if (modActive.type === TYPE_AREA) {
+      let provinceName = ''
+      const province = event.features && event.features[0]
+      const prevModData = modActive.data
+
+      if (province) {
+        provinceName = province.properties.name
+        if (prevModData.indexOf(provinceName) > -1) {
+          // remove province
+          this.props.removeModData(provinceName)
+          this.setState({
+            mapStyle: this.state.mapStyle
+              .updateIn(['sources', 'area-outlines', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
+          })
+        } else {
+          // add province
+          this.props.addModData(provinceName)
+          this.setState({
+            mapStyle: this.state.mapStyle
+              .updateIn(['sources', 'area-outlines', 'data', 'features'], list => list.concat({
+                'type': 'Feature', 'properties': { n: provinceName }, 'geometry': province.geometry
+              }))
+          })
+        }
+      }
+      return
+    }
+
+    const layerClicked = event.features && event.features[0]
+
+    if (layerClicked) {
+      if (layerClicked.layer.id === TYPE_MARKER) {
+        this._onMarkerClick(layerClicked)
+      } else {
+        itemName = layerClicked.properties.name
+        wikiId = layerClicked.properties.wikiUrl
+        // utilsQuery.updateQueryStringParameter('type', TYPE_AREA)
+        // utilsQuery.updateQueryStringParameter('value', itemName)
+
+        const prevMapStyle = this.state.mapStyle
+        let mapStyle = prevMapStyle
+          .setIn(['sources', 'area-hover', 'data'], fromJS({
+            'type': 'FeatureCollection',
+            'features': []
+          }))
+        this.setState({
+          hoverInfo: null,
+          mapStyle
+        })
+
+        if (selectedItem.wiki === WIKI_PROVINCE_TIMELINE || selectedItem.wiki === WIKI_RULER_TIMELINE) {
+          this.props.selectValue(itemName)
+        } else {
+          this.props.selectAreaItem(wikiId, itemName)
+        }
+      }
+      this.props.history.push('/article')
+    }
+  }
+  handleChangeFilter = (event, value) => {
+    this.setState({
+      filtered: value,
+    })
+  }
+
+  constructor (props) {
+    super(props)
+    this._onMarkerClick = this._onMarkerClick.bind(this)
+    this._onDeckHover = this._onDeckHover.bind(this)
+    this.state = {
+      categories: markerIdNameArray,
+      filtered: defaultFilters,
+      mapStyle: defaultMapStyle,
+      mapTimelineContainerClass: 'mapTimeline',
+      year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
+      searchMarkerText: '',
+      data: null,
+      showYear: true,
+      expanded: false,
+      markerData: [],
+      geoData: [],
+      clusterRawData: [],
+      epics: [],
+      arcData: [],
+      viewport: {
+        latitude: utilsQuery.getURLParameter('position') ? +utilsQuery.getURLParameter('position').split(',')[0] : '37',
+        longitude: utilsQuery.getURLParameter('position') ? +utilsQuery.getURLParameter('position').split(',')[1] : '37',
+        zoom: utilsQuery.getURLParameter('position') ? +utilsQuery.getURLParameter('position').split(',')[2] : '2.5',
+        minZoom: 2,
+        bearing: 0,
+        pitch: 0,
+        width: 500,
+        height: 500
+      },
+      hoveredItems: [],
+      activatedTooltip: true,
+      hoverInfo: null,
     }
   }
 
@@ -494,7 +828,6 @@ class Map extends Component {
     if (selectedItem.value !== nextProps.selectedItem.value) {
       console.debug('###### Item changed')
       if (nextProps.selectedItem.wiki === 'random') {
-
         const { markerData } = this.state
         const markerDataLength = markerData.find(el => el.subtype !== 'c' && el.subtype !== 'cp').length
         if (markerDataLength > 0) {
@@ -529,9 +862,12 @@ class Map extends Component {
           mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
             .setIn(['sources', 'entity-outlines', 'data'], fromJS({
               'type': 'FeatureCollection',
-              'features': [ ]
+              'features': []
             }))
-            .setIn(['sources', 'entity-outlines', 'data'], fromJS({ ...multiPolygonToOutline, properties: { color: metadata[nextProps.activeArea.color][nextActiveprovinceValue][1] } }))
+            .setIn(['sources', 'entity-outlines', 'data'], fromJS({
+              ...multiPolygonToOutline,
+              properties: { color: metadata[nextProps.activeArea.color][nextActiveprovinceValue][1] }
+            }))
           this.setState({
             viewport,
             hoverInfo: null
@@ -540,10 +876,10 @@ class Map extends Component {
           this.setState({
             mapStyle: this.state.mapStyle.setIn(['sources', 'area-hover', 'data'], fromJS({
               'type': 'FeatureCollection',
-              'features': [ ]
+              'features': []
             })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
               'type': 'FeatureCollection',
-              'features': [ ]
+              'features': []
             })),
             hoverInfo: null
           })
@@ -553,10 +889,10 @@ class Map extends Component {
         mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
           .setIn(['sources', 'area-hover', 'data'], fromJS({
             'type': 'FeatureCollection',
-            'features': [ ]
+            'features': []
           })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
             'type': 'FeatureCollection',
-            'features': [ ]
+            'features': []
           }))
         this.setState({
           hoverInfo: null
@@ -601,16 +937,14 @@ class Map extends Component {
                   'type': 'Point',
                   'coordinates': prevFeature.coo
                 },
-                'properties': {
-                }
+                'properties': {}
               }, {
                 'type': 'Feature',
                 'geometry': {
                   'type': 'Point',
                   'coordinates': selectedFeature.coo
                 },
-                'properties': {
-                }
+                'properties': {}
               }]
             }) : turf.bbox({
               'type': 'FeatureCollection',
@@ -647,16 +981,16 @@ class Map extends Component {
       }
 
       if (nextProps.selectedItem.type !== TYPE_AREA && nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {})._id !== (selectedItem.data || {})._id)) {
-      // TODO: only go ahead if selectedYear is starting year
+        // TODO: only go ahead if selectedYear is starting year
 
-      // setup new epic!
+        // setup new epic!
         if (selectedItem.type === TYPE_EPIC && !nextProps.selectedItem.data) {
-        // remove old geoJson // TODO: this could complicate with sequential wars
+          // remove old geoJson // TODO: this could complicate with sequential wars
           mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, TYPE_EPIC)
         }
 
         if (nextProps.selectedItem.data && (nextProps.selectedItem.data || {})._id !== (selectedItem.data || {})._id) {
-        // draw outlines after main
+          // draw outlines after main
           const participants = ((nextProps.selectedItem.data || {}).data || {}).participants
           if (!participants) return
           const { viewport, multiPolygonToOutlines } = this._getAreaViewportAndOutlines('ruler', '', false, false, participants)
@@ -665,54 +999,57 @@ class Map extends Component {
             const warEndYear = ((nextProps.selectedItem.data || {}).data || {}).end
             if (!isNaN(warEndYear)) {
               axios.get(properties.chronasApiHost + '/areas/' + (+warEndYear + 10))
-              .then((endYearDataRes) => {
-                const endYearData = endYearDataRes.data
-                const participantFlatList = participants.reduce((acc, val) => acc.concat(val), [])
-                const centroidsParticipants = {}
-                const arcData = []
-                const nextData = nextProps.activeArea.data
+                .then((endYearDataRes) => {
+                  const endYearData = endYearDataRes.data
+                  const participantFlatList = participants.reduce((acc, val) => acc.concat(val), [])
+                  const centroidsParticipants = {}
+                  const arcData = []
+                  const nextData = nextProps.activeArea.data
 
-                Object.keys(nextData).map(provId => {
-                  const provinceGeojsonArr = metadata.provinces.features
-                  let currRuler = nextData[provId][0]
-                  if (participantFlatList.indexOf(currRuler) > -1) {
-                    let newRuler = endYearData[provId][0]
-                    if (newRuler !== currRuler && participantFlatList.indexOf(newRuler) > -1) {
-                      if (!centroidsParticipants[newRuler]) {
-                        // centroids not set up for this ruler
-                        const ownedProvIds = Object.keys(nextData).filter(prov => nextData[prov][0] === newRuler)
-                        centroidsParticipants[newRuler] = provinceGeojsonArr.filter(prov => ownedProvIds.indexOf(prov.properties.name) > -1).map(prov => turf.centroid(prov))
-                      }
+                  Object.keys(nextData).map(provId => {
+                    const provinceGeojsonArr = metadata.provinces.features
+                    let currRuler = nextData[provId][0]
+                    if (participantFlatList.indexOf(currRuler) > -1) {
+                      let newRuler = endYearData[provId][0]
+                      if (newRuler !== currRuler && participantFlatList.indexOf(newRuler) > -1) {
+                        if (!centroidsParticipants[newRuler]) {
+                          // centroids not set up for this ruler
+                          const ownedProvIds = Object.keys(nextData).filter(prov => nextData[prov][0] === newRuler)
+                          centroidsParticipants[newRuler] = provinceGeojsonArr.filter(prov => ownedProvIds.indexOf(prov.properties.name) > -1).map(prov => turf.centroid(prov))
+                        }
 
-                      const provInQuestion = provinceGeojsonArr.find(prov => prov.properties.name === provId)
-                      const targetCentroid = turf.centroid(provInQuestion)
-                      const sourceCentroid = turf.nearest(targetCentroid, turf.featureCollection(centroidsParticipants[newRuler]))
-                      const rulerColorPr = metadata.ruler[newRuler][1]
-                      const rulerColor = participants[0].includes(newRuler) ? [255, 0, 0, 200] : [0, 0, 255, 200]
-                      const rulerColor2 = (rulerColorPr.indexOf('rgb(') > -1) ? rulerColorPr.substring(4, rulerColorPr.length - 1).split(',').map(el => +el).concat([100]) : [100, 100, 100]
-                      /* (rulerColorPr.indexOf('rgb(') > -1) ? rulerColorPr.substring(4, rulerColorPr.length - 1).split(',').map(el => +el) : [100, 100, 100] */
+                        const provInQuestion = provinceGeojsonArr.find(prov => prov.properties.name === provId)
+                        const targetCentroid = turf.centroid(provInQuestion)
+                        const sourceCentroid = turf.nearest(targetCentroid, turf.featureCollection(centroidsParticipants[newRuler]))
+                        const rulerColorPr = metadata.ruler[newRuler][1]
+                        const rulerColor = participants[0].includes(newRuler) ? [255, 0, 0, 200] : [0, 0, 255, 200]
+                        const rulerColor2 = (rulerColorPr.indexOf('rgb(') > -1) ? rulerColorPr.substring(4, rulerColorPr.length - 1).split(',').map(el => +el).concat([100]) : [100, 100, 100]
+                        /* (rulerColorPr.indexOf('rgb(') > -1) ? rulerColorPr.substring(4, rulerColorPr.length - 1).split(',').map(el => +el) : [100, 100, 100] */
 
-                      if (sourceCentroid && targetCentroid) {
-                        arcData.push([sourceCentroid.geometry.coordinates, targetCentroid.geometry.coordinates, rulerColor2, rulerColor])
+                        if (sourceCentroid && targetCentroid) {
+                          arcData.push([sourceCentroid.geometry.coordinates, targetCentroid.geometry.coordinates, rulerColor2, rulerColor])
+                        }
                       }
                     }
-                  }
+                  })
+                  this.setState({ arcData })
                 })
-                this.setState({ arcData })
-              })
             }
 
-          // Todo: multiPolygonToOutlines[0] has properties! does that slow things down?
+            // Todo: multiPolygonToOutlines[0] has properties! does that slow things down?
             this.setState({
               mapStyle: this._getDirtyOrOriginalMapStyle(mapStyleDirty)
-              .setIn(['sources', 'entity-outlines', 'data'], fromJS({
-                'type': 'FeatureCollection',
-                'features': [ ]
-              }))
-              .setIn(['sources', 'entity-outlines', 'data'], fromJS({
-                'type': 'FeatureCollection',
-                'features': [{ ...multiPolygonToOutlines[0], properties: { color: 'red' } }, { ...multiPolygonToOutlines[1], properties: { color: 'blue' } }]
-              })),
+                .setIn(['sources', 'entity-outlines', 'data'], fromJS({
+                  'type': 'FeatureCollection',
+                  'features': []
+                }))
+                .setIn(['sources', 'entity-outlines', 'data'], fromJS({
+                  'type': 'FeatureCollection',
+                  'features': [{
+                    ...multiPolygonToOutlines[0],
+                    properties: { color: 'red' }
+                  }, { ...multiPolygonToOutlines[1], properties: { color: 'blue' } }]
+                })),
               viewport,
               hoverInfo: null
             })
@@ -720,90 +1057,92 @@ class Map extends Component {
             this.setState({
               mapStyle: this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['sources', 'area-hover', 'data'], fromJS({
                 'type': 'FeatureCollection',
-                'features': [ ]
+                'features': []
               })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
                 'type': 'FeatureCollection',
-                'features': [ ]
+                'features': []
               })),
               hoverInfo: null
             })
           }
         } else {
           // TODO: this gets called too much!
-        // load initial epic data object
+          // load initial epic data object
           const epicWiki = nextProps.selectedItem.value
           const isForMod = nextProps.selectedItem.wiki === 'modOnly'
           axios.get(properties.chronasApiHost + '/metadata/' + window.encodeURIComponent(epicWiki))
-          .then((newEpicEntitiesRes) => {
-            const newEpicEntities = newEpicEntitiesRes.data
+            .then((newEpicEntitiesRes) => {
+              const newEpicEntities = newEpicEntitiesRes.data
 
-            if (!newEpicEntities.data) return
+              if (!newEpicEntities.data) return
 
-            const participants = isForMod ? [] : (newEpicEntities.data.participants || [])
-            const teamMapping = {}
-            const rulerPromises = []
-            const flatternedParticipants = []
+              const participants = isForMod ? [] : (newEpicEntities.data.participants || [])
+              const teamMapping = {}
+              const rulerPromises = []
+              const flatternedParticipants = []
 
-            if (epicWiki && !isForMod) {
-              rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + window.encodeURIComponent(epicWiki)))
-            }
+              if (epicWiki && !isForMod) {
+                rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + window.encodeURIComponent(epicWiki)))
+              }
 
-            participants.forEach((team, teamIndex) => {
-              team.forEach((participant) => {
-                teamMapping[participant] = teamIndex
-                rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + participant))
-                flatternedParticipants.push(participant)
-              })
-            })
-
-            axios.all(rulerPromises)
-              .then(axios.spread((...args) => {
-                if (epicWiki && !isForMod && args.length > 0) {
-                  newEpicEntities.content = (args[0].data || {}).map.sort((a, b) => {
-                    return +(a.properties.y || -5000) - +(b.properties.y || -5000)
-                  })
-                  newEpicEntities.media = (args[0].data || {}).media
-
-                  // this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
-                  const allEpicFeatures = newEpicEntities.content
-                    .map((el, index) => {
-                      return {
-                        'index': index,
-                        'hidden': false,
-                        'subtype': el.properties.t,
-                        '_id': el.properties.w,
-                        'name': el.properties.n,
-                        'coo': el.geometry.coordinates,
-                        'type': 'w',
-                        'year': el.properties.y,
-                      }
-                      // return {
-                      //   index: index,
-                      //   hidden: false,
-                      //
-                      // }
-
-                      // el.index = index
-                      // el.hidden = false
-                      // return el
-                    })
-
-                  if (allEpicFeatures && allEpicFeatures.length > 0) this.setState({ geoData: allEpicFeatures.filter(el => (el.coo || []).length === 2) })
-                  args.shift()
-                }
-                this.props.setData({
-                  ...newEpicEntities,
-                  id: newEpicEntities._id,
-                  // epicData: newEpicEntities,
-                  rulerEntities: args.map((res, i) => { return { ...res.data, id: flatternedParticipants[i] } }),
-                  contentIndex: -1
+              participants.forEach((team, teamIndex) => {
+                team.forEach((participant) => {
+                  teamMapping[participant] = teamIndex
+                  rulerPromises.push(axios.get(properties.chronasApiHost + '/metadata/a_ruler_' + participant))
+                  flatternedParticipants.push(participant)
                 })
+              })
 
-                if (!isForMod) this.props.history.push('/article')
-                if (!rightDrawerOpen) this.props.setRightDrawerVisibility(true)
-              }))
-              .catch((err) => console.debug('wer got an error', err))
-          })
+              axios.all(rulerPromises)
+                .then(axios.spread((...args) => {
+                  if (epicWiki && !isForMod && args.length > 0) {
+                    newEpicEntities.content = (args[0].data || {}).map.sort((a, b) => {
+                      return +(a.properties.y || -5000) - +(b.properties.y || -5000)
+                    })
+                    newEpicEntities.media = (args[0].data || {}).media
+
+                    // this._addGeoJson(TYPE_MARKER, TYPE_EPIC, newEpicEntities.data.content)
+                    const allEpicFeatures = newEpicEntities.content
+                      .map((el, index) => {
+                        return {
+                          'index': index,
+                          'hidden': false,
+                          'subtype': el.properties.t,
+                          '_id': el.properties.w,
+                          'name': el.properties.n,
+                          'coo': el.geometry.coordinates,
+                          'type': 'w',
+                          'year': el.properties.y,
+                        }
+                        // return {
+                        //   index: index,
+                        //   hidden: false,
+                        //
+                        // }
+
+                        // el.index = index
+                        // el.hidden = false
+                        // return el
+                      })
+
+                    if (allEpicFeatures && allEpicFeatures.length > 0) this.setState({ geoData: allEpicFeatures.filter(el => (el.coo || []).length === 2) })
+                    args.shift()
+                  }
+                  this.props.setData({
+                    ...newEpicEntities,
+                    id: newEpicEntities._id,
+                    // epicData: newEpicEntities,
+                    rulerEntities: args.map((res, i) => {
+                      return { ...res.data, id: flatternedParticipants[i] }
+                    }),
+                    contentIndex: -1
+                  })
+
+                  if (!isForMod) this.props.history.push('/article')
+                  if (!rightDrawerOpen) this.props.setRightDrawerVisibility(true)
+                }))
+                .catch((err) => console.debug('wer got an error', err))
+            })
         }
       }
     }
@@ -865,7 +1204,7 @@ class Map extends Component {
         mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
           .setIn(['sources', 'area-hover', 'data'], fromJS({
             'type': 'FeatureCollection',
-            'features': [ ]
+            'features': []
           }))
         this.setState({
           hoverInfo: null
@@ -878,21 +1217,21 @@ class Map extends Component {
         const addedProvinces = _.difference(nextProps.modActive.data, modActive.data)
 
         for (const provinceName of removedProvinces) {
-            // remove province
+          // remove province
           mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
-                .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.filter((obj) => (obj.properties.name !== provinceName)))
+            .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.filter((obj) => (obj.properties.name !== provinceName)))
         }
 
         for (const provinceName of addedProvinces) {
-            // add province
+          // add province
           mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
-                .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.concat({
-                  'type': 'Feature',
-                  'properties': { name: provinceName },
-                  'geometry': ((this.state.mapStyle
-                    .getIn(['sources', 'provinces', 'data']).toJS().features
-                    .filter((el) => el.properties.name === provinceName) || {})[0] || {}).geometry
-                }))
+            .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.concat({
+              'type': 'Feature',
+              'properties': { name: provinceName },
+              'geometry': ((this.state.mapStyle
+                .getIn(['sources', 'provinces', 'data']).toJS().features
+                .filter((el) => el.properties.name === provinceName) || {})[0] || {}).geometry
+            }))
         }
       }
     } else if (modActive.type === TYPE_AREA) {
@@ -1039,319 +1378,6 @@ class Map extends Component {
     window.removeEventListener('resize', this._resize)
   }
 
-  _resize = () => {
-    const newWidth = (isStatic) ? window.innerWidth : (this.props.width || (window.innerWidth - 56))
-    this.setState({
-      viewport: {
-        ...this.state.viewport,
-        width: newWidth,
-        height: (this.props.height || window.innerHeight)
-      }
-    })
-  };
-
-  _updateLine = (sourceData) => {
-    // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
-    const prevMapStyle = this.state.mapStyle
-    let mapStyle = prevMapStyle
-      .setIn(['sources', 'epicroute', 'data', 'features'], [{
-        'type': 'Feature',
-        'properties': {},
-        'geometry': {
-          'type': 'LineString',
-          'coordinates': sourceData
-        }
-      }])
-    this.setState({ mapStyle })
-  };
-
-  _loadGeoJson = (sourceId, sourceData) => {
-    // utilsMapping.updatePercentiles(data, f => f.properties.income[this.state.year]);
-    const prevMapStyle = this.state.mapStyle
-    let mapStyle = prevMapStyle
-      .setIn(['sources', sourceId, 'data', 'features'], sourceData.features)
-    this.setState({ mapStyle })
-  };
-
-  _addGeoJson = (sourceId, entityId, fullData = false, newYear = false, newLimit) => {
-    if (fullData) {
-      // const mapStyle = this.state.mapStyle
-      //   .updateIn(['sources', TYPE_MARKER, 'data', 'features'], list => list.concat(fullData.map((feature) => {
-      //     feature.properties.isEpic = true
-      //     return feature
-      //   })))
-      // this.setState({ mapStyle })
-    } else if (entityId.toString() !== '') {
-      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + (newYear || this.props.selectedYear) + '&count=' + (!isNaN(newLimit) ? newLimit : this.props.activeMarkers.limit))
-        .then(features => {
-          // const mapStyle = this.state.mapStyle
-          //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
-          // this.setState({ mapStyle })
-          if (newYear) {
-            this.setState({ markerData: features.data.filter(p => (p.coo || []).length === 2) })
-          } else {
-            this.setState({ markerData: this.state.markerData.concat(features.data.filter(p => (p.coo || []).length === 2)) })
-          }
-        })
-    }
-  }
-
-  _addEpic = (subtype) => {
-    if (subtype.toString() !== '') {
-      axios.get(properties.chronasApiHost + '/metadata?type=e&end=3000&subtype=' + subtype)
-      .then(res => {
-        const { markerTheme } = this.props
-        const resData = res.data
-        const battlesByWars = (subtype.includes("ew")) ? resData.shift() : ''
-        this.setState({
-          epics: this.state.epics.concat(resData.map((el, index) => {
-            let divBlocks = ''
-            const pEndYear = +el.data.end
-            const startYear = +el.data.start || +el.year
-            const endYear = pEndYear ? pEndYear : (startYear + 1)
-
-            if (subtype.includes("ew")) {
-              battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl, index) => {
-                const iconType = (index % 3) ? 'battleIcon1' : 'battleIcon2'
-
-                const rawNext = getPercent(startYear, endYear, bEl[1])
-                const percentage = (rawNext) * 100 + '%'
-
-                divBlocks = divBlocks + "<img class='tsTicks " + iconType + "' src='/images/transparent.png' title='" + bEl[0] + "'; style='margin-left: " + percentage + "; ' />"
-              })
-            }
-
-            const elsubtype = el.subtype
-            const elTitle = el.name || el.data.title
-
-            return {
-              start: new Date(new Date(0, 1, 1).setFullYear(startYear)),
-              className: 'timelineItem_' + elsubtype,
-              editable: false,
-              subtype: el.subtype,
-              end: pEndYear ? new Date(new Date(0, 1, 1).setFullYear(+pEndYear)) : undefined, //new Date(new Date(0, 1, 1).setFullYear(+startYear+1)),
-              content: '<div class="warContainer">' + ((elsubtype === "ei") ? '<img class="tsTicks discoveryIcon" src="/images/transparent.png">' : (elsubtype === "ps") ? '<img class="tsTicks esIcon' + ((index % 3 === 0) ? 1 : 2) + '" src="/images/transparent.png">' : elTitle) +  divBlocks + '</div>',
-              title: ((elsubtype === "ew") ? ('<img class="tsTicks warIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '-' + pEndYear + ' </span>: ') : (elsubtype === "ei") ? ('<img class="tsTicks discoveryIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : (elsubtype === "ps") ? ('<img class="tsTicks esIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : '') + '<b>'+elTitle+'</b>',
-              wiki: el.data.wiki || el.wiki,
-              source: el.data.source,
-              id: el._id,
-              group: 1
-            }
-          }))
-        })
-      })
-    }
-  }
-
-  _removeEpic = (preSuptype) => {
-    const subtype = (preSuptype === 'es') ? 'ps' : preSuptype
-    this.setState({
-      epics: this.state.epics.filter(el => el.subtype !== subtype)
-    })
-  }
-
-  _removeGeoJson = (prevMapStyle, sourceId, entityId) => {
-    if (entityId === TYPE_EPIC) {
-      return prevMapStyle
-        .updateIn(['sources', TYPE_MARKER, 'data', 'features'], list => list.filter(function (obj) {
-          return (obj.properties.isEpic !== true)
-        })).setIn(['sources', 'area-hover', 'data'], fromJS({
-          'type': 'FeatureCollection',
-          'features': [ ]
-        })).setIn(['sources', 'entity-outlines', 'data'], fromJS({
-          'type': 'FeatureCollection',
-          'features': [ ]
-        }))
-    } else {
-      this.setState({ markerData: this.state.markerData.filter(function (obj) {
-        return ((obj.properties || {}).t !== entityId) && (obj.subtype !== entityId)
-        // return ((obj.properties || {}).t !== entityId)
-      })
-      })
-      return prevMapStyle
-    }
-  }
-
-  _updateGeoJson = (sourceId, entityId) => {
-    setTimeout(() => {
-      this._removeGeoJson(sourceId, entityId)
-      this._addGeoJson(sourceId, entityId)
-    }, 500)
-  }
-
-  _updateEpicGeo = (selectedIndex) => {
-    this.setState((prevState) => {
-      return { geoData: prevState.geoData.map((f) => {
-        if (selectedIndex !== -1 && f.index >= selectedIndex) {
-          f.hidden = true
-        } else {
-          f.hidden = false
-        }
-        return f
-      }) }
-    })
-  }
-
-  _changeYear = (year) => {
-    const { activeArea, activeMarkers, changeAreaData, selectedItem, setYear } = this.props
-    // TODO: reset selected marker pools
-    if (year > 2000) {
-      return setYear(2000)
-    } else if (year < -2000) {
-      return setYear(-2000)
-    }
-
-    this._addGeoJson(TYPE_MARKER, activeMarkers.list, false, year)
-    axios.get(properties.chronasApiHost + '/areas/' + year)
-      .then((areaDefsRequest) => {
-        changeAreaData(areaDefsRequest.data)
-        this._simulateYearChange(areaDefsRequest.data)
-        this._changeArea(areaDefsRequest.data, activeArea.label, activeArea.color, selectedItem.value)
-        utilsQuery.updateQueryStringParameter('year', year)
-        this.setState({ showYear: true })
-      })
-  }
-
-  _goToViewport = ({ longitude, latitude, zoomIn }) => {
-    this._onViewportChange({
-      ...this.state.viewport,
-      longitude,
-      latitude,
-      zoom: zoomIn ? 5 : this.state.viewport.zoom, // Math.max(this.state.viewport.zoom + 1, 4.5),
-      transitionInterpolator: new FlyToInterpolator(),
-      transitionDuration: FLYTOANIMATIONDURATION
-    })
-  };
-
-  _onViewportChange = viewport => this.setState({ viewport });
-
-  _updateSettings = (name, value) => {
-    if (name === 'year') {
-      this.setState({ year: value })
-
-      const { data, mapStyle } = this.state
-      if (data) {
-        // utilsMapping.updatePercentiles(data, f => f.properties.income[value]);
-        const newMapStyle = mapStyle.setIn(['sources', 'incomeByState', 'data'], fromJS(data))
-        this.setState({ mapStyle: newMapStyle })
-      }
-    }
-  };
-
-  _onHover = event => {
-    if (event.stopPropagation) event.stopPropagation()
-
-    const { expanded, hoveredItems } = this.state
-
-    // console.debug('mapboxgl hover')
-    if (/* expanded || */ hoveredItems.length > 0 || this.props.modActive.type !== '') return
-
-    let provinceName = ''
-    let hoverInfo = null
-
-    const layerHovered = event.features && event.features[0]
-    if (layerHovered) {
-      hoverInfo = {
-        lngLat: event.lngLat,
-        feature: layerHovered.properties
-      }
-      provinceName = layerHovered.properties.name
-
-      this.setState({ mapStyle: this.state.mapStyle
-          .setIn(['sources', 'area-hover', 'data', 'features'], [{
-            'type': 'Feature', 'properties': {}, 'geometry': layerHovered.geometry
-          }])
-      })
-    } else {
-      const prevMapStyle = this.state.mapStyle
-      let mapStyle = prevMapStyle
-        .setIn(['sources', 'area-hover', 'data'], fromJS({
-          'type': 'FeatureCollection',
-          'features': [ ]
-        }))
-      this.setState({ mapStyle })
-    }
-
-    this.setState({
-      hoverInfo
-    })
-  }
-
-  _onClick = event => {
-    if (event.stopPropagation) event.stopPropagation()
-
-    if (!areaActive) return
-
-    const { modActive, selectedItem } = this.props
-    const { expanded, hoveredItems } = this.state
-
-    // we want to click on marker and ignore mapgl layer
-    if (/* expanded || */hoveredItems.length > 0) return
-
-    let itemName = ''
-    let wikiId = ''
-
-    if ((modActive.type === TYPE_MARKER || modActive.type === TYPE_METADATA) && modActive.selectActive) {
-      this.props.setModData(event.lngLat.map((l) => +l.toFixed(3)))
-      return
-    } else if (modActive.type === TYPE_AREA) {
-      let provinceName = ''
-      const province = event.features && event.features[0]
-      const prevModData = modActive.data
-
-      if (province) {
-        provinceName = province.properties.name
-        if (prevModData.indexOf(provinceName) > -1) {
-          // remove province
-          this.props.removeModData(provinceName)
-          this.setState({ mapStyle: this.state.mapStyle
-            .updateIn(['sources', 'area-outlines', 'data', 'features'], list => list.filter((obj) => (obj.properties.n !== provinceName)))
-          })
-        } else {
-          // add province
-          this.props.addModData(provinceName)
-          this.setState({ mapStyle: this.state.mapStyle
-            .updateIn(['sources', 'area-outlines', 'data', 'features'], list => list.concat({
-              'type': 'Feature', 'properties': { n: provinceName }, 'geometry': province.geometry
-            }))
-          })
-        }
-      }
-      return
-    }
-
-    const layerClicked = event.features && event.features[0]
-
-    if (layerClicked) {
-      if (layerClicked.layer.id === TYPE_MARKER) {
-        this._onMarkerClick(layerClicked)
-      } else {
-        itemName = layerClicked.properties.name
-        wikiId = layerClicked.properties.wikiUrl
-        // utilsQuery.updateQueryStringParameter('type', TYPE_AREA)
-        // utilsQuery.updateQueryStringParameter('value', itemName)
-
-        const prevMapStyle = this.state.mapStyle
-        let mapStyle = prevMapStyle
-          .setIn(['sources', 'area-hover', 'data'], fromJS({
-            'type': 'FeatureCollection',
-            'features': [ ]
-          }))
-        this.setState({
-          hoverInfo: null,
-          mapStyle
-        })
-
-        if (selectedItem.wiki === WIKI_PROVINCE_TIMELINE || selectedItem.wiki === WIKI_RULER_TIMELINE) {
-          this.props.selectValue(itemName)
-        } else {
-          this.props.selectAreaItem(wikiId, itemName)
-        }
-      }
-      this.props.history.push('/article')
-    }
-  }
-
   _onDeckHover ({ x, y, object }) {
     const { viewport, expanded } = this.state
     const activeCluster = this.props.mapStyles.clusterMarkers
@@ -1400,7 +1426,7 @@ class Map extends Component {
     const { markerData, clusterRawData, viewport } = this.state
 
     areaActive = false
-    setTimeout(() => areaActive = true, 500)
+    setTimeout(() => { areaActive = true }, 500)
 
     if (clusterRawData.length > 0) {
       // cluster on
@@ -1415,7 +1441,7 @@ class Map extends Component {
     let mapStyle = prevMapStyle
       .setIn(['sources', 'area-hover', 'data'], fromJS({
         'type': 'FeatureCollection',
-        'features': [ ]
+        'features': []
       }))
     this.setState({
       hoverInfo: null,
@@ -1429,7 +1455,7 @@ class Map extends Component {
       if (foundIndex !== -1) {
         utilsQuery.updateQueryStringParameter('wiki', wikiId)
         setEpicContentIndex(foundIndex)
-      // setWikiId(wikiId)
+        // setWikiId(wikiId)
       }
     } else {
       // utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
@@ -1458,18 +1484,15 @@ class Map extends Component {
         return
       } else {
         // TODO: check a good marker against a bad one go on
-        selectMarkerItem(wikiId, { ...(layerClicked.object || layerClicked.properties), 'coo': (layerClicked.object || {}).coo || layerClicked.geometry.coordinates })
+        selectMarkerItem(wikiId, {
+          ...(layerClicked.object || layerClicked.properties),
+          'coo': (layerClicked.object || {}).coo || layerClicked.geometry.coordinates
+        })
       }
     }
 
     if (modActive.type === TYPE_MARKER) return
     if (layerClicked.object) history.push('/article')
-  }
-
-  handleChangeFilter = (event, value) => {
-    this.setState({
-      filtered: value,
-    })
   }
 
   /*
@@ -1497,9 +1520,16 @@ class Map extends Component {
             <IconMenu
               style={{ /* top: -16, */float: 'right' }}
               iconButtonElement={<IconButton tooltip='Close'><CloseIcon hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
-              onClick={() => this.setState({ expanded: false, clusterRawData: [], hoverInfo: null, filtered: defaultFilters, searchMarkerText: '' })} />
+              onClick={() => this.setState({
+                expanded: false,
+                clusterRawData: [],
+                hoverInfo: null,
+                filtered: defaultFilters,
+                searchMarkerText: ''
+              })} />
             <IconMenu
-              iconButtonElement={<IconButton tooltip='Filter'><ContentFilter hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+              iconButtonElement={<IconButton tooltip='Filter'><ContentFilter
+                hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
               onChange={this.handleChangeFilter}
               // value={filtered}
               style={{ /* top: -16, */float: 'right' }}
@@ -1508,16 +1538,22 @@ class Map extends Component {
               value={filtered}
               multiple
             >
-              {categories.map((category, i) => <MenuItem key={'categoriesMenuItem' + i} value={category[0]} primaryText={category[1]} disabled={!content.some(linkedItem => linkedItem.subtype === category[0])} />)}
+              {categories.map((category, i) => <MenuItem key={'categoriesMenuItem' + i} value={category[0]}
+                primaryText={category[1]}
+                disabled={!content.some(linkedItem => linkedItem.subtype === category[0])} />)}
             </IconMenu>
           </div>
 
           return (
-            <Popup className='mapHoverTooltip interactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
-              <div className='county-info' onMouseLeave={() => { /* this.setState({ expanded: false, hoverInfo: null }) */ }} >
-                { menuRow }
+            <Popup className='mapHoverTooltip interactive' longitude={hoverInfo.lngLat[0]}
+              latitude={hoverInfo.lngLat[1]} closeButton={false}>
+              <div className='county-info'
+                onMouseLeave={() => { /* this.setState({ expanded: false, hoverInfo: null }) */
+                }}>
+                {menuRow}
                 <Stepper linear={false} connector={null} activeStep={-1} orientation='vertical'
-                  style={{ float: 'left',
+                  style={{
+                    float: 'left',
                     maxHeight: 400, /* background: 'rgb(245, 245, 245)', boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset', overflow: 'auto', */
                     placeContent: 'center space-between',
                     alignItems: 'stretch',
@@ -1540,7 +1576,7 @@ class Map extends Component {
                     const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 278px' : '154px 224px'
                     return (<Step key={i} style={styles.stepContainer}>
                       <StepButton
-                        iconContainerStyle={{ background:  'inherit' }}
+                        iconContainerStyle={{ background: 'inherit' }}
                         icon={
                           <div className='listAvatar'><img style={{
                             borderRadius: '50%',
@@ -1549,12 +1585,18 @@ class Map extends Component {
                             width: 30,
                             background: backgroundPosition + ' / ' + backgroundSize,
                           }} src='/images/transparent.png' /></div>
-                          }
+                        }
                         onClick={() => {
                           delete content[i].zoomLevels
                           selectMarkerItem(content[i].wiki || content[i]._id, content[i])
                           history.push('/article')
-                          this.setState({ expanded: false, clusterRawData: [], hoverInfo: null, filtered: defaultFilters, searchMarkerText: '' })
+                          this.setState({
+                            expanded: false,
+                            clusterRawData: [],
+                            hoverInfo: null,
+                            filtered: defaultFilters,
+                            searchMarkerText: ''
+                          })
                         }}>
                         <div style={{
                           overflow: 'hidden',
@@ -1593,8 +1635,13 @@ class Map extends Component {
 
         const showClustExpandButton = isCluster && Array.isArray(content) && content.length > 1
         return (
-          <Popup className='mapHoverTooltip inactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
-            <div className='county-info' style={showClustExpandButton ? { height: 20, marginTop: -10 } : {}} onClick={() => { console.debug('set expanded to true'); this.setState({ expanded: true }) }}>
+          <Popup className='mapHoverTooltip inactive' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]}
+            closeButton={false}>
+            <div className='county-info' style={showClustExpandButton ? { height: 20, marginTop: -10 } : {}}
+              onClick={() => {
+                console.debug('set expanded to true')
+                this.setState({ expanded: true })
+              }}>
               {showClustExpandButton ? <div><FlatButton
                 style={{ minWidth: 22 }}
                 label=''
@@ -1614,7 +1661,7 @@ class Map extends Component {
                       }}>
                       <Step key={1} style={styles.stepContainer}>
                         <StepButton
-                          iconContainerStyle={{ background:  'inherit' }}
+                          iconContainerStyle={{ background: 'inherit' }}
                           icon={<div className='listAvatar'><img style={{
                             borderRadius: '50%',
                             marginRight: '0em',
@@ -1624,7 +1671,14 @@ class Map extends Component {
                             backgroundSize: backgroundSize
                           }} src='/images/transparent.png' /></div>}
                           onClick={() => {
-                            selectMarkerItem(wiki || _id, { name, year, wiki, _id, type, subtype: (fSubtype === 'cp') ? 'c' : fSubtype })
+                            selectMarkerItem(wiki || _id, {
+                              name,
+                              year,
+                              wiki,
+                              _id,
+                              type,
+                              subtype: (fSubtype === 'cp') ? 'c' : fSubtype
+                            })
                             history.push('/article')
                             this.setState({ expanded: false, hoverInfo: null, clusterRawData: [], })
                           }}>
@@ -1681,7 +1735,8 @@ class Map extends Component {
         const religionIcon = selectedValues['e'][4]
         const religionGeneralIcon = selectedValues['g'][3]
         return (
-          <Popup className='dimsTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]} closeButton={false}>
+          <Popup className='dimsTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]}
+            closeButton={false}>
             <div className='county-info'>
               <Chip
                 className='chipAvatar'
@@ -1690,7 +1745,9 @@ class Map extends Component {
               >
                 <Avatar color={themes[theme].backColors[0]}
                   backgroundColor={rulerIcon ? '#fff' : '#6a6a6a'}
-                  {...(rulerIcon ? (rulerIcon[0] === '/' ? { src: rulerIcon } : { src: getFullIconURL(decodeURIComponent(rulerIcon)) }) : { icon: <RulerIcon viewBox={'0 0 64 64'} /> })}
+                  {...(rulerIcon ? (rulerIcon[0] === '/' ? { src: rulerIcon } : { src: getFullIconURL(decodeURIComponent(rulerIcon)) }) : {
+                    icon: <RulerIcon viewBox={'0 0 64 64'} />
+                  })}
                 />
                 {selectedValues['r'][0] || 'n/a'}
               </Chip>
@@ -1701,7 +1758,9 @@ class Map extends Component {
               >
                 <Avatar color={themes[theme].backColors[0]}
                   backgroundColor={cultureIcon ? '#fff' : '#6a6a6a'}
-                  {...(cultureIcon ? (cultureIcon[0] === '/' ? { src: cultureIcon } : { src: getFullIconURL(decodeURIComponent(cultureIcon)) }) : { icon: <CultureIcon viewBox={'0 0 64 64'} /> })}
+                  {...(cultureIcon ? (cultureIcon[0] === '/' ? { src: cultureIcon } : { src: getFullIconURL(decodeURIComponent(cultureIcon)) }) : {
+                    icon: <CultureIcon viewBox={'0 0 64 64'} />
+                  })}
                 />
                 {selectedValues['c'][0] || 'n/a'}
               </Chip>
@@ -1712,7 +1771,10 @@ class Map extends Component {
               >
                 <Avatar color={themes[theme].backColors[0]}
                   backgroundColor={religionIcon ? '#fff' : '#6a6a6a'}
-                  {...(religionIcon ? (religionIcon[0] === '/' ? { src: religionIcon } : { src: getFullIconURL(decodeURIComponent(religionIcon)) }) : { icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} /> })}
+                  {...(religionIcon ? (religionIcon[0] === '/' ? { src: religionIcon } : { src: getFullIconURL(decodeURIComponent(religionIcon)) }) : {
+                    icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
+                      viewBox={'0 0 200 168'} />
+                  })}
                 />
                 {selectedValues['e'][0] || 'n/a'}
               </Chip>
@@ -1723,7 +1785,10 @@ class Map extends Component {
               >
                 <Avatar color={themes[theme].backColors[0]}
                   backgroundColor={religionGeneralIcon ? '#fff' : '#6a6a6a'}
-                  {...(religionGeneralIcon ? (religionGeneralIcon[0] === '/' ? { src: religionGeneralIcon } : { src: getFullIconURL(decodeURIComponent(religionGeneralIcon)) }) : { icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }} viewBox={'0 0 200 168'} /> })}
+                  {...(religionGeneralIcon ? (religionGeneralIcon[0] === '/' ? { src: religionGeneralIcon } : { src: getFullIconURL(decodeURIComponent(religionGeneralIcon)) }) : {
+                    icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
+                      viewBox={'0 0 200 168'} />
+                  })}
                 />
                 {selectedValues['g'][0] || 'n/a'}
               </Chip>
@@ -1772,11 +1837,11 @@ class Map extends Component {
         captureClick={false}
         captureDrag={false}
         latitude={((modActive || {}).data || {})[1] ||
-        (selectedItem.coo || {})[1] ||
-        ((selectedItem.value || {}).coo || {})[1]}
+      (selectedItem.coo || {})[1] ||
+      ((selectedItem.value || {}).coo || {})[1]}
         longitude={((modActive || {}).data || {})[0] ||
-        (selectedItem.coo || {})[0] ||
-        ((selectedItem.value || {}).coo || {})[0]}
+      (selectedItem.coo || {})[0] ||
+      ((selectedItem.value || {}).coo || {})[0]}
         offsetLeft={0}
         offsetTop={0}>
         <BasicPin size={40} />
@@ -1798,15 +1863,18 @@ class Map extends Component {
       }}>
         <Snackbar
           selectedYear={+selectedYear}
-          open={!rightDrawerOpen && !infoOpen}// this.state.showYear}
+          open={!infoOpen}// this.state.showYear}
           message={messageYearNotification(selectedYear, (selectedYear < 1), themes[theme].foreColors[2])}
           contentStyle={styles.yearNotificationContent}
           bodyStyle={styles.yearNotificationBody}
-          style={{ ...styles.yearNotification,
+          style={{
+            ...styles.yearNotification,
+            left: rightDrawerOpen ? 'calc(25% - 20px)' : 'calc(50% - 20px)',
             background: theme === 'dark' ? 'url(/images/year-dark.png) no-repeat scroll center top transparent' : 'url(/images/year-light.png) no-repeat scroll center top transparent',
-            transform: (this.state.showYear && !rightDrawerOpen && !infoOpen)
-            ? 'translate3d(0, 0, 0)' : 'translate3d(0, -150px, 0)' }}
-          autoHideDuration={4000}
+            transform: (this.state.showYear && !infoOpen)
+              ? 'translate3d(0, 0, 0)' : 'translate3d(0, -150px, 0)'
+          }}
+          autoHideDuration={6000}
           onRequestClose={() => this.setState({ showYear: false })}
         />
         <MapGL
@@ -1820,7 +1888,9 @@ class Map extends Component {
               history.location.pathname !== '/account' &&
               history.location.pathname.indexOf('/community/') === -1)) ? 'inherit' : 'blur(10px)'
           }}
-          ref={(map) => { this.map = map }}
+          ref={(map) => {
+            this.map = map
+          }}
           {...viewport}
           mapStyle={mapStyle}
           // getCursor={({isDragging, isHovering}) => { return isDragging ? 'grabbing' : isHovering ? 'pointer' : 'grab'}}
@@ -1836,7 +1906,7 @@ class Map extends Component {
             goToViewport={this._goToViewport}
             theme={themes[theme]}
             viewport={viewport}
-            selectedItem={selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_EPIC  ? selectedItem : (selectedItem.type === TYPE_AREA && possibleHiglightedAREAitem) ? possibleHiglightedAREAitem : {}}
+            selectedItem={selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_EPIC ? selectedItem : (selectedItem.type === TYPE_AREA && possibleHiglightedAREAitem) ? possibleHiglightedAREAitem : {}}
             updateLine={this._updateLine}
             geoData={geoData}
             clusterRawData={activeCluster ? Array.isArray(possibleClusterRaw) ? possibleClusterRaw.length === 1 ? -1 : possibleClusterRaw : [] : []}
@@ -1858,9 +1928,10 @@ class Map extends Component {
           {modMarker}
           {this._renderPopup()}
         </MapGL>
-        { !isStatic && <div className={mapTimelineContainerClass}>
-          <MapTimeline history={history} groupItems={mapTimelineContainerClass !== 'mapTimeline discoverActive' ? epics : []} />
-        </div> }
+        {!isStatic && <div className={mapTimelineContainerClass}>
+          <MapTimeline history={history}
+            groupItems={mapTimelineContainerClass !== 'mapTimeline discoverActive' ? epics : []} />
+        </div>}
       </div>
     )
   }
@@ -1890,7 +1961,7 @@ const enhance = compose(
     setWikiId,
     setModToUpdate,
     selectEpicItem,
-    selectMarkerItem : selectMarkerItemAction,
+    selectMarkerItem: selectMarkerItemAction,
     setYear,
     setEpicContentIndex,
     setModData: setModDataAction,

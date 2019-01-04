@@ -9,7 +9,7 @@ import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import { setModType } from '../buttons/actionReducers'
 import { TYPE_MARKER } from '../../../map/actionReducers'
-import { properties, epicIdNameArray } from '../../../../properties'
+import { epicIdNameArray, properties } from '../../../../properties'
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
 const formStyle = {
@@ -18,12 +18,13 @@ const formStyle = {
   maxHeight: 'calc(100% - 236px)',
   background: '#f3f3f2',
   overflow: 'auto',
-  width: '100%' }
+  width: '100%'
+}
 
 export class LinkedForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const {setModType, showNotification, initialValues, history} = this.props
+      const { setModType, showNotification, initialValues, history } = this.props
       const token = localStorage.getItem('chs_token')
       const wikiURL = values.wiki
 
@@ -38,26 +39,25 @@ export class LinkedForm extends Component {
       if (redirect === 'edit') {
         if (isEpic) {
           bodyToSend = {
-            "data": {
-              "title": values.description,
-              "wiki": values.wiki,
-              "start": values.year,
-              "end": values.end,
-              "poster": values.poster
+            'data': {
+              'title': values.description,
+              'wiki': values.wiki,
+              'start': values.year,
+              'end': values.end,
+              'poster': values.poster
             },
-            "wiki": values.wiki,
-            "subtype": values.subtype,
-            "year": values.year,
-            "type": "e"
+            'wiki': values.wiki,
+            'subtype': values.subtype,
+            'year': values.year,
+            'type': 'e'
           }
-          if (values.subtype === "ew") {
-            bodyToSend.data["participants"] = [
+          if (values.subtype === 'ew') {
+            bodyToSend.data['participants'] = [
               values.attacker.map(el => el.name),
               values.defender.map(el => el.name),
             ]
           }
-        }
-        else {
+        } else {
           // updating linked metadata
           if (values.onlyEpicContent !== initialValues.onlyEpicContent) bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
           if (values.year !== initialValues.year) bodyToSend.year = values.year
@@ -90,54 +90,52 @@ export class LinkedForm extends Component {
           }
         }
         // attempt post marker if wiki + lat long + year available and wiki new
-      }
-      else {
+      } else {
         if (isEpic) {
           bodyToSend = {
-            "_id": "e_" + decodeURIComponent(values.wiki).replace(/ /g, "_"),
-            "data": {
-              "title": values.description,
-              "wiki": values.wiki,
-              "start": values.year,
-              "end": values.end,
-              "poster": values.poster,
+            '_id': 'e_' + decodeURIComponent(values.wiki).replace(/ /g, '_'),
+            'data': {
+              'title': values.description,
+              'wiki': values.wiki,
+              'start': values.year,
+              'end': values.end,
+              'poster': values.poster,
             },
-            "wiki": values.wiki,
-            "subtype": values.subtype,
-            "year": values.year,
-            "type": "e"
+            'wiki': values.wiki,
+            'subtype': values.subtype,
+            'year': values.year,
+            'type': 'e'
           }
-          if (values.subtype === "ew") {
-            bodyToSend.data["participants"] = [
+          if (values.subtype === 'ew') {
+            bodyToSend.data['participants'] = [
               values.attacker.map(el => el.name),
               values.defender.map(el => el.name),
             ]
           }
-        }
-        else {
-        bodyToSend._id = (values.subtype !== 'html') ? values.src : (values.src + '_' + new Date().getTime().toString())
-        bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
-        // adding linked metadata
-        let geojson
-        if (values.geojson) geojson = JSON.parse(values.geojson)
-        if (values.year) bodyToSend.year = values.year
-        if (values.subtype) bodyToSend.subtype = values.subtype
-        if (values.wiki) bodyToSend.wiki = values.wiki
-        if (values.coo) bodyToSend.coo = values.coo
+        } else {
+          bodyToSend._id = (values.subtype !== 'html') ? values.src : (values.src + '_' + new Date().getTime().toString())
+          bodyToSend.type = values.onlyEpicContent ? '0' : 'i'
+          // adding linked metadata
+          let geojson
+          if (values.geojson) geojson = JSON.parse(values.geojson)
+          if (values.year) bodyToSend.year = values.year
+          if (values.subtype) bodyToSend.subtype = values.subtype
+          if (values.wiki) bodyToSend.wiki = values.wiki
+          if (values.coo) bodyToSend.coo = values.coo
 
-        // have data?
-        bodyToSend.data = {
-          title: values.description,
-          source: values.source,
-          poster: values.poster,
-          content: values.content,
-          geojson: geojson,
-          start: values.year,
-          end: values.end,
-          participants: (values.participants || []).map(el => el.participantTeam.map(el2 => el2.name))
+          // have data?
+          bodyToSend.data = {
+            title: values.description,
+            source: values.source,
+            poster: values.poster,
+            content: values.content,
+            geojson: geojson,
+            start: values.year,
+            end: values.end,
+            participants: (values.participants || []).map(el => el.participantTeam.map(el2 => el2.name))
+          }
         }
       }
-    }
 
       const metadataItem = encodeURIComponent(values.src)
       fetch(properties.chronasApiHost + '/metadata/' + ((redirect === 'edit') ? metadataItem : ''), {
@@ -169,8 +167,12 @@ export class LinkedForm extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) { this.props.change('coo[0]', nextProps.modActive.data[0]) }
-    if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) { this.props.change('coo[1]', nextProps.modActive.data[1]) }
+    if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) {
+      this.props.change('coo[0]', nextProps.modActive.data[0])
+    }
+    if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) {
+      this.props.change('coo[1]', nextProps.modActive.data[1])
+    }
   }
 
   componentWillMount () {
@@ -223,10 +225,10 @@ const enhance = compose(
     initialValues: getDefaultValues(state, props),
     modActive: state.modActive,
   }),
-    {
-      setModType,
-      showNotification
-    }),
+  {
+    setModType,
+    showNotification
+  }),
   reduxForm({
     form: 'record-form',
     enableReinitialize: true,

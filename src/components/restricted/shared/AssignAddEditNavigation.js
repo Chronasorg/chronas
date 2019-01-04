@@ -10,7 +10,7 @@ const AssignAddEditNavigation = ({ pathname = '' }) => {
   return <BottomNavigation
     // style={styles.articleHeader}
     // onChange={this.handleChange}
-    selectedIndex={(pathname.indexOf("mod/areas") > -1) ? 0 : (pathname.indexOf("mod/metadata/create") > -1) ? 1 : 2}>
+    selectedIndex={(pathname.indexOf('mod/areas') > -1) ? 0 : (pathname.indexOf('mod/metadata/create') > -1) ? 1 : 2}>
     <BottomNavigationItem
       className='bottomNavigationItem'
       containerElement={<Link to='/mod/areas' />}

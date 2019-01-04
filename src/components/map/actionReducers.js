@@ -1,4 +1,4 @@
-import utilsQuery from "./utils/query";
+import utilsQuery from './utils/query'
 
 export const SET_WIKI_ID = 'SET_WIKI_ID'
 export const SET_DATA = 'SET_DATA'
@@ -80,7 +80,8 @@ export const selectLinkedItem = (wiki, value = wiki) => {
   return {
     type: SET_LINKED_ITEM,
     payload: [wiki, value],
-}}
+  }
+}
 
 export const selectMarkerItem = (wiki, value = wiki) => {
   utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
@@ -88,7 +89,8 @@ export const selectMarkerItem = (wiki, value = wiki) => {
   return {
     type: SET_MARKER_ITEM,
     payload: [wiki, value],
-}}
+  }
+}
 
 export const deselectItem = () => ({
   type: DESELECT_ITEM

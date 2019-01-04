@@ -1,4 +1,3 @@
-export simpleRestClient from './simple';
-export jsonServerRestClient from './jsonServer';
-export * from './types';
-
+export simpleRestClient from './simple'
+export jsonServerRestClient from './jsonServer'
+export * from './types'

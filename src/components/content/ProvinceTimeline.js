@@ -36,18 +36,19 @@ const styles = {
     // height: 'calc(100% - 128px)',
   },
   navButtons: {
-    marginTop:'12px',
+    marginTop: '12px',
     right: '28px',
     bottom: '10px',
     position: 'fixed'
   },
   navTitle: {
-    marginTop:'12px',
+    marginTop: '12px',
     left: 'calc(20% + 4px)',
     bottom: '10px',
     position: 'fixed'
   }
 }
+
 class ProvinceTimeline extends React.Component {
   state = {
     selectedWiki: null,
@@ -72,6 +73,15 @@ class ProvinceTimeline extends React.Component {
     },
     year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
   }
+  _onClickTimeline = (props, event) => {
+    // if (!props.item) return
+    const dimId = props.item.split('||')[2]
+    const wikiId = (props.group === 'capital') ? this.props.metadata[props.group][dimId] : this.props.metadata[props.group][dimId][2]
+    this.setState({
+      selectedWiki: wikiId,
+      selectedTypeId: { type: props.group, id: dimId }
+    })
+  };
 
   componentDidMount () {
     // Hack for issue https://github.com/Lighthouse-io/react-visjs-timeline/issues/40
@@ -83,16 +93,6 @@ class ProvinceTimeline extends React.Component {
 
     this.setState({ timelineOptions })
   }
-
-  _onClickTimeline = (props, event) => {
-    // if (!props.item) return
-    const dimId = props.item.split('||')[2]
-    const wikiId = (props.group === 'capital') ? this.props.metadata[props.group][dimId] : this.props.metadata[props.group][dimId][2]
-    this.setState({
-      selectedWiki: wikiId,
-      selectedTypeId: { type: props.group, id: dimId }
-    })
-  };
 
   componentWillReceiveProps (nextProps) {
     const { provinceEntity, metadata } = this.props
@@ -158,7 +158,7 @@ class ProvinceTimeline extends React.Component {
           items.push({
             className: 'provinceTimelineItem',
             start: new Date(new Date(0, 1, 1).setFullYear(startYear)),
-            end: new Date(new Date(0, 1, 1).setFullYear(endYear)),  // end is optional
+            end: new Date(new Date(0, 1, 1).setFullYear(endYear)), // end is optional
             content: itemTitle,
             id: key + '||' + index + '||' + dimKey,
             group: key,
@@ -171,16 +171,19 @@ class ProvinceTimeline extends React.Component {
     })
 
     return (
-      <div className='ProvinceTimeline' style={{ width: '100%', height: '100%', overflow: 'auto', display: 'inline-table' }}>
+      <div className='ProvinceTimeline'
+        style={{ width: '100%', height: '100%', overflow: 'auto', display: 'inline-table' }}>
         <TimelinePlus
           options={timelineOptions}
           customTimes={new Date(new Date(0, 1, 1).setFullYear(+selectedYear))}
           groups={groups}
           items={items}
-          clickHandler={this._onClickTimeline.bind(this)}
+          clickHandler={this._onClickTimeline}
         />
         <div style={contentStyle}>
-          <ArticleIframe history={history} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki} selectedTypeId={selectedTypeId} selectedItem={selectedItem} setMetadataType={setMetadataType} provinceType={''} deselectItem={deselectItem} />
+          <ArticleIframe history={history} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki}
+            selectedTypeId={selectedTypeId} selectedItem={selectedItem} setMetadataType={setMetadataType}
+            provinceType={''} deselectItem={deselectItem} />
         </div>
       </div>
     )

@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
-;
+
 import { connect } from 'react-redux'
-import pure from 'recompose/pure'
 import compose from 'recompose/compose'
 import TextField from 'material-ui/TextField'
-import { translate, defaultTheme } from 'admin-on-rest'
+import { defaultTheme, translate } from 'admin-on-rest'
 import muiThemeable from 'material-ui/styles/muiThemeable'
 import { setModData as setModDataAction } from './../buttons/actionReducers'
 
@@ -24,18 +23,18 @@ import { setModData as setModDataAction } from './../buttons/actionReducers'
  */
 export class ModGeoInput extends Component {
   handleBlur = eventOrValue => {
-    this.props.onBlur(eventOrValue);
-    this.props.input.onBlur(eventOrValue);
+    this.props.onBlur(eventOrValue)
+    this.props.input.onBlur(eventOrValue)
   };
 
   handleFocus = event => {
-    this.props.onFocus(event);
-    this.props.input.onFocus(event);
+    this.props.onFocus(event)
+    this.props.input.onFocus(event)
   };
 
   handleChange = (eventOrValue, val) => {
-    this.props.onChange(eventOrValue);
-    this.props.input.onChange(eventOrValue);
+    this.props.onChange(eventOrValue)
+    this.props.input.onChange(eventOrValue)
 
     const prevLatLng = this.props.modActive.data
     prevLatLng[this.props.accessor] = +val
@@ -43,7 +42,7 @@ export class ModGeoInput extends Component {
     this.props.setModData(prevLatLng)
   };
 
-  render() {
+  render () {
     const {
       elStyle,
       // input,
@@ -55,47 +54,51 @@ export class ModGeoInput extends Component {
       resource,
       source,
       type,
-    } = this.props;
+    } = this.props
 
-    const meta={ touched: true, error: false }
+    const meta = { touched: true, error: false }
     if (typeof meta === 'undefined') {
       throw new Error(
         "The TextInput component wasn't called within a redux-form <Field>. Did you decorate it and forget to add the addField prop to your component? See https://marmelab.com/admin-on-rest/Inputs.html#writing-your-own-input-component for details."
-      );
+      )
     }
-    const { touched, error } = meta;
+    const { touched, error } = meta
     const input = {}
 
-    if (typeof this.props.modActive.data !== "undefined") input.value = this.props.modActive.data[accessor]
+    if (typeof this.props.modActive.data !== 'undefined') input.value = this.props.modActive.data[accessor]
 
     return (
-    <div>
-      <TextField
-        {...input}
-        onBlur={this.handleBlur}
-        onFocus={this.handleFocus}
-        onChange={this.handleChange}
-        type={type}
-        value={(typeof this.props.modActive.data !== "undefined") ? this.props.modActive.data[accessor] : 123}
-        style={elStyle}
-        {...options}
-      />
-    </div>
-    );
+      <div>
+        <TextField
+          {...input}
+          onBlur={this.handleBlur}
+          onFocus={this.handleFocus}
+          onChange={this.handleChange}
+          type={type}
+          value={(typeof this.props.modActive.data !== 'undefined') ? this.props.modActive.data[accessor] : 123}
+          style={elStyle}
+          {...options}
+        />
+      </div>
+    )
   }
 }
 
 ModGeoInput.defaultProps = {
   addField: true,
   accessor: 0,
-  onBlur: () => {},
-  onChange: () => {},
-  onFocus: () => {},
+  onBlur: () => {
+  },
+  onChange: () => {
+  },
+  onFocus: () => {
+  },
   options: {},
   type: 'text',
   // modActive: 1,
-  setModData: () => {},
-};
+  setModData: () => {
+  },
+}
 
 const enhance = compose(
   muiThemeable(), // force redraw on theme change
@@ -104,7 +107,7 @@ const enhance = compose(
   }), {
     setModData: setModDataAction,
   })
-);
+)
 
-export default enhance(ModGeoInput);
+export default enhance(ModGeoInput)
 // export default ModGeoInput;

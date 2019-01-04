@@ -28,6 +28,7 @@ body {
 .vis-item {
   //border-width: 0px !important;
 }
+
 .mapTimeline {
   margin-left: -40px;
   .vis-panel.vis-center {
@@ -48,9 +49,13 @@ body {
 }
 
 .tsTicks {
-  display: none }
+  display: none
+}
+
 .vis-item:hover {
-  .tsTicks { display: block }
+  .tsTicks {
+    display: block
+  }
 }
 
 .nofocus:focus {
@@ -70,8 +75,8 @@ div.vis-tooltip {
   visibility: hidden;
   white-space: nowrap;
 
-  font-size:14px;
-  color:#ddd !important;
+  font-size: 14px;
+  color: #ddd !important;
   background-color: rgba(85, 85, 85, 0.85) !important;
 
   -moz-border-radius: 3px;
@@ -86,7 +91,9 @@ div.vis-tooltip {
 }
 
 .vis-selected {
-  .tsTicks { display: block !important }
+  .tsTicks {
+    display: block !important
+  }
 }
 
 .extendedTimeline {
@@ -98,7 +105,7 @@ div.vis-tooltip {
   .timelineItem_ew {
     background-color: white !important;
     //border: 2px solid rgba(214, 0, 0, 0.2)
-    border: 4px solid rgb(214, 0, 0)  !important;
+    border: 4px solid rgb(214, 0, 0) !important;
   }
   .vis-panel {
     &.vis-center {
@@ -140,7 +147,7 @@ div.vis-tooltip {
     }
     &.vis-selected {
       z-index: 1000;
-      border: 1px solid rgb(214, 0, 0)  !important;
+      border: 1px solid rgb(214, 0, 0) !important;
       background: white !important;
     }
   }
@@ -190,14 +197,15 @@ div.vis-tooltip {
     margin-top: 2px;
   }
 }
+
 .classReveal {
   opacity: 1 !important;
-  &.modalMenu > div > div{
+  &.modalMenu > div > div {
     overflow: auto !important;
   }
 }
 
-.accountContentStyle{
+.accountContentStyle {
   > div {
     box-shadow: none !important;
   }
@@ -210,8 +218,8 @@ div.vis-tooltip {
   overflow: auto;
 }
 
-.boardContentStyle{
-   > div {
+.boardContentStyle {
+  > div {
     background-color: #eee !important;
   }
   position: fixed !important;
@@ -221,7 +229,6 @@ div.vis-tooltip {
   max-height: calc(100% - 4em) !important;
   overflow: auto;
 }
-
 
 .dialogImageBackgroundHack {
   top: 0;
@@ -255,9 +262,11 @@ div.vis-tooltip {
 .dialogBackgroundHack::-webkit-scrollbar {
   width: 10px;
 }
+
 .dialogBackgroundHack::-webkit-scrollbar-thumb {
   background: rgba(203, 203, 203, 0.38);
 }
+
 .dialogBackgroundHack::-webkit-scrollbar-track {
   background: transparent;
 }
@@ -292,9 +301,9 @@ div.vis-tooltip {
   pointer-events: none;
 
   div {
-    height: 4px!important;
-    transition: width .5s ease-out,height .5s ease-out;
-    box-shadow: 0 1px 2px 0 rgba(1,2,3,.4)!important;
+    height: 4px !important;
+    transition: width .5s ease-out, height .5s ease-out;
+    box-shadow: 0 1px 2px 0 rgba(1, 2, 3, .4) !important;
 
     //background-color: rgb(212, 0, 18) !important;
     -webkit-transition: width 500ms ease-out, height 500ms ease-out;
@@ -332,12 +341,12 @@ div.vis-tooltip {
 .image-gallery-left-nav, .image-gallery-right-nav {
   color: #fff;
   font-size: 1.4em;
-  background-color: rgba(66,66,66,.54);
+  background-color: rgba(66, 66, 66, .54);
   padding: 50px 15px;
   top: 50%;
   transform: translateY(-50%);
   justify-content: center;
-  background: rgba(48,48,48,.5);
+  background: rgba(48, 48, 48, .5);
   border-radius: 50%;
   box-sizing: border-box;
   color: #fff;
@@ -372,7 +381,7 @@ button:focus {
     padding: 2em;
     height: 160px;
     width: 100%;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.3) 30%,rgba(0,0,0,0) 100%);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.3) 30%, rgba(0, 0, 0, 0) 100%);
   }
 }
 
@@ -432,7 +441,7 @@ button:focus {
 }
 
 .create-page > div {
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset;
 }
 
 .simple-form {
@@ -443,19 +452,19 @@ button:focus {
 }
 
 .dragHandle.markerHandle {
-  left: 40px!important;
-  box-shadow: -2px 2px 6px 3px rgba(0,0,0,.3)!important;
-  border-top-right-radius: 40px!important;
-  width: 30px!important;
-  height: 30px!important;
-  top: calc(100% - 20px)!important;
-  margin-left: -50px!important;
+  left: 40px !important;
+  box-shadow: -2px 2px 6px 3px rgba(0, 0, 0, .3) !important;
+  border-top-right-radius: 40px !important;
+  width: 30px !important;
+  height: 30px !important;
+  top: calc(100% - 20px) !important;
+  margin-left: -50px !important;
 
   div {
     box-shadow: none !important;
   }
   svg {
-    transform: rotate(-45deg)  !important;
+    transform: rotate(-45deg) !important;
     width: 40px !important;
     height: 40px !important;
     margin-left: -10px !important;
@@ -467,6 +476,7 @@ button:focus {
     cursor: nesw-resize !important;
   }
 }
+
 .dragHandle.markerHandle > button > div > div {
   border-top-right-radius: 40px !important;
   width: 30px !important;
@@ -474,8 +484,6 @@ button:focus {
   top: calc(100% - 22px) !important;
   margin-left: 10px !important;
 }
-
-
 
 @keyframes rightFadeIn {
   0% {
@@ -519,7 +527,6 @@ button:focus {
   border-radius: 2px;
 }
 
-
 .mapHoverTooltip.inactive {
   cursor: pointer !important;
 
@@ -552,8 +559,8 @@ $spin-speed: 1s;
   fill: #333
 }
 
-.LoadingCircle_loading{
-  animation:blinkingText $spin-speed infinite;
+.LoadingCircle_loading {
+  animation: blinkingText $spin-speed infinite;
   animation-timing-function: ease-in-out;
   font-size: 18px;
   color: #333;
@@ -562,10 +569,16 @@ $spin-speed: 1s;
   margin-top: -4%;
 }
 
-@keyframes blinkingText{
-  0%{		opacity: 1;	}
-  49%{	opacity: 0;	}
-  100%{	opacity: 1;	}
+@keyframes blinkingText {
+  0% {
+    opacity: 1;
+  }
+  49% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .LoadingCircle_wrapper {
@@ -641,7 +654,7 @@ svg.LoadingCircle_rotate {
   border: 0 !important;
 }
 
-.listAvatar{
+.listAvatar {
   padding-bottom: 2px;
   img {
     border-radius: 50%;
@@ -702,6 +715,7 @@ div.vis-tooltip {
     float: right;
   }
 }
+
 .discoveryIcon:hover {
   opacity: 1;
 }
@@ -811,7 +825,7 @@ div.vis-tooltip {
 
   &.articleEpic {
     margin: 0;
-    margin-top:  6px;
+    margin-top: 6px;
     opacity: 1;
     height: 40px;
     width: 30px;
@@ -825,7 +839,8 @@ div.vis-tooltip {
   margin-left: 32.06349206349206%;
   height: 38px;
   width: 15px;
-  background: url(/images/abstract-atlas.png) -30px -200px; background-size: 121px 278px;
+  background: url(/images/abstract-atlas.png) -30px -200px;
+  background-size: 121px 278px;
 }
 
 .battleIcon2 {
@@ -842,6 +857,7 @@ div.vis-tooltip {
   z-index: 2000000;
   cursor: help;
 }
+
 .timelineIconSmall {
   margin-top: 112px
 }
@@ -864,10 +880,10 @@ div.vis-tooltip {
 
 .customLink {
   cursor: pointer;
-  &:hover { opacity: 0.6 }
+  &:hover {
+    opacity: 0.6
+  }
 }
-
-
 
 .social-signup-buttons {
   display: table;
@@ -900,16 +916,19 @@ div.vis-tooltip {
     }
   }
 }
+
 .signup-button {
   .signupBig {
     font-size: 60px !important;
   }
 }
+
 .signup-button__text {
   padding: 0px 0px 30px 10px;
 
   display: none;
 }
+
 @media (min-width: 1200px) {
   .signup-button__text {
     display: inline-block;
@@ -917,8 +936,6 @@ div.vis-tooltip {
     margin-left: 6px;
   }
 }
-
-
 
 .auth-form-divider {
   color: '#999';
@@ -936,6 +953,7 @@ div.vis-tooltip {
     position: absolute;
   }
 }
+
 .auth-form-divider-text {
   //background-color: @body-bg;
   display: inline-block;
@@ -964,7 +982,6 @@ div.vis-tooltip {
     padding-top: .75em;
     -webkit-appearance: none;
 
-
     &:focus {
       //box-shadow: 0 0 5px -2px fade(@link-color, 60%), 0 1px 2px '#999'er;
       position: relative;
@@ -978,32 +995,34 @@ div.vis-tooltip {
   //}
 }
 
-
 // social links
 
 .btn-link-github {
-    color: #242a2e;
+  color: #242a2e;
   &:hover {
     color: #242a2e;
     opacity: 0.5;
   }
 }
+
 .btn-link-facebook {
-    color: #4267b2;
+  color: #4267b2;
   &:hover {
     color: #4267b2;
     opacity: 0.5;
   }
 }
+
 .btn-link-google {
-    color: #ea4735;
+  color: #ea4735;
   &:hover {
     color: #ea4735;
     opacity: 0.5;
   }
 }
+
 .btn-link-twitter {
-    color: #1ea1f2;
+  color: #1ea1f2;
   &:hover {
     color: #1ea1f2;
     opacity: 0.5;
@@ -1015,6 +1034,7 @@ div.vis-tooltip {
     bottom: 2px !important;
   }
 }
+
 //
 //.searchEpicContainer:hover {
 //  .searchEpicClass {
@@ -1023,5 +1043,5 @@ div.vis-tooltip {
 //}
 
 .bottomNavigationItem img {
-      object-fit: cover;
+  object-fit: cover;
 }

@@ -1,6 +1,6 @@
-import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest'
+import { AUTH_CHECK, AUTH_GET_PERMISSIONS, AUTH_ERROR, AUTH_LOGIN, AUTH_LOGOUT } from 'admin-on-rest'
 import decodeJwt from 'jwt-decode'
-import { USER_SIGNUP, setToken } from './actionReducers'
+import { setToken, USER_SIGNUP } from './actionReducers'
 import { properties } from '../../../properties'
 
 export default (type, params) => {
@@ -32,8 +32,7 @@ export default (type, params) => {
 
           return Promise.resolve(token)
         })
-    }
-    else if (authType === USER_SIGNUP) {
+    } else if (authType === USER_SIGNUP) {
       const request = new Request(properties.chronasApiHost + '/auth/signup', {
         method: 'POST',
         body: JSON.stringify({ username, password, avatar, email, first_name, last_name, education, bio, website }),
@@ -66,11 +65,11 @@ export default (type, params) => {
     localStorage.removeItem('chs_avatar')
     localStorage.removeItem('chs_privilege')
     localStorage.removeItem('chs_id')
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   if (type === AUTH_ERROR) {
-    const { status } = params;
+    const { status } = params
     if (status === 401 || status === 403) {
       localStorage.removeItem('chs_token')
       localStorage.removeItem('chs_avatar')
@@ -78,20 +77,20 @@ export default (type, params) => {
       localStorage.removeItem('chs_privilege')
       localStorage.removeItem('chs_id')
 
-      return Promise.reject();
+      return Promise.reject(type)
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   if (type === AUTH_CHECK) {
-    const { resource } = params;
-    return localStorage.getItem('chs_token') ? Promise.resolve() : Promise.reject();
+    const { resource } = params
+    return localStorage.getItem('chs_token') ? Promise.resolve() : Promise.reject(new Error('no token stored'))
   }
 
   if (type === AUTH_GET_PERMISSIONS) {
-    console.debug("AUTH_GET_PERMISSIONS")
-    return Promise.resolve(localStorage.getItem('chs_privilege'));
+    console.debug('AUTH_GET_PERMISSIONS')
+    return Promise.resolve(localStorage.getItem('chs_privilege'))
   }
 
-  return Promise.reject('Unkown method');
+  return Promise.reject(new Error('Unkown method'))
 }

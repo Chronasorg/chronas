@@ -1,29 +1,15 @@
-import React, { Component } from 'react';
-import compose from 'recompose/compose';
-import { connect } from 'react-redux';
-import IconButton from 'material-ui/IconButton';
-import {cyan500} from 'material-ui/styles/colors';
-import UndoIcon from 'material-ui/svg-icons/content/undo';
-import RedoIcon from 'material-ui/svg-icons/content/redo';
-import {
-  crudUpdate as crudUpdateAction,
-} from './actionReducers'
+import React, { Component } from 'react'
+import compose from 'recompose/compose'
+import { connect } from 'react-redux'
+import IconButton from 'material-ui/IconButton'
+import { cyan500 } from 'material-ui/styles/colors'
+import UndoIcon from 'material-ui/svg-icons/content/undo'
+import RedoIcon from 'material-ui/svg-icons/content/redo'
+import { crudUpdate as crudUpdateAction, } from './actionReducers'
 
 export class RevertButton extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  getBasePath() {
-    const { location } = this.props;
-    return location.pathname
-      .split('/')
-      .slice(0, -1)
-      .join('/');
-  }
-
   save = (redirect) => {
-    const { basePath = '/resources/revisions', record = {}, isRedo = false } = this.props;
+    const { basePath = '/resources/revisions', record = {}, isRedo = false } = this.props
     this.props.crudUpdate(
       this.props.resource,
       record.id,
@@ -31,10 +17,18 @@ export class RevertButton extends Component {
       record,
       basePath,
       'list'
-    );
+    )
   };
 
-  componentWillReceiveProps(nextProps) {
+  getBasePath () {
+    const { location } = this.props
+    return location.pathname
+      .split('/')
+      .slice(0, -1)
+      .join('/')
+  }
+
+  componentWillReceiveProps (nextProps) {
     /*
     if (this.props.data !== nextProps.data) {
       this.setState({ record: nextProps.data }); // FIXME: erases user entry when fetch response arrives late
@@ -52,15 +46,15 @@ export class RevertButton extends Component {
     */
   }
 
-  render() {
-    const { record = {} } = this.props;
+  render () {
+    const { record = {} } = this.props
     return <IconButton
-      tooltip={record["reverted"] ? "Redo This Edit" : "Revert This Edit"}
+      tooltip={record['reverted'] ? 'Redo This Edit' : 'Revert This Edit'}
       tooltipPosition='center-right'
       onClick={this.save}
       style={{ overflow: 'visible', left: -10 }}>
-      {record["reverted"] ? <RedoIcon color={cyan500} /> : <UndoIcon color={cyan500} />}
-        </IconButton>
+      {record['reverted'] ? <RedoIcon color={cyan500} /> : <UndoIcon color={cyan500} />}
+    </IconButton>
   }
 }
 
@@ -68,6 +62,6 @@ const enhance = compose(
   connect(null, {
     crudUpdate: crudUpdateAction,
   }),
-);
+)
 
-export default enhance(RevertButton);
+export default enhance(RevertButton)

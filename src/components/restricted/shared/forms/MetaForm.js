@@ -7,12 +7,13 @@ import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import axios from 'axios'
-import { setModType, setModData } from '../buttons/actionReducers'
+import { setModData, setModType } from '../buttons/actionReducers'
 import { updateSingleMetadata } from './../../../map/data/actionReducers'
 import { properties } from '../../../../properties'
 import { showNotification } from 'admin-on-rest'
 import { TYPE_METADATA } from '../../../map/actionReducers'
 import utilsQuery from '../../../map/utils/query'
+
 const jsonp = require('jsonp')
 
 const styles = {
@@ -35,7 +36,7 @@ function hexToRgb (hex) {
   var c
   if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
     c = hex.substring(1).split('')
-    if (c.length == 3) {
+    if (c.length === 3) {
       c = [c[0], c[0], c[1], c[1], c[2], c[2]]
     }
     c = '0x' + c.join('')
@@ -74,7 +75,7 @@ export class MetaForm extends Component {
             'title': values.title,
             'wiki': newWikiURL,
             'start': +values.start,
-            'end':  +values.end,
+            'end': +values.end,
             'participants': (values.participants || []).map(el => el.participantTeam.map(el2 => el2.name)),
             'content': (values.content || []).map((el) => {
               const contentType = (el.contentType.substr(0, 2) === 'w|') ? 'markers' : 'metadata'
@@ -87,7 +88,7 @@ export class MetaForm extends Component {
           'subtype': values.subtype,
           'year': +values.start,
           'score': 0,
-          'coo':  values.coo,
+          'coo': values.coo,
           'type': values.type
         }
 
@@ -202,27 +203,28 @@ export class MetaForm extends Component {
             },
             body: JSON.stringify(bodyToSend)
           })
-          .then((res) => {
-            if (res.status === 200) {
-              this.setState({
-                metaToUpdate: metadataItem,
-                successFullyUpdated: true
-              })
-              this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
-              if (redirect === 'edit') history.goBack()
-              else {
-                if (utilsQuery.getURLParameter('value')) history.push('/article')
-                else history.push('/')
+            .then((res) => {
+              if (res.status === 200) {
+                this.setState({
+                  metaToUpdate: metadataItem,
+                  successFullyUpdated: true
+                })
+                this.props.showNotification((redirect === 'edit') ? 'Metadata successfully updated' : 'Metadata successfully added')
+                if (redirect === 'edit') history.goBack()
+                else {
+                  if (utilsQuery.getURLParameter('value')) history.push('/article')
+                  else history.push('/')
+                }
+              } else {
+                this.setState({
+                  metaToUpdate: '',
+                  successFullyUpdated: false
+                })
+                this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
               }
-            } else {
-              this.setState({
-                metaToUpdate: '',
-                successFullyUpdated: false
-              })
-              this.props.showNotification((redirect === 'edit') ? 'Metadata not updated' : 'Metadata not added', 'warning')
-            }
-          })
+            })
         }).catch((err) => {
+          console.error(err)
           this.props.showNotification((redirect === 'edit') ? 'Metadata not updated: invalid icon url.' : 'Metadata not added: invalid icon url', 'warning')
         })
       }
@@ -240,7 +242,10 @@ export class MetaForm extends Component {
       .then(() => {
         setModType('', [], metaToUpdate)
       })
-      .catch((err) => setModType(''))
+      .catch((err) => {
+        console.error(err)
+        setModType('')
+      })
   }
 
   componentDidMount () {
@@ -251,8 +256,12 @@ export class MetaForm extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) { this.props.change('coo[0]', nextProps.modActive.data[0]) }
-    if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) { this.props.change('coo[1]', nextProps.modActive.data[1]) }
+    if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) {
+      this.props.change('coo[0]', nextProps.modActive.data[0])
+    }
+    if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) {
+      this.props.change('coo[1]', nextProps.modActive.data[1])
+    }
   }
 
   render () {
@@ -302,13 +311,13 @@ const enhance = compose(
     selectedYear: state.selectedYear,
     selectedItem: state.selectedItem,
   }),
-    {
-      // crudUpdate: crudUpdateAction,
-      setModType,
-      setModData,
-      updateSingleMetadata,
-      showNotification
-    }),
+  {
+    // crudUpdate: crudUpdateAction,
+    setModType,
+    setModData,
+    updateSingleMetadata,
+    showNotification
+  }),
   reduxForm({
     form: 'record-form',
     enableReinitialize: true,

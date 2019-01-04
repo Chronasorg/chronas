@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
 import YouTube from 'react-youtube'
 import { Player } from 'video-react'
 import Dialog from 'material-ui/Dialog'
@@ -14,20 +13,17 @@ import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconEdit from 'material-ui/svg-icons/content/create'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import ContentAdd from 'material-ui/svg-icons/content/add'
-import { Card, CardActions, CardHeader, CardMedia, CardTitle, CardText } from 'material-ui/Card'
 import SelectField from 'material-ui/SelectField'
-import FlatButton from 'material-ui/FlatButton'
 import MenuItem from 'material-ui/MenuItem'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
-import { Tabs, Tab } from 'material-ui/Tabs'
+import { Tab, Tabs } from 'material-ui/Tabs'
 import ImageGallery from 'react-image-gallery'
 import SwipeableViews from 'react-swipeable-views'
 import { LoadingCircle } from '../../global/LoadingCircle'
-import { translate, ViewTitle, showNotification } from 'admin-on-rest'
+import { showNotification, translate, ViewTitle } from 'admin-on-rest'
 import axios from 'axios'
-import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
+import { red400 } from 'material-ui/styles/colors'
 import GridTile from '../../overwrites/GridTile'
-import { tooltip } from '../../../styles/chronasStyleComponents'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
 import { setAreaColorLabel } from '../../menu/layers/actionReducers'
 import { selectAreaItem, selectEpicItem, selectLinkedItem, selectMarkerItem } from '../../map/actionReducers'
@@ -154,7 +150,7 @@ const styles = {
   },
   selectedIMG: {
     height: 'auto',
-/* transform: translateY(-50%); */
+    /* transform: translateY(-50%); */
     position: 'relative',
     left: 0,
     width: '100%',
@@ -207,49 +203,9 @@ const styles = {
 }
 
 class Discover extends PureComponent {
-  constructor (props) {
-    super(props)
-    this._openPartOf = this._openPartOf.bind(this)
-    this.state = {
-      selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} },
-      slideIndex: 0,
-      currentYearLoaded: 3000,
-      hiddenElement: true,
-      isFetchingImages: true,
-      slidesData: [],
-      tileData: {
-        tilesHighlightData: [],
-        tilesArtefactsData: [],
-        tilesArticlesData: [],
-        tilesEpicsData: [],
-        tilesPeopleData: [],
-        tilesCitiesData: [],
-        tilesBattlesData: [],
-        tilesOtherData: [],
-        tilesVideosData: [],
-        tilesPodcastsData: [],
-        tilesPsData: []
-      },
-      tabDataKeys: [
-        ['tilesHighlightData', 'HIGHLIGHTS', ''],
-        ['tilesArtefactsData', 'ARTEFACTS', 'artefacts'],
-        // ['tilesArticlesData', 'ARTICLES', 'articles'],
-        ['tilesEpicsData', 'EPICS', 'epics'],
-        ['tilesPeopleData', 'PEOPLE', 'people'],
-        ['tilesCitiesData', 'CITIES', 'cities'],
-        ['tilesBattlesData', 'BATTLES', 'battles'],
-        ['tilesOtherData', 'OTHER', 'misc'],
-        ['tilesVideosData', 'VIDEOS', 'v'],
-        // ['tilesPodcastsData', 'PODCASTS', 'audios'],
-        ['tilesPsData', 'PRIMARY SOURCES', 'ps']
-      ]
-    }
-  }
-
   handleChange = (value) => {
     this.setState({ slideIndex: value })
   }
-
   handleClose = () => {
     if (this.state.selectedImage.src !== '') {
       this.handleImageClose()
@@ -257,25 +213,20 @@ class Discover extends PureComponent {
     }
     this.props.history.push('/')
   }
-
   handleImageClose = () => {
     this.setState({ selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} } })
   }
-
   componentDidMount = () => {
     this.setState({ hiddenElement: false })
   }
-
   componentWillMount = () => {
     if (this.props.selectedYear !== this.state.currentYearLoaded) {
       this._updateImages(this.props.selectedYear)
     }
   }
-
   componentWillUnmount = () => {
     this.setState({ hiddenElement: true })
   }
-
   componentWillReceiveProps = (nextProps) => {
     const { selectedYear } = this.props
 
@@ -284,40 +235,37 @@ class Discover extends PureComponent {
       this._updateImages(nextProps.selectedYear)
     }
   }
-
   _handleOpenArticle = (selectedImage) => {
     this.props.selectLinkedItem(selectedImage.wiki, selectedImage.fullData)
     this.props.history.push('/article')
   }
-
   _openPartOf = (el, fullData) => {
-    const { activeArea, setAreaColorLabel, selectAreaItem, selectMarkerItem, selectedYear, selectEpicItem,  selectLinkedItem, history } = this.props
+    const { activeArea, setAreaColorLabel, selectAreaItem, selectMarkerItem, selectedYear, selectEpicItem, selectLinkedItem, history } = this.props
 
     const aeId = ((el || {}).properties || {}).aeId
     const typeId = ((el || {}).properties || {}).ct || (fullData || {}).type
     if (aeId) {
-      const [ ae, colorToSelect, rulerToHold ] = aeId.split('|')
+      const [ae, colorToSelect, rulerToHold] = aeId.split('|')
       const nextData = activeArea.data
       const provinceWithOldRuler = Object.keys(nextData).find(key => nextData[key][utils.activeAreaDataAccessor(colorToSelect)] === rulerToHold) // TODO: go on here
       if (provinceWithOldRuler) {
         selectAreaItem(provinceWithOldRuler, provinceWithOldRuler)
         if (colorToSelect !== activeArea.color) {
-          setAreaColorLabel(colorToSelect,colorToSelect)
+          setAreaColorLabel(colorToSelect, colorToSelect)
         }
       }
     } else if (typeId === 'marker') {
       selectMarkerItem(el.properties.w, { coo: (el.geometry || {}).coordinates })
     } else if (typeId === 'e') {
-      if ('ruler' !== activeArea.color) {
+      if (activeArea.color !== 'ruler') {
         setAreaColorLabel('ruler', 'ruler')
       }
-      selectEpicItem(fullData.wiki, +(fullData.year || selectedYear),fullData._id)
+      selectEpicItem(fullData.wiki, +(fullData.year || selectedYear), fullData._id)
     } else {
       selectLinkedItem(((el || {}).properties || {}).w || (fullData || {}).wiki, fullData)
     }
     history.push('/article')
   }
-
   _updateImages = (selectedYear) => {
     this.setState({ isFetchingImages: true })
     // Load slides data
@@ -356,8 +304,8 @@ class Discover extends PureComponent {
           res.forEach((imageItem) => {
             newTilesData.push({
               src: imageItem._id,
-              wiki: (imageItem.subtype === "ps" && imageItem.wiki),
-              thumbnail: imageItem.data.poster || (imageItem.subtype === "ps" && "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Sachsenspiegel.jpg/614px-Sachsenspiegel.jpg"),
+              wiki: (imageItem.subtype === 'ps' && imageItem.wiki),
+              thumbnail: imageItem.data.poster || (imageItem.subtype === 'ps' && 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Sachsenspiegel.jpg/614px-Sachsenspiegel.jpg'),
               title: imageItem.data.title,
               subtype: imageItem.subtype,
               source: imageItem.data.source,
@@ -400,7 +348,6 @@ class Discover extends PureComponent {
         })
       })
   }
-
   _handleUpvote = (id, stateDataId) => {
     const token = localStorage.getItem('chs_token')
     if (!token) {
@@ -454,7 +401,6 @@ class Discover extends PureComponent {
         })
     }
   }
-
   _handleDownvote = (id, stateDataId) => {
     const token = localStorage.getItem('chs_token')
     if (!token) {
@@ -508,23 +454,27 @@ class Discover extends PureComponent {
         })
     }
   }
-
   _handleEdit = (id, dataKey = false) => {
     const selectedItem = (dataKey) ? this.state.tileData[dataKey].find(el => (el.src === decodeURIComponent(id))) : this.state.selectedImage
-    this.props.selectLinkedItem(selectedItem, { ...selectedItem,
+    this.props.selectLinkedItem(selectedItem, {
+      ...selectedItem,
       ...selectedItem.fullData,
-      participants: (((selectedItem.fullData || {}).data || {}).participants || []).map((pT) => { return { 'participantTeam': pT.map((pp) => { return { 'name': pp } }) } }) })
+      participants: (((selectedItem.fullData || {}).data || {}).participants || []).map((pT) => {
+        return {
+          'participantTeam': pT.map((pp) => {
+            return { 'name': pp }
+          })
+        }
+      })
+    })
     this.props.history.push('/mod/linked')
   }
-
   _handleAdd = () => {
     this.props.history.push('/mod/linked/create')
   }
-
   _handleOpenSource = (source) => {
     window.open(decodeURIComponent(source), '_blank').focus()
   }
-
   _removeTile = (tileDataKey, tileSrc) => {
     const originalTileData = this.state.tileData
     const originalSlideData = this.state.slidesData
@@ -537,6 +487,45 @@ class Discover extends PureComponent {
     })
 
     this.forceUpdate()
+  }
+
+  constructor (props) {
+    super(props)
+    this._openPartOf = this._openPartOf.bind(this)
+    this.state = {
+      selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} },
+      slideIndex: 0,
+      currentYearLoaded: 3000,
+      hiddenElement: true,
+      isFetchingImages: true,
+      slidesData: [],
+      tileData: {
+        tilesHighlightData: [],
+        tilesArtefactsData: [],
+        tilesArticlesData: [],
+        tilesEpicsData: [],
+        tilesPeopleData: [],
+        tilesCitiesData: [],
+        tilesBattlesData: [],
+        tilesOtherData: [],
+        tilesVideosData: [],
+        tilesPodcastsData: [],
+        tilesPsData: []
+      },
+      tabDataKeys: [
+        ['tilesHighlightData', 'HIGHLIGHTS', ''],
+        ['tilesArtefactsData', 'ARTEFACTS', 'artefacts'],
+        // ['tilesArticlesData', 'ARTICLES', 'articles'],
+        ['tilesEpicsData', 'EPICS', 'epics'],
+        ['tilesPeopleData', 'PEOPLE', 'people'],
+        ['tilesCitiesData', 'CITIES', 'cities'],
+        ['tilesBattlesData', 'BATTLES', 'battles'],
+        ['tilesOtherData', 'OTHER', 'misc'],
+        ['tilesVideosData', 'VIDEOS', 'v'],
+        // ['tilesPodcastsData', 'PODCASTS', 'audios'],
+        ['tilesPsData', 'PRIMARY SOURCES', 'ps']
+      ]
+    }
   }
 
   render () {
@@ -556,7 +545,10 @@ class Discover extends PureComponent {
 
       const sourceSelected = decodeURIComponent(source !== 'undefined' ? source : id)
 
-      return <div className='slideButtons' style={(stateData[2] !== 'audios') ? styles.buttonContainer : { ...styles.buttonContainer, bottom: 100 }}>
+      return <div className='slideButtons' style={(stateData[2] !== 'audios') ? styles.buttonContainer : {
+        ...styles.buttonContainer,
+        bottom: 100
+      }}>
         <IconButton
           onClick={() => this._handleUpvote(id, stateData[0])}
           color='red'
@@ -573,26 +565,28 @@ class Discover extends PureComponent {
           tooltipPosition='center-left'
           tooltip={translate('pos.downvote')}
         ><IconThumbDown hoverColor={themes[theme].highlightColors[0]} color={downvoteColor} /></IconButton>
-        <div style={styles.scoreLabel}>{ score} </div>
-        {(stateData[2] === 'audios' || stateData[2] === 'articles' || (stateData[2] === 'ps' && (sourceSelected || '').indexOf('http') > -1) || stateData[2] === 'v') ? <IconButton
-          style={styles.sourceButton}
-          tooltipPosition='bottom-center'
-          tooltip={sourceSelected}
-          onClick={() => this._handleOpenSource(sourceSelected)} >
-          tooltip={hasNoWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
-          <FloatingActionButton
-            mini
-            backgroundColor='#aaaaaaba'
-          ><IconOutbound hoverColor={themes[theme].highlightColors[0]} color='white' style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
-          </FloatingActionButton >
-        </IconButton> : null }
+        <div style={styles.scoreLabel}>{score} </div>
+        {(stateData[2] === 'audios' || stateData[2] === 'articles' || (stateData[2] === 'ps' && (sourceSelected || '').indexOf('http') > -1) || stateData[2] === 'v')
+          ? <IconButton
+            style={styles.sourceButton}
+            tooltipPosition='bottom-center'
+            tooltip={sourceSelected}
+            onClick={() => this._handleOpenSource(sourceSelected)}>
+            tooltip={hasNoWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
+            <FloatingActionButton
+              mini
+              backgroundColor='#aaaaaaba'
+            ><IconOutbound hoverColor={themes[theme].highlightColors[0]} color='white'
+              style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
+            </FloatingActionButton>
+          </IconButton> : null}
         <FloatingActionButton
           mini
           onClick={() => this._handleEdit(id, stateData[0])}
           backgroundColor='#aaaaaaba'
           style={styles.editButton}
         ><IconEdit hoverColor={themes[theme].highlightColors[0]} color='white' />
-        </FloatingActionButton >
+        </FloatingActionButton>
       </div>
     }
 
@@ -601,7 +595,11 @@ class Discover extends PureComponent {
     const addButtonDynamicStyle = { ...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit' }
     return (
       <div>
-        <Toolbar style={{ zIndex: 15000, color: 'white', boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px' }}>
+        <Toolbar style={{
+          zIndex: 15000,
+          color: 'white',
+          boxShadow: 'rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px'
+        }}>
           <ToolbarGroup>
             <ToolbarTitle style={styles.toolbarTitleStyle} text={titleText} />
           </ToolbarGroup>
@@ -618,7 +616,7 @@ class Discover extends PureComponent {
               onClick={this.handleClose}
             >
               <CloseIcon color={styles.toolbarTitleStyle.color} />
-            </FloatingActionButton >
+            </FloatingActionButton>
           </ToolbarGroup>
         </Toolbar>
         <Dialog open
@@ -646,23 +644,28 @@ class Discover extends PureComponent {
               const src = event.target.src
               const tile = slidesData.find(el => (el.original === src))
 
-              this.setState({ selectedImage: {
-                  src: tile.subtype === "ps" ? tile.thumbnail : (tile.src || tile.original || tile.poster),
+              this.setState({
+                selectedImage: {
+                  src: tile.subtype === 'ps' ? tile.thumbnail : (tile.src || tile.original || tile.poster),
                   year: tile.subtitle || tile.originalTitle,
                   title: tile.title || tile.description,
-                  wiki: tile.subtype === "ps" && [tile.wiki],
+                  wiki: tile.subtype === 'ps' && [tile.wiki],
                   source: tile.source,
                   fullData: tile.fullData
-                } })
+                }
+              })
 
-              if (tile.subtype !== "ps") {
-                axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' +  window.encodeURIComponent((tile.src || tile.original)))
+              if (tile.subtype !== 'ps') {
+                axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + window.encodeURIComponent((tile.src || tile.original)))
                   .then((linkedItemResult) => {
                     if (linkedItemResult.status === 200) {
                       const res = (linkedItemResult.data.map || []).concat(linkedItemResult.data.media || [])
-                      this.setState({ selectedImage: {
-                          ...this.state.selectedImage, wiki: res.filter(el => el.properties.ct === 'marker' || el.properties.ct === 'area')
-                        } })
+                      this.setState({
+                        selectedImage: {
+                          ...this.state.selectedImage,
+                          wiki: res.filter(el => el.properties.ct === 'marker' || el.properties.ct === 'area')
+                        }
+                      })
                     }
                   })
               }
@@ -684,11 +687,14 @@ class Discover extends PureComponent {
               margin: '0 auto',
               width: '1024px',
               marginBottom: '1em',
-              marginTop: '1em' }}
+              marginTop: '1em'
+            }}
           >
             {tabDataKeys.map((tabKey, i) => (
-              <Tab disabled={!(tileData[tabKey[0]].length > 0)} style={tileData[tabKey[0]].length > 0 ? { } : { opacity: 0.3, cursor: 'not-allowed' }} key={'tabHeader_' + i} label={tabKey[1]} value={i} />
-              ))}
+              <Tab disabled={!(tileData[tabKey[0]].length > 0)}
+                style={tileData[tabKey[0]].length > 0 ? {} : { opacity: 0.3, cursor: 'not-allowed' }}
+                key={'tabHeader_' + i} label={tabKey[1]} value={i} />
+            ))}
           </Tabs>
           <SwipeableViews
             index={slideIndex}
@@ -699,56 +705,14 @@ class Discover extends PureComponent {
                   cellHeight={180}
                   padding={1}
                   cols={(tabKey[2] !== 'v')
-                  ? (tabKey[2] === 'audios')
-                    ? 1 : 3
-                  : 2
-                }
+                    ? (tabKey[2] === 'audios')
+                      ? 1 : 3
+                    : 2
+                  }
                   style={styles.gridList}
-              >
+                >
                   {tileData[tabKey[0]].length > 0 ? tileData[tabKey[0]].map((tile, j) => (
-                    (tile.subtype !== 'epics' && tile.subtype !== 'v' && tile.subtype !== 'audios' /*&& tile.subtype !== 'ps'*/ && tile.subtype !== 'articles') ? <GridTile
-                      key={tile.src}
-                      style={{ border: '1px solid black', cursor: 'pointer' }}
-                      titleStyle={styles.title}
-                      subtitleStyle={styles.subtitle}
-                      title={tile.subtitle}
-                      subtitle={tile.title}
-                      actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
-                      actionPosition='right'
-                      titlePosition='bottom'
-                      titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
-                      cols={((j + 3) % 4 < 2) ? 1 : 2}
-                      titleHeight={128}
-                      rows={2}
-                      >
-                      <img src={tile.thumbnail || tile.src}
-                        onError={() => this._removeTile(tabKey[0], tile.src)}
-                        onClick={() => {
-                          this.setState({ selectedImage: {
-                              src: tile.subtype === "ps" ? tile.thumbnail : (tile.src || tile.original || tile.poster),
-                              year: tile.subtitle || tile.originalTitle,
-                              title: tile.title || tile.description,
-                              wiki: tile.subtype === "ps" && [tile.wiki],
-                              source: tile.source,
-                              fullData: tile.fullData
-                            } })
-
-                          if (tile.subtype !== "ps") {
-                            axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' +  window.encodeURIComponent(tile.src))
-                              .then((linkedItemResult) => {
-                                if (linkedItemResult.status === 200) {
-                                  const res = (linkedItemResult.data.map || []).concat(linkedItemResult.data.media || [])
-
-                                  this.setState({ selectedImage: {
-                                      ...this.state.selectedImage, wiki: res.filter(el => el.properties.ct === 'marker' || el.properties.ct === 'area')
-                                    } })
-                                }
-                              })
-                          }
-                        }}
-                          />
-                    </GridTile>
-                    : (tile.subtype === 'epics')
+                    (tile.subtype !== 'epics' && tile.subtype !== 'v' && tile.subtype !== 'audios' /* && tile.subtype !== 'ps' */ && tile.subtype !== 'articles')
                       ? <GridTile
                         key={tile.src}
                         style={{ border: '1px solid black', cursor: 'pointer' }}
@@ -759,37 +723,87 @@ class Discover extends PureComponent {
                         actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
                         actionPosition='right'
                         titlePosition='bottom'
-                        titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 10%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                        titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
                         cols={((j + 3) % 4 < 2) ? 1 : 2}
                         titleHeight={128}
                         rows={2}
                       >
-                        <h1 style={{
-                          position: 'absolute',
-                          left: '0px',
-                          right: '0px',
-                          top: '0px',
-                          margin: '0.3em',
-                          color: 'white',
-                          fontWeight: 'bolder',
-                          fontSize: '3em',
-                          textShadow: '0.03em 0 4px #000, 0.03em 0 4px #000, 0.03em 0 4px #000, 0.03em 0 4px #000'
-                        }}>EPIC</h1>
-                        <img src={tile.poster || '/images/placeholder-epic.png'}
+                        <img src={tile.thumbnail || tile.src}
                           onError={() => this._removeTile(tabKey[0], tile.src)}
                           onClick={() => {
-                            this.setState({ selectedImage: {
-                              src: tile.src,
-                              poster: tile.poster,
-                              year: tile.subtitle,
-                              title: tile.title,
-                              wiki: tile.wiki,
-                              source: tile.source,
-                              fullData: tile.fullData
-                            } })
+                            this.setState({
+                              selectedImage: {
+                                src: tile.subtype === 'ps' ? tile.thumbnail : (tile.src || tile.original || tile.poster),
+                                year: tile.subtitle || tile.originalTitle,
+                                title: tile.title || tile.description,
+                                wiki: tile.subtype === 'ps' && [tile.wiki],
+                                source: tile.source,
+                                fullData: tile.fullData
+                              }
+                            })
+
+                            if (tile.subtype !== 'ps') {
+                              axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + window.encodeURIComponent(tile.src))
+                                .then((linkedItemResult) => {
+                                  if (linkedItemResult.status === 200) {
+                                    const res = (linkedItemResult.data.map || []).concat(linkedItemResult.data.media || [])
+
+                                    this.setState({
+                                      selectedImage: {
+                                        ...this.state.selectedImage,
+                                        wiki: res.filter(el => el.properties.ct === 'marker' || el.properties.ct === 'area')
+                                      }
+                                    })
+                                  }
+                                })
+                            }
                           }}
                         />
                       </GridTile>
+                      : (tile.subtype === 'epics')
+                        ? <GridTile
+                          key={tile.src}
+                          style={{ border: '1px solid black', cursor: 'pointer' }}
+                          titleStyle={styles.title}
+                          subtitleStyle={styles.subtitle}
+                          title={tile.subtitle}
+                          subtitle={tile.title}
+                          actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
+                          actionPosition='right'
+                          titlePosition='bottom'
+                          titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 10%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                          cols={((j + 3) % 4 < 2) ? 1 : 2}
+                          titleHeight={128}
+                          rows={2}
+                        >
+                          <h1 style={{
+                            position: 'absolute',
+                            left: '0px',
+                            right: '0px',
+                            top: '0px',
+                            margin: '0.3em',
+                            color: 'white',
+                            fontWeight: 'bolder',
+                            fontSize: '3em',
+                            textShadow: '0.03em 0 4px #000, 0.03em 0 4px #000, 0.03em 0 4px #000, 0.03em 0 4px #000'
+                          }}>EPIC</h1>
+                          <img src={tile.poster || '/images/placeholder-epic.png'}
+                            onError={() => this._removeTile(tabKey[0], tile.src)}
+                            onClick={() => {
+                              this.setState({
+                                selectedImage: {
+                                  src: tile.src,
+                                  poster: tile.poster,
+                                  year: tile.subtitle,
+                                  title: tile.title,
+                                  wiki: tile.wiki,
+                                  source: tile.source,
+                                  fullData: tile.fullData
+                                }
+                              })
+                            }}
+                          />
+                        </GridTile>
                         : <GridTile
                           key={tile.src}
                           style={{ border: '1px solid black', cursor: 'pointer' }}
@@ -803,20 +817,21 @@ class Discover extends PureComponent {
                           titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
                           rows={tile.subtype === 'audios' ? 1 : 2}
                           titleHeight={128}
-                          >
+                        >
                           {getYoutubeId(tile.src)
-                              ? <YouTube
-                                className='videoContent'
-                                videoId={getYoutubeId(tile.src)}
-                                opts={properties.YOUTUBEOPTS}
-                                onError={() => this._removeTile(tabKey[0], tile.src)}
-                                />
-                              : <Player className='videoContent' fluid={false} ref='player'>
-                                <source src={tile.src} />
-                              </Player>
-                            }
+                            ? <YouTube
+                              className='videoContent'
+                              videoId={getYoutubeId(tile.src)}
+                              opts={properties.YOUTUBEOPTS}
+                              onError={() => this._removeTile(tabKey[0], tile.src)}
+                            />
+                            : <Player className='videoContent' fluid={false} ref='player'>
+                              <source src={tile.src} />
+                            </Player>
+                          }
                         </GridTile>
-                    )) : ( isFetchingImages ? <LoadingCircle theme={theme} title={translate('pos.loading')} /> : <span>No items found</span>)}
+                  )) : (isFetchingImages ? <LoadingCircle theme={theme} title={translate('pos.loading')} />
+                    : <span>No items found</span>)}
                 </GridList>
               </div> : <div />
             ))}
@@ -841,41 +856,72 @@ class Discover extends PureComponent {
             <p style={styles.selectedImageDescription}>{selectedImage.title}</p>
             <div style={styles.selectedImageButtonContainer}>
 
-              { hasNoWiki || ((selectedImage || {}).wiki || []).length === 1
-              ? <IconButton
-                style={{ ...styles.buttonOpenArticle, paddingRight: '1em' }}
-                tooltipPosition='bottom-center'
-                tooltip={hasNoWiki ? translate('pos.discover_component.hasNoArticle') : (translate('pos.discover_component.openArticle') + "  " + (((selectedImage.wiki[0].properties || {}).n || '').toString() || "").toUpperCase())}>
-                <RaisedButton
-                  hoverColor={themes[theme].highlightColors[0]}
-                  disabled={hasNoWiki}
-                  label='Open Article'
-                  onClick={() => this._openPartOf(selectedImage.wiki[0],selectedImage.fullData)}
-                  primary
+              {hasNoWiki || ((selectedImage || {}).wiki || []).length === 1
+                ? <IconButton
+                  style={{ ...styles.buttonOpenArticle, paddingRight: '1em' }}
+                  tooltipPosition='bottom-center'
+                  tooltip={hasNoWiki ? translate('pos.discover_component.hasNoArticle') : (translate('pos.discover_component.openArticle') + '  ' + (((selectedImage.wiki[0].properties || {}).n || '').toString() || '').toUpperCase())}>
+                  <RaisedButton
+                    hoverColor={themes[theme].highlightColors[0]}
+                    disabled={hasNoWiki}
+                    label='Open Article'
+                    onClick={() => this._openPartOf(selectedImage.wiki[0], selectedImage.fullData)}
+                    primary
                   />
-              </IconButton>
-                :
-                  <SelectField
-                  style={{ width: 200, color: 'rgb(255, 255, 255)', backgroundColor: 'transparent', maxHeight: 36, textAlign: 'center' }}
-                  menuStyle={{ width: 200, color: 'rgb(255, 255, 255)', top: 14, maxHeight: 36,  backgroundColor: 'rgb(106, 106, 106)' }}
-                  menuItemStyle={{ width: 200, maxHeight: 36, color: 'rgb(255, 255, 255)', backgroundColor: 'rgb(106, 106, 106)' }}
-                  labelStyle={{ maxHeight: 36, width: 200, left: 0, color: 'rgb(255, 255, 255)', backgroundColor: 'rgb(106, 106, 106)' }}
+                </IconButton>
+                : <SelectField
+                  style={{
+                    width: 200,
+                    color: 'rgb(255, 255, 255)',
+                    backgroundColor: 'transparent',
+                    maxHeight: 36,
+                    textAlign: 'center'
+                  }}
+                  menuStyle={{
+                    width: 200,
+                    color: 'rgb(255, 255, 255)',
+                    top: 14,
+                    maxHeight: 36,
+                    backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  menuItemStyle={{
+                    width: 200,
+                    maxHeight: 36,
+                    color: 'rgb(255, 255, 255)',
+                    backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  labelStyle={{
+                    maxHeight: 36,
+                    width: 200,
+                    left: 0,
+                    color: 'rgb(255, 255, 255)',
+                    backgroundColor: 'rgb(106, 106, 106)'
+                  }}
                   listStyle={{ width: 200 }}
                   underlineStyle={{ width: 200 }}
-                  floatingLabelStyle={{ maxHeight: 36, width: 200, left: 0, color: 'rgb(255, 255, 255)', backgroundColor: 'rgb(106, 106, 106)' }}
+                  floatingLabelStyle={{
+                    maxHeight: 36,
+                    width: 200,
+                    left: 0,
+                    color: 'rgb(255, 255, 255)',
+                    backgroundColor: 'rgb(106, 106, 106)'
+                  }}
                   hintStyle={{ width: 200, left: 22, color: 'rgb(255, 255, 255)' }}
                   // maxHeight={36}
                   floatingLabelText={translate('pos.related_item')}
                   hintText={translate('pos.related_item')}
                   value={null}
-                  onChange={(event, index, value) => { this._openPartOf(value) }}
-                  >
-                  { (selectedImage.wiki || []).map((el) => {
-                    return <MenuItem value={el} primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                  onChange={(event, index, value) => {
+                    this._openPartOf(value)
+                  }}
+                >
+                  {(selectedImage.wiki || []).map((el) => {
+                    return <MenuItem value={el}
+                      primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
                   })}
                 </SelectField>
-                }
-              { selectedImage.src && <IconButton
+              }
+              {selectedImage.src && <IconButton
                 style={styles.buttonOpenArticle}
                 tooltipPosition='bottom-center'
                 tooltip={hasNoWiki ? translate('pos.discover_component.hasNoImage') : translate('pos.discover_component.openSource')}>
@@ -884,10 +930,11 @@ class Discover extends PureComponent {
                   disabled={hasNoImage}
                   label='Open Image'
                   primary
-                  onClick={() => this._handleOpenSource(selectedImage.src)} >
-                  <IconOutbound color='white' style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
+                  onClick={() => this._handleOpenSource(selectedImage.src)}>
+                  <IconOutbound color='white'
+                    style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
                 </RaisedButton>
-              </IconButton> }
+              </IconButton>}
               <IconButton
                 style={styles.buttonOpenArticle}
                 tooltipPosition='bottom-center'
@@ -897,8 +944,9 @@ class Discover extends PureComponent {
                   disabled={hasNoSource}
                   label='Open Source'
                   primary
-                  onClick={() => this._handleOpenSource(selectedImage.source)} >
-                  <IconOutbound color='white' style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
+                  onClick={() => this._handleOpenSource(selectedImage.source)}>
+                  <IconOutbound color='white'
+                    style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
                 </RaisedButton>
               </IconButton>
               <IconButton

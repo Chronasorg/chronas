@@ -73,6 +73,42 @@ import { FieldTitle, translate } from 'admin-on-rest'
  */
 export class AutocompleteInput extends Component {
   state = {};
+  handleNewRequest = (chosenRequest, index) => {
+    const { setLinkedItemData } = this.props
+
+    if (setLinkedItemData) setLinkedItemData({ linkedItemKey1: chosenRequest.value })
+
+    const { allowEmpty, choices, input, optionValue } = this.props
+    let choiceIndex = allowEmpty ? index - 1 : index
+
+    // The empty item is always at first position
+    if (allowEmpty && index === 0) {
+      return input.onChange('')
+    }
+
+    input.onChange(chosenRequest.value)
+  };
+  handleUpdateInput = searchText => {
+    this.setState({ searchText })
+    this.props.onSearchChange(searchText)
+    const { setFilter } = this.props
+    setFilter && setFilter(searchText)
+  };
+  addAllowEmpty = choices => {
+    const { allowEmpty, translate } = this.props
+
+    if (allowEmpty) {
+      return [
+        {
+          value: '',
+          text: translate('aor.input.autocomplete.none'),
+        },
+        ...choices,
+      ]
+    }
+
+    return choices
+  };
 
   componentWillMount () {
     this.setSearchText(this.props)
@@ -100,29 +136,6 @@ export class AutocompleteInput extends Component {
     this.setState({ searchText: searchText || input.value })
   }
 
-  handleNewRequest = (chosenRequest, index) => {
-    const { setLinkedItemData } = this.props
-
-    if (setLinkedItemData) setLinkedItemData({ linkedItemKey1: chosenRequest.value })
-
-    const { allowEmpty, choices, input, optionValue } = this.props
-    let choiceIndex = allowEmpty ? index - 1 : index
-
-    // The empty item is always at first position
-    if (allowEmpty && index === 0) {
-      return input.onChange('')
-    }
-
-    input.onChange(chosenRequest.value)
-  };
-
-  handleUpdateInput = searchText => {
-    this.setState({ searchText })
-    this.props.onSearchChange(searchText)
-    const { setFilter } = this.props
-    setFilter && setFilter(searchText)
-  };
-
   getSuggestion (choice) {
     const { optionText, translate, translateChoice } = this.props
     const choiceName =
@@ -133,22 +146,6 @@ export class AutocompleteInput extends Component {
       ? translate(choiceName, { _: choiceName })
       : choiceName
   }
-
-  addAllowEmpty = choices => {
-    const { allowEmpty, translate } = this.props
-
-    if (allowEmpty) {
-      return [
-        {
-          value: '',
-          text: translate('aor.input.autocomplete.none'),
-        },
-        ...choices,
-      ]
-    }
-
-    return choices
-  };
 
   render () {
     const {
@@ -179,7 +176,7 @@ export class AutocompleteInput extends Component {
 
     return (
       <AutoComplete
-        searchText={this.state.searchText || ((this.props  || {}).input || {}).value || ''}
+        searchText={this.state.searchText || ((this.props || {}).input || {}).value || ''}
         dataSource={dataSource}
         floatingLabelText={
           <FieldTitle
@@ -192,7 +189,7 @@ export class AutocompleteInput extends Component {
         }
         fullWidth
         filter={filter}
-        hintText={"Start typing"}
+        hintText={'Start typing'}
         onNewRequest={this.handleNewRequest}
         onUpdateInput={this.handleUpdateInput}
         openOnFocus
@@ -210,7 +207,8 @@ AutocompleteInput.defaultProps = {
   choices: [],
   filter: AutoComplete.fuzzyFilter,
   options: {},
-  onSearchChange: () => {},
+  onSearchChange: () => {
+  },
   optionText: 'name',
   optionValue: 'id',
   translateChoice: true,

@@ -1,18 +1,68 @@
 import React from 'react'
 import {
-  XAxis,
-  YAxis,
-  FlexibleWidthXYPlot,
-  HorizontalGridLines,
-  GradientDefs,
   AreaSeries,
+  Crosshair,
+  FlexibleWidthXYPlot,
+  GradientDefs,
+  HorizontalGridLines,
   LineMarkSeries,
-  VerticalRectSeries,
-  Crosshair
+  XAxis,
+  YAxis
 } from 'react-vis'
-import { themes } from '../../../properties'
 
 export default class InfluenceChart extends React.Component {
+  componentDidMount = () => {
+    const { newData, epicMeta, selectedYear } = this.props
+    const newId = (newData[0] || {}).id
+    if (((newData || [])[0] || {}).data) {
+      this._setupData(newData, epicMeta, selectedYear, newId)
+    }
+  }
+  _setupData = (newData, epicMeta, selectedYear, newId) => {
+    this.setState({ idSetup: newId })
+    const nextSeries = newData.map((seriesEl) => seriesEl.data)
+
+    const currentYearMarkerValues = epicMeta
+      ? nextSeries.map((s, i) => {
+        const nearestYear = s[0]
+          .data.map(y => +y.left).reduce(function (prev, curr) {
+            return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
+          }, Infinity).toString()
+        const topObj = s[0].data.find(f => f.left === nearestYear)
+        return {
+          left: selectedYear,
+          top: topObj ? (topObj.top + ((i !== 2) ? '' : '%')) : ''
+        }
+      })
+      : newData[0].data.map((s, i) => {
+        const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
+          return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
+        }).toString()
+        const topObj = s.data.find(f => f.left === nearestYear)
+        return {
+          left: selectedYear,
+          top: topObj ? (topObj.top + ((i !== 2) ? '' : '%')) : ''
+        }
+      })
+
+    const crosshairStartValues = epicMeta ? [{
+      left: +epicMeta.start
+    }] : undefined
+    const crosshairEndValues = epicMeta ? [{
+      left: +epicMeta.end || +epicMeta.start
+    }] : undefined
+
+    this.setState({
+      sortedData: newData[0].data[0].data.map((el) => {
+        if (!isNaN(el.left)) return el.left
+      }).sort((a, b) => +a - +b),
+      series: nextSeries,
+      currentYearMarkerValues,
+      crosshairStartValues,
+      crosshairEndValues
+    })
+  }
+
   constructor (props) {
     super(props)
     this.state = {
@@ -106,66 +156,15 @@ export default class InfluenceChart extends React.Component {
     }
   }
 
-  componentDidMount = () => {
-    const { newData, epicMeta, selectedYear } = this.props
-    const newId = (newData[0] || {}).id
-    if (((newData || [])[0] || {}).data) {
-      this._setupData(newData, epicMeta, selectedYear, newId)
-    }
-  }
-
   componentWillReceiveProps (nextProps) {
     const { newData, epicMeta, selectedYear } = nextProps
     const newId = (newData[0] || {}).id
     if (((newData || [])[0] || {}).data &&
       (newId !== ((this.props.newData || [])[0] || {}).id ||
         (newId !== this.state.idSetup) ||
-      selectedYear !== this.props.selectedYear)) {
+        selectedYear !== this.props.selectedYear)) {
       this._setupData(newData, epicMeta, selectedYear, newId)
     }
-  }
-
-  _setupData = (newData, epicMeta, selectedYear, newId) => {
-    this.setState({ idSetup: newId })
-    const nextSeries = newData.map((seriesEl) => seriesEl.data)
-
-    const currentYearMarkerValues = epicMeta
-      ? nextSeries.map((s, i) => {
-        const nearestYear = s[0]
-          .data.map(y => +y.left).reduce(function (prev, curr) {
-          return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
-        },Infinity).toString()
-        const topObj = s[0].data.find(f => f.left === nearestYear)
-        return {
-          left: selectedYear,
-          top: topObj ? (topObj.top + ((i !== 2) ? '' : '%')) : ''
-        }
-      })
-      : newData[0].data.map((s, i) => {
-        const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
-          return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
-        }).toString()
-        const topObj = s.data.find(f => f.left === nearestYear)
-        return {
-          left: selectedYear,
-          top: topObj ? (topObj.top + ((i !== 2) ? '' : '%')) : ''
-        }
-      })
-
-    const crosshairStartValues = epicMeta ? [{
-      left: +epicMeta.start
-    }] : undefined
-    const crosshairEndValues = epicMeta ? [{
-      left: +epicMeta.end || +epicMeta.start
-    }] : undefined
-
-    this.setState({
-      sortedData: newData[0].data[0].data.map((el) => { if (!isNaN(el.left)) return el.left }).sort((a, b) => +a - +b),
-      series: nextSeries,
-      currentYearMarkerValues,
-      crosshairStartValues,
-      crosshairEndValues
-    })
   }
 
   render () {
@@ -190,13 +189,15 @@ export default class InfluenceChart extends React.Component {
             height={(epicMeta) ? 256 : 200}>
             <HorizontalGridLines />
             <GradientDefs>
-              { epicMeta ? rulerProps.map((rulerEl, i) => <linearGradient key={'CoolGradient' + i} id={'CoolGradient' + i} x1='0' x2='0' y1='0' y2='1'>
+              {epicMeta ? rulerProps.map((rulerEl, i) => <linearGradient key={'CoolGradient' + i}
+                id={'CoolGradient' + i} x1='0' x2='0' y1='0'
+                y2='1'>
                 <stop offset='0%' stopColor={(rulerEl || {})[1] || 'grey'} stopOpacity={0.8} />
                 <stop offset='100%' stopColor='white' stopOpacity={0.3} />
               </linearGradient>) : <linearGradient id='CoolGradient0' x1='0' x2='0' y1='0' y2='1'>
                 <stop offset='0%' stopColor={entityColor} stopOpacity={0.8} />
                 <stop offset='100%' stopColor='white' stopOpacity={0.3} />
-              </linearGradient> }
+              </linearGradient>}
             </GradientDefs>
             <YAxis
               orientation='left' title='Population'
@@ -218,12 +219,12 @@ export default class InfluenceChart extends React.Component {
               curve='curveMonotoneX'
               data={epicMeta ? (seriesEl[0] || {}).data : (seriesEl[2] || {}).data} />
             )}
-            { epicMeta && <Crosshair
+            {epicMeta && <Crosshair
               className='startMarker'
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
               values={crosshairStartValues} />}
-            { epicMeta && <Crosshair
+            {epicMeta && <Crosshair
               className='endMarker'
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
@@ -237,19 +238,21 @@ export default class InfluenceChart extends React.Component {
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
               values={currentYearMarkerValues} />
-            { chartIcons.map((el, index) => {
-            return <Crosshair
+            {chartIcons.map((el, index) => {
+              return <Crosshair
 
-              className={(epicMeta) ? 'timelineIconBig' : 'timelineIconSmall'}
-              itemsFormat={this._formatCrosshairItems}
-              titleFormat={this._formatCrosshairTitle}
-              values={[{
-                left: +el.date,
-              }]}>
-              <div>
-                <img title={el.name} src={"/images/transparent.png"} className={(index % 3) ? 'battleIcon1' : 'battleIcon2'} />
-              </div>
-            </Crosshair>})}
+                className={(epicMeta) ? 'timelineIconBig' : 'timelineIconSmall'}
+                itemsFormat={this._formatCrosshairItems}
+                titleFormat={this._formatCrosshairTitle}
+                values={[{
+                  left: +el.date,
+                }]}>
+                <div>
+                  <img title={el.name} src={'/images/transparent.png'}
+                    className={(index % 3) ? 'battleIcon1' : 'battleIcon2'} />
+                </div>
+              </Crosshair>
+            })}
           </FlexibleWidthXYPlot>
         </div>
       </div>

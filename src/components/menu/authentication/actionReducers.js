@@ -17,32 +17,32 @@ export const userSignup = (payload, pathName) => ({
   type: USER_LOGIN,
   payload,
   meta: { auth: true, pathName },
-});
+})
 
 export const setUser = (token, user, privilege, avatar) => ({
   type: SET_USER,
   payload: [token, user, privilege, avatar],
-});
+})
 
 export const customNotification = message => ({
   type: CUSTOM_NOTIFICATION,
   payload: message,
-});
+})
 
 export const setToken = token => ({
   type: SET_TOKEN,
   payload: token,
-});
+})
 
 export const setUsername = username => ({
   type: SET_USERNAME,
   payload: username,
-});
+})
 
 export const setPrivilege = privilege => ({
   type: SET_PRIVILEGE,
   payload: privilege,
-});
+})
 
 export const logout = () => ({
   type: USER_LOGOUT,
@@ -50,13 +50,13 @@ export const logout = () => ({
 
 /** Reducers **/
 
-export const userReducer = (initial = { 'token': '', 'username': '', 'privilege': '' }) => (
+export const userReducer = (initial = { 'token': '', 'username': '', 'privilege': '' }) =>
   (prevUser = initial, { type, payload }) => {
     switch (type) {
       case FLUSH_USER:
       case USER_LOGOUT:
       case USER_LOGIN_FAILURE:
-        localStorage.removeItem('chs_token');
+        localStorage.removeItem('chs_token')
         return initial
       case SET_USER:
         return {
@@ -80,9 +80,8 @@ export const userReducer = (initial = { 'token': '', 'username': '', 'privilege'
         return {
           ...prevUser,
           privilege: payload
-        };
+        }
       default:
-        return prevUser;
+        return prevUser
     }
   }
-);

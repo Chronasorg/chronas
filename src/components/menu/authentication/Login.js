@@ -1,23 +1,20 @@
 import React, { Component } from 'react'
-import { reduxForm, Field } from 'redux-form'
+import { Field, reduxForm } from 'redux-form'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import compose from 'recompose/compose'
-import {Notification, translate, showNotification, userLogin, AUTH_LOGIN} from 'admin-on-rest'
+import { AUTH_LOGIN, Notification, showNotification, translate, userLogin } from 'admin-on-rest'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import { Card, CardActions } from 'material-ui/Card'
-import Avatar from 'material-ui/Avatar'
 import CircularProgress from 'material-ui/CircularProgress'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
-import { Toolbar, ToolbarGroup } from 'material-ui/Toolbar'
-import LockIcon from 'material-ui/svg-icons/action/lock-outline'
 import { cyan500, pinkA200 } from 'material-ui/styles/colors'
-import { userSignup as userSignupAction, USER_SIGNUP } from './actionReducers'
-import { themes, properties } from '../../../properties'
+import { USER_SIGNUP, userSignup as userSignupAction } from './actionReducers'
+import { properties, themes } from '../../../properties'
 
 const styles = {
   main: {
@@ -71,36 +68,35 @@ const renderInput = ({ meta: { touched, error } = {}, input: { ...inputProps }, 
   />
 
 class Login extends Component {
+  componentDidMount = () => {
+    this.setState({ hiddenElement: false })
+  }
+  componentWillUnmount = () => {
+    this.setState({ hiddenElement: true })
+  }
+  login = (auth) => {
+    const { userLogin, showNotification } = this.props
+    userLogin({ ...auth, authType: AUTH_LOGIN }, this.props.location.state ? this.props.location.state.nextPathname : '/')
+    showNotification('aor.auth.logging_in')
+  }
+  signup = (auth) => {
+    const { userSignup, showNotification } = this.props
+    userSignup({
+      ...auth,
+      authType: USER_SIGNUP
+    }, this.props.location.state ? this.props.location.state.nextPathname : '/')
+    showNotification('aor.auth.signing_up')
+  }
+  handleClose = () => {
+    this.props.history.push('/')
+  }
+
   constructor (props) {
     super(props)
     this.state = {
       hiddenElement: true,
       authMode: 'signIn'
     }
-  }
-
-  componentDidMount = () => {
-    this.setState({ hiddenElement: false })
-  }
-
-  componentWillUnmount = () => {
-    this.setState({ hiddenElement: true })
-  }
-
-  login = (auth) => {
-    const { userLogin, showNotification } = this.props
-    userLogin({...auth, authType: AUTH_LOGIN}, this.props.location.state ? this.props.location.state.nextPathname : '/')
-    showNotification('aor.auth.logging_in')
-  }
-
-  signup = (auth) => {
-    const { userSignup, showNotification } = this.props
-    userSignup({...auth, authType: USER_SIGNUP}, this.props.location.state ? this.props.location.state.nextPathname : '/')
-    showNotification('aor.auth.signing_up')
-  }
-
-  handleClose = () => {
-    this.props.history.push('/')
   }
 
   render () {
@@ -118,10 +114,18 @@ class Login extends Component {
       <div className='modal-body'>
         <p style={{ textAlign: 'center' }}><span className='auth-form-divider-text'>with one click:</span></p>
         <div className='social-signup-buttons'>
-          <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github' className='btn btn-link-github btn-block'><i className="fa fa-github-square signupBig"></i><span className='signup-button__text'> Github</span></a></div>
-          <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google' className='btn btn-link-google btn-block'><i className="fa fa-google-plus-square signupBig"></i><span className='signup-button__text'> Google</span></a></div>
-          <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook' className='btn btn-link-facebook btn-block'><i className="fa fa-facebook-square signupBig"></i><span className='signup-button__text'> Facebook</span></a></div>
-          {/*<div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div>*/}
+          <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github'
+            className='btn btn-link-github btn-block'><i
+              className='fa fa-github-square signupBig' /><span className='signup-button__text'> Github</span></a></div>
+          <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google'
+            className='btn btn-link-google btn-block'><i
+              className='fa fa-google-plus-square signupBig' /><span className='signup-button__text'> Google</span></a>
+          </div>
+          <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook'
+            className='btn btn-link-facebook btn-block'><i
+              className='fa fa-facebook-square signupBig' /><span className='signup-button__text'> Facebook</span></a>
+          </div>
+          {/* <div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div> */}
         </div>
         <p className='auth-form-divider'><span className='auth-form-divider-text'>or</span></p>
         <form method='post' action='/signin' role='signin' noValidate='novalidate' className='auth-form'>
@@ -129,7 +133,7 @@ class Login extends Component {
           <input type='hidden' name='target' value='/' />
           <form onSubmit={handleSubmit(this.login)}>
             <div style={styles.form}>
-              <div style={styles.input} >
+              <div style={styles.input}>
                 <Field
                   name='email'
                   component={renderInput}
@@ -160,8 +164,12 @@ class Login extends Component {
           </form>
         </form>
         <div className='row text-muted mt-3'>
-          <div className='col-sm-8'>Don't have an account? <a href='javascript:;' onClick={() => this.setState({ authMode: 'signUp' })} rel='modal-pane' data-modal-pane='join'>Join Chronas</a></div>
-          <div className='col-sm-4 text-right' onClick={() => this.setState({ authMode: 'passwordReset' })}><a href='javascript:;' rel='modal-pane' data-modal-pane='password'>Forgot password?</a></div>
+          <div className='col-sm-8'>Don't have an account? <a href='javascript:;'
+            onClick={() => this.setState({ authMode: 'signUp' })}
+            rel='modal-pane' data-modal-pane='join'>Join Chronas</a>
+          </div>
+          <div className='col-sm-4 text-right' onClick={() => this.setState({ authMode: 'passwordReset' })}><a
+            href='javascript:;' rel='modal-pane' data-modal-pane='password'>Forgot password?</a></div>
         </div>
       </div>
     </div>
@@ -172,10 +180,18 @@ class Login extends Component {
       <div className='modal-body'>
         <p style={{ textAlign: 'center' }}><span className='auth-form-divider-text'>with a few clicks:</span></p>
         <div className='social-signup-buttons'>
-          <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github' className='btn btn-link-github btn-block'><i className="fa fa-github-square signupBig"></i><span className='signup-button__text'> Github</span></a></div>
-          <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google' className='btn btn-link-google btn-block'><i className="fa fa-google-plus-square signupBig"></i><span className='signup-button__text'> Google</span></a></div>
-          <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook' className='btn btn-link-facebook btn-block'><i className="fa fa-facebook-square signupBig"></i><span className='signup-button__text'> Facebook</span></a></div>
-          {/*<div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div>*/}
+          <div className='signup-button'><a href={githubAuthUrl} title='Sign in with Github'
+            className='btn btn-link-github btn-block'><i
+              className='fa fa-github-square signupBig' /><span className='signup-button__text'> Github</span></a></div>
+          <div className='signup-button'><a href={googleAuthUrl} title='Sign in with Google'
+            className='btn btn-link-google btn-block'><i
+              className='fa fa-google-plus-square signupBig' /><span className='signup-button__text'> Google</span></a>
+          </div>
+          <div className='signup-button'><a href={facebookAuthUrl} title='Sign in with Facebook'
+            className='btn btn-link-facebook btn-block'><i
+              className='fa fa-facebook-square signupBig' /><span className='signup-button__text'> Facebook</span></a>
+          </div>
+          {/* <div className='signup-button'><a href={twitterAuthUrl} title='Sign in with Twitter' className='btn btn-link-twitter btn-block'><i className="fa fa-twitter-square signupBig"></i><span className='signup-button__text'> Twitter</span></a></div> */}
         </div>
         <p className='auth-form-divider'><span className='auth-form-divider-text'>or</span></p>
         <form method='post' action='/signup' role='signup' noValidate='novalidate' className='auth-form'>
@@ -183,14 +199,14 @@ class Login extends Component {
           <input type='hidden' name='target' value='/' />
           <form onSubmit={handleSubmit(this.signup)}>
             <div style={styles.form}>
-              <div style={styles.input} >
+              <div style={styles.input}>
                 <Field
                   name='email'
                   type='email'
                   component={renderInput}
                   floatingLabelText={translate('aor.auth.email')}
                   disabled={submitting}
-                  />
+                />
               </div>
               <div style={styles.input}>
                 <Field
@@ -199,7 +215,7 @@ class Login extends Component {
                   floatingLabelText={translate('aor.auth.password')}
                   type='password'
                   disabled={submitting}
-                  />
+                />
               </div>
               <div style={styles.input}>
                 <Field
@@ -215,7 +231,7 @@ class Login extends Component {
                   component={renderInput}
                   floatingLabelText={translate('aor.auth.first_name')}
                   disabled={submitting}
-                  />
+                />
               </div>
               <div style={styles.input}>
                 <Field
@@ -223,7 +239,7 @@ class Login extends Component {
                   component={renderInput}
                   floatingLabelText={translate('aor.auth.last_name')}
                   disabled={submitting}
-                  />
+                />
               </div>
               <div style={styles.input}>
                 <Field
@@ -237,7 +253,7 @@ class Login extends Component {
                 <Field
                   name='bio'
                   component={renderInput}
-                  floatingLabelText={translate('aor.auth.bio')} multiLine={true} rows={2}
+                  floatingLabelText={translate('aor.auth.bio')} multiLine rows={2}
                   disabled={submitting}
                 />
               </div>
@@ -257,7 +273,7 @@ class Login extends Component {
                   component={renderInput}
                   floatingLabelText={translate('aor.auth.website')}
                   disabled={submitting}
-                  />
+                />
               </div>
             </div>
             <CardActions>
@@ -268,11 +284,13 @@ class Login extends Component {
                 icon={submitting && <CircularProgress size={25} thickness={2} />}
                 label={translate('aor.auth.sign_up')}
                 fullWidth
-                />
+              />
             </CardActions>
           </form>
         </form>
-        <p className='text-center text-muted mt-3'>Already have an account? <a onClick={() => this.setState({ authMode: 'signIn' })} href='javascript:;' rel='modal-pane' data-modal-pane='signin'>Sign in</a></p>
+        <p className='text-center text-muted mt-3'>Already have an account? <a
+          onClick={() => this.setState({ authMode: 'signIn' })} href='javascript:;' rel='modal-pane'
+          data-modal-pane='signin'>Sign in</a></p>
       </div>
     </div>
     const passwordResetComponent = <div className='auth-box modal-pane-password'>
@@ -280,32 +298,42 @@ class Login extends Component {
         <h4 className='modal-title' style={{ margin: '0 auto' }}>Forgotten your password?</h4>
       </div>
       <div className='modal-body' style={{ marginTop: '2em' }}>
-        <form method='post' action='/forgot-password' role='password-retrieval' noValidate='novalidate' className='form-password auth-form'>
+        <form method='post' action='/forgot-password' role='password-retrieval' noValidate='novalidate'
+          className='form-password auth-form'>
           <input type='hidden' name='action' value='forgot-password' />
           <div className='form-groups'>
             <div className='form-group'>
               <label htmlFor='email' className='sr-only'>Email address</label>
-              <input type='email' name='email' id='email' placeholder='Email address' className='form-control form-control--first form-control--last' />
+              <input type='email' name='email' id='email' placeholder='Email address'
+                className='form-control form-control--first form-control--last' />
             </div>
           </div>
-          <button type='submit' data-loading-text='Sending...' className='btn btn-block btn-primary btn-submit'>Send reset link</button>
+          <button type='submit' data-loading-text='Sending...' className='btn btn-block btn-primary btn-submit'>Send
+            reset link
+          </button>
         </form>
-        <p className='text-center text-muted mt-3'>I remember, <a href='javascript:;' rel='modal-pane' data-modal-pane='signin' onClick={() => this.setState({ authMode: 'signIn' })}>sign in</a></p>
+        <p className='text-center text-muted mt-3'>I remember, <a href='javascript:;' rel='modal-pane'
+          data-modal-pane='signin'
+          onClick={() => this.setState({ authMode: 'signIn' })}>sign
+          in</a></p>
       </div>
     </div>
 
     return (
-      <Dialog bodyStyle={{ overflow: 'auto', backgroundImage: themes[theme].gradientColors[0]}} open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
-        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0 }} onRequestClose={this.handleClose} >
-        <Card style={styles.card} >
+      <Dialog bodyStyle={{ overflow: 'auto', backgroundImage: themes[theme].gradientColors[0] }} open
+        contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
+        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0 }} onRequestClose={this.handleClose}>
+        <Card style={styles.card}>
 
           {this.state.authMode === 'signIn' ? signInComponent : null}
           {this.state.authMode === 'signUp' ? signUpComponent : null}
           {this.state.authMode === 'passwordReset' ? passwordResetComponent : null}
 
           <IconButton
-            tooltipPosition="bottom-left"
-            tooltip={'Close'} className='closeTopRight' iconStyle={{ width: 24, height: 24, color: themes[theme].foreColors[0] }} touch key={'close'} containerElement={<Link to='/' />}>
+            tooltipPosition='bottom-left'
+            tooltip={'Close'} className='closeTopRight'
+            iconStyle={{ width: 24, height: 24, color: themes[theme].foreColors[0] }} touch key={'close'}
+            containerElement={<Link to='/' />}>
             <CloseIcon hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
         </Card>
@@ -325,7 +353,7 @@ const enhance = compose(
       if (!values.password) errors.password = translate('aor.validation.required')
       return errors
     },
-  },{
+  }, {
     form: 'signUp',
     validate: (values, props) => {
       const errors = {}
@@ -337,8 +365,8 @@ const enhance = compose(
     },
   }),
   connect(state => ({
-      theme: state.theme,
-    }), {
+    theme: state.theme,
+  }), {
     userLogin,
     userSignup: userSignupAction,
     showNotification

@@ -1,15 +1,15 @@
-import React, { Children, Component } from 'react';
-;
-import { reduxForm } from 'redux-form';
-import { connect } from 'react-redux';
-import compose from 'recompose/compose';
-import { showNotification } from 'admin-on-rest';
-import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues';
-import FormInput from 'admin-on-rest/lib/mui/form/FormInput';
-import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar';
-import { setModType } from "../buttons/actionReducers";
+import React, { Children, Component } from 'react'
+import { reduxForm } from 'redux-form'
+import { connect } from 'react-redux'
+import compose from 'recompose/compose'
+import { showNotification } from 'admin-on-rest'
+import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
+import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
+import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
+import { setModType } from '../buttons/actionReducers'
 import { TYPE_MARKER } from '../../../map/actionReducers'
-import { properties } from "../../../../properties";
+import { properties } from '../../../../properties'
+
 // import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
 const formStyle = {
@@ -66,14 +66,17 @@ export class MarkerForm extends Component {
   componentWillMount () {
     this.props.setModType(TYPE_MARKER)
   }
-  componentWillReceiveProps(nextProps) {
-    if (this.props.modActive.data[0] !== nextProps.modActive.data[0])
-      this.props.change ("coo[0]" , nextProps.modActive.data[0] )
-    if (this.props.modActive.data[1] !== nextProps.modActive.data[1])
-      this.props.change ("coo[1]" , nextProps.modActive.data[1] )
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.modActive.data[0] !== nextProps.modActive.data[0]) {
+      this.props.change('coo[0]', nextProps.modActive.data[0])
+    }
+    if (this.props.modActive.data[1] !== nextProps.modActive.data[1]) {
+      this.props.change('coo[1]', nextProps.modActive.data[1])
+    }
   }
 
-  render() {
+  render () {
     const {
       basePath,
       children,
@@ -84,10 +87,10 @@ export class MarkerForm extends Component {
       toolbar,
       hidesavebutton,
       version,
-    } = this.props;
+    } = this.props
 
     return (
-      <form className="simple-form">
+      <form className='simple-form'>
         <div style={formStyle} key={version}>
           {Children.map(children, input => (
             <FormInput
@@ -105,29 +108,28 @@ export class MarkerForm extends Component {
           submitOnEnter,
         })}
       </form>
-    );
+    )
   }
 }
-
 
 MarkerForm.defaultProps = {
   submitOnEnter: true,
   toolbar: <Toolbar />,
-};
+}
 
 const enhance = compose(
   connect((state, props) => ({
     initialValues: getDefaultValues(state, props),
     modActive: state.modActive,
-    }),
-    {
-      setModType,
-      showNotification
-    }),
+  }),
+  {
+    setModType,
+    showNotification
+  }),
   reduxForm({
     form: 'record-form',
     enableReinitialize: true,
   })
-);
+)
 
-export default enhance(MarkerForm);
+export default enhance(MarkerForm)

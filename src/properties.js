@@ -1,6 +1,5 @@
 import React from 'react'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
-import InfoIcon from 'material-ui/svg-icons/action/announcement'
 import CommentIcon from 'material-ui/svg-icons/communication/comment'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
@@ -11,14 +10,20 @@ const styles = {
 }
 // <InfoIcon style={styles.icon} />
 export const didYouKnows = [
-  [ 'timeline', <div>You can mouse scroll the timeline to scale</div>],
-  [ 'discover',<div>You can browse images and other media by clicking <DiscoverIcon /> on the menu bar</div>],
-  [ 'coloring',<div>You can change map coloring to religion, culture or population at <LayersIcon /> on the menu bar</div>],
-  [ 'markerlimit',<div>You can improve performance by decreasing marker count at <LayersIcon /> on the menu bar</div>],
-  [ 'province',<div>You can see a complete history of a province by clicking <ProvinceIcon viewBox={'0 0 64 64'} /> on the article header</div>],
-  [ 'question',<div>You can ask questions about articles and answer others in the <CommentIcon /> section</div>],
-  [ 'distribution',<div>You can see a complete distribution of people of a realm by clicking <CompositionChartIcon /> on an article</div>],
-  [ 'link',<div>You can link any articles together to show up in a content section (articles) or the media section</div>],
+  ['timeline', <div>You can mouse scroll the timeline to scale</div>],
+  ['discover', <div>You can browse images and other media by clicking <DiscoverIcon /> on the menu bar</div>],
+  ['coloring',
+    <div>You can change map coloring to religion, culture or population at <LayersIcon /> on the menu bar</div>],
+  ['markerlimit', <div>You can improve performance by decreasing marker count at <LayersIcon /> on the menu bar</div>],
+  ['province',
+    <div>You can see a complete history of a province by clicking <ProvinceIcon viewBox={'0 0 64 64'} /> on the article
+      header</div>],
+  ['question', <div>You can ask questions about articles and answer others in the <CommentIcon /> section</div>],
+  ['distribution',
+    <div>You can see a complete distribution of people of a realm by clicking <CompositionChartIcon /> on an article
+    </div>],
+  ['link',
+    <div>You can link any articles together to show up in a content section (articles) or the media section</div>],
 ]
 
 const arrayToObject = (array, ind = 1) =>
@@ -197,16 +202,16 @@ export const iconMapping = {
     'eb1': {
       'x': iconWidth,
       'y': 5 * iconHeight,
-      'width': iconWidth/2,
+      'width': iconWidth / 2,
       'height': iconHeight,
       'anchorY': iconHeight,
     },
     'eb2': {
       'x': iconWidth,
       'y': 5 * iconHeight,
-      'width': iconWidth/2,
+      'width': iconWidth / 2,
       'height': iconHeight,
-      'anchorX': iconWidth/2,
+      'anchorX': iconWidth / 2,
       'anchorY': iconHeight,
     },
     'cp': {
@@ -214,7 +219,7 @@ export const iconMapping = {
       'y': 3 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
-      'anchorY': iconHeight/2,
+      'anchorY': iconHeight / 2,
       'mask': true
     },
     'c0': {
@@ -222,7 +227,7 @@ export const iconMapping = {
       'y': 4 * iconHeight,
       'width': iconWidth,
       'height': iconHeight,
-      'anchorY': iconHeight/2,
+      'anchorY': iconHeight / 2,
     },
     'ca': {
       'x': 0,
@@ -376,7 +381,7 @@ export const iconMapping = {
     'eb1': {
       'x': iconWidthModern,
       'y': 5 * iconHeightModern,
-      'width': iconWidthModern/2,
+      'width': iconWidthModern / 2,
       'height': iconHeightModern,
       'anchorY': iconHeightModern,
     },
@@ -392,7 +397,7 @@ export const iconMapping = {
       'y': 3 * iconHeightModern,
       'width': iconWidthModern,
       'height': iconHeightModern,
-      'anchorY': iconHeightModern/2,
+      'anchorY': iconHeightModern / 2,
       'mask': true
     },
     'c0': {
@@ -400,7 +405,7 @@ export const iconMapping = {
       'y': 4 * iconHeightModern,
       'width': iconWidthModern,
       'height': iconHeightModern,
-      'anchorY': iconHeightModern/2,
+      'anchorY': iconHeightModern / 2,
     },
     'ca': {
       'x': 0,
@@ -742,7 +747,7 @@ export const themes = {
   // }
 }
 
-export const getPercent = (min,max,val) => {
+export const getPercent = (min, max, val) => {
   var range = max - min
   return (val - min) / range
 }
@@ -757,11 +762,11 @@ export const getFullIconURL = (iconPath) => {
 }
 
 export const getYoutubeId = (url) => {
-  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  if (match && match[2].length == 11) {
-    return match[2];
+  const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+  const match = url.match(regExp)
+  if (match && match[2].length === 11) {
+    return match[2]
   } else {
-    false
+    return false
   }
 }

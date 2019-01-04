@@ -7,12 +7,11 @@ import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import { properties, themes } from "../../../properties";
-import {resetModActive, setFullModActive} from "../../restricted/shared/buttons/actionReducers";
-import {toggleRightDrawer as toggleRightDrawerAction} from "../actionReducers";
-import QAAForum from "../../menu/board/ReForum/Views/ForumFeed/QAAForum";
+import { themes } from '../../../properties'
+import { resetModActive, setFullModActive } from '../../restricted/shared/buttons/actionReducers'
+import { toggleRightDrawer as toggleRightDrawerAction } from '../actionReducers'
+import QAAForum from '../../menu/board/ReForum/Views/ForumFeed/QAAForum'
 import {
-  translate,
   AutocompleteInput,
   BooleanField,
   BooleanInput,
@@ -28,14 +27,15 @@ import {
   NullableBooleanInput,
   NumberField,
   NumberInput,
-  Restricted,
-  ReferenceInput,
   ReferenceField,
+  ReferenceInput,
+  Restricted,
   SelectInput,
-  SimpleForm,
   showNotification,
+  SimpleForm,
   TextField,
   TextInput,
+  translate,
   ViewTitle
 } from 'admin-on-rest'
 
@@ -46,7 +46,7 @@ const MODE = [
   'partition'
 ]
 
-const imgButton = { width: 20, height: 20}
+const imgButton = { width: 20, height: 20 }
 const styles = {
   container: {
     padding: '16px',
@@ -222,6 +222,19 @@ const styles = {
 }
 
 class LinkedQAA extends React.Component {
+  handleClose = () => {
+    this.props.history.goBack()
+  }
+  componentDidMount = () => {
+    this.setState({ hiddenElement: false })
+  }
+  componentWillUnmount = () => {
+    this.setState({ hiddenElement: true })
+  }
+  _minimize = () => {
+    this.props.setContentMenuItem('')
+  }
+
   constructor (props) {
     super(props)
     this.state = {
@@ -232,22 +245,6 @@ class LinkedQAA extends React.Component {
       currentForum: 'general',
       hiddenElement: true
     }
-  }
-
-  handleClose = () => {
-    this.props.history.goBack()
-  }
-
-  componentDidMount = () => {
-    this.setState({ hiddenElement: false })
-  }
-
-  componentWillUnmount = () => {
-    this.setState({ hiddenElement: true })
-  }
-
-  _minimize = () => {
-    this.props.setContentMenuItem('')
   }
 
   render () {
@@ -266,7 +263,7 @@ class LinkedQAA extends React.Component {
     return (
       <Paper zDepth={3} style={{
         position: 'fixed',
-        left:  (isMinimized ? '-52px' : '-574px'),
+        left: (isMinimized ? '-52px' : '-574px'),
         zIndex: 2147483647,
         top: '4px',
         padding: '0em',
@@ -289,13 +286,17 @@ class LinkedQAA extends React.Component {
           title={<span style={{ color: themes[theme].foreColors[0] }}>Q&A: {qName}</span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
-            ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
+            ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }}
+              onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
             : <IconButton
-              tooltipPosition="bottom-left"
-              tooltip={'Minimize'}  onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+              tooltipPosition='bottom-left'
+              tooltip={'Minimize'} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}
+                hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
         <div style={styles.container}>
-          {qId && qId !== "" && <QAAForum setHasQuestions={setHasQuestions} forums={[]} qaaEntity={qId} users={this.state.users} discussions={this.state.discussions} />}
+          {qId && qId !== '' &&
+          <QAAForum setHasQuestions={setHasQuestions} forums={[]} qaaEntity={qId} users={this.state.users}
+            discussions={this.state.discussions} />}
         </div>
       </Paper>
     )

@@ -19,42 +19,42 @@
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [ ]
+        "features": []
       }
     },
     "area-outlines": {
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [ ]
+        "features": []
       }
     },
     "entity-outlines": {
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [ ]
+        "features": []
       }
     },
     "provinces": {
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [ ]
+        "features": []
       }
     },
     "area-hover": {
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [ ]
+        "features": []
       }
     },
     "area-mod": {
       "type": "geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [ ]
+        "features": []
       }
     },
     "markers": {
@@ -194,14 +194,30 @@
           "default": "#bc0000"
         },
         "line-width": [
-          "interpolate", ["linear"], ["zoom"],
-          2, 4,
-          8, 40
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          2,
+          4,
+          8,
+          40
         ],
         "line-blur": [
-          "interpolate", ["linear"], ["zoom"],
-          2, 3,
-          8, 30
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
+          2,
+          3,
+          8,
+          30
         ]
       }
     },
@@ -230,17 +246,28 @@
         "text-allow-overlap": false,
         "symbol-placement": "line-center",
         "text-field": "{n}",
-        "text-font": ["Cinzel Regular"],
+        "text-font": [
+          "Cinzel Regular"
+        ],
         "text-transform": "uppercase",
         "text-size": [
           "interpolate",
-          ["linear"],
-          ["zoom"],
+          [
+            "linear"
+          ],
+          [
+            "zoom"
+          ],
           2,
           [
             "interpolate",
-            ["linear"],
-            ["get", "d"],
+            [
+              "linear"
+            ],
+            [
+              "get",
+              "d"
+            ],
             1500,
             8,
             3500,
@@ -249,8 +276,13 @@
           9,
           [
             "interpolate",
-            ["linear"],
-            ["get", "d"],
+            [
+              "linear"
+            ],
+            [
+              "get",
+              "d"
+            ],
             1500,
             80,
             3500,
@@ -269,24 +301,45 @@
       "id": "clusters",
       "type": "circle",
       "source": "markers",
-      "filter": ["has", "point_count"],
+      "filter": [
+        "has",
+        "point_count"
+      ],
       "paint": {
         "circle-color": {
           "property": "point_count",
           "type": "interval",
           "stops": [
-            [0, "#51bbd6"],
-            [10, "#f1f075"],
-            [30, "#f28cb1"]
+            [
+              0,
+              "#51bbd6"
+            ],
+            [
+              10,
+              "#f1f075"
+            ],
+            [
+              30,
+              "#f28cb1"
+            ]
           ]
         },
         "circle-radius": {
           "property": "point_count",
           "type": "interval",
           "stops": [
-            [0, 20],
-            [100, 30],
-            [750, 40]
+            [
+              0,
+              20
+            ],
+            [
+              100,
+              30
+            ],
+            [
+              750,
+              40
+            ]
           ]
         }
       }
@@ -295,10 +348,15 @@
       "id": "cluster-count",
       "type": "symbol",
       "source": "markers",
-      "filter": ["has", "point_count"],
+      "filter": [
+        "has",
+        "point_count"
+      ],
       "layout": {
         "text-field": "{point_count_abbreviated}",
-        "text-font": ["Cinzel Bold"],
+        "text-font": [
+          "Cinzel Bold"
+        ],
         "text-size": 12
       }
     },
@@ -309,7 +367,11 @@
       "paint": {
         "line-color": "rgb(200,22,22)",
         "line-width": 6,
-        "line-dasharray": [0, 3, 3]
+        "line-dasharray": [
+          0,
+          3,
+          3
+        ]
       }
     }
   ]

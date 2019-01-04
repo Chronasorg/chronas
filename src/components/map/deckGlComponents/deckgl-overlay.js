@@ -1,19 +1,10 @@
 import React, { Component } from 'react'
-import { scaleQuantile } from 'd3-scale'
 import { rgb } from 'd3-color'
 import { easeCubic } from 'd3-ease'
 import rbush from 'rbush'
-import DeckGL, {
-  WebMercatorViewport,
-  IconLayer,
-  ScatterplotLayer,
-  PathLayer,
-  GeoJsonLayer,
-  TextLayer,
-  ArcLayer
-} from 'deck.gl'
+import DeckGL, { ArcLayer, IconLayer, ScatterplotLayer, WebMercatorViewport } from 'deck.gl'
 import TagmapLayer from './tagmap-layer'
-import { properties, RGBAtoArray, iconMapping, iconSize } from '../../../properties'
+import { iconMapping, iconSize, properties, RGBAtoArray } from '../../../properties'
 import utilsQuery from '../utils/query'
 
 const Arc = require('arc')
@@ -48,17 +39,6 @@ function colorToRGBArray (color) {
 }
 
 export default class DeckGLOverlay extends Component {
-  static get defaultViewport () {
-    return {
-      longitude: -100,
-      latitude: 40.7,
-      zoom: 3,
-      maxZoom: 15,
-      pitch: 30,
-      bearing: 30
-    }
-  }
-
   constructor (props) {
     super(props)
 
@@ -72,6 +52,17 @@ export default class DeckGLOverlay extends Component {
       x: 0,
       y: 0,
       hoveredItems: null
+    }
+  }
+
+  static get defaultViewport () {
+    return {
+      longitude: -100,
+      latitude: 40.7,
+      zoom: 3,
+      maxZoom: 15,
+      pitch: 30,
+      bearing: 30
     }
   }
 
@@ -101,8 +92,8 @@ export default class DeckGLOverlay extends Component {
     const size = /* showCluster ? 1 : */ Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
     const updateTrigger = z * showCluster
 
-    const wasEpic = (selectedItem || {}).type === "epic"
-    const isEpic = (nextProps.selectedItem || {}).type === "epic"
+    const wasEpic = (selectedItem || {}).type === 'epic'
+    const isEpic = (nextProps.selectedItem || {}).type === 'epic'
 
     const viewportChange = viewport.latitude !== oldViewport.latitude || viewport.longitude !== oldViewport.longitude || viewport.zoom !== oldViewport.zoom
     let isDirty = viewportChange
@@ -191,7 +182,7 @@ export default class DeckGLOverlay extends Component {
           id: 'icon',
           autoHighlight: true,
           highlightColor: showCluster ? [0, 0, 0, 0] : RGBAtoArray(theme.highlightColors[0]), // showCluster
-            // ? [0,0,0,0] : RGBAtoArray(theme.highlightColors[0]),
+          // ? [0,0,0,0] : RGBAtoArray(theme.highlightColors[0]),
           data: this._getMarker({
             ...{
               markerData: (showCluster && nextProps.geoData.length > 0) ? [] : (nextProps.activeColor === 'ruler') ? nextIconMarker.filter(el => el.subtype !== 'c').concat(capitalMarkers0).concat(capitalMarkers) : nextIconMarker.filter(el => el.subtype[0] !== 'c')

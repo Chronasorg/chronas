@@ -35,24 +35,24 @@ const createStore = (initialState = {}) => {
   // Store Instantiation and HMR Setup
   // ======================================================
 
-  const sagaMiddleware = createSagaMiddleware();
+  const sagaMiddleware = createSagaMiddleware()
 
   const httpClient = (url, options = {}) => {
     if (!options.headers) {
-      options.headers = new Headers({ Accept: 'application/json' });
+      options.headers = new Headers({ Accept: 'application/json' })
     }
-    const token = localStorage.getItem('chs_token');
-    options.headers.set('Authorization', `Bearer ${token}`);
-    return fetchUtils.fetchJson(url, options);
+    const token = localStorage.getItem('chs_token')
+    options.headers.set('Authorization', `Bearer ${token}`)
+    return fetchUtils.fetchJson(url, options)
   }
 
-  const restClient = jsonServerRestClient(properties.chronasApiHost, httpClient);
+  const restClient = jsonServerRestClient(properties.chronasApiHost, httpClient)
 
-  const saga = function* rootSaga() {
+  const saga = function * rootSaga () {
     yield [
       crudSaga(restClient, authClient)
-    ].map(fork);
-  };
+    ].map(fork)
+  }
 
   const store = createReduxStore(
     makeRootReducer(),
@@ -61,10 +61,10 @@ const createStore = (initialState = {}) => {
       applyMiddleware(sagaMiddleware, routerMiddleware(history)),
       window.devToolsExtension ? window.devToolsExtension() : f => f,
     )
-  );
+  )
 
-  store.dispatch(declareResources([{ name: 'posts' }, { name: 'comments' }, { name: 'users' }, { name: 'areas' }, { name: 'images' }, { name: 'markers' }, { name: 'metadata' }, { name: 'revisions' }]));
-  sagaMiddleware.run(saga);
+  store.dispatch(declareResources([{ name: 'posts' }, { name: 'comments' }, { name: 'users' }, { name: 'areas' }, { name: 'images' }, { name: 'markers' }, { name: 'metadata' }, { name: 'revisions' }]))
+  sagaMiddleware.run(saga)
   store.asyncReducers = {}
 
   // To unsubscribe, invoke `store.unsubscribeHistory()` anytime

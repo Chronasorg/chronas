@@ -1,8 +1,8 @@
-import {grey600, grey400} from './chronasColors';
+import { grey600 } from './chronasColors'
 
 export const backIcon = {
   color: grey600,
-};
+}
 
 export const drawer = {
   title: {
@@ -17,9 +17,9 @@ export const drawer = {
     marginBottom: 12,
     fontWeight: 400,
   },
-};
+}
 
 export const tooltip = {
-    marginLeft: "40px",
-    marginTop: "-37px"
+  marginLeft: '40px',
+  marginTop: '-37px'
 }

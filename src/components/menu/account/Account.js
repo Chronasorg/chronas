@@ -1,11 +1,9 @@
 import React, { createElement, PureComponent } from 'react'
-import { Route, Switch } from 'react-router-dom'
-import { Link } from 'react-router-dom'
+import { Link, Route, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import pure from 'recompose/pure'
 import {
-  translate,
   AutocompleteInput,
   BooleanField,
   BooleanInput,
@@ -21,25 +19,22 @@ import {
   NullableBooleanInput,
   NumberField,
   NumberInput,
-  Restricted,
-  ReferenceInput,
   ReferenceField,
+  ReferenceInput,
+  Restricted,
   SelectInput,
   SimpleForm,
   TextField,
   TextInput,
+  translate,
 } from 'admin-on-rest'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
-import { Card, CardActions } from 'material-ui/Card'
+import { Card } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import Delete from '../../restricted/shared/crudComponents/Delete'
-import DeleteButton from '../../restricted/shared/buttons/DeleteButton'
-import FlatButton from 'material-ui/FlatButton'
-import { tooltip } from '../../../styles/chronasStyleComponents'
-import { chronasMainColor } from '../../../styles/chronasColors'
 import { themes } from '../../../properties'
 
 const styles = {
@@ -77,21 +72,19 @@ const styles = {
 }
 
 class Account extends PureComponent {
-  constructor (props) {
-    super(props)
-    this.state = { hiddenElement: true }
-  }
-
   componentDidMount = () => {
     this.setState({ hiddenElement: false })
   }
-
   componentWillUnmount = () => {
     this.setState({ hiddenElement: true })
   }
-
   handleClose = () => {
     this.props.history.push('/')
+  }
+
+  constructor (props) {
+    super(props)
+    this.state = { hiddenElement: true }
   }
 
   render () {
@@ -108,23 +101,23 @@ class Account extends PureComponent {
     const username = localStorage.getItem('chs_userid')
     const routeProps = {
       'match': {
-        'path':'/account',
-        'url':'/resources/users/' + window.encodeURIComponent(username),
+        'path': '/account',
+        'url': '/resources/users/' + window.encodeURIComponent(username),
         'isExact': true,
         'params': {
           'id': username
         }
       },
       'location': {
-        'pathname':'/account',
-        'search':'',
-        'hash':''
+        'pathname': '/account',
+        'search': '',
+        'hash': ''
       },
       'history': {
         'length': 50,
         'action': 'POP',
         'location': {
-          'pathname':'/account',
+          'pathname': '/account',
           'search': '',
           'hash': ''
         }
@@ -133,16 +126,17 @@ class Account extends PureComponent {
 
     const UserEdit = (props) => {
       const t = { ...props, ...routeProps }
-      return <Edit style={{ }} title={<span>{translate('aor.edit_profile')}</span>} {...t}>
-        <SimpleForm style={{ }}>
+      return <Edit style={{}} title={<span>{translate('aor.edit_profile')}</span>} {...t}>
+        <SimpleForm style={{}}>
           <DisabledInput source='username' />
-          <TextInput source='email' type='email' label='resources.users.fields.email' validation={{ email: true }} options={{ fullWidth: true }} style={{ width: 544 }} />
+          <TextInput source='email' type='email' label='resources.users.fields.email' validation={{ email: true }}
+            options={{ fullWidth: true }} style={{ width: 544 }} />
           <TextInput source='password' type='password' />
           <TextInput source='name' />
           <TextInput source='avatar' type='aor.profile_image' />
           <TextInput source='education' />
           <LongTextInput source='bio' />
-          <TextInput source='website'/>
+          <TextInput source='website' />
         </SimpleForm>
       </Edit>
     }
@@ -173,20 +167,20 @@ class Account extends PureComponent {
             }}
             contentClassName={(this.state.hiddenElement) ? '' : 'classReveal accountContentStyle'}
             contentStyle={{ ...styles.dialogStyle, background: themes[theme].backColors[0] }}
-                  onRequestClose={this.handleClose}>
+            onRequestClose={this.handleClose}>
             <Toolbar style={styles.toolbar}>
               <ToolbarGroup>
                 <ToolbarTitle text={''} />
               </ToolbarGroup>
               <ToolbarGroup>
                 <IconButton
-                  tooltipPosition="bottom-left"
+                  tooltipPosition='bottom-left'
                   tooltip={'Go Back'} touch key={'back'} onClick={() => this.props.history.goBack()}>
                   <IconBack />
                 </IconButton>
                 <IconButton
-                  tooltipPosition="bottom-left"
-                  tooltip={'Close'}  touch key={'close'} containerElement={<Link to='/' />}>
+                  tooltipPosition='bottom-left'
+                  tooltip={'Close'} touch key={'close'} containerElement={<Link to='/' />}>
                   <CloseIcon />
                 </IconButton>
               </ToolbarGroup>
@@ -206,19 +200,19 @@ class Account extends PureComponent {
     return (
       <Switch style={{ zIndex: 20000 }}>
         {UserEdit && (
-        <Route
-          exact
-          path={'/account/'}
-          render={restrictPage(UserEdit, username, { ...commonProps, ...routeProps })}
-                />
-              )}
+          <Route
+            exact
+            path={'/account/'}
+            render={restrictPage(UserEdit, username, { ...commonProps, ...routeProps })}
+          />
+        )}
         {UserDelete && (
-        <Route
-          exact
-          path={'/' + window.encodeURIComponent(username) + '/delete'}
-          render={restrictPage(UserDelete, 'delete', { ...commonProps, ...routeProps })}
-                />
-              )}
+          <Route
+            exact
+            path={'/' + window.encodeURIComponent(username) + '/delete'}
+            render={restrictPage(UserDelete, 'delete', { ...commonProps, ...routeProps })}
+          />
+        )}
       </Switch>
     )
   }
@@ -228,7 +222,7 @@ const enhance = compose(
   connect(state => ({
     theme: state.theme,
     userDetails: state.userDetails
-  }), { }),
+  }), {}),
   pure,
   translate,
 )

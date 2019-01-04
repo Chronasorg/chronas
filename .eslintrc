@@ -9,8 +9,29 @@
     "react",
     "promise"
   ],
+  "settings": {
+    "react": {
+      "pragma": "React",  // Pragma to use, default to "React"
+      "version": "15.4.0" // React version, default to the latest React stable release
+//      "flowVersion": "0.53" // Flow version
+    }
+//    "propWrapperFunctions": [
+//      // The names of any function used to wrap propTypes, e.g. `forbidExtraProps`. If this isn't set, any propTypes wrapped in a function will be skipped.
+////      "forbidExtraProps",
+////      {"property": "freeze", "object": "Object"}
+////      {"property": "myFavoriteWrapper"}
+//    ]
+  },
   "env": {
+    "es6": true,
     "browser" : true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "globals": {
     "__DEV__"      : false,
@@ -19,9 +40,21 @@
     "__COVERAGE__" : false
   },
   "rules": {
+    "brace-style": "off",
+    "camelcase": "off",
+    "no-labels": "off",
+    "standard/object-curly-even-spacing": "off",
+    "standard/computed-property-even-spacing": "off",
+    "react/no-unused-prop-types": "off",
+    "indent"               : "off",
+    "react/prop-types"     : [2, { "skipUndeclared": true }],
     "key-spacing"          : "off",
+    "no-mixed-operators"   : "off",
+    "no-useless-escape"    : "off",
+    "no-unused-vars"       : "off",
     "jsx-quotes"           : [2, "prefer-single"],
-    "max-len"              : [2, 120, 2],
+    "one-var"              : "off",
+    "max-len"              : "off",
     "object-curly-spacing" : [2, "always"],
     "comma-dangle"         : "off"
   }

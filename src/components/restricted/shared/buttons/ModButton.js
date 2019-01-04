@@ -1,52 +1,49 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import RaisedButton from 'material-ui/RaisedButton';
-import {cyan500} from 'material-ui/styles/colors';
-import ContentCreate from 'material-ui/svg-icons/content/create'
-import { setModType as setModTypeAction, setModSelectActive as setModSelectActiveAction } from './actionReducers'
-import { translate } from'admin-on-rest';
+import { connect } from 'react-redux'
+import RaisedButton from 'material-ui/RaisedButton'
+import { setModSelectActive as setModSelectActiveAction, setModType as setModTypeAction } from './actionReducers'
+import { translate } from 'admin-on-rest'
 
 class ModButton extends Component {
-  constructor(props) {
-    super(props);
-    this.handleModActive = this.handleModActive.bind(this);
+  constructor (props) {
+    super(props)
+    this.handleModActive = this.handleModActive.bind(this)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     const { setModType } = this.props
-    setModType("")
+    setModType('')
   }
 
-  handleModActive(event) {
-    event.preventDefault();
+  handleModActive (event) {
+    event.preventDefault()
     const { modActive, setModSelectActive } = this.props
     setModSelectActive(!modActive.selectActive)
   }
 
-  render() {
+  render () {
     const { modActive, translate, modType } = this.props
-    let modNote = ""
-    if (modActive.type === "marker"){
-      modNote = "Click on map to place marker"
-    } else if (modActive.type === "areas"){
-      modNote = "Select provinces to edit"
+    let modNote = ''
+    if (modActive.type === 'marker') {
+      modNote = 'Click on map to place marker'
+    } else if (modActive.type === 'areas') {
+      modNote = 'Select provinces to edit'
     }
     return (<div><RaisedButton
-      label={translate((modType === "marker") ? 'resources.markers.place_marker' : 'resources.markers.place_area')}
+      label={translate((modType === 'marker') ? 'resources.markers.place_marker' : 'resources.markers.place_area')}
       primary={(!modActive.selectActive)}
       secondary={(modActive.selectActive)}
       onClick={this.handleModActive}
-    /><span style={{paddingLeft: '1em'}}>{modNote}</span></div>)
+    /><span style={{ paddingLeft: '1em' }}>{modNote}</span></div>)
   }
 }
 
 ModButton.defaultProps = {
-    style: { padding: 0 },
+  style: { padding: 0 },
 }
 
-function mapStateToProps(state, props) {
+function mapStateToProps (state, props) {
   return {
     modActive: state.modActive,
   }

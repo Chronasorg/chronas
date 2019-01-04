@@ -23,7 +23,7 @@ const utils = {
   isTouching: function (array1, array2) {
     for (var i = 0; i < array1.length; i++) {
       for (var j = 0; j < array2.length; j++) {
-        if (array1[i] == array2[j]) {
+        if (array1[i] === array2[j]) {
           return true
         }
       }
@@ -50,15 +50,15 @@ const utils = {
   },
 
   get_polygon_centroid: function (fullpts) {
-    let xSum = 0;
-    let ySum = 0;
-    let len = 0;
+    let xSum = 0
+    let ySum = 0
+    let len = 0
 
     fullpts.forEach((polys) => {
       polys.forEach((coord) => {
-        xSum += coord[0];
-        ySum += coord[1];
-        len++;
+        xSum += coord[0]
+        ySum += coord[1]
+        len++
       })
     })
 
@@ -71,29 +71,29 @@ const utils = {
 
     // max x - min x > max y - min y
     if (extremas[2][0] - extremas[0][0] > extremas[3][1] - extremas[1][1]) {
-/*
-      currLabelSize = Math.sqrt((  (extremas[0][1] - point[1]) * (extremas[0][1] - point[1])
-        + (extremas[0][0] - point[0]) * (extremas[0][0] - point[0]) ))
-        +
-        Math.sqrt((extremas[2][1] - point[1]) * (extremas[2][1] - point[1])
-          + (extremas[2][0] - point[0]) * (extremas[2][0] - point[0]));
-*/
+      /*
+            currLabelSize = Math.sqrt((  (extremas[0][1] - point[1]) * (extremas[0][1] - point[1])
+              + (extremas[0][0] - point[0]) * (extremas[0][0] - point[0]) ))
+              +
+              Math.sqrt((extremas[2][1] - point[1]) * (extremas[2][1] - point[1])
+                + (extremas[2][0] - point[0]) * (extremas[2][0] - point[0]));
+      */
       //    minX to  maxX
       return [
         [extremas[0][0], extremas[0][1]],
         [point[0], point[1]],
         [extremas[2][0], extremas[2][1]]
-      ]  // angle != 0
+      ] // angle != 0
     }
     //    minX, minY, maxX, maxY
     else {
-/*
-      currLabelSize = Math.sqrt((  (extremas[0][1] - point[1]) * (extremas[0][1] - point[1])
-        + (extremas[0][0] - point[0]) * (extremas[0][0] - point[0]) ))
-        +
-        Math.sqrt((extremas[2][1] - point[1]) * (extremas[2][1] - point[1])
-          + (extremas[2][0] - point[0]) * (extremas[2][0] - point[0]));
-*/
+      /*
+            currLabelSize = Math.sqrt((  (extremas[0][1] - point[1]) * (extremas[0][1] - point[1])
+              + (extremas[0][0] - point[0]) * (extremas[0][0] - point[0]) ))
+              +
+              Math.sqrt((extremas[2][1] - point[1]) * (extremas[2][1] - point[1])
+                + (extremas[2][0] - point[0]) * (extremas[2][0] - point[0]));
+      */
       if (extremas[1][0] - extremas[3][0] < 1) {
         return [
           [extremas[1][0], extremas[1][1]],
@@ -110,14 +110,14 @@ const utils = {
     }
   }, // probably won't need
 
-// helper function locates points on bezier curves.
+  // helper function locates points on bezier curves.
   curveHelper: function (x1, y1, x2, y2, x3, y3, x4, y4) {
     var tx1, ty1, tx2, ty2, tx3, ty3, tx4, ty4
     var a, b, c, u
     var vec, currentPos, currentDist, vec1, vect, quad
-    vec = { x:0, y:0 }
-    vec1 = { x:0, y:0 }
-    vect = { x:0, y:0 }
+    vec = { x: 0, y: 0 }
+    vec1 = { x: 0, y: 0 }
+    vect = { x: 0, y: 0 }
     quad = false
     currentPos = 0
     currentDist = 0
@@ -128,10 +128,14 @@ const utils = {
     }
     var estLen = Math.sqrt((x4 - x1) * (x4 - x1) + (y4 - y1) * (y4 - y1))
     var onePix = 1 / estLen
+
     function posAtC (c) {
-      tx1 = x1; ty1 = y1
-      tx2 = x2; ty2 = y2
-      tx3 = x3; ty3 = y3
+      tx1 = x1
+      ty1 = y1
+      tx2 = x2
+      ty2 = y2
+      tx3 = x3
+      ty3 = y3
       tx1 += (tx2 - tx1) * c
       ty1 += (ty2 - ty1) * c
       tx2 += (tx3 - tx2) * c
@@ -146,9 +150,12 @@ const utils = {
       vec.y = ty1 + (ty2 - ty1) * c
       return vec
     }
+
     function posAtQ (c) {
-      tx1 = x1; ty1 = y1
-      tx2 = x2; ty2 = y2
+      tx1 = x1
+      ty1 = y1
+      tx2 = x2
+      ty2 = y2
       tx1 += (tx2 - tx1) * c
       ty1 += (ty2 - ty1) * c
       tx2 += (x3 - tx2) * c
@@ -157,6 +164,7 @@ const utils = {
       vec.y = ty1 + (ty2 - ty1) * c
       return vec
     }
+
     function forward (dist) {
       var step
       helper.posAt(currentPos)
@@ -184,6 +192,7 @@ const utils = {
       vect.x /= u
       vect.y /= u
     }
+
     function tangentC (pos) {
       a = (1 - pos)
       b = 6 * a * pos
@@ -195,10 +204,11 @@ const utils = {
       vect.x /= u
       vect.y /= u
     }
+
     var helper = {
-      vec : vec,
-      vect : vect,
-      forward : forward,
+      vec: vec,
+      vect: vect,
+      forward: forward,
     }
     if (quad) {
       helper.posAt = posAtQ
@@ -240,18 +250,18 @@ const utils = {
         if (metadata['culture'][key]) tmpName = metadata['culture'][key][0] || ''
       }
 
-      for (var i1 = 1; i1 < myId[key].length; i1++) {
+      for (var j1 = 1; j1 < myId[key].length; j1++) {
         loop1:
-          for (var i2 = 0; i2 < myId[key].length; i2++) {
-            for (var i3 = 0; i3 < myId[key][i1].length; i3++) {
-              if (i1 != i2 && this.isTouching(adjacent[myId[key][i1][i3]], myId[key][i2])) {
-                Array.prototype.push.apply(myId[key][i2], myId[key][i1])
-                myId[key].splice(i1, 1)
-                i1--
-                break loop1
-              }
+        for (var j2 = 0; j2 < myId[key].length; j2++) {
+          for (var j3 = 0; j3 < myId[key][j1].length; j3++) {
+            if (j1 !== j2 && this.isTouching(adjacent[myId[key][j1][j3]], myId[key][j2])) {
+              Array.prototype.push.apply(myId[key][j2], myId[key][j1])
+              myId[key].splice(j1, 1)
+              j1--
+              break loop1
             }
           }
+        }
       }
 
       for (var i1 = 0, tot1 = myId[key].length; i1 < tot1; i1++) {
@@ -263,19 +273,18 @@ const utils = {
             }
             groups[key][i1].push(metadata.provinces.features[myId[key][i1][i2]].geometry.coordinates[0])
             polyGroups[key][i1].push(metadata.provinces.features[myId[key][i1][i2]])
-          }
-          else {
+          } else {
             groups[key] = [
               [metadata.provinces.features[myId[key][i1][i2]].geometry.coordinates[0]]
-            ];
+            ]
             polyGroups[key] = [
               [metadata.provinces.features[myId[key][i1][i2]]]
-            ];
+            ]
           }
         }
       }
 
-      for (var i = 0; i < groups[key].length; i++) {  // tmpLength
+      for (var i = 0; i < groups[key].length; i++) { // tmpLength
         var lineCoordinates = this.getCoordsForMultiPolyLine(groups[key][i])
 
         var point = {
@@ -287,15 +296,15 @@ const utils = {
           'properties': {}
         }
 
-        const bareLine = turf.lineString(lineCoordinates, { sharpness: 1, resolution: 3 } )
+        const bareLine = turf.lineString(lineCoordinates, { sharpness: 1, resolution: 3 })
         try {
-          var multiLine = turf.bezier(bareLine)  // EXTREMACENTROIDLINE    200MS
+          var multiLine = turf.bezier(bareLine) // EXTREMACENTROIDLINE    200MS
         } catch (err) {
 
         }
 
         multiLine.properties.n = tmpName
-        multiLine.properties.d = ((turf.lineDistance(bareLine)) / Math.pow(tmpName.length, .2))
+        multiLine.properties.d = ((turf.lineDistance(bareLine)) / Math.pow(tmpName.length, 0.2))
         myLineColl.features.push(multiLine)
         myColl.features.push(point)
       }
@@ -402,7 +411,7 @@ const utils = {
 
       var tmpProv, tmpRul, tmpRel, tmpRelGen, tmpCul, tmpPop, tmpCap, tmpCoo
 
-      for (var i = 0; i < metadata.provinces.features.length; i++) {  // tmpLength
+      for (var i = 0; i < metadata.provinces.features.length; i++) { // tmpLength
         tmpCoo = undefined
         tmpRul = undefined
         tmpRel = undefined
@@ -417,7 +426,7 @@ const utils = {
         if (areaDefs.hasOwnProperty(tmpProv)) {
           // TODO: remove again + add security check when updating
           if (areaDefs[tmpProv] === null) {
-            areaDefs[tmpProv] = ["SWE",null,null,null,null]
+            areaDefs[tmpProv] = ['SWE', null, null, null, null]
           }
           tmpRul = areaDefs[tmpProv][0]
           tmpCul = areaDefs[tmpProv][1]
@@ -431,43 +440,44 @@ const utils = {
           // metadata.provinces.features[i].properties.g = tmpPop
           // metadata.provinces.features[i].properties.a = tmpCap
 
-          if (this.activeTextFeat === "ruler" && metadata['ruler'][tmpRul]) {
+          if (this.activeTextFeat === 'ruler' && metadata['ruler'][tmpRul]) {
             metadata.provinces.features[i].properties.nameLabel = metadata['ruler'][tmpRul][0]
-          }
-          else if (this.activeTextFeat === "religion" && metadata['religion'][tmpRel]) {
+          } else if (this.activeTextFeat === 'religion' && metadata['religion'][tmpRel]) {
             metadata.provinces.features[i].properties.nameLabel = (metadata['religion'][tmpRel] || {})[0]
-          }
-          else if (this.activeTextFeat === "religionGeneral" && metadata['religionGeneral'][tmpRelGen]) {
+          } else if (this.activeTextFeat === 'religionGeneral' && metadata['religionGeneral'][tmpRelGen]) {
             metadata.provinces.features[i].properties.nameLabel = (metadata['religionGeneral'][tmpRelGen] || {})[0]
-          }
-          else if (this.activeTextFeat === "culture" && metadata['culture'][tmpCul]) {
+          } else if (this.activeTextFeat === 'culture' && metadata['culture'][tmpCul]) {
             metadata.provinces.features[i].properties.nameLabel = metadata['culture'][tmpCul][0]
           }
         }
 
-        if (this.activeTextFeat === 'ruler' && !this.rulIsSetup) { this.prepareCollectionIDs(rulCollection, tmpRul, i) }
-        if (this.activeTextFeat === 'religion' && !this.relIsSetup) { this.prepareCollectionIDs(relCollection, tmpRel, i) }
-        if (this.activeTextFeat === 'religionGeneral' && !this.relGenIsSetup) { this.prepareCollectionIDs(relGenCollection, tmpRelGen, i) }
-        if (this.activeTextFeat === 'culture' && !this.culIsSetup) { this.prepareCollectionIDs(culCollection, tmpCul, i) }
+        if (this.activeTextFeat === 'ruler' && !this.rulIsSetup) {
+          this.prepareCollectionIDs(rulCollection, tmpRul, i)
+        }
+        if (this.activeTextFeat === 'religion' && !this.relIsSetup) {
+          this.prepareCollectionIDs(relCollection, tmpRel, i)
+        }
+        if (this.activeTextFeat === 'religionGeneral' && !this.relGenIsSetup) {
+          this.prepareCollectionIDs(relGenCollection, tmpRelGen, i)
+        }
+        if (this.activeTextFeat === 'culture' && !this.culIsSetup) {
+          this.prepareCollectionIDs(culCollection, tmpCul, i)
+        }
       }
 
       if (!this.rulIsSetup && (this.activeTextFeat === 'ruler')) {
         // this.rulIsSetup = true;
         return this.fillCollectionId(rulCollection, null, 'r', metadata)
-      }
-      else if (!this.culIsSetup && (this.activeTextFeat === 'culture')) {
+      } else if (!this.culIsSetup && (this.activeTextFeat === 'culture')) {
         // this.culIsSetup = true;
         return this.fillCollectionId(culCollection, null, 'c', metadata)
-      }
-      else if (!this.relIsSetup && (this.activeTextFeat === 'religion')) {
+      } else if (!this.relIsSetup && (this.activeTextFeat === 'religion')) {
         // this.relIsSetup = true;
         return this.fillCollectionId(relCollection, null, 'e', metadata)
-      }
-      else if (!this.relGenIsSetup && (this.activeTextFeat === 'religionGeneral')) {
+      } else if (!this.relGenIsSetup && (this.activeTextFeat === 'religionGeneral')) {
         // this.relGenIsSetup = true;
         return this.fillCollectionId(relGenCollection, null, 'g', metadata)
-      }
-      else {
+      } else {
         return []
       }
     }

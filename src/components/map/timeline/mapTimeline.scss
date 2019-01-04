@@ -3,7 +3,7 @@
   transition: all .5s;
   transition-timing-function: ease-in-out;
   .vis-panel.vis-bottom {
-    top: 82px!important;
+    top: 82px !important;
     pointer-events: none;
   }
 }
@@ -23,7 +23,7 @@
   }
 }
 
-.provinceTimelineItem{
+.provinceTimelineItem {
   cursor: pointer;
   //background: inherit !important;
 }
@@ -35,7 +35,9 @@
   }
   &.vis-range {
     background: inherit;
-  }}
+  }
+}
+
 .entityTimelineItem {
   cursor: pointer;
   border-radius: 30px !important;
@@ -55,25 +57,26 @@
   .vis-item {
     &.vis-range {
       background-color: #ffffff40;
-    }}
+    }
+  }
   .vis-timeline {
-  cursor: ew-resize;
-  border: none;
-  position: fixed;
-  bottom: -2px !important;
-  height: 132px !important;
-  //height: 120px !important;
-  width: 100%;
-  max-height: 90% !important;
-}}
-
+    cursor: ew-resize;
+    border: none;
+    position: fixed;
+    bottom: -2px !important;
+    height: 132px !important;
+    //height: 120px !important;
+    width: 100%;
+    max-height: 90% !important;
+  }
+}
 
 .mapTimeline {
-    .extendedTimeline {
-      .vis-timeline {
-        height: 400px !important;
-      }
+  .extendedTimeline {
+    .vis-timeline {
+      height: 400px !important;
     }
+  }
 }
 
 .vis-panel {
@@ -99,14 +102,15 @@
 
   .vis-panel {
     &.vis-background {
-    &.vis-horizontal {
-      top: 9px !important;
+      &.vis-horizontal {
+        top: 9px !important;
+      }
     }
   }
-}
   .vis-timeline {
-  //height: 500px !important; // !important;
-}}
+    //height: 500px !important; // !important;
+  }
+}
 
 .vis-custom-time {
   &.selectedYear {
@@ -120,7 +124,6 @@
 .vis-panel.vis-bottom, .vis-panel.vis-center, .vis-panel.vis-top {
   height: 24px;
 }
-
 
 .mapTimeline {
   &.discoverActive {
@@ -159,10 +162,10 @@
 .vis-panel.vis-bottom, .vis-panel.vis-center, .vis-panel.vis-left, .vis-panel.vis-right, .vis-panel.vis-top {
   border: 2px #ffffff;
 }
+
 .rv-xy-plot {
   overflow: hidden;
 }
-
 
 .currentYearMarker {
   .rv-crosshair__line {
@@ -192,7 +195,12 @@
     }
   }
 }
-.rv-crosshair { &.undefined { position:fixed }}
+
+.rv-crosshair {
+  &.undefined {
+    position: fixed
+  }
+}
 
 .startMarker, .endMarker {
   .rv-crosshair__line {
@@ -222,9 +230,9 @@
   background: none;
   text-shadow: 0.03em 0 4px white, 0.03em 0 4px white, 0.03em 0 4px white, 0.03em 0 4px white;
   border: 0;
-  font-size: 24px;
-  margin-top: 12px;
-  margin-left: 12px;
+  font-size: 28px;
+  margin-top: 8px;
+  margin-left: 4px;
   cursor: text;
   z-index: 1000;
 }
@@ -332,10 +340,10 @@
   }
 
   .chipAvatar {
-   > div {
-     height: 24px !important;
-     width: 24px !important;
-   }
+    > div {
+      height: 24px !important;
+      width: 24px !important;
+    }
   }
 
   img {

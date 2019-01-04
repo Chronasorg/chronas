@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Toggle from 'material-ui/Toggle';
-import { FieldTitle } from 'admin-on-rest';
+import React, { Component } from 'react'
+import Toggle from 'material-ui/Toggle'
+import { FieldTitle } from 'admin-on-rest'
 
 const styles = {
   block: {
@@ -11,14 +10,14 @@ const styles = {
   toggle: {
     marginBottom: 16,
   },
-};
+}
 
 class BooleanInput extends Component {
   handleToggle = (event, value) => {
-    this.props.input.onChange(value);
+    this.props.input.onChange(value)
   };
 
-  render() {
+  render () {
     const {
       value,
       input,
@@ -28,7 +27,7 @@ class BooleanInput extends Component {
       elStyle,
       resource,
       options,
-    } = this.props;
+    } = this.props
 
     return (
       <div style={elStyle || styles.block}>
@@ -47,24 +46,13 @@ class BooleanInput extends Component {
           {...options}
         />
       </div>
-    );
+    )
   }
 }
-
-BooleanInput.propTypes = {
-  addField: PropTypes.bool.isRequired,
-  elStyle: PropTypes.object,
-  input: PropTypes.object,
-  isRequired: PropTypes.bool,
-  label: PropTypes.string,
-  resource: PropTypes.string,
-  source: PropTypes.string,
-  options: PropTypes.object,
-};
 
 BooleanInput.defaultProps = {
   addField: true,
   options: {},
-};
+}
 
-export default BooleanInput;
+export default BooleanInput

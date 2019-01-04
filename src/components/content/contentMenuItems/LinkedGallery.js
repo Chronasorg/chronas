@@ -1,17 +1,11 @@
 import React from 'react'
-import { Sunburst, LabelSeries, Treemap, } from 'react-vis'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
-import {selectLinkedItem, selectMarkerItem} from '../../map/actionReducers'
-import Divider from 'material-ui/Divider'
-import FlatButton from 'material-ui/FlatButton'
+import { selectLinkedItem } from '../../map/actionReducers'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
-import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left'
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
-import ImageGallery from 'react-image-gallery'
 import YouTube from 'react-youtube'
 import axios from 'axios'
-import Menu from 'material-ui/Menu'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
@@ -25,23 +19,17 @@ import IconThumbUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
 import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
 import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconEdit from 'material-ui/svg-icons/content/create'
-import CloseIcon from 'material-ui/svg-icons/content/clear'
-import ContentAdd from 'material-ui/svg-icons/content/add'
 import ContentLink from 'material-ui/svg-icons/content/link'
 import CommentIcon from 'material-ui/svg-icons/communication/comment'
-import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import ContentFilter from 'material-ui/svg-icons/content/filter-list'
 import IconButton from 'material-ui/IconButton'
-import { Tabs, Tab } from 'material-ui/Tabs'
-import SwipeableViews from 'react-swipeable-views'
-import { translate, ViewTitle, showNotification } from 'admin-on-rest'
-import { green400, green600, blue400, blue600, red400, red600 } from 'material-ui/styles/colors'
-import { tooltip } from '../../../styles/chronasStyleComponents'
-import {didYouKnows, getYoutubeId, properties, themes} from "../../../properties"
-import { resetModActive, setFullModActive } from "../../restricted/shared/buttons/actionReducers";
-import { toggleRightDrawer as toggleRightDrawerAction } from "../actionReducers";
+import { showNotification, translate, ViewTitle } from 'admin-on-rest'
+import { red400 } from 'material-ui/styles/colors'
+import { getYoutubeId, properties, themes } from '../../../properties'
+import { resetModActive, setFullModActive } from '../../restricted/shared/buttons/actionReducers'
+import { toggleRightDrawer as toggleRightDrawerAction } from '../actionReducers'
 
 const fullRadian = Math.PI * 2
 
@@ -50,7 +38,7 @@ const MODE = [
   'partition'
 ]
 const GALLERYBATCHSIZE = 10
-const imgButton = { width: 20, height: 20}
+const imgButton = { width: 20, height: 20 }
 const styles = {
   container: {
     padding: '16px',
@@ -235,11 +223,202 @@ const styles = {
 }
 
 class LinkedGallery extends React.Component {
+  loadLinkedItemsToTileData = (nextLinkedItems) => {
+    this.setState({
+      showMax: GALLERYBATCHSIZE,
+      tileData: nextLinkedItems,
+    },
+    this.forceUpdate)
+  }
+  handleChangeFilter = (event, value) => {
+    this.setState({
+      filtered: value,
+      showMax: GALLERYBATCHSIZE
+    })
+  };
+  handleChange = (value) => {
+    this.setState({ slideIndex: value })
+  }
+  handleClose = () => {
+    if (this.state.selectedImage.src !== '') {
+      this.handleImageClose()
+      return
+    }
+    this.props.history.push('/')
+  }
+  handleImageClose = () => {
+    this.setState({ selectedImage: { src: '', year: '', title: '', wiki: '', source: '' } })
+  }
+  componentDidMount = () => {
+    this.setState({ hiddenElement: false })
+  }
+  componentWillMount = () => {
+    this.loadLinkedItemsToTileData(this.props.linkedItems)
+  }
+  componentWillUnmount = () => {
+    this.setState({ hiddenElement: true })
+  }
+  componentWillReceiveProps = (nextProps) => {
+    const { linkedItems } = this.props
+
+    const nextMediaSrc = nextProps.linkedItems.map(el => el.src)
+    if (linkedItems && nextProps.linkedItems && ((linkedItems || []).length !== (nextProps.linkedItems || []).length || (linkedItems || []).some(el => !nextMediaSrc.includes(el.src)))) {
+      this.loadLinkedItemsToTileData(nextProps.linkedItems)
+    }
+  }
+  _handleUpvote = (id, stateDataId) => {
+    const token = localStorage.getItem('chs_token')
+    if (!token) {
+      this.props.showNotification('pos.pleaseLogin')
+      return
+    }
+
+    const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
+    const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
+    const tileData = this.state.tileData
+
+    if (upvotedItems.indexOf(id) > -1) {
+      // already upvoted -> downvote
+      localStorage.setItem('chs_upvotedItems', upvotedItems.filter((elId) => elId !== id))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+        .then(() => {
+          this.setState({
+            tileData: tileData.map((el) => {
+              if (encodeURIComponent(el.src) === id) el.score -= 1
+              return el
+            })
+          })
+          this.forceUpdate()
+        })
+    } else if (downvotedItems.indexOf(id) > -1) {
+      // already downvoted -> upvote twice
+      localStorage.setItem('chs_upvotedItems', upvotedItems.concat([id]))
+      localStorage.setItem('chs_downvotedItems', downvotedItems.filter((elId) => elId !== id))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+        .then(() => {
+          axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+            .then(() => {
+              this.setState({
+                tileData: tileData.map((el) => {
+                  if (encodeURIComponent(el.src) === id) el.score += 2
+                  return el
+                })
+              })
+              this.forceUpdate()
+            })
+        })
+    } else {
+      // neutral -> just upvote
+      localStorage.setItem('chs_upvotedItems', upvotedItems.concat([id]))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+        .then(() => {
+          this.props.showNotification((typeof token !== 'undefined') ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+          this.setState({
+            tileData: tileData.map((el) => {
+              if (encodeURIComponent(el.src) === id) el.score += 1
+              return el
+            })
+          })
+          this.forceUpdate()
+        })
+    }
+  }
+  _handleDownvote = (id) => {
+    const token = localStorage.getItem('chs_token')
+    if (!token) {
+      this.props.showNotification('pos.pleaseLogin')
+      return
+    }
+    const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
+    const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
+    const tileData = this.state.tileData
+
+    if (downvotedItems.indexOf(id) > -1) {
+      // already downvoted -> upvote
+      localStorage.setItem('chs_downvotedItems', downvotedItems.filter((elId) => elId !== id))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+        .then(() => {
+          this.setState({
+            tileData: tileData.map((el) => {
+              if (encodeURIComponent(el.src) === id) el.score += 1
+              return el
+            })
+          })
+          this.forceUpdate()
+        })
+    } else if (upvotedItems.indexOf(id) > -1) {
+      // already upvoted -> downvote twice
+      localStorage.setItem('chs_downvotedItems', downvotedItems.concat([id]))
+      localStorage.setItem('chs_upvotedItems', upvotedItems.filter((elId) => elId !== id))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+        .then(() => {
+          axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+            .then(() => {
+              this.setState({
+                tileData: tileData.map((el) => {
+                  if (encodeURIComponent(el.src) === id) el.score -= 2
+                  return el
+                })
+              })
+              this.forceUpdate()
+            })
+        })
+    } else {
+      // neutral -> just downvote
+      localStorage.setItem('chs_downvotedItems', downvotedItems.concat([id]))
+      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+        .then(() => {
+          this.props.showNotification((typeof token !== 'undefined') ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
+          this.setState({
+            tileData: tileData.map((el) => {
+              if (encodeURIComponent(el.src) === id) el.score -= 1
+              return el
+            })
+          })
+          this.forceUpdate()
+        })
+    }
+  }
+  _minimize = () => {
+    this.props.setContentMenuItem('')
+  }
+  _handleEdit = (id) => {
+    const selectedItem = this.state.tileData.find(el => (el.src === decodeURIComponent(id)))
+    this.props.selectLinkedItem(selectedItem)
+    this.props.history.push('/mod/linked')
+  }
+  _handleAdd = () => {
+    this.props.history.push('/mod/links')
+  }
+  _handleOpenSource = (source) => {
+    window.open(source, '_blank').focus()
+  }
+  _removeTile = (tileSrc) => {
+    const originalTileData = this.state.tileData.filter(el => el.src !== tileSrc)
+
+    this.setState({
+      tileData: originalTileData
+    })
+
+    this.forceUpdate()
+  }
+  _handleScroll = (e) => {
+    const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight
+    if (bottom) {
+      const { showMax, tileData, filtered } = this.state
+      const tileLength = tileData.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1)).length
+      if (showMax < tileLength) {
+        this.setState({ showMax: (showMax + GALLERYBATCHSIZE) })
+      }
+      console.debug('bottom reached!', tileLength)
+    }
+  }
+
   constructor (props) {
     super(props)
     this.state = {
       showMax: GALLERYBATCHSIZE,
-      filtered:[
+      filtered: [
         'artefacts',
         'articles',
         'stories',
@@ -258,212 +437,17 @@ class LinkedGallery extends React.Component {
       hiddenElement: true,
       tileData: [],
       categories: [
-          ['artefacts','Artefacts'],
-          ['articles','Articles'],
-          ['stories','Stories'],
-          ['people','People'],
-          ['cities','Cities'],
-          ['battles','Battles'],
-          ['misc','Misc'],
-          ['v','Video'],
-          ['audios','Audio'],
-          ['ps','Primary Sources (text)']
+        ['artefacts', 'Artefacts'],
+        ['articles', 'Articles'],
+        ['stories', 'Stories'],
+        ['people', 'People'],
+        ['cities', 'Cities'],
+        ['battles', 'Battles'],
+        ['misc', 'Misc'],
+        ['v', 'Video'],
+        ['audios', 'Audio'],
+        ['ps', 'Primary Sources (text)']
       ]
-    }
-  }
-
-  loadLinkedItemsToTileData = (nextLinkedItems) => {
-    this.setState({
-      showMax: GALLERYBATCHSIZE,
-      tileData: nextLinkedItems,
-    },
-      this.forceUpdate);
-  }
-
-  handleChangeFilter = (event, value) => {
-    this.setState({
-      filtered: value,
-      showMax: GALLERYBATCHSIZE
-    });
-  };
-
-  handleChange = (value) => {
-    this.setState({ slideIndex: value })
-  }
-
-  handleClose = () => {
-    if (this.state.selectedImage.src !== '') {
-      this.handleImageClose()
-      return
-    }
-    this.props.history.push('/')
-  }
-
-  handleImageClose = () => {
-    this.setState({ selectedImage: { src: '', year: '', title: '', wiki: '', source: '' } })
-  }
-
-  componentDidMount = () => {
-    this.setState({ hiddenElement: false })
-  }
-
-  componentWillMount = () => {
-    this.loadLinkedItemsToTileData(this.props.linkedItems)
-  }
-
-  componentWillUnmount = () => {
-    this.setState({ hiddenElement: true })
-  }
-
-  componentWillReceiveProps = (nextProps) => {
-    const { linkedItems } = this.props
-
-    const nextMediaSrc = nextProps.linkedItems.map( el => el.src )
-    if (linkedItems && nextProps.linkedItems && ((linkedItems || []).length !== (nextProps.linkedItems || []).length || (linkedItems || []).some((el => !nextMediaSrc.includes(el.src))))) {
-      this.loadLinkedItemsToTileData(nextProps.linkedItems)
-    }
-  }
-
-  _handleUpvote = (id, stateDataId) => {
-    const token = localStorage.getItem('chs_token')
-    if (!token) {
-      this.props.showNotification('pos.pleaseLogin')
-      return
-    }
-
-    const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
-    const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
-    const tileData = this.state.tileData
-
-    if (upvotedItems.indexOf(id) > -1) {
-      // already upvoted -> downvote
-      localStorage.setItem('chs_upvotedItems', upvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          this.setState({ tileData: tileData.map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score -= 1
-              return el
-            }) })
-          this.forceUpdate()
-        })
-    } else if (downvotedItems.indexOf(id) > -1) {
-      // already downvoted -> upvote twice
-      localStorage.setItem('chs_upvotedItems', upvotedItems.concat([id]))
-      localStorage.setItem('chs_downvotedItems', downvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-            .then(() => {
-              this.setState({ tileData: tileData.map((el) => {
-                  if (encodeURIComponent(el.src) === id) el.score += 2
-                  return el
-                }) })
-              this.forceUpdate()
-            })
-        })
-    } else {
-      // neutral -> just upvote
-      localStorage.setItem('chs_upvotedItems', upvotedItems.concat([id]))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          this.setState({ tileData: tileData.map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score += 1
-              return el
-            }) })
-          this.forceUpdate()
-        })
-    }
-  }
-
-  _handleDownvote = (id) => {
-    const token = localStorage.getItem('chs_token')
-    if (!token) {
-      this.props.showNotification('pos.pleaseLogin')
-      return
-    }
-    const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
-    const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
-    const tileData = this.state.tileData
-
-    if (downvotedItems.indexOf(id) > -1) {
-      // already downvoted -> upvote
-      localStorage.setItem('chs_downvotedItems', downvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          this.setState({ tileData: tileData.map((el) => {
-              if (encodeURIComponent(el.src) === id) el.score += 1
-              return el
-            }) })
-          this.forceUpdate()
-        })
-    } else if (upvotedItems.indexOf(id) > -1) {
-      // already upvoted -> downvote twice
-      localStorage.setItem('chs_downvotedItems', downvotedItems.concat([id]))
-      localStorage.setItem('chs_upvotedItems', upvotedItems.filter((elId) => elId !== id))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-            .then(() => {
-              this.setState({ tileData: tileData.map((el) => {
-                  if (encodeURIComponent(el.src) === id) el.score -= 2
-                  return el
-                }) })
-              this.forceUpdate()
-            })
-        })
-    } else {
-      // neutral -> just downvote
-      localStorage.setItem('chs_downvotedItems', downvotedItems.concat([id]))
-      axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token}})
-        .then(() => {
-          this.props.showNotification((typeof token !== "undefined") ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          this.setState({ tileData: tileData.map((el) => {f
-              if (encodeURIComponent(el.src) === id) el.score -= 1
-              return el
-            }) })
-          this.forceUpdate()
-        })
-    }
-  }
-
-  _minimize = () => {
-    this.props.setContentMenuItem('')
-  }
-
-  _handleEdit = (id) => {
-    const selectedItem = this.state.tileData.find(el => (el.src === decodeURIComponent(id)))
-    this.props.selectLinkedItem(selectedItem)
-    this.props.history.push('/mod/linked')
-  }
-
-  _handleAdd = () => {
-    this.props.history.push('/mod/links')
-  }
-
-  _handleOpenSource = (source) => {
-    window.open(source, '_blank').focus()
-  }
-
-  _removeTile = (tileSrc) => {
-    const originalTileData = this.state.tileData.filter(el => el.src !== tileSrc)
-
-    this.setState({
-      tileData: originalTileData
-    })
-
-    this.forceUpdate()
-  }
-
-  _handleScroll = (e) => {
-    const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
-    if (bottom) {
-      const { showMax, tileData, filtered } = this.state
-      const tileLength = tileData.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1 )).length
-      if (showMax < tileLength) {
-        this.setState({ showMax: (showMax + GALLERYBATCHSIZE)})
-      }
-      console.debug("bottom reached!",tileLength)
     }
   }
 
@@ -473,8 +457,8 @@ class LinkedGallery extends React.Component {
 
     const noTiles = (typeof linkedItems === 'undefined' || (tileData && tileData.length === 0))
 
-    const hasSource = typeof selectedImage.source === "undefined" || selectedImage.source === ''
-    const hasWiki = typeof selectedImage.wiki === "undefined" || selectedImage.wiki === ''
+    const hasSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
+    const hasWiki = typeof selectedImage.wiki === 'undefined' || selectedImage.wiki === ''
 
     const slideButtons = (subtype, score, id, source, stateData) => {
       // console.debug(id, source, source || id)
@@ -484,74 +468,77 @@ class LinkedGallery extends React.Component {
       const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'rgba(170, 170, 170, 0.73)' : 'green'
       const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'rgba(170, 170, 170, 0.73)' : 'red'
 
-      const sourceSelected = decodeURIComponent(source !== "undefined" ? source : id)
+      const sourceSelected = decodeURIComponent(source !== 'undefined' ? source : id)
 
-      return <div className="slideButtons" style={(stateData[2] !== 'audios') ? styles.buttonContainer : { ...styles.buttonContainer, bottom: 100} }>
+      return <div className='slideButtons' style={(stateData[2] !== 'audios') ? styles.buttonContainer : {
+        ...styles.buttonContainer,
+        bottom: 100
+      }}>
         <IconButton
           onClick={() => this._handleUpvote(id)}
           color='red'
-          style={ styles.upArrow }
-          tooltipPosition="center-left"
+          style={styles.upArrow}
+          tooltipPosition='center-left'
           tooltip={translate('pos.upvote')}
-          iconStyle={ styles.iconButton }
+          iconStyle={styles.iconButton}
         ><IconThumbUp color={upvoteColor} />
         </IconButton>
         <IconButton
           onClick={() => this._handleDownvote(id)}
-          style={ styles.downArrow }
-          iconStyle={ styles.iconButton }
-          tooltipPosition="center-left"
+          style={styles.downArrow}
+          iconStyle={styles.iconButton}
+          tooltipPosition='center-left'
           tooltip={translate('pos.downvote')}
         ><IconThumbDown color={downvoteColor} /></IconButton>
-        <div style={ styles.scoreLabel }>{ score} </div>
+        <div style={styles.scoreLabel}>{score} </div>
         <FloatingActionButton
-          mini={true}
+          mini
           onClick={() => this._handleEdit(id)}
           backgroundColor='#aaaaaaba'
-          style={ styles.editButton }
+          style={styles.editButton}
         ><IconEdit color='white' />
-        </FloatingActionButton >
-        { subtype !== "ps" && source && source !== "undefined" && <FloatingActionButton
-          mini={true}
+        </FloatingActionButton>
+        {subtype !== 'ps' && source && source !== 'undefined' && <FloatingActionButton
+          mini
           onClick={() => window.open(decodeURIComponent(source), '_blank').focus()}
           backgroundColor='#aaaaaaba'
-          style={ styles.sourceButton }
+          style={styles.sourceButton}
         ><CommentIcon
-          tooltipPosition="center-left"
+          tooltipPosition='center-left'
           tooltip={translate('pos.downvote')}
           hoverColor={themes[theme].highlightColors[0]}
           color='white' />
-        </FloatingActionButton >}
+        </FloatingActionButton>}
         <FloatingActionButton
-          mini={true}
-          onClick={() => window.open(decodeURIComponent(subtype !== "ps" ? id : source), '_blank').focus()}
+          mini
+          onClick={() => window.open(decodeURIComponent(subtype !== 'ps' ? id : source), '_blank').focus()}
           backgroundColor='#aaaaaaba'
-          style={ styles.fullButton }
-          tooltipPosition="center-left"
+          style={styles.fullButton}
+          tooltipPosition='center-left'
           tooltip={translate('pos.downvote')}
-        ><IconOutbound  hoverColor={themes[theme].highlightColors[0]} color='white' />
-        </FloatingActionButton >
+        ><IconOutbound hoverColor={themes[theme].highlightColors[0]} color='white' />
+        </FloatingActionButton>
       </div>
     }
 
-    const addButtonDynamicStyle = {...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit'}
+    const addButtonDynamicStyle = { ...styles.addButton, display: (selectedImage.src !== '') ? 'none' : 'inherit' }
 
     return (
       <Paper
         onScroll={this._handleScroll}
         zDepth={3} style={{
-        position: 'fixed',
-        left:  (isMinimized ? '-52px' : '-574px'),
-        zIndex: 2147483647,
-        top: '4px',
-        padding: '0em',
-        transition: 'all .3s ease-in-out',
-        width: (isMinimized ? '30px' : '500px'),
-        maxHeight: (isMinimized ? '30px' : 'calc(100% - 200px)'),
-        pointerEvents: (isMinimized ? 'none' : 'inherit'),
-        opacity: (isMinimized ? '0' : 'inherit'),
-        overflow: 'auto',
-      }}>
+          position: 'fixed',
+          left: (isMinimized ? '-52px' : '-574px'),
+          zIndex: 2147483647,
+          top: '4px',
+          padding: '0em',
+          transition: 'all .3s ease-in-out',
+          width: (isMinimized ? '30px' : '500px'),
+          maxHeight: (isMinimized ? '30px' : 'calc(100% - 200px)'),
+          pointerEvents: (isMinimized ? 'none' : 'inherit'),
+          opacity: (isMinimized ? '0' : 'inherit'),
+          overflow: 'auto',
+        }}>
         <AppBar
           style={
             {
@@ -564,28 +551,31 @@ class LinkedGallery extends React.Component {
           title={<span style={{ color: themes[theme].foreColors[0] }}>Media: {qName}</span>}
           iconElementLeft={<div />}
           iconElementRight={isMinimized
-            ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
+            ? <IconButton iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)' }} style={{ left: '-9px' }}
+              onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
             : <IconButton
-              tooltipPosition="bottom-left"
-              tooltip={'Minimize'} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}  hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+              tooltipPosition='bottom-left'
+              tooltip={'Minimize'} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}
+                hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
-        { !isMinimized && <div style={styles.container}>
+        {!isMinimized && <div style={styles.container}>
           <div style={styles.root}>
             <div style={styles.rootMenu}>
-               <IconMenu
+              <IconMenu
                 clickCloseDelay={0}
                 iconButtonElement={<IconButton tooltip='Filter Media'><ContentFilter /></IconButton>}
                 onChange={this.handleChangeFilter}
                 value={filtered}
-                multiple={true}
+                multiple
               >
-                {categories.map((category, i) => <MenuItem key={"categoriesMenuItem"+i} value={category[0]} primaryText={category[1]} disabled={!tileData || !tileData.some(linkedItem => linkedItem.subtype === category[0])} />)}
+                {categories.map((category, i) => <MenuItem key={'categoriesMenuItem' + i} value={category[0]}
+                  primaryText={category[1]}
+                  disabled={!tileData || !tileData.some(linkedItem => linkedItem.subtype === category[0])} />)}
               </IconMenu>
               <IconMenu
                 iconButtonElement={<IconButton tooltip='Add Media'><ContentLink /></IconButton>}
                 onClick={this._handleAdd}
-                style={ addButtonDynamicStyle }>
-              </IconMenu>
+                style={addButtonDynamicStyle} />
             </div>
             <GridList
               className='linkedGalleryGridList'
@@ -594,11 +584,11 @@ class LinkedGallery extends React.Component {
               cols={1}
               style={styles.gridList}
             >
-              {tileData.length > 0 ? tileData.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1 )).slice(0,showMax).map((tile, j) => (
-                  (tile.subtype !== 'v' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
+              {tileData.length > 0 ? tileData.filter(linkedItem => (JSON.stringify(filtered).indexOf(linkedItem.subtype) !== -1)).slice(0, showMax).map((tile, j) => (
+                (tile.subtype !== 'v' && tile.subtype !== 'audios' && tile.subtype !== 'ps' && tile.subtype !== 'articles')
                   ? <GridTile
                     key={tile.src}
-                    style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
+                    style={{ border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
                     titleStyle={styles.title}
                     subtitleStyle={styles.subtitle}
                     title={tile.subtitle}
@@ -612,20 +602,24 @@ class LinkedGallery extends React.Component {
                     titleHeight={128}
                   >
                     <img src={tile.src}
-                         onError={() => this._removeTile(tile.src)}
-                         onClick={() => { this.setState({ selectedImage: {
-                             src: tile.src,
-                             year: tile.subtitle,
-                             title: tile.title,
-                             wiki: tile.wiki,
-                             source: tile.source
-                           } })}}
+                      onError={() => this._removeTile(tile.src)}
+                      onClick={() => {
+                        this.setState({
+                          selectedImage: {
+                            src: tile.src,
+                            year: tile.subtitle,
+                            title: tile.title,
+                            wiki: tile.wiki,
+                            source: tile.source
+                          }
+                        })
+                      }}
                     />
                   </GridTile>
                   : (tile.subtype === 'articles' || tile.subtype === 'ps')
                     ? <GridTile
                       key={tile.src}
-                      style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
+                      style={{ border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
                       titleStyle={styles.title}
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
@@ -637,20 +631,25 @@ class LinkedGallery extends React.Component {
                       cols={1}
                       rows={2}
                       titleHeight={128}
-                    ><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Sachsenspiegel.jpg/614px-Sachsenspiegel.jpg'
-                          onError={() => this._removeTile(tile.src)}
-                          onClick={() => { this.setState({ selectedImage: {
+                    ><img
+                      src='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Sachsenspiegel.jpg/614px-Sachsenspiegel.jpg'
+                      onError={() => this._removeTile(tile.src)}
+                      onClick={() => {
+                          this.setState({
+                            selectedImage: {
                               src: tile.src,
                               year: tile.subtitle,
                               title: tile.title,
                               wiki: tile.wiki,
                               source: tile.source
-                            } })}}
-                    />
+                            }
+                          })
+                        }}
+                      />
                     </GridTile>
                     : <GridTile
                       key={tile.src}
-                      style={{border: '1px solid black', cursor: 'pointer', pointerEvents: 'none'}}
+                      style={{ border: '1px solid black', cursor: 'pointer', pointerEvents: 'none' }}
                       titleStyle={styles.title}
                       subtitleStyle={styles.subtitle}
                       title={tile.subtitle}
@@ -669,7 +668,7 @@ class LinkedGallery extends React.Component {
                           opts={properties.YOUTUBEOPTS}
                           onError={() => this._removeTile(tile.src)}
                         />
-                        : <Player className='videoContent' fluid={false} ref="player">
+                        : <Player className='videoContent' fluid={false} ref='player'>
                           <source src={tile.src} />
                         </Player>
                       }
@@ -682,7 +681,12 @@ class LinkedGallery extends React.Component {
             autoDetectWindowHeight={false}
             modal={false}
             contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogImageBackgroundHack'}
-            contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '64px', maxWidth: 'calc(100% - 64px)'}}
+            contentStyle={{
+              ...styles.discoverDialogStyle,
+              overflow: 'auto',
+              left: '64px',
+              maxWidth: 'calc(100% - 64px)'
+            }}
             bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
             actionsContainerStyle={{ backgroundColor: red400 }}
             style={{ backgroundColor: 'transparent', overflow: 'auto' }}
@@ -696,31 +700,32 @@ class LinkedGallery extends React.Component {
               <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
               <p style={styles.selectedImageDescription}>{selectedImage.title}</p>
               <div style={styles.selectedImageButtonContainer}>
-                { selectedImage.source && <IconButton
+                {selectedImage.source && <IconButton
                   style={styles.buttonOpenArticle}
-                  tooltipPosition="bottom-center"
+                  tooltipPosition='bottom-center'
                   tooltip={hasWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
                   <RaisedButton
                     disabled={hasSource}
-                    label="Open Source"
-                    primary={true}
-                    onClick={() => this._handleOpenSource(selectedImage.source)} >
-                    <IconOutbound color="white" style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
+                    label='Open Source'
+                    primary
+                    onClick={() => this._handleOpenSource(selectedImage.source)}>
+                    <IconOutbound color='white'
+                      style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
                   </RaisedButton>
                 </IconButton>}
                 <IconButton
                   style={styles.buttonOpenArticle}
-                  tooltipPosition="bottom-center"
+                  tooltipPosition='bottom-center'
                   tooltip={translate('pos.discover_component.edit')}>
                   <RaisedButton
-                    label="Edit"
-                    primary={true}
+                    label='Edit'
+                    primary
                     onClick={() => this._handleEdit(selectedImage.source)} />
                 </IconButton>
               </div>
             </div>
           </Dialog>
-        </div> }
+        </div>}
       </Paper>
     )
   }

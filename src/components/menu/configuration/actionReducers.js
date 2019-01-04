@@ -2,12 +2,11 @@ const CHANGE_THEME = 'CHANGE_THEME'
 const CHANGE_LOCALE = 'CHANGE_LOCALE'
 const CHANGE_MARKERTHEME = 'CHANGE_MARKERTHEME'
 
-
 /** Actions **/
 
 export const changeTheme = theme => ({
-    type: CHANGE_THEME,
-    payload: theme,
+  type: CHANGE_THEME,
+  payload: theme,
 })
 
 export const changeLocale = locale => ({
@@ -22,7 +21,7 @@ export const changeMarkerTheme = theme => ({
 
 /** Reducers **/
 
-export const localeReducer = (initialLocale = 'en') => (
+export const localeReducer = (initialLocale = 'en') =>
   (previousLocale = initialLocale, { type, payload }) => {
     switch (type) {
       case CHANGE_LOCALE:
@@ -31,9 +30,8 @@ export const localeReducer = (initialLocale = 'en') => (
         return previousLocale
     }
   }
-)
 
-export const markerThemeReducer = (initialLocale = 'abstract') => (
+export const markerThemeReducer = (initialLocale = 'abstract') =>
   (previousLocale = initialLocale, { type, payload }) => {
     switch (type) {
       case CHANGE_MARKERTHEME:
@@ -42,9 +40,8 @@ export const markerThemeReducer = (initialLocale = 'abstract') => (
         return previousLocale
     }
   }
-)
 
-export const themeReducer = (initialTheme = 'light') => (
+export const themeReducer = (initialTheme = 'light') =>
   (previousTheme = initialTheme, { type, payload }) => {
     switch (type) {
       case CHANGE_THEME:
@@ -53,4 +50,3 @@ export const themeReducer = (initialTheme = 'light') => (
         return previousTheme
     }
   }
-)

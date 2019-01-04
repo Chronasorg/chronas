@@ -1,12 +1,10 @@
 import React from 'react'
-import { Sunburst, LabelSeries, Treemap, } from 'react-vis'
+import { Sunburst, Treemap, } from 'react-vis'
 import AppBar from 'material-ui/AppBar'
 import Paper from 'material-ui/Paper'
-import Divider from 'material-ui/Divider'
 import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
-import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left'
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
 import nest from './utilsNest'
 import { themes } from '../../../properties'
@@ -29,6 +27,7 @@ const styles = {
     // backgroundColor: 'rgba(255,255,255,0.7)'
   }
 }
+
 /**
  * Recursively modify data depending on whether or not each cell has been selected by the hover/highlight
  * @param {Object} data - the current node being considered
@@ -80,32 +79,6 @@ export default class ChartSunburst extends React.Component {
       return [[dataValue, dataColor]].concat(this.getKeyPath(node.parent))
     }
   }
-
-  componentWillReceiveProps (nextProps) {
-    const { activeAreaDim } = this.props
-
-    if (!nextProps.isMinimized && (nextProps.preData && nextProps.preData.length > 0 || nextProps.selectedYear !== this.props.selectedYear)) {
-      const { preData } = nextProps
-      if (!preData || preData.length === 0) return
-
-      const groupBys = ['ruler', 'religionGeneral', 'religion', 'culture']
-
-      let sunBurstDataPartial = nest()
-      groupBys.forEach((dim) => {
-        if (activeAreaDim.indexOf(dim) === -1)
-          sunBurstDataPartial = sunBurstDataPartial.key(function (d) { return d[dim] })
-      })
-      this.setState({
-        data: {
-          'children': sunBurstDataPartial
-            .meta((preData || {})[1] || {})
-            .entries((preData || {})[0] || {})
-        },
-        total: preData[0].reduce((a, b) => { return (+a || 0) + (b.size || 0) }, 0)
-      })
-    }
-  }
-
   _countSize = (obj, key, out) => {
     var i,
       proto = Object.prototype,
@@ -126,17 +99,14 @@ export default class ChartSunburst extends React.Component {
 
     return out
   }
-
   _minimize = () => {
     this.props.setContentMenuItem('')
   }
-
   _updateModeIndex = (increment) => {
     const newIndex = this.state.modeIndex + (increment ? 1 : -1)
     const modeIndex = newIndex < -1 ? MODE.length - 1 : newIndex >= MODE.length ? -1 : newIndex
     this.setState({ modeIndex })
   }
-
   _handleMouseOver = node => {
     const { modeIndex } = this.state
     const { angle, angle0 } = node
@@ -153,6 +123,36 @@ export default class ChartSunburst extends React.Component {
       pathValue: path.map((el) => ('<span style="color: ' + el[1] + '" >' + el[0] + '</span>')).join(' > ') + (modeIndex === -1 ? ' (' + Math.round((angle - angle0) / fullRadian * 1000) / 10 + '%)' : ''),
       data: updateData(this.state.data, pathAsMap)
     })
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { activeAreaDim } = this.props
+
+    if (!nextProps.isMinimized && (nextProps.preData && nextProps.preData.length > 0 || nextProps.selectedYear !== this.props.selectedYear)) {
+      const { preData } = nextProps
+      if (!preData || preData.length === 0) return
+
+      const groupBys = ['ruler', 'religionGeneral', 'religion', 'culture']
+
+      let sunBurstDataPartial = nest()
+      groupBys.forEach((dim) => {
+        if (activeAreaDim.indexOf(dim) === -1) {
+          sunBurstDataPartial = sunBurstDataPartial.key(function (d) {
+            return d[dim]
+          })
+        }
+      })
+      this.setState({
+        data: {
+          'children': sunBurstDataPartial
+            .meta((preData || {})[1] || {})
+            .entries((preData || {})[0] || {})
+        },
+        total: preData[0].reduce((a, b) => {
+          return (+a || 0) + (b.size || 0)
+        }, 0)
+      })
+    }
   }
 
   render () {
@@ -175,7 +175,9 @@ export default class ChartSunburst extends React.Component {
       width: 450,
       colorType: 'literal',
       getSize: d => d.size,
-      getColor: (d) => { return d.hex },
+      getColor: (d) => {
+        return d.hex
+      },
       style: {
         stroke: '#ddd',
         strokeOpacity: 0.3,
@@ -196,9 +198,9 @@ export default class ChartSunburst extends React.Component {
         data: updateData(this.state.data, false)
       }),
       onValueClick: (node) => {
-        const wikiEntity = node.wiki || ( node.data && node.data.wiki)
-        const isProvince = node.isProvince || ( node.data && node.isProvince)
-        const provName = node.name || ( node.data && node.data.name)
+        const wikiEntity = node.wiki || (node.data && node.data.wiki)
+        const isProvince = node.isProvince || (node.data && node.isProvince)
+        const provName = node.name || (node.data && node.data.name)
         if (wikiEntity) {
           this.props.setWikiId(wikiEntity)
           if (isProvince) {
@@ -211,7 +213,7 @@ export default class ChartSunburst extends React.Component {
     return (
       <Paper zDepth={3} style={{
         position: 'fixed',
-        left:  (isMinimized ? '-52px' : '-574px'),
+        left: (isMinimized ? '-52px' : '-574px'),
         top: '4px',
         zIndex: 2147483647,
         padding: '0em',
@@ -232,28 +234,31 @@ export default class ChartSunburst extends React.Component {
               boxShadow: 'rgba(0, 0, 0, 0.4) -1px 2px 3px 1px'
             }
           }
-          title={<span style={{ color: themes[theme].foreColors[0] }}>Breakdown <span style={{ fontSize: 'inherit', color: 'inherit' }}>of {this.state.total} subjects</span></span>}
+          title={<span style={{ color: themes[theme].foreColors[0] }}>Breakdown <span
+            style={{ fontSize: 'inherit', color: 'inherit' }}>of {this.state.total} subjects</span></span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
-            ? <IconButton style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon  color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>
+            ? <IconButton style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon
+              color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>
             : <IconButton
-              tooltipPosition="bottom-left"
-              tooltip={'Minimize'} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+              tooltipPosition='bottom-left'
+              tooltip={'Minimize'} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}
+                hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
         <div style={styles.chartContainer}>
-        { !isMinimized && (modeIndex === -1) && <Sunburst {...chartProps}>
+          {!isMinimized && (modeIndex === -1) && <Sunburst {...chartProps}>
 
-          { finalValue &&  <div style={{
-            textShadow: 'black 1px 0px 1px',
-            position: 'absolute',
-            left: 123,
-            top: 178,
-            width: 200,
-            textAlign: 'center'
-          }} dangerouslySetInnerHTML={{__html: finalValue}}></div>
-          }
-        </Sunburst>}
-        { !isMinimized && (modeIndex !== -1) && <Treemap {...chartProps} /> }
+            {finalValue && <div style={{
+              textShadow: 'black 1px 0px 1px',
+              position: 'absolute',
+              left: 123,
+              top: 178,
+              width: 200,
+              textAlign: 'center'
+            }} dangerouslySetInnerHTML={{ __html: finalValue }} />
+            }
+          </Sunburst>}
+          {!isMinimized && (modeIndex !== -1) && <Treemap {...chartProps} />}
         </div>
         <FlatButton
           style={{
@@ -272,7 +277,7 @@ export default class ChartSunburst extends React.Component {
           marginTop: '-42px',
           marginLeft: '1em',
         }}>
-          { pathValue &&  <div dangerouslySetInnerHTML={{__html: pathValue}}></div>
+          {pathValue && <div dangerouslySetInnerHTML={{ __html: pathValue }} />
           }
         </div>
       </Paper>

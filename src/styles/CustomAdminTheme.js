@@ -1,15 +1,22 @@
 import {
-  cyan500, cyan700, pinkA200,
-  grey100, grey300, grey400, grey500,
-  white, darkBlack, fullBlack,
-} from 'material-ui/styles/colors';
-import { fade } from 'material-ui/utils/colorManipulator';
-import spacing from 'material-ui/styles/spacing';
+  cyan500,
+  cyan700,
+  darkBlack,
+  fullBlack,
+  grey100,
+  grey300,
+  grey400,
+  grey500,
+  pinkA200,
+  white,
+} from 'material-ui/styles/colors'
+import { fade } from 'material-ui/utils/colorManipulator'
+import spacing from 'material-ui/styles/spacing'
 
 const customTheme = {
   spacing: spacing,
   fontFamily: 'inherit',
-  drawer : {
+  drawer: {
     width: 50
   },
   palette: {
@@ -42,6 +49,6 @@ const customTheme = {
       accent1Color: '#ff4081'
     }
   }
-};
+}
 
 export default customTheme

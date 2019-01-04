@@ -109,7 +109,6 @@ export const setEpic = epics => ({
   payload: epics,
 })
 
-
 export const toggleEpic = epic => ({
   type: TOGGLE_EPIC,
   payload: epic,
@@ -117,7 +116,12 @@ export const toggleEpic = epic => ({
 
 /** Reducers **/
 
-export const mapStylesReducer = (initial = { basemap: 'topographic', showProvinceBorders: true, 'popOpacity': false, 'clusterMarkers': (localStorage.getItem('chs_cluster') === 'true') || false }) =>
+export const mapStylesReducer = (initial = {
+  basemap: 'topographic',
+  showProvinceBorders: true,
+  'popOpacity': false,
+  'clusterMarkers': (localStorage.getItem('chs_cluster') === 'true') || false
+}) =>
   (prevMapStyle = initial, { type, payload }) => {
     switch (type) {
       case SET_POPOPACITY:
@@ -184,7 +188,10 @@ export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': '
     }
   }
 
-export const markerReducer = (initial = { list: [], limit: (localStorage.getItem('chs_markerLimit') ? +localStorage.getItem('chs_markerLimit') : 3000) }) =>
+export const markerReducer = (initial = {
+  list: [],
+  limit: (localStorage.getItem('chs_markerLimit') ? +localStorage.getItem('chs_markerLimit') : 3000)
+}) =>
   (prevMarker = initial, { type, payload }) => {
     switch (type) {
       case SET_MARKERLIMIT:

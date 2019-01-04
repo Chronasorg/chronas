@@ -1,6 +1,5 @@
 import React, { createElement, PureComponent } from 'react'
-import { Route, Switch } from 'react-router-dom'
-import { Link } from 'react-router-dom'
+import { Link, Route, Switch } from 'react-router-dom'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import pure from 'recompose/pure'
@@ -10,11 +9,11 @@ import Toolbar from 'material-ui/Toolbar'
 import FlatButton from 'material-ui/FlatButton'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 import { chronasMainColor } from '../../../styles/chronasColors'
-import { UserList, UserCreate, UserEdit, UserDelete, UserIcon } from '../users'
-import { AreaList, AreaCreate, AreaEdit, AreaDelete, AreaIcon } from '../areas'
-import { MarkerList, MarkerCreate, MarkerEdit, MarkerDelete, MarkerIcon } from '../markers'
-import { MetadataList, MetadataCreate, MetadataEdit, MetadataDelete, MetadataIcon } from '../metadata'
-import { RevisionList, RevisionCreate, RevisionEdit, RevisionDelete, RevisionIcon } from '../revisions'
+import { UserCreate, UserDelete, UserEdit, UserList } from '../users'
+import { AreaCreate, AreaDelete, AreaEdit, AreaList } from '../areas'
+import { MarkerCreate, MarkerDelete, MarkerEdit, MarkerList } from '../markers'
+import { MetadataCreate, MetadataDelete, MetadataEdit, MetadataList } from '../metadata'
+import { RevisionCreate, RevisionDelete, RevisionEdit, RevisionList } from '../revisions'
 
 const styles = {
   menuButtons: {
@@ -43,30 +42,29 @@ const resources = {
   images: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
   users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
 }
+
 //, create: UserCreate, edit: UserEdit, remove: UserDelete
 
 class CrudRoute extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = { hiddenElement: true }
-  }
-
   componentDidMount = () => {
-    this.setState({hiddenElement: false})
+    this.setState({ hiddenElement: false })
   }
-
   componentWillUnmount = () => {
-    this.setState({hiddenElement: true})
+    this.setState({ hiddenElement: true })
   }
-
   handleClose = () => {
     this.props.history.push('/')
   }
 
-  render() {
+  constructor (props) {
+    super(props)
+    this.state = { hiddenElement: true }
+  }
+
+  render () {
     const { list, create, edit, show, remove, options, onMenuTap, translate } = this.props
     const currPrivilege = +localStorage.getItem('chs_privilege')
-    const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege )
+    const resourceList = Object.keys(resources).filter(resCheck => +resources[resCheck].permission <= currPrivilege)
 
     const restrictPage = (component, route, commonProps) => {
       const RestrictedPage = routeProps => (
@@ -74,19 +72,19 @@ class CrudRoute extends PureComponent {
           <Dialog
 
             modal={false}
-            bodyStyle={{padding: 0}}
-            style={{paddingTop: 0, height: '100vh'}}
+            bodyStyle={{ padding: 0 }}
+            style={{ paddingTop: 0, height: '100vh' }}
 
             repositionOnUpdate={false}
             autoDetectWindowHeight={false}
-            open={true} contentClassName={(this.state.hiddenElement) ? "" : "classReveal"}
-            autoScrollBodyContent={true} contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
-            <Toolbar style={{ backgroundColor: "rgb(22, 22, 19)" }}>
-              {resourceList.map((resourceKey) => (<div key={"div-" + resourceKey}>
+            open contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
+            autoScrollBodyContent contentStyle={styles.dialogStyle} onRequestClose={this.handleClose}>
+            <Toolbar style={{ backgroundColor: 'rgb(22, 22, 19)' }}>
+              {resourceList.map((resourceKey) => (<div key={'div-' + resourceKey}>
                 <FlatButton
                   key={resourceKey}
-                  containerElement={<Link to={"/resources/" + resourceKey} />}
-                  tooltipPosition="bottom-right"
+                  containerElement={<Link to={'/resources/' + resourceKey} />}
+                  tooltipPosition='bottom-right'
                   tooltip={translate('pos.' + resourceKey)}
                   tooltipStyles={tooltip}
                   hoverColor={chronasMainColor}
@@ -108,13 +106,13 @@ class CrudRoute extends PureComponent {
 
     return (
       <div>
-      <Switch>
-        <Route
-          exact
-          path={'/resources'}
-          render={restrictPage(() => (<span>Select a resource from the menu above.</span>), '')}
-        />
-      </Switch>
+        <Switch>
+          <Route
+            exact
+            path={'/resources'}
+            render={restrictPage(() => (<span>Select a resource from the menu above.</span>), '')}
+          />
+        </Switch>
         {resourceList.map((resourceKey) => {
           const commonProps = {
             options,
@@ -126,7 +124,7 @@ class CrudRoute extends PureComponent {
             resource: resourceKey,
           }
 
-          return (<Switch key={resourceKey} style={{zIndex: 20000}}>
+          return (<Switch key={resourceKey} style={{ zIndex: 20000 }}>
             {resources[resourceKey].list && (
               <Route
                 exact
@@ -170,7 +168,7 @@ class CrudRoute extends PureComponent {
 }
 
 const enhance = compose(
-  connect(state => ({ }), { }),
+  connect(state => ({}), {}),
   pure,
   translate,
 )

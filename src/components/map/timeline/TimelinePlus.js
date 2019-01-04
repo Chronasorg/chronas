@@ -5,11 +5,10 @@ import PropTypes from 'prop-types'
 import difference from 'lodash/difference'
 import intersection from 'lodash/intersection'
 import each from 'lodash/each'
-import assign from 'lodash/assign'
 import omit from 'lodash/omit'
 import keys from 'lodash/keys'
 
-const noop = function() {}
+const noop = function () {}
 const events = [
   'click',
   // 'contextmenu',
@@ -31,23 +30,23 @@ const eventPropTypes = {}
 const eventDefaultProps = {}
 
 each(events, event => {
-  ;(eventPropTypes[event] = PropTypes.func),
-    (eventDefaultProps[`${event}Handler`] = noop)
+  eventPropTypes[event] = PropTypes.func
+  eventDefaultProps[`${event}Handler`] = noop
 })
 
 export default class TimelinePlus extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       customTimes: [],
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.$el.destroy()
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { container } = this.refs
 
     this.$el = new vis.Timeline(container, undefined, this.props.options)
@@ -63,7 +62,7 @@ export default class TimelinePlus extends Component {
   //   this.init()
   // }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     const { items, groups, options, selection, selectionOptions = {}, customTimes,
       animate = true,
     } = nextProps
@@ -148,7 +147,7 @@ export default class TimelinePlus extends Component {
     // )
   }
 
-  init() {
+  init () {
     const {
       items,
       groups,
@@ -219,13 +218,12 @@ export default class TimelinePlus extends Component {
     this.setState({ customTimes })
   }
 
-  render() {
-    return <div ref="container" />
+  render () {
+    return <div ref='container' />
   }
 }
 
-TimelinePlus.propTypes = assign(
-  {
+TimelinePlus.propTypes = {
     items: PropTypes.array,
     groups: PropTypes.array,
     options: PropTypes.object,
@@ -240,17 +238,14 @@ TimelinePlus.propTypes = assign(
       PropTypes.instanceOf(Date),
       PropTypes.number,
     ]),
-  },
-  eventPropTypes
-)
+    ...eventPropTypes,
+}
 
-TimelinePlus.defaultProps = assign(
-  {
+TimelinePlus.defaultProps = {
     items: [],
     groups: [],
     options: {},
     selection: [],
     customTimes: {},
-  },
-  eventDefaultProps
-)
+    ...eventDefaultProps,
+}

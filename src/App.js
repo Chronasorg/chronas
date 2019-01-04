@@ -1,24 +1,17 @@
 import React, { Component, createElement } from 'react'
-import { Provider, connect } from 'react-redux'
+import { connect, Provider } from 'react-redux'
 import axios from 'axios'
-import {
-  defaultTheme,
-  Delete,
-  Restricted,
-  TranslationProvider,
-  showNotification
-} from 'admin-on-rest'
+import { defaultTheme, Delete, Restricted, showNotification, TranslationProvider } from 'admin-on-rest'
 import decodeJwt from 'jwt-decode'
 import 'font-awesome/css/font-awesome.css'
-import { Switch, Route } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
-import queryString from 'query-string'
 import { setLoadStatus, setMetadata } from './components/map/data/actionReducers'
-import { TYPE_AREA, TYPE_EPIC, TYPE_MARKER, selectAreaItem, selectMarkerItem } from './components/map/actionReducers'
-import { setMarker, setEpic, setAreaColorLabel, setArea } from './components/menu/layers/actionReducers'
+import { selectAreaItem, selectMarkerItem, TYPE_AREA, TYPE_MARKER } from './components/map/actionReducers'
+import { setArea, setAreaColorLabel, setEpic, setMarker } from './components/menu/layers/actionReducers'
 import { setYear } from './components/map/timeline/actionReducers'
 import Notification from './components/overwrites/Notification'
 import Menu from './components/menu/Menu'
@@ -86,6 +79,49 @@ const prefixedStyles = {}
 const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
 
 class App extends Component {
+  _launchFullscreen = (element) => {
+    if (element.requestFullscreen) {
+      element.requestFullscreen()
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen()
+    } else if (element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen()
+    } else if (element.msRequestFullscreen) {
+      element.msRequestFullscreen()
+    }
+  }
+  _exitFullscreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen()
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen()
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen()
+    }
+  }
+  _setFullscreen = () => {
+    const goFullscreen = typeof (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) === 'undefined'
+    if (goFullscreen) {
+      this._launchFullscreen(document.documentElement)
+    } else {
+      this._exitFullscreen()
+    }
+    localStorage.setItem('chs_fullscreen', goFullscreen)
+    this.setState({ isFullScreen: goFullscreen })
+  }
+  _setBodyFont = (newFont) => {
+    if (properties.fontOptions.map(el => el.id).includes(newFont)) {
+      const currBodyClasses = Array.from(document.body.classList)
+      properties.fontOptions.forEach((el) => {
+        if (currBodyClasses.includes(el.id)) {
+          document.body.classList.remove(el.id)
+        }
+      })
+      document.body.classList.add(newFont)
+      localStorage.setItem('chs_font', newFont)
+    }
+  }
+
   constructor (props) {
     super(props)
     this.state = {
@@ -197,52 +233,6 @@ class App extends Component {
       })
   }
 
-  _launchFullscreen = (element) => {
-    if (element.requestFullscreen) {
-      element.requestFullscreen()
-    } else if (element.mozRequestFullScreen) {
-      element.mozRequestFullScreen()
-    } else if (element.webkitRequestFullscreen) {
-      element.webkitRequestFullscreen()
-    } else if (element.msRequestFullscreen) {
-      element.msRequestFullscreen()
-    }
-  }
-
-  _exitFullscreen = () => {
-    if (document.exitFullscreen) {
-      document.exitFullscreen()
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen()
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen()
-    }
-  }
-
-  _setFullscreen = () => {
-    const goFullscreen = typeof (document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement) === 'undefined'
-    if (goFullscreen) {
-      this._launchFullscreen(document.documentElement)
-    } else {
-      this._exitFullscreen()
-    }
-    localStorage.setItem('chs_fullscreen', goFullscreen)
-    this.setState({ isFullScreen: goFullscreen })
-  }
-
-  _setBodyFont = (newFont) => {
-    if (properties.fontOptions.map(el => el.id).includes(newFont)) {
-      const currBodyClasses = Array.from(document.body.classList)
-      properties.fontOptions.forEach((el) => {
-        if (currBodyClasses.includes(el.id)) {
-          document.body.classList.remove(el.id)
-        }
-      })
-      document.body.classList.add(newFont)
-      localStorage.setItem('chs_font', newFont)
-    }
-  }
-
   componentDidMount () {
     const { setUser, showNotification } = this.props
     const { failAndNotify } = this.state
@@ -342,7 +332,7 @@ class App extends Component {
 
     customTheme.tabs = {
       backgroundColor: 'transparent',
-      selectedTextColor:  themes[theme].foreColors[1],
+      selectedTextColor: themes[theme].foreColors[1],
       textColor: themes[theme].foreColors[0]
     }
 
@@ -387,7 +377,8 @@ class App extends Component {
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     {(isLoading || failAndNotify) && !isStatic && <LoadingPage failAndNotify={failAndNotify} />}
                     {!isLoading && !failAndNotify && createElement(Map, { history, isLoading })}
-                    {!isLoading && !failAndNotify && !isStatic && <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
+                    {!isLoading && !failAndNotify && !isStatic &&
+                    <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <PledgeDialog theme={theme} open={pledgeOpen} snooze={() => {
                         setTimeout(() => {
                           this.setState({ pledgeOpen: true })
@@ -455,7 +446,7 @@ class App extends Component {
                       {createElement(Menu)}
                     </Sidebar>}
                   </div>
-                  { !isStatic && <div className='notifications'>
+                  {!isStatic && <div className='notifications'>
                     <Notification />
                   </div>}
                 </div>

@@ -171,7 +171,7 @@ export default {
   },
   resources: {
     links: {
-      fields : {
+      fields: {
         source: 'Source article receiving links',
         media_list: 'Items to appear in the media section',
         content_list: 'Items to appear in the left content list section',
@@ -373,4 +373,4 @@ export default {
       },
     },
   },
-};
+}

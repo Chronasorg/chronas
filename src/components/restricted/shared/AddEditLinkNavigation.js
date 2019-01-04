@@ -10,7 +10,7 @@ const AddEditLinkNavigation = ({ pathname = '' }) => {
   return <BottomNavigation
     // style={styles.articleHeader}
     // onChange={this.handleChange}
-    selectedIndex={(pathname.indexOf("/create") > -1) ? 0 : (pathname.indexOf("/links") === -1) ? 1 : 2}>
+    selectedIndex={(pathname.indexOf('/create') > -1) ? 0 : (pathname.indexOf('/links') === -1) ? 1 : 2}>
     <BottomNavigationItem
       className='bottomNavigationItem'
       containerElement={<Link to='/mod/markers/create' />}
