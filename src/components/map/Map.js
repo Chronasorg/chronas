@@ -143,7 +143,7 @@ class Map extends Component {
   componentDidMount = () => {
     this._addGeoJson(TYPE_MARKER, this.props.activeMarkers.list)
     this._addEpic(this.props.activeEpics)
-    window.addEventListener('resize', this._resize)
+    window.addEventListener('resize', this._resize, {passive: true})
     this._resize()
   }
   _initializeMap = () => {

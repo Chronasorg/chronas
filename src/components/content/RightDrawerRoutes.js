@@ -395,13 +395,13 @@ class RightDrawerRoutes extends PureComponent {
   }
   handleMousedown = e => {
     this.setState({ isResizing: true, lastDownX: e.clientX })
-    document.addEventListener('mousemove', e => this.handleMousemove(e), false)
-    document.addEventListener('mouseup', e => this.handleMouseup(e), false)
+    document.addEventListener('mousemove', e => this.handleMousemove(e), {passive: true})
+    document.addEventListener('mouseup', e => this.handleMouseup(e), {passive: true})
   }
   handleMouseup = e => {
     this.setState({ isResizing: false })
-    window.removeEventListener('mousemove', e => this.handleMousemove(e), false)
-    window.removeEventListener('mouseup', e => this.handleMouseup(e), false)
+    window.removeEventListener('mousemove', e => this.handleMousemove(e), {passive: true})
+    window.removeEventListener('mouseup', e => this.handleMouseup(e), {passive: true})
   }
   handleMousemove = e => {
     const { selectedItem } = this.props

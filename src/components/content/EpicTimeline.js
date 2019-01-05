@@ -265,6 +265,10 @@ class EpicTimeline extends React.Component {
   setYearWrapper = (newYear) => {
     if (!isNaN(newYear)) this.props.setYear(+newYear)
   }
+
+  _roundToTwo = (val) => {
+    return Math.round(+val * 100) /100
+  }
   _setUpInfluenceDataAndMediaAndLinkedContent = (epicData, influenceRawData, isEntity) => {
     if (!epicData || (!epicData.content || !epicData.data) && !influenceRawData) return
 
@@ -281,21 +285,21 @@ class EpicTimeline extends React.Component {
             title: 'Provinces',
             disabled: false,
             data: influenceRawData.data.influence.map((el) => {
-              return { left: Object.keys(el)[0], top: Object.values(el)[0][0] }
+              return { left: Object.keys(el)[0], top: this._roundToTwo(Object.values(el)[0][0]) }
             })
           },
           {
             title: 'Population Total',
             disabled: false,
             data: influenceRawData.data.influence.map((el) => {
-              return { left: Object.keys(el)[0], top: Object.values(el)[0][1] }
+              return { left: Object.keys(el)[0], top: this._roundToTwo(Object.values(el)[0][1]) }
             })
           },
           {
             title: 'Population Share',
             disabled: false,
             data: influenceRawData.data.influence.map((el) => {
-              return { left: Object.keys(el)[0], top: Object.values(el)[0][2] }
+              return { left: Object.keys(el)[0], top: this._roundToTwo(Object.values(el)[0][2]) }
             })
           }
         ]
@@ -308,7 +312,7 @@ class EpicTimeline extends React.Component {
               title: 'Population Share',
               disabled: false,
               data: epicEntity.data.influence.map((el) => {
-                return { left: Object.keys(el)[0], top: Object.values(el)[0][2] }
+                return { left: Object.keys(el)[0], top: this._roundToTwo(Object.values(el)[0][2]) }
               })
             }
           ]

@@ -148,6 +148,7 @@ class Snackbar extends Component {
       message: messageProp, // eslint-disable-line no-unused-vars
       onRequestClose, // eslint-disable-line no-unused-vars
       onActionClick,
+      selectedYear,
       style,
       ...other
     } = this.props

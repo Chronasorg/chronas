@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import { Portal } from 'react-portal'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import Dialog from 'material-ui/Dialog'
@@ -11,6 +10,7 @@ import IconArrowUp from 'material-ui/svg-icons/navigation/expand-less'
 import IconArrowDown from 'material-ui/svg-icons/navigation/expand-more'
 import IconReset from 'material-ui/svg-icons/av/replay'
 import SearchEpicAutocomplete from '../../overwrites/SearchEpicAutocomplete'
+import PortalYear from './PortalYear'
 import { setYear } from './actionReducers'
 import { selectEpicItem, selectMarkerItem, TYPE_EPIC } from '../actionReducers'
 import TimelinePlus from './TimelinePlus'
@@ -592,14 +592,14 @@ class MapTimeline extends Component {
             if (freeToChange) this._onClickTimeline(event)
           }}
         />
-        <Portal node={document && document.querySelector('.vis-custom-time.selectedYear')}>
+        <PortalYear node={document && document.querySelector('.vis-custom-time.selectedYear')}>
           <button className='currentYearLabel' title='click to select exact year' onClick={(event) => {
             event.stopPropagation()
             this._toggleYearDialog(true)
           }}>
             {selectedYear}
           </button>
-        </Portal>
+        </PortalYear>
       </div>
     )
   }

@@ -112,7 +112,7 @@ export default class DeckGLOverlay extends Component {
         getTargetPosition: d => d.target,
         getSourceColor: d => d.color,
         getTargetColor: d => d.color2,
-        strokeWidth
+        getStrokeWidth: strokeWidth
       })
     }
 

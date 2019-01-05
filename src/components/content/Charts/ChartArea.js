@@ -1,4 +1,5 @@
 import React from 'react'
+import shallowCompare from 'react-addons-shallow-compare';
 import {
   AreaSeries,
   Crosshair,
@@ -154,6 +155,10 @@ export default class InfluenceChart extends React.Component {
         }
       })
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
   }
 
   componentWillReceiveProps (nextProps) {

@@ -193,8 +193,8 @@ class Menu extends PureComponent {
                     src={customAvatar}><span style={{
                     fontWeight: 'bolder',
                     color: themes[theme].backColors[0]
-                  }}>{(username || ' ').substr(0, 1).toUpperCase()}</span></Avatar>/*  <AccountIcon
-              hoverColor={themes[theme].highlightColors[0]}/> */}
+                  }}>{(username || ' ').substr(0, 1).toUpperCase()}</span></Avatar>
+                }
               </IconButton>
             </div>
           ) : null
