@@ -541,7 +541,7 @@ class Information extends PureComponent {
                   <hr />
                   <h4 style={{ marginBottom: '1em' }}>Details</h4>
                   <div>
-                    <div style={{ float: 'right' }}><h4>Marker Breakdown</h4>
+                    <div style={{ float: 'right', maxHeight: 40 }}><h4>Marker Breakdown</h4>
                       <ul style={{ listStyle: 'none' }}>
                         {statisticsBreakdown.markerBreakdown.children.map(el => <li><span
                           style={{ fontWeight: 'bolder' }}>{el.size}</span>: {el.title}</li>)}
@@ -550,7 +550,7 @@ class Information extends PureComponent {
                     {<Treemap {...chartProps} data={statisticsBreakdown.markerBreakdown} />}
                   </div>
                   <div>
-                    <div style={{ float: 'right' }}><h4>Media Breakdown</h4>
+                    <div style={{ float: 'right', maxHeight: 40 }}><h4>Media Breakdown</h4>
                       <ul style={{ listStyle: 'none' }}>
                         {statisticsBreakdown.markerBreakdown.children.map(el => <li><span
                           style={{ fontWeight: 'bolder' }}>{el.size}</span>: {el.title}</li>)}
@@ -559,7 +559,7 @@ class Information extends PureComponent {
                     {<Treemap {...chartProps} data={statisticsBreakdown.mediaBreakdown} />}
                   </div>
                   <div>
-                    <div style={{ float: 'right' }}><h4>Users By Auth Type</h4>
+                    <div style={{ float: 'right', maxHeight: 40 }}><h4>Users By Auth Type</h4>
                       <ul style={{ listStyle: 'none' }}>
                         {statisticsBreakdown.userBreakdown.children.map(el => <li><span
                           style={{ fontWeight: 'bolder' }}>{el.size}</span>: {el.title}</li>)}

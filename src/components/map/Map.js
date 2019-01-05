@@ -1006,7 +1006,7 @@ class Map extends Component {
                   const arcData = []
                   const nextData = nextProps.activeArea.data
 
-                  Object.keys(nextData).map(provId => {
+                  Object.keys(nextData).forEach(provId => {
                     const provinceGeojsonArr = metadata.provinces.features
                     let currRuler = nextData[provId][0]
                     if (participantFlatList.indexOf(currRuler) > -1) {
