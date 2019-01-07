@@ -356,8 +356,8 @@ class Map extends Component {
       // TODO: do this async!
 
       if (newColor === 'religionGeneral') {
-        activeprovinceValue = (metadata['religionGeneral'][(metadata['religion'][activeprovinceValue] || {})[3]] || {})[0]
-        prevActiveprovinceValue = (metadata['religionGeneral'][(metadata['religion'][prevActiveprovinceValue] || {})[3]] || {})[0]
+        activeprovinceValue = (metadata['religion'][activeprovinceValue] || {})[3]
+        prevActiveprovinceValue = (metadata['religion'][prevActiveprovinceValue] || {})[3]
       }
 
       const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(newColor, activeprovinceValue, prevColor, prevActiveprovinceValue)
@@ -797,6 +797,10 @@ class Map extends Component {
     }
   }
 
+  componentDidCatch(error, info) {
+    this.props.showNotification('Something went wrong', 'confirm')
+  }
+
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
     const { mapStyles, activeArea, selectedYear, metadata, modActive, history, activeEpics, activeMarkers, selectedItem, selectAreaItem, selectMarkerItem } = this.props
@@ -852,8 +856,8 @@ class Map extends Component {
         let prevActiveprovinceValue = (activeArea.data[selectedItem.value] || {})[utils.activeAreaDataAccessor(activeArea.color)]
 
         if (nextProps.activeArea.color === 'religionGeneral') {
-          nextActiveprovinceValue = (metadata['religionGeneral'][(metadata['religion'][nextActiveprovinceValue] || {})[3]] || {})[0]
-          prevActiveprovinceValue = (metadata['religionGeneral'][(metadata['religion'][prevActiveprovinceValue] || {})[3]] || {})[0]
+          nextActiveprovinceValue = (metadata['religion'][nextActiveprovinceValue] || {})[3]
+          prevActiveprovinceValue = (metadata['religion'][prevActiveprovinceValue] || {})[3]
         }
 
         const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, nextActiveprovinceValue, activeArea.color, prevActiveprovinceValue)

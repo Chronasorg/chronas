@@ -26,10 +26,14 @@ export class AreaForm extends Component {
     this.props.handleSubmit(values => {
       const { initialValues, setModType } = this.props
 
-      if (!values.rulerApply) delete values.ruler
-      if (!values.religionApply) delete values.religion
-      if (!values.cultureApply) delete values.culture
-      if (!values.populationApply) delete values.population
+      if (!values.rulerApply) { delete values.ruler }
+      else { values.ruler = values.ruler || "" }
+      if (!values.religionApply) { delete values.religion }
+      else { values.religion = values.religion || "" }
+      if (!values.cultureApply) { delete values.culture }
+      else { values.culture = values.culture || "" }
+      if (!values.populationApply) { delete values.population }
+      else { values.population = values.population || 0 }
 
       const token = localStorage.getItem('chs_token')
       fetch(properties.chronasApiHost + ((typeof values.replaceWith !== 'undefined') ? '/areas/replace' : '/areas'), {

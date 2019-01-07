@@ -171,6 +171,7 @@ const selectedIndexObject = {
   'ruler': 1,
   'culture': 2,
   'religion': 3,
+  'religionGeneral': 4,
 }
 
 const resources = {
@@ -577,6 +578,10 @@ class RightDrawerRoutes extends PureComponent {
   componentWillUnmount () {
     window.removeEventListener('mousemove', e => this.handleMousemove(e), false)
     window.removeEventListener('mouseup', e => this.handleMouseup(e), false)
+  }
+
+  componentDidCatch(error, info) {
+    this.props.showNotification('Something went wrong', 'confirm')
   }
 
   _getFullIconURL (iconPath) {

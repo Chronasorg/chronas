@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { translate } from 'admin-on-rest'
+import {showNotification, translate} from 'admin-on-rest'
 import YouTube from 'react-youtube'
 import { Player } from 'video-react'
 import { StepButton, Stepper } from 'material-ui/Stepper'
@@ -278,7 +278,7 @@ class EpicTimeline extends React.Component {
 
     const epicMeta = (epicData || {}).data || {}
     const influenceChartData = (isEntity)
-      ? (influenceRawData.data.influence ? [{
+      ? ((influenceRawData.data || {}).influence ? [{
         id: influenceRawData.id,
         data: [
           {
@@ -578,7 +578,9 @@ class EpicTimeline extends React.Component {
       </GridList>
     }
   }
-
+  componentDidCatch(error, info) {
+    this.props.showNotification('Something went wrong', 'confirm')
+  }
   render () {
     const { epicMeta, epicLinkedArticles, stepIndex, linkedMediaItems, influenceChartData, selectedImage, selectedWiki, iframeLoading } = this.state
     const { activeContentMenuItem, activeAreaDim, selectedItem, rulerProps, setHasQuestions, isEntity, newWidth, history, selectedYear, setContentMenuItem, sunburstData, translate, theme } = this.props
@@ -834,6 +836,7 @@ const enhance = compose(
     changeColor,
     deselectItem,
     setData,
+    showNotification,
     selectAreaItem,
     setYear: setYearAction,
     selectValue,

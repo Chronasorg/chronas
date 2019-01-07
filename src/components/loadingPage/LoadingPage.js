@@ -135,7 +135,7 @@ const closest = (preArr, closestTo) => {
   const arr = preArr.map(el => el.year)
   const closestYear = arr.reduce(function (prev, curr) {
     return (Math.abs(curr - closestTo) < Math.abs(prev - closestTo) ? curr : prev)
-  })
+  }, Infinity)
   return preArr.find(el => el.year === closestYear)
 }
 

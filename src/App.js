@@ -302,6 +302,12 @@ class App extends Component {
     return false
   }
 
+  // componentDidCatch(error, info) {
+  //   alert('we got an error app')
+  //   console.debug(error, info)
+  //   // showNotification(selectedItem)
+  // }
+
   render () {
     const {
       width,

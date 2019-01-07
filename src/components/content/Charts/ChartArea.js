@@ -38,7 +38,7 @@ export default class InfluenceChart extends React.Component {
       : newData[0].data.map((s, i) => {
         const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
           return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
-        }).toString()
+        }, +selectedYear).toString()
         const topObj = s.data.find(f => f.left === nearestYear)
         return {
           left: selectedYear,
