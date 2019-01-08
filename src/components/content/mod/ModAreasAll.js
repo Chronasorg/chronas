@@ -113,7 +113,7 @@ export const ModAreasAll = (props) => {
           props.setModData(v)
         }} validation={required} elStyle={{ width: '60%', minWidth: '300px' }} defaultValue={defaultValues.provinces}
           source='provinces' label='resources.areas.fields.province_list' />
-        <Subheader>Data</Subheader>
+        <span>(empty data is called 'Unknown')</span>
         <BooleanInput
           source='rulerApply'
           defaultValue={defaultValues.rulerApply}

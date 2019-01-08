@@ -92,13 +92,13 @@ export class ModAreasReplace extends Component {
     const validateValueInput = (values) => {
       const errors = {}
 
-      if (!values.replaceWith) {
-        errors.replaceWith = ['Replace value is required']
-      }
+      // if (!values.replaceWith && values.replaceWith !== "") {
+      //   errors.replaceWith = ['Replace value is required']
+      // }
 
-      if (!values.rulerApply &&
-        !values.cultureApply &&
-        !values.religionApply &&
+      if (!values.rulerApply && values.rulerApply !== "" &&
+        !values.cultureApply && values.cultureApply !== "" &&
+        !values.religionApply && values.religionApply !== "" &&
         !values.populationApply) {
         errors.rulerApply = ['At least one of ruler, culture, religion or population is required']
         errors.cultureApply = ['At least one of ruler, culture, religion or population is required']
@@ -119,7 +119,7 @@ export class ModAreasReplace extends Component {
       <AssignAddEditNavigation pathname={props.location.pathname} />
       <Divider />
       <Create title='Overwrite Area' {...props}>
-        <AreaForm validate={validateValueInput} {...props} >
+        <AreaForm isfromReplace validate={validateValueInput} {...props} >
           <FlatButton
             backgroundColor={'rgb(141, 141, 141)'}
             hoverColor={'rgb(200, 178, 115)'}
@@ -134,8 +134,9 @@ export class ModAreasReplace extends Component {
             containerElement={<Link to='/mod/areasReplace' />}
             style={{ color: '#ffffff', marginRight: 12 }}
           />
-          <Subheader>Data</Subheader>
-          <span>(select one value of the below to be overwritten)</span>
+          <br />
+          <b>Select one value of the below to be overwritten</b>
+          <span>(empty data is called 'Unknown')</span>
           <BooleanInput
             source='rulerApply'
             // defaultValue={defaultValues.rulerApply}

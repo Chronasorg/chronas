@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
-import { defaultTheme, translate } from 'admin-on-rest'
+import { defaultTheme, showNotification, translate } from 'admin-on-rest'
 import { Step, StepButton, Stepper, } from 'material-ui/Stepper'
 import Snackbar from '../overwrites/SnackbarNoAwayClick'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
@@ -1971,6 +1971,7 @@ const enhance = compose(
     setModData: setModDataAction,
     removeModData: removeModDataAction,
     addModData: addModDataAction,
+    showNotification
   }),
   pure,
   translate,

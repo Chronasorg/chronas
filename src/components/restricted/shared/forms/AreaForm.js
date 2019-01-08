@@ -24,7 +24,7 @@ const formStyle = {
 export class AreaForm extends Component {
   handleSubmitWithRedirect = (redirect = this.props.redirect, value) =>
     this.props.handleSubmit(values => {
-      const { initialValues, setModType } = this.props
+      const { initialValues, isfromReplace, setModType } = this.props
 
       if (!values.rulerApply) { delete values.ruler }
       else { values.ruler = values.ruler || "" }
@@ -34,6 +34,9 @@ export class AreaForm extends Component {
       else { values.culture = values.culture || "" }
       if (!values.populationApply) { delete values.population }
       else { values.population = values.population || 0 }
+      if (!values.replaceWith && isfromReplace) {
+        values.replaceWith = ""
+      }
 
       const token = localStorage.getItem('chs_token')
       fetch(properties.chronasApiHost + ((typeof values.replaceWith !== 'undefined') ? '/areas/replace' : '/areas'), {
