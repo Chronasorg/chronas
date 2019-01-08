@@ -612,7 +612,7 @@ class EpicTimeline extends React.Component {
           setContentMenuItem={setContentMenuItem} isMinimized={activeContentMenuItem !== 'linked'}
           setWikiId={this.setWikiIdWrapper} selectValue={this.selectValueWrapper}
           linkedItems={linkedMediaItems} selectedYear={selectedYear} />
-        {influenceChartData && influenceChartData.length > 0 &&
+        {influenceChartData && influenceChartData.length > 0 && entityName !== "Unknown" &&
         <div style={{ height: (!isEntity) ? '256px' : '200px', width: '100%' }}>
           <InfluenceChart qName={entityName || ''} epicMeta={isEntity ? false : epicMeta}
             chartIcons={epicLinkedArticles.filter(el => el.type === 'b' || el.type === 'si')}
