@@ -1231,6 +1231,7 @@ class RightDrawerRoutes extends PureComponent {
         finalProps = {
           ...commonProps,
           metadata,
+          contentTypeRaw,
           selectedItem,
           selectedYear,
           setModDataLng,

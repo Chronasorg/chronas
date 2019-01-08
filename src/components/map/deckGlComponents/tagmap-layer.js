@@ -2,9 +2,7 @@
 import { CompositeLayer, TextLayer } from 'deck.gl'
 import TagMapWrapper from './tagmap-wrapper'
 
-const TEXTCOLOR = [
-  [51, 51, 51, 80],
-]
+const TEXTCOLOR = [ 0, 0, 0, 200 ]
 
 const defaultProps = {
   getLabel: x => x.label,
@@ -150,13 +148,13 @@ export default class TagmapLayer extends CompositeLayer {
       new TextLayer({
         id: 'tagmap-layer',
         data: tags,
-        fontFamily: 'Cinzel, serif',
+        fontFamily: 'Cinzel, serif', //  'Times New Roman, serif',
         getAlignmentBaseline: 'bottom',
         getPixelOffset: [0, -10],
         onClick: onMarkerClick,
         getText: d => d.label,
         getPosition: d => d.position,
-        getColor: d => TEXTCOLOR,
+        // getColor: d => TEXTCOLOR,
         getSize: (d) => { /* console.debug(d); */
           return d.capital ? (1.5 * d.height) : d.height
         },

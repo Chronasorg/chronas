@@ -109,7 +109,7 @@ export const ModMetaEdit = (props) => {
     { name: '[Marker] People -> Religious', id: 'm_religious' },
     { name: '[Marker] People -> Athletes', id: 'm_athletes' },
     { name: '[Marker] People -> Unclassified', id: 'm_unclassified' },
-    { name: '[Marker] Other -> Area Info', id: 'm_areainfo' },
+    { name: '[Marker] Other -> Landmark', id: 'm_landmark' },
     { name: '[Marker] Other -> Unknown', id: 'm_unknown' },
     { id: 'meta_story', name: 'Story' },
     { id: 'meta_image', name: 'Image' },

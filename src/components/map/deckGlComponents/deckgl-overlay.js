@@ -238,6 +238,7 @@ export default class DeckGLOverlay extends Component {
         layers[1] = new IconLayer({ // 4
           id: 'clusterIcon',
           autoHighlight: false,
+          highlightColor: [0, 0, 0, 0],
           data: this._getMarker({
             ...{
               markerData: (showCluster && nextProps.geoData.length > 0) ? nextProps.geoData.concat(capitalMarkers0).concat(capitalMarkers) : nextProps.clusterRawData.concat(capitalMarkers0).concat(capitalMarkers)
@@ -539,7 +540,7 @@ export default class DeckGLOverlay extends Component {
     'w|r': '[Wiki Article] People -> Religious',
     'w|at': '[Wiki Article] People -> Athletes',
     'w|op': '[Wiki Article] People -> Unclassified',
-    'w|ai': '[Wiki Article] Other -> Area Info',
+    'w|l': '[Wiki Article] Other -> Landmark',
     'w|o': '[Wiki Article] Other -> Unknown',
     'o': 'Other'
 

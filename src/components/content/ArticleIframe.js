@@ -276,7 +276,10 @@ class ArticleIframe extends React.Component {
       <div style={!(isMarker || isMedia || !hasChart) ? {
       ...styles.actionButtonContainer,
       top: 254
-    } : (isProvince) ? { ...styles.actionButtonContainer, top: 332 } : {
+    } : (!hasChart && isEntity) ? {
+        ...styles.actionButtonContainer,
+        top: 60
+      } : (isProvince) ? { ...styles.actionButtonContainer, top: 332 } : {
       ...styles.actionButtonContainer,
       backgroundColor: themes[theme].backColors[0]
     }}>
@@ -371,7 +374,7 @@ class ArticleIframe extends React.Component {
         {htmlContent && <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />}
         {!htmlContent && (+selectedWiki !== -1) && (selectedWiki !== '') && (selectedWiki !== null) &&
         <iframe id='articleIframe' onLoad={this._handleUrlChange}
-          style={{ ...styles.iframe, display: (shouldLoad ? 'none' : '') }}
+          style={{ ...styles.iframe, display: (shouldLoad ? 'none' : ''), height: (!hasChart && isEntity ? 'calc(100% - 56px)' : '100%') }}
           src={'https://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%'
           frameBorder='0' />}
       </div>

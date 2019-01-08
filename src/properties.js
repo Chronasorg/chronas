@@ -36,9 +36,10 @@ export const markerIdNameArray = [
   ['ar', 'Artifact', 'Artifacts', 'Artifacts', '#6d4b25'],
   ['b', 'Battle', 'Battles', 'Battles', '#eb5047'],
   ['si', 'Siege', 'Sieges', 'Battles', '#eb5047'],
-  ['c', 'City', 'Cities', 'Cities', '#035e95'],
   ['cp', 'Capital', 'Capital', 'Capital', '#035e95'],
+  ['c', 'City', 'Cities', 'Cities', '#035e95'],
   ['ca', 'Castle', 'Castles', 'Cities', '#035e95'],
+  ['l', 'Landmark', 'Landmark', 'Other', '#035e95'],
   ['m', 'Military', 'Military', 'People', '#55a650'],
   ['p', 'Politician', 'Politicians', 'People', '#55a650'],
   ['e', 'Explorer', 'Explorers', 'People', '#55a650'],
@@ -47,8 +48,7 @@ export const markerIdNameArray = [
   ['r', 'Religious', 'Religious', 'People', '#55a650'],
   ['at', 'Athlete', 'Athletes', 'People', '#55a650'],
   ['op', 'Unclassified', 'Unclassified', 'People', '#55a650'],
-  ['ai', 'Area Info', 'Area Info', 'Other', '#035e95'],
-  ['o', 'Unknown', 'Unknown', 'Other', '#035e95']
+  ['o', 'Unknown', 'Unknown', 'Other', '#5b5b5b']
 ]
 
 export const epicIdNameArray = [
@@ -243,7 +243,7 @@ export const iconMapping = {
       'height': iconHeight,
       'anchorY': iconHeight
     },
-    'ai': {
+    'l': {
       'x': 2 * iconWidth,
       'y': 4 * iconHeight,
       'width': iconWidth,
@@ -421,7 +421,7 @@ export const iconMapping = {
       'height': iconHeightModern,
       'anchorY': iconHeightModern
     },
-    'ai': {
+    'l': {
       'x': 2 * iconWidthModern,
       'y': 4 * iconHeightModern,
       'width': iconWidthModern,
@@ -590,7 +590,7 @@ export const properties = {
   areaLabelLayers: ['ruler', 'religion', 'religionGeneral', 'culture'],
   provinceThreshold: 4,
   chronasApiHost: 'http://localhost:4040/v1', // https://api.chronas.org/v1    -  http://localhost:4040/v1
-  markersTypes: ['w', 'w|b', 'w|si', 'w|c', 'w|ca', 'w|m', 'w|p', 'w|e', 'w|s', 'w|a', 'w|r', 'w|at', 'w|op', 'w|ai', 'w|o'],
+  markersTypes: ['w', 'w|b', 'w|si', 'w|c', 'w|ca', 'w|m', 'w|p', 'w|e', 'w|s', 'w|a', 'w|r', 'w|at', 'w|op', 'w|l', 'w|o'],
   // metadataTypes: ['ae|ruler', /*'ae|ca',*/ 'ae|culture', 'ae|religion', 'ae|religionGeneral', 'a', 'e', 't', 'h', 'i|a', 'i|b', 'i|c', 'i|p', 'i|m', 'i|siege', 'i|war', 'ps', 'v'],
 
   linkedTypes: [
@@ -621,7 +621,7 @@ export const properties = {
     { name: '[Wiki Article] People -> Religious', id: 'w|r' },
     { name: '[Wiki Article] People -> Athletes', id: 'w|at' },
     { name: '[Wiki Article] People -> Unclassified', id: 'w|op' },
-    { name: '[Wiki Article] Other -> Area Info', id: 'w|ai' },
+    { name: '[Wiki Article] Other -> Landmark', id: 'w|l' },
     { name: '[Wiki Article] Other -> Unknown', id: 'w|o' },
     { name: 'Other', id: 'o', color: '#555555' },
   ],
@@ -671,7 +671,7 @@ export const properties = {
     'w|r': '[Wiki Article] People -> Religious',
     'w|at': '[Wiki Article] People -> Athletes',
     'w|op': '[Wiki Article] People -> Unclassified',
-    'w|ai': '[Wiki Article] Other -> Area Info',
+    'w|l': '[Wiki Article] Other -> Landmark',
     'w|o': '[Wiki Article] Other -> Unknown',
     'o': 'Other'
   },
@@ -753,7 +753,7 @@ export const getPercent = (min, max, val) => {
 }
 
 export const RGBAtoArray = (str) => {
-  const match = str.match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d{1,3})\))?/)
+  const match = (str || "empty").match(/rgba?\((\d{1,3}), ?(\d{1,3}), ?(\d{1,3})\)?(?:, ?(\d{1,3})\))?/)
   return match ? [+match[1], +match[2], +match[3], +(match[4] || 255)] : [0, 0, 0, 0]
 }
 
@@ -763,7 +763,7 @@ export const getFullIconURL = (iconPath) => {
 
 export const getYoutubeId = (url) => {
   const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
-  const match = url.match(regExp)
+  const match = (url || "empty").match(regExp)
   if (match && match[2].length === 11) {
     return match[2]
   } else {

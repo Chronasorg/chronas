@@ -133,7 +133,7 @@ export const MarkerEdit = (props) => {
           <SelectInput options={{ fullWidth: true }} onChange={(val, v) => {
             props.actOnRootTypeChange(v)
           }} source='type' validate={required}
-            defaultValue={props.selectedItem.value.type ? (props.selectedItem.value.type + '|' + props.selectedItem.value.subtype) : (defaultObj.type) ? (defaultObj.type + '|' + defaultObj.subtype) : ''}
+            defaultValue={props.contentTypeRaw || (props.selectedItem.value.type ? (props.selectedItem.value.type + '|' + props.selectedItem.value.subtype) : (defaultObj.type) ? (defaultObj.type + '|' + defaultObj.subtype) : '')}
             choices={properties.linkedTypes} label='resources.markers.fields.type' />
           <TextInput options={{ fullWidth: true }} source='name' defaultValue={props.selectedItem.value.name}
             label='resources.markers.fields.name' />
@@ -180,7 +180,9 @@ export const MarkerCreate = (props) => {
     <Divider />
     <Create title={'Create Article'} {...props}>
       <MarkerForm validate={validateWiki} redirect='' history={props.history}>
-        <SelectInput options={{ fullWidth: true }} onChange={(val, v) => {
+        <SelectInput
+          defaultValue={props.contentTypeRaw}
+          options={{ fullWidth: true }} onChange={(val, v) => {
           props.actOnRootTypeChange(v)
         }} source='type' validate={required} choices={properties.linkedTypes} label='resources.markers.fields.type' />
         <TextInput options={{ fullWidth: true }} validate={required} source='name' label='resources.markers.fields.name' />

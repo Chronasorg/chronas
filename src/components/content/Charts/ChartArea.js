@@ -157,7 +157,7 @@ export default class InfluenceChart extends React.Component {
     }
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate (nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState);
   }
 
@@ -174,7 +174,7 @@ export default class InfluenceChart extends React.Component {
 
   render () {
     const { series, crosshairValues, currentYearMarkerValues, crosshairStartValues, crosshairEndValues, sortedData } = this.state
-    const { chartIcons, rulerProps, selectedYear, epicMeta } = this.props
+    const { chartIcons, rulerProps, setEpicContentIndex, selectedYear, epicMeta } = this.props
 
     if (!sortedData || sortedData.length === 0) return null
 
@@ -243,24 +243,36 @@ export default class InfluenceChart extends React.Component {
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
               values={currentYearMarkerValues} />
-            {chartIcons.map((el, index) => {
-              return <Crosshair
-
-                className={(epicMeta) ? 'timelineIconBig' : 'timelineIconSmall'}
-                itemsFormat={this._formatCrosshairItems}
-                titleFormat={this._formatCrosshairTitle}
-                values={[{
-                  left: +el.date,
-                }]}>
-                <div>
-                  <img title={el.name} src={'/images/transparent.png'}
-                    className={(index % 3) ? 'battleIcon1' : 'battleIcon2'} />
-                </div>
-              </Crosshair>
-            })}
+            {chartIcons.map((el, index) => <Crosshair
+                  className={((el.type === "si" || el.type === "b") && !epicMeta) ? 'timelineIconSmall' : 'timelineIconBig'}
+                  itemsFormat={this._formatCrosshairItems}
+                  titleFormat={this._formatCrosshairTitle}
+                  values={[{
+                    left: +el.date,
+                  }]}>
+                  <div>
+                    <ItemImage {...{ name: el.name, epicIndex: el.i, type: el.type, index: index, setEpicContentIndex: setEpicContentIndex }}  title={el.name} src={'/images/transparent.png'}
+                         className={(index % 3) ? 'battleIcon1' : 'battleIcon2'} />
+                  </div>
+                </Crosshair>
+            )}
           </FlexibleWidthXYPlot>
         </div>
       </div>
     )
+  }
+}
+
+class ItemImage extends React.Component {
+  onClick = () => {
+    const { setEpicContentIndex, epicIndex } = this.props;
+    setEpicContentIndex(epicIndex);
+  }
+  render () {
+    const { name, index, type } = this.props;
+    return (<div>
+      <img onClick={this.onClick} title={name} src={'/images/transparent.png'}
+           className={(type === "si" || type === "b") ? ((index % 3) ? 'battleIcon1' : 'battleIcon2') : (type === "ew") ? 'warIcon' : 'discoveryIcon' } />
+    </div>)//(<div style={style} onClick={this.onClick}>{name}</div>)
   }
 }

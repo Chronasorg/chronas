@@ -47,8 +47,6 @@ export class SelectArrayInput extends Component {
 
   handleAdd = newValue => {
     const { linkedItemData, setLinkedItemData, source } = this.props
-    const values = [...this.state.values, newValue]
-    this.setState({ values }, () => this.handleChange(this.state.values))
 
     const newArr1 = linkedItemData.linkedItemKey1.split('||')
     const toAddString = newValue.value || newValue
@@ -76,6 +74,8 @@ export class SelectArrayInput extends Component {
     })
       .then(() => {
         console.debug('linked added')
+        const values = [...this.state.values, newValue]
+        this.setState({ values }, () => this.handleChange(this.state.values))
       })
   }
 

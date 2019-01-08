@@ -159,7 +159,7 @@ export const LinkedEdit = (props) => {
         <SelectInput onChange={(val, v) => {
           props.actOnRootTypeChange(v)
         }} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.type'
-          defaultValue={props.selectedItem.value.subtype} />
+          defaultValue={props.contentTypeRaw || props.selectedItem.value.subtype} />
 
         {isEpic && <AutocompleteInput options={{ fullWidth: true }} source='select' choices={props.epicsChoice}
           onSearchChange={(val) => {
@@ -252,6 +252,7 @@ export const LinkedCreate = (props) => {
         <SelectInput onChange={(val, v) => {
           props.actOnRootTypeChange(v)
         }} validate={required} source='subtype' choices={properties.linkedTypes}
+          defaultValue={props.contentTypeRaw}
           label='resources.linked.fields.subtype' />
         <LongTextInput source='src' type='url' label='resources.linked.fields.src' />
         <LongTextInput validate={required} source='description' label='resources.linked.fields.description' />

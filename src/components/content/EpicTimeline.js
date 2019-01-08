@@ -349,8 +349,9 @@ class EpicTimeline extends React.Component {
 
     const epicLinkedArticles = ((entityContentData && entityContentData.concat(((epicData || {}).content || []))) ||
       (epicData || {}).content ||
-      (epicMeta || {}).content || []).map((linkedItem) => {
+      (epicMeta || {}).content || []).map((linkedItem, i) => {
       return {
+        'i': i,
         'name': (!linkedItem.properties) ? (linkedItem.name || linkedItem.wiki) : linkedItem.properties.n || linkedItem.properties.w,
         'wiki': (!linkedItem.properties) ? linkedItem.wiki : linkedItem.properties.w,
         'content': (!linkedItem.properties) ? (linkedItem.content || linkedItem.name) : (linkedItem.properties.c || linkedItem.properties.n),
@@ -417,7 +418,7 @@ class EpicTimeline extends React.Component {
       this._setUpInfluenceDataAndMediaAndLinkedContent(nextPropsEpicData, influenceRawData, nextProps.isEntity)
     } else if (prevLinkedId === nextLinkedId && (rulerProps || {})[2] !== (nextProps.rulerProps || {})[2]) {
       this.forceUpdate()
-    } else if (nextProps.selectedItem.type === TYPE_EPIC && nextProps.contentIndex !== contentIndex) {
+    } else if ((nextProps.selectedItem.type === TYPE_EPIC || nextProps.selectedItem.type === TYPE_AREA) && nextProps.contentIndex !== contentIndex) {
       this.setState({ stepIndex: nextProps.contentIndex, selectedWiki: false })
       if (setYearByArticle) {
         const newYear = (((((nextProps.selectedItem || {}).data || {}).content || [])[nextProps.contentIndex] || {}).properties || {}).y
@@ -583,7 +584,7 @@ class EpicTimeline extends React.Component {
   }
   render () {
     const { epicMeta, epicLinkedArticles, stepIndex, linkedMediaItems, influenceChartData, selectedImage, selectedWiki, iframeLoading } = this.state
-    const { activeContentMenuItem, activeAreaDim, selectedItem, rulerProps, setHasQuestions, isEntity, newWidth, history, selectedYear, setContentMenuItem, sunburstData, translate, theme } = this.props
+    const { activeContentMenuItem, activeAreaDim, setEpicContentIndex, selectedItem, rulerProps, setHasQuestions, isEntity, newWidth, history, selectedYear, setContentMenuItem, sunburstData, translate, theme } = this.props
 
     const linkedItems = (selectedItem || {}).data
     const hasSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
@@ -615,8 +616,8 @@ class EpicTimeline extends React.Component {
         {influenceChartData && influenceChartData.length > 0 && entityName !== "Unknown" &&
         <div style={{ height: (!isEntity) ? '256px' : '200px', width: '100%' }}>
           <InfluenceChart qName={entityName || ''} epicMeta={isEntity ? false : epicMeta}
-            chartIcons={epicLinkedArticles.filter(el => el.type === 'b' || el.type === 'si')}
-            rulerProps={rulerProps} setYear={this.setYearWrapper} newData={influenceChartData}
+            chartIcons={epicLinkedArticles.filter(el => el.type === 'b' || el.type === 'si' || el.type === 'ei' || el.type === 'ew')}
+            rulerProps={rulerProps} setYear={this.setYearWrapper} setEpicContentIndex={setEpicContentIndex} newData={influenceChartData}
             selectedYear={selectedYear} />
         </div>}
         {contentDetected && <div style={{

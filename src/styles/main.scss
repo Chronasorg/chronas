@@ -803,6 +803,48 @@ div.vis-tooltip {
   }
 }
 
+.rv-crosshair__inner {
+  .discoveryIcon {
+    margin-top: -360px;
+    pointer-events: all;
+    cursor: help;
+    opacity: 1;
+  }
+  .discoveryIcon:hover {
+    opacity: 0.7;
+    -webkit-filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+    filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+  }
+}
+
+.rv-crosshair__inner {
+  .warIcon {
+    pointer-events: all;
+    cursor: help;
+    margin-top: -70px;
+    opacity: 1;
+  }
+  .warIcon:hover {
+    opacity: 0.7;
+    -webkit-filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+    filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+  }
+}
+
+.rv-crosshair__inner {
+  .battleIcon1, .battleIcon2 {
+    cursor: help;
+    opacity: 1;
+  }
+  .battleIcon1:hover, .battleIcon2:hover {
+    opacity: 0.7;
+    -webkit-filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+    filter: drop-shadow(rgb(0, 0, 0) 0px 0px 2px);
+  }
+}
+
+
+
 .discoveryIcon {
   pointer-events: all;
   margin-right: 0;
