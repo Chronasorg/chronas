@@ -446,11 +446,11 @@ class EpicTimeline extends React.Component {
 
   getStepContent (stepIndex, contentDetected) {
     const { deselectItem, rulerProps, selectedItem, history, setMetadataEntity, theme } = this.props
-    const { selectedWiki, setYearByArticle, epicLinkedArticles, influenceChartData } = this.state
+    const { selectedWiki, setYearByArticle, epicMeta, epicLinkedArticles, influenceChartData } = this.state
     const selectedIndexItem = (epicLinkedArticles[stepIndex] || {})
     const itemType = selectedIndexItem.type
     const isMarker = !(selectedIndexItem.isMarker === false) || (selectedIndexItem.type.substr(0, 3) === 'ae|')
-    const hasChart = (influenceChartData && influenceChartData.length > 0)
+    const hasChart = (influenceChartData && influenceChartData.length > 0 && ((epicMeta || {}).title || (rulerProps || {})[0] !== "Unknown"))
     // TODO: fly to if coo, add geojson up to that index and animate current - if main, add all geojson
     if (isMarker) {
       const wikiUrl = selectedIndexItem.wiki || ((selectedItem || {}).data || {}).wiki || (rulerProps || {})[2] || -1
