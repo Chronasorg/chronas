@@ -66,6 +66,7 @@ export const ModLinksEdit = (props) => {
           }}
         />
         <h3>Link to media section</h3>
+        <b>Only media entities (images, videos, audio etc) allowed</b>
         <SelectArrayInput
           setLinkedItemData={props.setLinkedItemData}
           linkedItemData={props.linkedItemData}
@@ -80,6 +81,7 @@ export const ModLinksEdit = (props) => {
           source='linkedMedia' label='resources.links.fields.media_list' />
         <Divider />
         <h3>Link to content section</h3>
+        <b>Only wiki article entities, epics or area entities allowed</b>
         <SelectArrayInput
           setLinkedItemData={props.setLinkedItemData}
           linkedItemData={props.linkedItemData}

@@ -54,8 +54,6 @@ export class SelectArrayInput extends Component {
 
     const type = (source === 'linkedMedia') ? 'e' : 'a'
 
-    setLinkedItemData({ [source]: linkedItemData[source].filter(el => el !== toAddString) })
-
     const linkedBody = {
       linkedItemType1: (properties.markersTypes.includes(newArr1[1])) ? 'markers' : 'metadata',
       linkedItemType2: (properties.markersTypes.includes(newArr2[1])) ? 'markers' : 'metadata',
@@ -73,23 +71,20 @@ export class SelectArrayInput extends Component {
       }
     })
       .then(() => {
-        console.debug('linked added')
+        // console.debug('linked added')
         const values = [...this.state.values, newValue]
+        setLinkedItemData({ [source]: linkedItemData[source].filter(el => el !== toAddString).concat([toAddString]) })
         this.setState({ values }, () => this.handleChange(this.state.values))
       })
   }
 
   handleDelete = newValue => {
-    console.debug('remove chip', newValue)
+    // console.debug('remove chip', newValue)
     const { linkedItemData, setLinkedItemData, source } = this.props
-    const values = this.state.values.filter(v => v.value !== newValue)
-    this.setState({ values }, () => this.handleChange(this.state.values))
 
     const newArr1 = linkedItemData.linkedItemKey1.split('||')
     const toDeleteString = newValue.value || newValue
     const newArr2 = toDeleteString.split('||')
-
-    setLinkedItemData({ linkedMedia: linkedItemData[source].filter(el => el !== toDeleteString) })
 
     const linkedBody = {
       linkedItemType1: (properties.markersTypes.includes(newArr1[1])) ? 'markers' : 'metadata',
@@ -106,7 +101,10 @@ export class SelectArrayInput extends Component {
       }
     })
       .then(() => {
-        console.debug('linked deleted')
+        const values = this.state.values.filter(v => v.value !== newValue)
+        setLinkedItemData({ [source]: linkedItemData[source].filter(el => el !== toDeleteString) })
+        this.setState({ values }, () => this.handleChange(this.state.values))
+        // console.debug('linked deleted')
       })
   };
 

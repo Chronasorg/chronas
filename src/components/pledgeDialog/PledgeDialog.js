@@ -68,7 +68,7 @@ class PledgeDialog extends PureComponent {
 
         <CardText>
           <p>
-              You have now been on Chronas for over <b>30 minutes</b>!
+              You have now been on Chronas for over <b>15 minutes</b>!
           </p>
           <p>
               Chronas depends on user support to survive and grow.
@@ -82,7 +82,7 @@ class PledgeDialog extends PureComponent {
           </p>
         </CardText>
         <CardActions>
-          <FlatButton label='Remind me in another 30 minutes' onClick={() => snooze()} />
+          <FlatButton label='Remind me in another 15 minutes' onClick={() => snooze()} />
           <FlatButton label='Open Patreon in new tab' onClick={() => {
             var win = window.open('https://www.patreon.com/chronas', '_blank')
             win.focus()

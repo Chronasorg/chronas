@@ -74,7 +74,7 @@ const styles = {
   },
 }
 
-const PLEDGEREMINDERDURATION = 1800000
+const PLEDGEREMINDERDURATION = 900000 // 1800000
 const prefixedStyles = {}
 const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
 
@@ -256,7 +256,7 @@ class App extends Component {
     if (!localStorage.getItem('chs_pledge_closed')) {
       setTimeout(() => {
         this.setState({ pledgeOpen: true })
-        // this.forceUpdate();
+        this.forceUpdate();
       }, PLEDGEREMINDERDURATION)
     }
 
@@ -318,7 +318,6 @@ class App extends Component {
     } = this.props
 
     const {
-      drawerOpen,
       pledgeOpen,
       failAndNotify,
       isFullScreen,
@@ -363,12 +362,9 @@ class App extends Component {
       prefixedStyles.contentSmall = prefix(styles.contentSmall)
     }
 
-    prefixedStyles.content.transition = 'margin-left 350ms cubic-bezier(0.23, 1, 0.32, 1)'
-    prefixedStyles.content.overflow = 'hidden'
-
-    if (drawerOpen) {
-      prefixedStyles.content.marginLeft = 156
-    } else {
+    if (!prefixedStyles.content.transition) {
+      prefixedStyles.content.transition = 'margin-left 350ms cubic-bezier(0.23, 1, 0.32, 1)'
+      prefixedStyles.content.overflow = 'hidden'
       prefixedStyles.content.marginLeft = 0
     }
 
