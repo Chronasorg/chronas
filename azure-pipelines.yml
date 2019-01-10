@@ -10,9 +10,13 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 variables:
-  imageName: 'aumanjoa/chronas-map:$(build.buildId)'
+  imageName: 'aumanjoa/chronas-map:$(build.buildId)-script'
+  dockerHubUsername: 'aumanjoa'
   appInsightsKey: $(applicationInsightsKey)
 
 steps:
-- script: docker build -f Dockerfile -t $(imageName) --build-arg APPLICATIONINSIGHTS_KEY=$(appInsightsKey) .
-  displayName: 'docker build'
+- script: |
+    docker build -f Dockerfile -t $(imageName) --build-arg APPLICATIONINSIGHTS_KEY=$(appInsightsKey) .
+    docker login -u $(dockerHubUsername) -p $(dockerHubPwd)
+    docker push $(imageName)
+  displayName: 'docker build and push'
