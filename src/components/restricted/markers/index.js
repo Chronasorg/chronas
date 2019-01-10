@@ -50,7 +50,7 @@ export const MarkerIcon = Icon
 
 const validateWiki = (values) => {
   const errors = {}
-  if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1))// && ((this.props.selectedItem.value || {}).w !== values.wiki)) {
+  if ((typeof values.wiki === "string" && values.wiki.indexOf('.wikipedia.org/wiki/') === -1))// && ((this.props.selectedItem.value || {}).w !== values.wiki)) {
   {
     errors.wiki = ['The URL needs to be a full Wikipedia URL']
   }
@@ -98,7 +98,7 @@ export const MarkerEdit = (props) => {
 
   const validateWikiProps = (values) => {
     const errors = {}
-    if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki) && (((contentArr[cIndex] || {}).properties || {}).w !== values.wiki)) {
+    if ((typeof values.wiki === "string" && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki) && (((contentArr[cIndex] || {}).properties || {}).w !== values.wiki)) {
       errors.wiki = ['The URL needs to be a full Wikipedia URL']
     }
     return errors
@@ -141,12 +141,12 @@ export const MarkerEdit = (props) => {
             defaultValue={'https://en.wikipedia.org/wiki/' + (props.selectedItem.value._id || defaultObj.wiki)}
             label='resources.markers.fields.url' type='url' />
           <ModButton style={{ width: '30%', float: 'left' }} modType='marker' />
-          <TextInput style={{ width: '30%', float: 'left' }} source='coo[0]' onChange={(val, v) => {
+          <TextInput style={{ width: '30%', float: 'left' }} source='coo[1]' onChange={(val, v) => {
             props.setModDataLng(+v)
-          }} defaultValue={(props.selectedItem.value.coo || {})[0]} label='resources.markers.fields.lat' />
-          <TextInput style={{ width: '30%', float: 'right' }} source='coo[1]' onChange={(val, v) => {
+          }} defaultValue={(props.selectedItem.value.coo || {})[1]} label='resources.markers.fields.lat' />
+          <TextInput style={{ width: '30%', float: 'right' }} source='coo[0]' onChange={(val, v) => {
             props.setModDataLat(+v)
-          }} defaultValue={(props.selectedItem.value.coo || {})[1]} label='resources.markers.fields.lng' />
+          }} defaultValue={(props.selectedItem.value.coo || {})[0]} label='resources.markers.fields.lng' />
           <NumberInput options={{ fullWidth: true }} validate={required} defaultValue={props.selectedItem.value.year}
             source='year' label='resources.markers.fields.year' type='number' />
           <LongTextInput options={{ fullWidth: true }} source='geojson' label='resources.linked.fields.geojson'
@@ -191,10 +191,10 @@ export const MarkerCreate = (props) => {
         <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
         <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => {
           props.setModDataLng(+v)
-        }} source='coo[0]' label='resources.markers.fields.lat' />
+        }} source='coo[1]' label='resources.markers.fields.lat' />
         <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => {
           props.setModDataLat(+v)
-        }} source='coo[1]' label='resources.markers.fields.lng' />
+        }} source='coo[0]' label='resources.markers.fields.lng' />
         <NumberInput source='year' label='resources.markers.fields.year' />
         <LongTextInput options={{ fullWidth: true }} source='geojson' label='resources.linked.fields.geojson' />
         <EmbeddedArrayInput options={{ fullWidth: true }} source='capital'>

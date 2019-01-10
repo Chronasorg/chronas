@@ -165,10 +165,10 @@ export const ModMetaAdd = (props) => {
     <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
     <NumberInput style={{ width: '30%', float: 'left' }} options={{ fullWidth: true }} onChange={(val, v) => {
       props.setModDataLng(+v)
-    }} source='coo[0]' label='resources.markers.fields.lat' />
+    }} source='coo[1]' label='resources.markers.fields.lat' />
     <NumberInput style={{ width: '30%', float: 'right' }} options={{ fullWidth: true }} onChange={(val, v) => {
       props.setModDataLat(+v)
-    }} source='coo[1]' label='resources.markers.fields.lng' />
+    }} source='coo[0]' label='resources.markers.fields.lng' />
     <TextInput options={{ fullWidth: true }} type='text' source='partOf' label='resources.areas.fields.partOf' />
   </MetaForm>,
     'ruler':

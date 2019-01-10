@@ -579,9 +579,11 @@ class EpicTimeline extends React.Component {
       </GridList>
     }
   }
+
   componentDidCatch(error, info) {
     this.props.showNotification('Something went wrong', 'confirm')
   }
+
   render () {
     const { epicMeta, epicLinkedArticles, stepIndex, linkedMediaItems, influenceChartData, selectedImage, selectedWiki, iframeLoading } = this.state
     const { activeContentMenuItem, activeAreaDim, setEpicContentIndex, selectedItem, rulerProps, setHasQuestions, isEntity, newWidth, history, selectedYear, setContentMenuItem, sunburstData, translate, theme } = this.props

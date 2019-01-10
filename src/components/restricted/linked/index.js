@@ -46,7 +46,7 @@ export const LinkedIcon = Icon
 
 const validateWiki = (values) => {
   const errors = {}
-  if ((values.wiki && values.wiki !== values.wiki.indexOf('.wikipedia.org/wiki/') === -1)) {
+  if ((typeof values.wiki === "string" && values.wiki !== values.wiki.indexOf('.wikipedia.org/wiki/') === -1)) {
     errors.wiki = ['The URL needs to be a full Wikipedia URL']
   }
   return errors
@@ -111,7 +111,7 @@ export const LinkedEdit = (props) => {
   const validateWikiProps = (values) => {
     const errors = {}
     const initWiki = props.selectedItem.value.wiki || ((props.selectedItem || {}).data || {}).wiki || ''
-    if ((values.wiki && values.wiki !== initWiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && (initWiki !== values.wiki)) {
+    if ((typeof values.wiki === "string" && values.wiki !== initWiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && (initWiki !== values.wiki)) {
       errors.wiki = ['The URL needs to be a full Wikipedia URL']
     }
     return errors
@@ -186,7 +186,7 @@ export const LinkedEdit = (props) => {
         <LongTextInput source='poster' label='resources.linked.fields.poster' type='url'
           defaultValue={(props.selectedItem.value.data || {}).poster || ''} />
         <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url'
-          defaultValue={props.selectedItem.wiki || props.selectedItem.value.wiki || ''} />
+          defaultValue={((props.selectedItem || {}).value || {}).wiki || props.selectedItem.wiki || ''} />
         {/* <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4> */}
         <NumberInput style={isEpic ? { width: '50%', float: 'left' } : {}} validate={required}
           defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle || potentialYear}
@@ -197,11 +197,11 @@ export const LinkedEdit = (props) => {
         {!isEpic && <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />}
         {!isEpic && <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => {
           props.setModDataLng(+v)
-        }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} source='coo[0]'
+        }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} source='coo[1]'
           label='resources.markers.fields.lat' />}
         {!isEpic && <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => {
           props.setModDataLat(+v)
-        }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} source='coo[1]'
+        }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} source='coo[0]'
           label='resources.markers.fields.lng' />}
         {!isEpic && <LongTextInput source='geojson' label='resources.linked.fields.geojson'
           defaultValue={props.selectedItem.value.geojson || ''} />}
@@ -237,7 +237,7 @@ export const LinkedCreate = (props) => {
       errors.src = ['This field is required for all but html entities']
     }
 
-    if ((values.wiki && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
+    if ((typeof values.wiki === "string" && values.wiki.indexOf('.wikipedia.org/wiki/') === -1) && ((props.selectedItem.value || {}).w !== values.wiki)) {
       errors.wiki = ['This URL must to be a full Wikipedia URL']
     }
 
@@ -266,7 +266,7 @@ export const LinkedCreate = (props) => {
         <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
         <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => {
           props.setModDataLng(+v)
-        }} source='coo[0]' label='resources.markers.fields.lat' />
+        }} source='coo[1]' label='resources.markers.fields.lat' />
         <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => {
           props.setModDataLat(+v)
         }} source='coo[1]' label='resources.markers.fields.lng' />

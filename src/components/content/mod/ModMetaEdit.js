@@ -210,10 +210,10 @@ export const ModMetaEdit = (props) => {
       ? <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' /> : null}
     {(props.metadataEntity !== '') ? <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => {
       props.setModDataLng(+v)
-    }} source='coo[0]' label='resources.markers.fields.lat' /> : null}
+    }} source='coo[1]' label='resources.markers.fields.lat' /> : null}
     {(props.metadataEntity !== '') ? <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => {
       props.setModDataLat(+v)
-    }} source='coo[1]' label='resources.markers.fields.lng' /> : null}
+    }} source='coo[0]' label='resources.markers.fields.lng' /> : null}
     {(props.metadataEntity !== '') ? <TextInput options={{ fullWidth: true }} type='text' source='partOf'
       label='resources.areas.fields.partOf' /> : null}
   </MetaForm>,

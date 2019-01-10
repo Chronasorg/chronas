@@ -123,12 +123,16 @@ class Content extends Component {
     selectedWiki: null,
     hasQuestions: false,
     sunburstData: [],
-    activeContentMenuItem: (localStorage.getItem('chs_activeContentMenuItem') !== null) ? localStorage.getItem('chs_activeContentMenuItem') : ''
+    activeContentMenuItem: (localStorage.getItem('chs_activeContentMenuItem') !== null) ? localStorage.getItem('chs_activeContentMenuItem') : 'linked'
   }
 
   componentDidMount = () => {
     this.setState({ iframeLoading: true })
     this._handleNewData(this.props.selectedItem, this.props.metadata, this.props.activeArea)
+  }
+
+  componentDidCatch(error, info) {
+    this.props.showNotification('Something went wrong', 'confirm')
   }
 
   componentWillUnmount = () => {
@@ -336,7 +340,8 @@ class Content extends Component {
     const hasLinkedImage = (finalLinkedItems.media || []).some(lI => IMAGETYPES.includes(lI.subtype))
     const hasLinkedMovie = (finalLinkedItems.media || []).some(lI => MOVIETYPES.includes(lI.subtype))
     const hasLinkedAudio = (finalLinkedItems.media || []).some(lI => AUDIOTYPES.includes(lI.subtype))
-    const hasLinkedOther = (finalLinkedItems.media || []).length > 0
+    const hasLinkedOther = linkedCount > 0
+    const linkedActive = ((activeContentMenuItem === 'linked' && hasLinkedOther) || (activeContentMenuItem ===  'forcelinked'))
 
     return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
       {(entityTimelineOpen || epicTimelineOpen || isMarker || isMedia) && <div>
@@ -361,8 +366,8 @@ class Content extends Component {
               zIndex: 10,
               color: themes[theme].backColors[0],
               top: 0,
-              backgroundColor: ((activeContentMenuItem === 'linked') ? 'rgba(0,0,0,0.2)' : 'inherit')
-            }} onClick={() => this._toggleContentMenuItem('linked')} leftIcon={
+              backgroundColor: (linkedActive ? 'rgba(0,0,0,0.2)' : 'inherit')
+            }} onClick={() => this._toggleContentMenuItem('forcelinked')} leftIcon={
               <IconButton
                 tooltipPosition='bottom-left'
                 tooltip={''} iconStyle={{ fill: 'rgba(55, 57, 49, 0.19)', top: 0, pointerEvents: 'none' }}>
@@ -423,7 +428,7 @@ class Content extends Component {
           history={history}
           newWidth={newWidth}
           setContentMenuItem={this._setContentMenuItem}
-          activeContentMenuItem={activeContentMenuItem}
+          activeContentMenuItem={linkedActive ? 'linked' : activeContentMenuItem === 'linked' ? '' : activeContentMenuItem}
           activeAreaDim={activeAreaDim}
           setMetadataEntity={setMetadataEntity}
           influenceRawData={influenceRawData}
@@ -444,7 +449,7 @@ class Content extends Component {
               setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'qaa'}
               qId={((selectedItem || {}).data || {}).id || ''} qName={selectedWiki || ''} />
             <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem}
-              isMinimized={activeContentMenuItem !== 'linked'} setWikiId={this.setWikiIdWrapper}
+              isMinimized={!linkedActive} setWikiId={this.setWikiIdWrapper}
               selectValue={this.selectValueWrapper}
               linkedItems={((selectedItem || {}).data || {}).media || []} selectedYear={selectedYear}
               qName={selectedWiki || ''} />
