@@ -11,6 +11,11 @@ RUN npm install
 FROM dependencies AS build  
 WORKDIR /app
 COPY . /app
+
+ARG API_URL=https://api.chronas.org
+
+RUN perl -pi.back -e "s|http\:\/\/localhost\:4040|$API_URL|g" src/properties.js 
+
 # Build the app
 RUN npm run build
 
