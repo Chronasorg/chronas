@@ -11,7 +11,8 @@ pool:
 
 variables:
   imageName: 'aumanjoa/chronas-map:$(build.buildId)'
+  appInsightsKey: $(applicationInsightsKey)
 
 steps:
-- script: docker build -f Dockerfile -t $(imageName) .
+- script: docker build -f Dockerfile -t $(imageName) --build-arg APPLICATIONINSIGHTS_KEY=$(appInsightsKey) .
   displayName: 'docker build'
