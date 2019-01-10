@@ -18,8 +18,6 @@ ARG APPLICATIONINSIGHTS_KEY=placeholder
 RUN perl -pi.back -e "s|http\:\/\/localhost\:4040|$API_URL|g" src/properties.js 
 RUN perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index.html
 
-RUN cat src/index.html
-RUN cat src/properties.js 
 
 # Build the app
 RUN npm run build
