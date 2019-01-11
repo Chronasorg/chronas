@@ -15,6 +15,25 @@ variables:
   appInsightsKey: $(applicationInsightsKey)
 
 steps:
+- task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+  displayName: 'Prepare analysis on SonarCloud'
+  inputs:
+    SonarCloud: SonarCloud
+    organization: 'aumanjoa-github'
+    scannerMode: CLI
+    configMode: manual
+    cliProjectKey: 'chronas-map'
+    cliProjectName: 'Chronas Map'
+    cliProjectVersion: '$(Build.BuildNumber)'
+    cliSources: src
+    extraProperties: |
+     # Additional properties that will be passed to the scanner, 
+     # Put one key=value per line, example:
+     sonar.exclusions=node_models/**,src/restInterface/data.js
+     
+- task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+  displayName: 'Run Code Analysis'
+
 - script: |
     docker build -f Dockerfile -t $(imageName) --build-arg APPLICATIONINSIGHTS_KEY=$(appInsightsKey) .
     docker login -u $(dockerHubUsername) -p $(dockerHubPwd)
@@ -25,3 +44,6 @@ steps:
   inputs:
     pathtoPublish: 'kubernetes'
     artifactName: k8s
+
+- task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+  displayName: 'Publish Quality Gate Result'
