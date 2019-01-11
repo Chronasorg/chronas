@@ -5,10 +5,6 @@
 [![devDependency Status](https://david-dm.org/daumann/chronas/dev-status.svg)](https://david-dm.org/daumann/chronas#info=devDependencies)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-The upcoming version of Chronas in early development...
-
-Current Development page: [chronasdev.azurewebsites.net](http://chronasdev.azurewebsites.net/)
-
 ## Table of Contents
 - [Chronas](#chronas)
   - [Table of Contents](#table-of-contents)
