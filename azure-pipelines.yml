@@ -10,7 +10,7 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 variables:
-  imageName: 'aumanjoa/chronas-map:$(build.buildId)-script'
+  imageName: 'aumanjoa/chronas-map:ci-$(build.buildId)'
   dockerHubUsername: 'aumanjoa'
   appInsightsKey: $(applicationInsightsKey)
 
