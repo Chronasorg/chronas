@@ -11,6 +11,7 @@ pool:
 
 variables:
   imageName: 'aumanjoa/chronas-map:ci-$(build.buildId)'
+  latestImageName: 'aumanjoa/chronas-map'
   dockerHubUsername: 'aumanjoa'
   appInsightsKey: $(applicationInsightsKey)
 
@@ -38,6 +39,8 @@ steps:
     docker build -f Dockerfile -t $(imageName) --build-arg APPLICATIONINSIGHTS_KEY=$(appInsightsKey) .
     docker login -u $(dockerHubUsername) -p $(dockerHubPwd)
     docker push $(imageName)
+    docker tag $(imageName)  $(latestImageName)
+    docker push $(latestImageName)       
   displayName: 'docker build and push'
 
 - task: PublishBuildArtifacts@1
