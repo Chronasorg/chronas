@@ -19,9 +19,7 @@ RUN perl -pi.back -e "s|http\:\/\/localhost\:4040|$API_URL|g" src/properties.js
 RUN perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index.html
 
 
-# Build the app
+# move the dist folder to an nginx container to run them
 RUN npm run build
-
 FROM nginx:alpine AS release  
-
 COPY --from=build /app/dist/ /usr/share/nginx/html

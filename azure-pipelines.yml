@@ -20,3 +20,8 @@ steps:
     docker login -u $(dockerHubUsername) -p $(dockerHubPwd)
     docker push $(imageName)
   displayName: 'docker build and push'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: 'kubernetes'
+    artifactName: k8s
