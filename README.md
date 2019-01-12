@@ -1,30 +1,29 @@
 # Chronas
 
-[![Build Status](https://joausandbox.visualstudio.com/_apis/public/build/definitions/2b7f7236-ef4a-4ee5-9164-a7cb0ad72964/16/badge)](https://joausandbox.visualstudio.com/chronas/_build/index?definitionId=16)
+[![Build Status](https://dev.azure.com/chronas/chronas/_apis/build/status/Chronasorg.chronas?branchName=master)](https://dev.azure.com/chronas/chronas/_build/latest?definitionId=2?branchName=master)
 [![dependencies](https://david-dm.org/daumann/chronas.svg)](https://david-dm.org/daumann/chronas)
 [![devDependency Status](https://david-dm.org/daumann/chronas/dev-status.svg)](https://david-dm.org/daumann/chronas#info=devDependencies)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-The upcoming version of Chronas in early development...
-
-Current Development page: [chronasdev.azurewebsites.net](http://chronasdev.azurewebsites.net/)
-
 ## Table of Contents
-1. [Requirements](#requirements)
-1. [Installation](#getting-started)
-1. [Running the Project](#running-the-project)
-1. [Project Structure](#project-structure)
-1. [Live Development](#local-development)
-    * [Hot Reloading](#hot-reloading)
-    * [Redux DevTools](#redux-devtools)
-1. [Routing](#routing)
-1. [Testing](#testing)
-    * [dirty-chai](#dirty-chai)
-1. [Building for Production](#building-for-production)
-1. [Deployment](#deployment)
-1. [Docker](#Docker)
+- [Chronas](#chronas)
+  - [Table of Contents](#table-of-contents)
+  - [Requirements](#requirements)
+  - [Installation](#installation)
+  - [Running the Project](#running-the-project)
+  - [Project Structure](#project-structure)
+  - [Live Development](#live-development)
+    - [Hot Reloading](#hot-reloading)
+    - [Redux DevTools](#redux-devtools)
+  - [Routing](#routing)
+  - [Testing](#testing)
+  - [Building for Production](#building-for-production)
+  - [Deployment](#deployment)
+    - [Static Deployments](#static-deployments)
+    - [Docker](#docker)
+  - [Thank You](#thank-you)
 
-1. [Thank You](#thank-you)
+11. [Thank You](#thank-you)
 
 ## Requirements
 * node `>=8.1.0`

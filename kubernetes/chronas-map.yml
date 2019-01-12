@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: chronas-map
-        image: aumanjoa/chronas-map:389
+        image: aumanjoa/chronas-map:ci-#{buildId}#
         ports:
         - containerPort: 80
 ---
