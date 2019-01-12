@@ -82,6 +82,68 @@ export const postDiscussion = (userId, forumId, currentForum, currentDiscussion,
     }
 }
 
+
+export const editDiscussion = (userId, forumId, currentForum, currentDiscussion, qId) => {
+  const {
+    title,
+    content,
+    tags,
+    pinned,
+  } = currentDiscussion;
+
+  let validated = true;
+
+  if (!userId || !forumId) {
+    validated = false;
+    return 'Something is wrong with user/forum.'
+  }
+
+  if (title === null || title.length < 15) {
+    validated = false;
+    return 'Title should be at least 15 characters.'
+  }
+
+  if (content === null || content.length === 0) {
+    validated = false;
+    return 'Please write some content before posting.'
+  }
+
+  if (!qId && (tags === null || tags.length === 0)) {
+    // validated = false;
+    // return 'Please provide some tags.'
+  }
+  else if (qId) {
+    tags.push(qId)
+  }
+
+  // make api call if post is validated
+  if (validated) {
+    postDiscussionApi({
+      userId,
+      forumId,
+      title,
+      qa_id: qId,
+      content,
+      tags,
+      pinned,
+    }).then(
+      (data) => {
+        if (qId) {
+          history.goBack()
+        } else if (data.data.postCreated === true) {
+          // issue a redirect to the newly reacted discussion
+          history.push(`/community/${currentForum}/discussion/${data.data.discussion_slug}`);
+        } else {
+          return 'Something is wrong at our server end. Please try again later'
+        }
+      },
+      (error) => {
+        return error
+      }
+    );
+  }
+}
+
 /**
  * update the discussion title in redux state (controlled input)
  * @param  {String} value

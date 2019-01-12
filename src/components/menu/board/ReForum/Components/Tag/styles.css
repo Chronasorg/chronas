@@ -19,6 +19,9 @@
   background-color: #00cae3;
   color: #fff;
 
+  margin-right: 4px;
+  float: left;
+
   &:first-child { margin-left: 0; }
 }
 
@@ -30,4 +33,5 @@
 
 .Tag_removeButton {
   padding: 4px 10px;
+  margin-right: 1em;
 }

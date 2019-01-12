@@ -29,8 +29,10 @@ import {
   fetchOpinions,
   toggleFavoriteApi,
   postOpinionApi,
+  editPostApi,
   deletePostApi,
   voteOpinionApi,
+  editOpinionApi,
   deleteOpinionApi,
 } from './api'
 
@@ -96,6 +98,24 @@ export const postOpinion = (opinion, discussionSlug) => {
   }
 }
 
+export const editOpinion = (opinion, discussionSlug) => {
+  // validate the opinion
+  if (!opinion.content || opinion.content.length < 20) {
+    return 'Please provide a bit more text....at least 20 characters.'
+  } else {
+    // call the api to post the opinion
+    return editOpinionApi(opinion).then(
+      data => {
+        if (data.data._id) {
+          // fetch the discussion to refresh the opinion list
+          return fetchSingleDiscussion(discussionSlug).then((data) => { return data.data })
+        }
+        return 'Something went wrong'
+      }
+    )
+  }
+}
+
 /**
  * delete the discussion post
  * @param  {String} discussionSlug
@@ -110,6 +130,7 @@ export const deletePost = (discussionSlug, currentForum) => {
       }
     )
 }
+
 
 /**
  * after a successfull deletion of a discussion

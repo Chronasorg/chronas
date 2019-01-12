@@ -492,7 +492,7 @@ class Map extends Component {
       //   })))
       // this.setState({ mapStyle })
     } else if (entityId.toString() !== '') {
-      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + (newYear || this.props.selectedYear) + '&count=' + (!isNaN(newLimit) ? newLimit : this.props.activeMarkers.limit))
+      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + (isNaN(newYear) ? this.props.selectedYear : newYear) + '&count=' + (!isNaN(newLimit) ? newLimit : this.props.activeMarkers.limit))
         .then(features => {
           // const mapStyle = this.state.mapStyle
           //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))

@@ -281,6 +281,7 @@ class SingleDiscussion extends Component {
           allowDelete={allowDelete}
           deletingDiscussion={deletingDiscussion}
           deleteAction={this.deleteDiscussion.bind(this)}
+          editAction={this.deleteDiscussion.bind(this)}
           theme={theme}
           translate={translate}
         />

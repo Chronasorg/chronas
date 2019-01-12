@@ -35,9 +35,10 @@ import { BottomNavigation } from 'material-ui/BottomNavigation'
 import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import IconDrag from 'material-ui/svg-icons/editor/drag-handle'
+import IconList from 'material-ui/svg-icons/action/list'
 import BottomNavigationItem from '../overwrites/BottomNavigationItem'
 import { MetadataDelete } from '../restricted/metadata'
-import { RevisionDelete, RevisionEdit, RevisionList } from '../restricted/revisions'
+import { RevisionList } from '../restricted/revisions'
 import {
   deselectItem as deselectItemAction,
   selectAreaItem,
@@ -180,9 +181,9 @@ const resources = {
   linked: { create: LinkedCreate, edit: LinkedEdit, remove: LinkedDelete, permission: 1 },
   markers: { create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
   metadata: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
-  revisions: { list: RevisionList, edit: RevisionEdit, remove: RevisionDelete, permission: 1 },
-  images: { create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
-  users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
+  revisions: { list: RevisionList },
+  // images: { create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
+  // users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
 }
 
 const menuIndexByLocation = {
@@ -691,6 +692,12 @@ class RightDrawerRoutes extends PureComponent {
       }
       iconElementRight={
         <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
+          <IconButton
+            tooltipPosition='bottom-left'
+            tooltip={'Revisions'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
+            containerElement={<Link to='/mod/revisions' />}>
+            <IconList />
+          </IconButton>
           <IconButton
             tooltipPosition='bottom-left'
             tooltip={'Go Back'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}

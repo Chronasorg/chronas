@@ -16,6 +16,11 @@ export const postOpinionApi = (opinion) => {
   return axios.post(properties.chronasApiHost + '/board/opinion/newOpinion', opinion, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('chs_token')}});
 };
 
+
+export const editOpinionApi = (opinion) => {
+  return axios.post(properties.chronasApiHost + '/board/opinion/newOpinion', opinion, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('chs_token')}});
+};
+
 export const deletePostApi = (discussionSlug) => {
   return axios.delete(properties.chronasApiHost + `/board/discussion/deleteDiscussion/${discussionSlug}`, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('chs_token')}});
 };

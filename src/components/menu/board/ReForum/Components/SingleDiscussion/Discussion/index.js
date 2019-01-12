@@ -30,6 +30,7 @@ class Discussion extends Component {
       allowDelete,
       deletingDiscussion,
       deleteAction,
+      editAction
     } = this.props
 
     let dateDisplay = moment(discDate)
@@ -74,7 +75,10 @@ class Discussion extends Component {
             <i className={classnames(`fa fa-${userFavorited ? 'heart' : 'heart-o'}`)} />
             <span>{favCount}</span>
           </Button>
-
+          { false && allowDelete && <Button noUppercase className='Discussion_deleteButton' onClick={() => { editAction() }}>
+            <i className={classnames('fa fa-pencil-square-o')} />
+            <span>Edit</span>
+          </Button> }
           { allowDelete && <Button noUppercase className='Discussion_deleteButton' onClick={() => { deleteAction() }}>
             <i className={classnames('fa fa-trash', 'trashIcon')} />
             <span>Delete</span>
@@ -104,6 +108,7 @@ Discussion.defaultProps = {
   allowDelete: false,
   deletingDiscussion: false,
   deleteAction: () => { },
+  editAction: () => { }
 }
 
 export default Discussion

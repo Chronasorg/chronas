@@ -107,7 +107,7 @@ class Delete extends Component {
       data,
     })
     const titleElement = data ? (
-      <Title title={title} record={data} defaultTitle={defaultTitle} />
+      <Title title={defaultTitle} record={data} defaultTitle={defaultTitle} />
     ) : (
       ''
     )

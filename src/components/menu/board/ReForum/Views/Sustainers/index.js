@@ -67,9 +67,9 @@ class Sustainers extends Component {
                     textAlign: 'center',
                     width: 20,
                     height: 'inherit',
-                    marginLeft: -22,
+                    marginLeft: -62,
                     flex: 1,
-                    display: 'block', }} >Rank</div>
+                    display: 'block', }} ></div>
                   <div className='Opinion_userInfo'>
                     { 'User' }
                   </div>
@@ -112,7 +112,6 @@ class Sustainers extends Component {
                 return (
                   <div className='Opinion_container'>
                     <div className='Opinion_infoContainer'>
-                      <div className='Opinion_avatar'><h3>{ index + 1 }</h3></div>
                       { finalAvatarUrl }
                       <div className='Opinion_userInfo'>
                         { <Link to={`/community/user/${user.username || user.name}`} className='Opinion_name'>{user.username || user.name}</Link> }

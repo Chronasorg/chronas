@@ -104,6 +104,10 @@ class Opinion extends Component {
             { userProfile && <Link to={`/community/${forum.forum_slug}/discussion/${discussion.discussion_slug}`} className='Opinion_name'>{forum.forum_name} -> {discussion.title}</Link> }
           </div>
           <div className='dateInfo'>{dateDisplay}</div>
+          { false && !userProfile && allowDelete && <Button className='deleteButton' noUppercase onClick={() => { editAction(opinionId) }}>
+            <i className={classnames('fa fa-pencil-square-o')} />
+            <span>Edit</span>
+          </Button> }
           { !userProfile && allowDelete && <Button className='deleteButton' noUppercase onClick={() => { deleteAction(opinionId) }}>
             <i className={classnames('fa fa-trash', 'trashIcon')} />
             <span>Delete</span>
@@ -136,6 +140,7 @@ Opinion.defaultProps = {
   forum: {},
   discussion: {},
   currentUserRole: 'user',
+  editAction: () => {},
   deleteAction: () => {},
   deletingOpinion: null,
 }
