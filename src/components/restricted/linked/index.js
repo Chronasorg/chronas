@@ -189,10 +189,10 @@ export const LinkedEdit = (props) => {
           defaultValue={((props.selectedItem || {}).value || {}).wiki || props.selectedItem.wiki || ''} />
         {/* <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4> */}
         <NumberInput style={isEpic ? { width: '50%', float: 'left' } : {}} validate={required}
-          defaultValue={props.selectedItem.value.year || props.selectedItem.value.subtitle || potentialYear}
+          defaultValue={!isNaN(props.selectedItem.value.year) ? props.selectedItem.value.year : !isNaN(potentialYear) ? potentialYear : props.selectedItem.value.subtitle }
           source='year' label='resources.linked.fields.year' type='number' />
         {isEpic && <NumberInput style={{ width: '50%', float: 'right' }} source='end'
-          defaultValue={(props.selectedItem.value.data || {}).end || props.selectedItem.value.year || props.selectedItem.value.subtitle}
+          defaultValue={!isNaN((props.selectedItem.value.data || {}).end) ? (props.selectedItem.value.data || {}).end : !isNaN(props.selectedItem.value.year) ? props.selectedItem.value.year : props.selectedItem.value.subtitle}
           label='resources.areas.fields.endYear' />}
         {!isEpic && <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />}
         {!isEpic && <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => {
@@ -261,7 +261,7 @@ export const LinkedCreate = (props) => {
         <LongTextInput source='poster' label='resources.linked.fields.poster' type='url' />
         <LongTextInput source='wiki' label='resources.linked.fields.wiki' type='url' />
         {/* <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4> */}
-        <NumberInput validate={required} defaultValue={props.selectedYear || ''} source='year'
+        <NumberInput validate={required} defaultValue={!isNaN(props.selectedYear) ? props.selectedYear : ''} source='year'
           label='resources.linked.fields.year' type='number' />
         <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
         <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => {

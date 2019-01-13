@@ -497,7 +497,7 @@ class Map extends Component {
           // const mapStyle = this.state.mapStyle
           //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
           // this.setState({ mapStyle })
-          if (newYear) {
+          if (!isNaN(newYear)) {
             this.setState({ markerData: features.data.filter(p => (p.coo || []).length === 2) })
           } else {
             this.setState({ markerData: this.state.markerData.concat(features.data.filter(p => (p.coo || []).length === 2)) })
@@ -517,7 +517,7 @@ class Map extends Component {
               let divBlocks = ''
               const pEndYear = +el.data.end
               const startYear = +el.data.start || +el.year
-              const endYear = pEndYear || (startYear + 1)
+              const endYear = isNaN(pEndYear) ? (startYear + 1) : pEndYear
 
               if (subtype.includes('ew')) {
                 battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl, index) => {
@@ -538,7 +538,7 @@ class Map extends Component {
                 className: 'timelineItem_' + elsubtype,
                 editable: false,
                 subtype: el.subtype,
-                end: pEndYear ? new Date(new Date(0, 1, 1).setFullYear(+pEndYear)) : undefined, // new Date(new Date(0, 1, 1).setFullYear(+startYear+1)),
+                end: !isNaN(pEndYear) ? new Date(new Date(0, 1, 1).setFullYear(+pEndYear)) : undefined, // new Date(new Date(0, 1, 1).setFullYear(+startYear+1)),
                 content: '<div class="warContainer">' + ((elsubtype === 'ei') ? '<img class="tsTicks discoveryIcon" src="/images/transparent.png">' : (elsubtype === 'ps') ? '<img class="tsTicks esIcon' + ((index % 3 === 0) ? 1 : 2) + '" src="/images/transparent.png">' : elTitle) + divBlocks + '</div>',
                 title: ((elsubtype === 'ew') ? ('<img class="tsTicks warIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '-' + pEndYear + ' </span>: ') : (elsubtype === 'ei') ? ('<img class="tsTicks discoveryIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : (elsubtype === 'ps') ? ('<img class="tsTicks esIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : '') + '<b>' + elTitle + '</b>',
                 wiki: el.data.wiki || el.wiki,

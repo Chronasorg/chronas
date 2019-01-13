@@ -237,7 +237,7 @@ class EpicTimeline extends React.Component {
       const aeId = selectedArticle.aeId
 
       if (epicIdNameArray.map(el => el[0]).includes(selectedArticle.type)) {
-        selectEpicItem(selectedArticle.wiki, +newYear || selectedYear, selectedArticle.id)
+        selectEpicItem(selectedArticle.wiki, isNaN(newYear) ? +selectedYear : +newYear, selectedArticle.id)
       } else if (aeId) {
         const [ae, colorToSelect, rulerToHold] = aeId.split('|')
         this._selectAreaItem(rulerToHold, colorToSelect, true)
