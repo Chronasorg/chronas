@@ -75,6 +75,13 @@ const styles = {
   }
 }
 
+export const RevisionFilter = (props) => (
+  <Filter {...props}>
+    <TextInput source='user' />
+    <NullableBooleanInput source="reverted" defaultValue={true} />
+  </Filter>
+);
+
 export const RevisionList = (props) => {
   const prevBodyStyle = (record) => {
     if (record.reverted) {
@@ -86,11 +93,8 @@ export const RevisionList = (props) => {
   }
   const nextStyle = (record) => (record || {}).reverted ? { color: 'green' } : { color: 'red' }
   const prevStyle = { color: 'green' }
-  // {
-  //   if((record || {}).reverted) { return { color: 'red' } } else {return { color: 'green' }}
-  // }          styles={{ table: styles.subContainer }}
 
-  return <div style={styles.container}><div style={styles.subContainer}><List {...props} style={styles.container} title={'Revision History'} perPage={5}>
+  return <div style={styles.container}><div style={styles.subContainer}><List {...props} filters={<RevisionFilter />} style={styles.container} title={'Revision History'} perPage={5}>
     <Datagrid bodyOptions={{ overflow: 'auto', stripedRows: true, showRowHover: true }} rowStyle={rowStyle}>
       <RevertButton style={{ overflow: 'visible', maxWidth: '1em' }} {...props} isRedo={false} />
       <TextField style={{ maxWidth: '1em' }} source='entityId' label='resources.revisions.fields.entityId' />
@@ -105,6 +109,7 @@ export const RevisionList = (props) => {
     </Datagrid>
   </List></div></div>
 }
+
 //
 // export const RevisionEdit = (props) => {
 //   return <Edit title={<span>RevisionEdit</span>} {...props}>

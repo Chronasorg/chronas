@@ -154,7 +154,7 @@ class ArticleIframe extends React.Component {
 
     if (isProvince) {
       entityId = selectedTypeId.id
-    } else if (selectedItem.type === 'areas' && (selectedItem.wiki === '-1' || selectedItem.data.contentIndex === -1)) {
+    } else if (selectedItem.type === 'areas' && (selectedItem.wiki === '-1' || !contentIndexExists || selectedItem.data.contentIndex === -1)) {
       subentity = (((selectedItem || {}).data || {}).id || '').split('|')[2]
     } else if (epicContentItem) {
       if (((epicContentItem || {}).properties || {}).ct === 'marker') {
@@ -169,7 +169,7 @@ class ArticleIframe extends React.Component {
       // setMetadataType(selectedTypeId.type)
     }
     if (!entityId && !subentity) {
-      entityId = (selectedItem.value || {})._id || selectedItem.wiki || selectedItem.value
+      entityId = (selectedItem.data || {}).id || (selectedItem.value || {})._id || selectedItem.wiki || selectedItem.value
     }
 
     history.push('/mod/revisions?filter=%7B%22' + (entityId ? 'entity' : 'subentity') + '%22%3A%22' + (entityId || subentity) + '%22%2C%22last_seen_gte%22%3A%222018-11-08T06%3A00%3A00.000Z%22%7D')// fModUrl)

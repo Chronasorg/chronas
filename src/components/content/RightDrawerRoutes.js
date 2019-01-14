@@ -38,7 +38,7 @@ import IconDrag from 'material-ui/svg-icons/editor/drag-handle'
 import IconList from 'material-ui/svg-icons/action/list'
 import BottomNavigationItem from '../overwrites/BottomNavigationItem'
 import { MetadataDelete } from '../restricted/metadata'
-import { RevisionList } from '../restricted/revisions'
+import { RevisionList, RevisionEdit } from '../restricted/revisions'
 import {
   deselectItem as deselectItemAction,
   selectAreaItem,
@@ -181,7 +181,7 @@ const resources = {
   linked: { create: LinkedCreate, edit: LinkedEdit, remove: LinkedDelete, permission: 1 },
   markers: { create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
   metadata: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
-  revisions: { list: RevisionList },
+  revisions: { list: RevisionList, edit: RevisionEdit },
   // images: { create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
   // users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
 }
@@ -694,8 +694,8 @@ class RightDrawerRoutes extends PureComponent {
         <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
           <IconButton
             tooltipPosition='bottom-left'
-            tooltip={'Revisions'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
-            containerElement={<Link to='/mod/revisions' />}>
+            tooltip={'All Revisions'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
+            containerElement={<Link to='/mod/revisions?filter=%7B%7D&order=DESC&page=1&perPage=5&sort=timestamp' />}>
             <IconList />
           </IconButton>
           <IconButton
@@ -1290,7 +1290,17 @@ class RightDrawerRoutes extends PureComponent {
         })
       }
 
-      if (resources[resourceKey].edit) {
+      if (resources[resourceKey].edit && resourceKey === "revisions") {
+        resItems.push({
+          d_path: '/mod/' + resourceKey + ':id',
+          d_el: resources[resourceKey].edit,
+          d_sec: 'edit',
+          d_props: {
+            ...finalProps,
+            redirect: 'edit'
+          }
+        })
+      } else if (resources[resourceKey].edit) {
         resItems.push({
           d_path: '/mod/' + resourceKey,
           d_el: resources[resourceKey].edit,
