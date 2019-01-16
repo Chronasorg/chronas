@@ -141,7 +141,8 @@ const messageYearNotification = (year, isBC, foreColor) => <div><span style={{
 
 class Map extends Component {
   componentDidMount = () => {
-    this._addGeoJson(TYPE_MARKER, this.props.activeMarkers.list)
+    const { selectedYear } = this.props
+    this._addGeoJson(TYPE_MARKER, this.props.activeMarkers.list, false, +(utilsQuery.getURLParameter('year') || selectedYear))
     this._addEpic(this.props.activeEpics)
     window.addEventListener('resize', this._resize, {passive: true})
     this._resize()
@@ -314,8 +315,9 @@ class Map extends Component {
     console.error('We got something wrong with the turf.union or turf.unkinkPolygon')
     return {}
   }
-  _changeArea = (areaDefs, newLabel, newColor, selectedProvince, prevColor = false) => {
+  _changeArea = (areaDefs, newLabel, newColor, selectedProvince, prevColor = false, prevDimValue = false) => {
     const { activeArea, mapStyles, metadata, selectedItem } = this.props
+
     let mapStyle = this.state.mapStyle
 
     if (mapStyles.popOpacity || newColor === 'population') {
@@ -351,6 +353,7 @@ class Map extends Component {
     }
 
     if (selectedItem.type === TYPE_AREA && newColor !== '' && selectedProvince) {
+      // prev active refers to color change
       let activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(newColor)]
       let prevActiveprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(prevColor)]
       // TODO: do this async!
@@ -360,7 +363,7 @@ class Map extends Component {
         prevActiveprovinceValue = (metadata['religion'][prevActiveprovinceValue] || {})[3]
       }
 
-      const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(newColor, activeprovinceValue, prevColor, prevActiveprovinceValue)
+      const {viewport, multiPolygonToOutline} = this._getAreaViewportAndOutlines(newColor, prevDimValue || activeprovinceValue, prevColor, prevActiveprovinceValue, false)
 
       if (typeof multiPolygonToOutline !== 'undefined') {
         let newMapStyle = mapStyle
@@ -370,7 +373,7 @@ class Map extends Component {
               properties: {
                 color: (newColor === 'population')
                   ? (metadata[prevColor][prevActiveprovinceValue] || [])[1]
-                  : (metadata[newColor][activeprovinceValue] || [])[1]
+                  : (metadata[newColor][prevDimValue || activeprovinceValue] || [])[1]
               }
             }))
 
@@ -600,7 +603,12 @@ class Map extends Component {
     })
   }
   _changeYear = (year) => {
-    const { activeArea, activeMarkers, changeAreaData, selectedItem, setYear } = this.props
+    const { activeArea, activeMarkers, changeAreaData, selectedItem, setYear, metadata } = this.props
+    let prevActiveprovinceValue = (activeArea.data[selectedItem.value] || {})[utils.activeAreaDataAccessor(activeArea.color)]
+
+    if (activeArea.color === 'religionGeneral') {
+      prevActiveprovinceValue = (metadata['religion'][prevActiveprovinceValue] || {})[3]
+    }
     // TODO: reset selected marker pools
     if (year > 2000) {
       return setYear(2000)
@@ -613,7 +621,7 @@ class Map extends Component {
       .then((areaDefsRequest) => {
         changeAreaData(areaDefsRequest.data)
         this._simulateYearChange(areaDefsRequest.data)
-        this._changeArea(areaDefsRequest.data, activeArea.label, activeArea.color, selectedItem.value)
+        this._changeArea(areaDefsRequest.data, activeArea.label, activeArea.color, selectedItem.value, false, prevActiveprovinceValue)
         utilsQuery.updateQueryStringParameter('year', year)
         this.setState({ showYear: true })
       })
@@ -816,7 +824,7 @@ class Map extends Component {
     /** Acting on store changes **/
     if (nextProps.history.location.pathname === '/discover') {
       this.setState({ mapTimelineContainerClass: 'mapTimeline discoverActive' })
-    } else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '') {
+    } else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '' && this.state.mapTimelineContainerClass !== 'mapTimeline') {
       this.setState({ mapTimelineContainerClass: 'mapTimeline' })
     }
 
@@ -831,6 +839,8 @@ class Map extends Component {
     // slected item changed?
     if (selectedItem.value !== nextProps.selectedItem.value) {
       console.debug('###### Item changed')
+      const isRulerHold = (activeArea.data[selectedItem.value] &&
+        activeArea.data[selectedItem.value][utils.activeAreaDataAccessor(nextProps.activeArea.color)] === (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)])
       if (nextProps.selectedItem.wiki === 'random') {
         const { markerData } = this.state
         const markerDataLength = markerData.find(el => el.subtype !== 'c' && el.subtype !== 'cp').length
@@ -848,10 +858,13 @@ class Map extends Component {
 
           selectAreaItem(provinceId, provinceId) // set query url
         }
-      } else if ((nextProps.selectedItem.type === TYPE_AREA &&
-          nextProps.selectedItem.value !== '' &&
-          nextProps.activeArea.color !== '' &&
-          nextProps.activeArea.color === activeArea.color)) {
+      }
+      else if (
+        !isRulerHold &&
+        nextProps.selectedItem.type === TYPE_AREA &&
+        nextProps.selectedItem.value !== '' &&
+        nextProps.activeArea.color !== '' &&
+        nextProps.activeArea.color === activeArea.color) {
         let nextActiveprovinceValue = (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)]
         let prevActiveprovinceValue = (activeArea.data[selectedItem.value] || {})[utils.activeAreaDataAccessor(activeArea.color)]
 
@@ -860,7 +873,7 @@ class Map extends Component {
           prevActiveprovinceValue = (metadata['religion'][prevActiveprovinceValue] || {})[3]
         }
 
-        const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, nextActiveprovinceValue, activeArea.color, prevActiveprovinceValue)
+        const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, nextActiveprovinceValue, activeArea.color, prevActiveprovinceValue, false)
 
         if (typeof multiPolygonToOutline !== 'undefined' && metadata[nextProps.activeArea.color][nextActiveprovinceValue]) {
           mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
@@ -888,7 +901,7 @@ class Map extends Component {
             hoverInfo: null
           })
         }
-      } else if (nextProps.selectedItem.type !== TYPE_EPIC) {
+      } else if (!isRulerHold && nextProps.selectedItem.type !== TYPE_EPIC) {
         // setTimeout(() => {
         mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
           .setIn(['sources', 'area-hover', 'data'], fromJS({
@@ -1229,13 +1242,17 @@ class Map extends Component {
         for (const provinceName of addedProvinces) {
           // add province
           mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
-            .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.concat({
-              'type': 'Feature',
-              'properties': { name: provinceName },
-              'geometry': ((this.state.mapStyle
+            .updateIn(['sources', 'area-mod', 'data', 'features'], list => list.concat(
+              (this.state.mapStyle
                 .getIn(['sources', 'provinces', 'data']).toJS().features
-                .filter((el) => el.properties.name === provinceName) || {})[0] || {}).geometry
-            }))
+                .filter((el) => el.properties.name === provinceName) || {}).map((province) => {
+                  return {
+                    'type': 'Feature',
+                    'properties': { name: provinceName },
+                    'geometry': province.geometry
+                  }
+                })
+              ))
         }
       }
     } else if (modActive.type === TYPE_AREA) {
@@ -1295,7 +1312,12 @@ class Map extends Component {
       console.debug('###### Area Color changed' + nextProps.activeArea.color)
       this._changeArea(nextProps.activeArea.data, undefined, nextProps.activeArea.color, nextProps.selectedItem.value, activeArea.color)
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
-    } else if (nextProps.activeArea.color === 'ruler' && nextProps.selectedItem.type === 'areas' && nextProps.selectedItem.value !== '' && (activeArea.data[nextProps.selectedItem.value] && activeArea.data[nextProps.selectedItem.value][0] !== (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[0])) {
+    }
+
+    // Area Color not changed and is ruler area and not leaving and provinceruler would change
+    else if (nextProps.activeArea.color === 'ruler' && nextProps.selectedItem.type === 'areas' && nextProps.selectedItem.value !== '' &&
+      (activeArea.data[nextProps.selectedItem.value] &&
+        activeArea.data[nextProps.selectedItem.value][0] !== (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[0])) {
       // year changed while ruler article open and new ruler in province, ensure same ruler is kept if possible
       const rulerToHold = activeArea.data[selectedItem.value][0]
       const nextData = nextProps.activeArea.data

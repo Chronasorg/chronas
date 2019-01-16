@@ -158,7 +158,7 @@ export default class InfluenceChart extends React.Component {
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
+    return shallowCompare(this, nextProps, nextState)
   }
 
   componentWillReceiveProps (nextProps) {

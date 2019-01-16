@@ -170,6 +170,9 @@ class ArticleIframe extends React.Component {
     }
     if (!entityId && !subentity) {
       entityId = (selectedItem.data || {}).id || (selectedItem.value || {})._id || selectedItem.wiki || selectedItem.value
+      if (entityId.substr(1, 1) === ":") {
+        entityId = entityId.substr(2)
+      }
     }
 
     history.push('/mod/revisions?filter=%7B%22' + (entityId ? 'entity' : 'subentity') + '%22%3A%22' + (entityId || subentity) + '%22%2C%22last_seen_gte%22%3A%222018-11-08T06%3A00%3A00.000Z%22%7D')// fModUrl)

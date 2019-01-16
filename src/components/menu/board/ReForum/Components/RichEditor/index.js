@@ -15,6 +15,18 @@ import BlockStyleControls from './BlockStyleControls';
 import InlineStyleControls from './InlineStyleControls';
 import {themes} from "../../../../../../properties";
 
+function safelyParseJSON (json) {
+  let parsed = false
+
+  try {
+    parsed = JSON.parse(json)
+    parsed = true
+  } catch (e) {
+    // Oh well, but whatever...
+  }
+
+  return parsed // Could be undefined!
+}
 
 class RichEditor extends Component {
   constructor(props) {
@@ -33,7 +45,7 @@ class RichEditor extends Component {
 
   componentDidMount() {
     const { value } = this.props;
-    if (value) {
+    if (value && safelyParseJSON(value)) {
       const contentState = convertFromRaw(JSON.parse(value));
       const editorState = EditorState.createWithContent(contentState);
       this.setState({ editorState });
@@ -43,7 +55,7 @@ class RichEditor extends Component {
 
   componentWillReceiveProps (nextProps) {
     const { value } = this.props;
-    if (value !== nextProps.value) {
+    if (value !== nextProps.value &&  safelyParseJSON(nextProps.value)) {
       let nextVal = JSON.parse(JSON.stringify(nextProps.value))
 
       if (typeof nextVal === "string") nextVal = JSON.parse(nextVal)
@@ -111,6 +123,7 @@ class RichEditor extends Component {
       customTheme,
       type,
       onSave,
+      isEdit,
       readOnly,
       isQA
     } = this.props;
@@ -129,7 +142,7 @@ class RichEditor extends Component {
 
     let saveButtonLabel = '';
     if (type === 'newOpinion') saveButtonLabel = 'Reply';
-    if (type === 'newDiscussion') saveButtonLabel = isQA ? 'Post Question' : 'Post Discussion';
+    if (type === 'newDiscussion') saveButtonLabel = isEdit ? 'Update' : isQA ? 'Post Question' : 'Post Discussion';
 
     let placeholder = '';
     if (type === 'newOpinion') placeholder = isQA ? 'Your answer...\nBe Nice: No Racism, Bigotry, or Offensive Behavior.\n' +

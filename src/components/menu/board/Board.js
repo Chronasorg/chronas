@@ -77,6 +77,17 @@ const styles = {
   }
 }
 
+function array_move(arr, old_index, new_index) {
+  if (new_index >= arr.length) {
+    var k = new_index - arr.length + 1;
+    while (k--) {
+      arr.push(undefined);
+    }
+  }
+  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+  return arr; // for testing
+};
+
 class Board extends PureComponent {
   constructor (props) {
     super(props)
@@ -122,7 +133,19 @@ class Board extends PureComponent {
   }
 
   _setForums = () => {
-    getForums().then( (data) => this.setState({ forums: data }) )
+
+    getForums().then( (data) => {
+      console.debug(data)
+      if (data) {
+        let generalIndex = data.findIndex(e => e.forum_slug === 'general')
+        let reorderedForums = (generalIndex !== 0) ? array_move(data, generalIndex, 0) : data
+        let questionsIndex = reorderedForums.findIndex(e => e.forum_slug === 'questions')
+        if (questionsIndex !== 3) reorderedForums = array_move(reorderedForums, questionsIndex, 3)
+        this.setState({
+          forums: reorderedForums
+        })
+      }
+    } )
   }
 
   _updateCurrentForum = (newForm) => {
@@ -130,7 +153,7 @@ class Board extends PureComponent {
   }
 
   render () {
-    const { resources, userDetails, list, create, edit, show, remove, history, options, onMenuTap, translate, theme } = this.props
+    const { resources, list, create, edit, show, remove, history, options, onMenuTap, translate, theme } = this.props
     const { forums, users, currentForum } = this.state
     const commonProps = {
       options,
@@ -217,9 +240,6 @@ class Board extends PureComponent {
     }
 
     return <Switch>
-      <Route exact path="/community/admin" render={restrictPage(AdminContainer, {
-        ...commonProps, history: this.props.history, forums: this.state.forums, users: this.state.users })} >
-      </Route>
       <Route exact path="/community" render={restrictPageForumWrapper(true, ForumFeed, commonProps, { setForums: this._setForums, forums: this.state.forums, users: this.state.users, currentForum: this.state.currentForum, updateCurrentForum: this._updateCurrentForum, discussions: this.state.discussions, currentForumId: this.state.currentForum._id })} />
       <Route exact path="/community/highscore" render={restrictPageForumWrapper(false, Highscore, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
       <Route exact path="/community/sustainers" render={restrictPageForumWrapper(false, Sustainers, commonProps, { setForums: this._setForums, forums: this.state.forums} )} />
@@ -233,7 +253,6 @@ class Board extends PureComponent {
 
 const enhance = compose(
   connect(state => ({
-    userDetails: state.userDetails
   }), { }),
   pure,
   translate,

@@ -211,7 +211,9 @@ class SingleDiscussion extends Component {
     const {
       toggleingFavorite,
       postingOpinion,
+      currentForum,
       match,
+      forums,
       opinionError,
       deletingOpinion,
       deletingDiscussion,
@@ -219,6 +221,8 @@ class SingleDiscussion extends Component {
       translate,
       theme
     } = this.props;
+    const discussion_slug = this.props.match.params.discussion
+    const forumId = (forums.find(f => f.forum_slug === currentForum) || {})._id
 
     const {
       fetchingDiscussion,
@@ -267,15 +271,20 @@ class SingleDiscussion extends Component {
       <div className={'appLayout_constraintWidth'}>
         <Discussion
           id={_id}
+          user={discussion.user}
           userAvatar={avatar}
           userName={name}
+          forumId={forumId}
           userGitHandler={username}
           discTitle={title}
+          currentForum={currentForum}
+          discussion_slug={discussion_slug}
           discDate={date}
           discContent={content}
           tags={tags}
           favoriteCount={favorites.length}
           favoriteAction={() => this._toggleFavorite(_id)}
+          forums={forums}
           userFavorited={userFavorited}
           // toggleingFavorite={}
           allowDelete={allowDelete}

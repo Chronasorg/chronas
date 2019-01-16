@@ -38,7 +38,7 @@ import IconDrag from 'material-ui/svg-icons/editor/drag-handle'
 import IconList from 'material-ui/svg-icons/action/list'
 import BottomNavigationItem from '../overwrites/BottomNavigationItem'
 import { MetadataDelete } from '../restricted/metadata'
-import { RevisionList, RevisionEdit } from '../restricted/revisions'
+import { RevisionList } from '../restricted/revisions'
 import {
   deselectItem as deselectItemAction,
   selectAreaItem,
@@ -181,7 +181,7 @@ const resources = {
   linked: { create: LinkedCreate, edit: LinkedEdit, remove: LinkedDelete, permission: 1 },
   markers: { create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
   metadata: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
-  revisions: { list: RevisionList, edit: RevisionEdit },
+  revisions: { list: RevisionList },
   // images: { create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 1 },
   // users: { list: UserList, create: UserCreate, edit: UserEdit, remove: UserDelete, permission: 11 },
 }
@@ -1410,7 +1410,6 @@ class RightDrawerRoutes extends PureComponent {
           )}
 
         </Switch>
-
       </div>
     )
   }

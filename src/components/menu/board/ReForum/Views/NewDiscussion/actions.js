@@ -12,7 +12,7 @@ import {
 
   CLEAR_SUCCESS_MESSAGE,
 } from './constants';
-import { postDiscussionApi } from './api';
+import { postDiscussionApi, updatetDiscussionApi } from './api';
 
 /**
  * post a new discussion
@@ -83,7 +83,7 @@ export const postDiscussion = (userId, forumId, currentForum, currentDiscussion,
 }
 
 
-export const editDiscussion = (userId, forumId, currentForum, currentDiscussion, qId) => {
+export const updateDiscussion = (userId, forumId, currentForum, currentDiscussion, qId, id) => {
   const {
     title,
     content,
@@ -118,11 +118,12 @@ export const editDiscussion = (userId, forumId, currentForum, currentDiscussion,
 
   // make api call if post is validated
   if (validated) {
-    postDiscussionApi({
+    updatetDiscussionApi({
       userId,
       forumId,
       title,
       qa_id: qId,
+      id: id,
       content,
       tags,
       pinned,
@@ -132,7 +133,7 @@ export const editDiscussion = (userId, forumId, currentForum, currentDiscussion,
           history.goBack()
         } else if (data.data.postCreated === true) {
           // issue a redirect to the newly reacted discussion
-          history.push(`/community/${currentForum}/discussion/${data.data.discussion_slug}`);
+          // history.push(`/community/${currentForum}/discussion/${data.data.discussion_slug}`);
         } else {
           return 'Something is wrong at our server end. Please try again later'
         }

@@ -10,7 +10,6 @@ import TagsInput from '../../Components/NewDiscussion/TagsInput'
 
 import {
   postDiscussion,
-  editDiscussion,
   // updateDiscussionTitle,
   // updateDiscussionContent,
   // updateDiscussionPinStatus,
@@ -115,23 +114,6 @@ class NewDiscussion extends Component {
 
     const finalForumId = (forumId) || (forums.filter(f => f.forum_slug === properties.QAID) || {})._id
     const res = postDiscussion(userId, finalForumId, currentForum || properties.QAID, currentDiscussion, qId)
-    if (res === 'OK') {
-      // Success
-
-    } else {
-      // Error
-      this.setState({
-        errorMsg: res
-      })
-    }
-  }
-
-  _editDiscussion = (userId, forumId, currentForum, currentDiscussion) => {
-    const { forums } = this.props
-    const { qId } = this.props.match.params
-
-    const finalForumId = (forumId) || (forums.filter(f => f.forum_slug === properties.QAID) || {})._id
-    const res = editDiscussion(userId, finalForumId, currentForum || properties.QAID, currentDiscussion, qId)
     if (res === 'OK') {
       // Success
 

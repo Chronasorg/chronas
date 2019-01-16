@@ -133,10 +133,10 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
         }
       case SET_AREA_ITEM:
         return {
+          ...previousState,
           wiki: payload[0],
           value: payload[1],
           type: TYPE_AREA,
-          data: false
         }
       case SET_EPIC_ITEM:
         return {

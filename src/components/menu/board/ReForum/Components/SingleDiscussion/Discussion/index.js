@@ -9,19 +9,109 @@ import PlaceholderImage from '../../../SharedStyles/placeholder.jpg'
 import Button from '../../../Components/Button'
 import Tag from '../../../Components/Tag'
 import RichEditor from '../../../Components/RichEditor'
-import { themes } from "../../../../../../../properties";
+import TagsInput from '../../../Components/NewDiscussion/TagsInput'
+import {properties, themes} from "../../../../../../../properties";
+import {updateDiscussion} from "../../../Views/NewDiscussion/actions";
 
 class Discussion extends Component {
+  state = {
+    errorMsg: '',
+    forumId: null,
+    userId: null,
+    fatalError: null,
+    currentDiscussion: {
+      title: '',
+      content: '',
+      tags: [],
+      pinned: false,
+    },
+    isEditMode: false,
+  }
+
+  componentDidMount = () => {
+    const { tags, discContent, discTitle, user } = this.props
+    this.setState((prevState) => {
+      return { currentDiscussion: { pinned: false, content: discContent, tags: tags, title: discTitle },
+        userId: user._id || localStorage.getItem('chs_userid')}
+    })
+  }
+
+  _enableEdit = () => {
+    const {
+      editAction
+    } = this.props
+
+    const {
+      isEditMode
+    } = this.state
+
+    this.setState({ isEditMode: !isEditMode })
+
+    // editAction()
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const {
+      user,
+      forums,
+    } = this.props
+
+    const finalCurrentForum = (((nextProps || {}).match || {}).params || {}).qId ? properties.QAID : nextProps.currentForum
+
+    this.setState({ errorMsg: '' })
+
+    this.setUserAndForumID(user, forums, finalCurrentForum)
+  }
+
+  setUserAndForumID (user, forums, currentForum) {
+    const forumId = _.find(forums, { forum_slug: currentForum })
+    if (forumId || currentForum === properties.QAID) {
+      const currentForumId = (forumId || {})._id
+      this.setState({
+        forumId: currentForumId,
+        userId: user._id || localStorage.getItem('chs_userid'),
+      })
+    } else {
+      this.setState({
+        fatalError: 'Invalid forum buddy, go for the right one!',
+      })
+    }
+  }
+
+  updateDiscussionContent = (val) => {
+    this.setState((prevState) => {
+      return { currentDiscussion: { ...prevState.currentDiscussion, content: val } }
+    })
+  }
+
+  _postDiscussion = (userId, forumId, currentForum, currentDiscussion) => {
+    const { id, forums, match, discussion_slug } = this.props
+
+    const finalForumId = (forumId) || (forums.filter(f => f.forum_slug === properties.QAID) || {})._id
+    const res = updateDiscussion(userId, finalForumId, currentForum || properties.QAID, currentDiscussion, ((match || {}).params || {}).qId, discussion_slug)
+
+    this.setState({ isEditMode: false })
+  }
+
+  updateDiscussionTags = (val) => {
+    this.setState((prevState) => {
+      return { currentDiscussion: { ...prevState.currentDiscussion, tags: val } }
+    })
+  }
+
   render () {
     const {
+      currentForum,
       id,
       userAvatar,
       userName,
       userGitHandler,
       discTitle,
       discDate,
+      forumId,
       discContent,
       theme,
+      match,
       tags,
       favoriteCount,
       favoriteAction,
@@ -32,6 +122,20 @@ class Discussion extends Component {
       deleteAction,
       editAction
     } = this.props
+
+    const finalCurrentForm = ((match || {}).params || {}).qId ? properties.QAID : currentForum
+
+    const {
+      title,
+      content,
+      pinned,
+    } = this.state.currentDiscussion
+
+    const {
+      isEditMode,
+      userId,
+      currentDiscussion
+    } = this.state
 
     let dateDisplay = moment(discDate)
     dateDisplay = dateDisplay.from(moment())
@@ -62,20 +166,30 @@ class Discussion extends Component {
         <div className='Discussion_discContent'>
           <RichEditor
             customTheme={themes[theme]}
-            readOnly
+            readOnly={!isEditMode}
+            isEdit={isEditMode}
             value={discContent}
+            onChange={(value) => { this.updateDiscussionContent(value) }}
+            onSave={() => { this._postDiscussion(userId, forumId, finalCurrentForm, currentDiscussion) }}
           />
+          { isEditMode && <TagsInput
+            key={'tags'}
+            value={currentDiscussion.tags}
+            customTheme={themes[theme]}
+            isQA={currentForum === properties.QAID}
+            onChange={(tags) => { this.updateDiscussionTags(tags) }}
+          />}
         </div>
 
         <div className='Discussion_discFooter'>
-          <div className='Discussion_tags'>
-            { tags.map(tag => <Tag customTheme={themes[theme]} name={tag} key={_.uniqueId('tag_')} />)}
-          </div>
+          { !isEditMode && <div className='Discussion_tags'>
+            { ((currentDiscussion || {}).tags || tags).map(tag => <Tag customTheme={themes[theme]} name={tag} key={_.uniqueId('tag_')} />)}
+          </div> }
           <Button noUppercase className='Discussion_favoriteButton' style={{ color: themes[theme].backColors[0], background: themes[theme].foreColors[0]}} onClick={() => { !toggleingFavorite && favoriteAction(id) }}>
             <i className={classnames(`fa fa-${userFavorited ? 'heart' : 'heart-o'}`)} />
             <span>{favCount}</span>
           </Button>
-          { false && allowDelete && <Button noUppercase className='Discussion_deleteButton' onClick={() => { editAction() }}>
+          { allowDelete && <Button noUppercase className='Discussion_deleteButton' onClick={() => { this._enableEdit() }}>
             <i className={classnames('fa fa-pencil-square-o')} />
             <span>Edit</span>
           </Button> }

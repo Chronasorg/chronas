@@ -263,11 +263,12 @@ class EpicTimeline extends React.Component {
     }
   }
   setYearWrapper = (newYear) => {
-    if (!isNaN(newYear)) this.props.setYear(+newYear)
+    const { yearsSupported } = this.state
+    if (!isNaN(newYear) && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
   }
 
   _roundToTwo = (val) => {
-    return Math.round(+val * 100) /100
+    return Math.round(+val * 100) / 100
   }
   _setUpInfluenceDataAndMediaAndLinkedContent = (epicData, influenceRawData, isEntity) => {
     if (!epicData || (!epicData.content || !epicData.data) && !influenceRawData) return
@@ -402,7 +403,7 @@ class EpicTimeline extends React.Component {
     if (epicData) this._setUpInfluenceDataAndMediaAndLinkedContent(epicData, influenceRawData, isEntity)
   }
   componentWillReceiveProps = (nextProps) => {
-    const { rulerSetup, setYearByArticle } = this.state
+    const { rulerSetup, setYearByArticle, yearsSupported } = this.state
     const { selectedItem, contentIndex, rulerProps, isEntity, influenceRawData } = this.props
 
     const prevLinkedId = ((selectedItem || {}).data).id
@@ -422,7 +423,7 @@ class EpicTimeline extends React.Component {
       this.setState({ stepIndex: nextProps.contentIndex, selectedWiki: false })
       if (setYearByArticle) {
         const newYear = (((((nextProps.selectedItem || {}).data || {}).content || [])[nextProps.contentIndex] || {}).properties || {}).y
-        if (!isNaN(newYear)) this.props.setYear(+newYear)
+        if (!isNaN(newYear) && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
       }
     }
   }
@@ -448,7 +449,7 @@ class EpicTimeline extends React.Component {
   getStepContent (stepIndex, contentDetected) {
     const { deselectItem, rulerProps, selectedItem, history, setMetadataEntity, theme } = this.props
     const { selectedWiki, setYearByArticle, epicMeta, epicLinkedArticles, influenceChartData } = this.state
-    const selectedIndexItem = (epicLinkedArticles[stepIndex] || {})
+    const selectedIndexItem = epicLinkedArticles.find(el => el.i === stepIndex) || (epicLinkedArticles[stepIndex] || {})
     const itemType = selectedIndexItem.type
     const isMarker = !(selectedIndexItem.isMarker === false) || (selectedIndexItem.type.substr(0, 3) === 'ae|')
     const hasChart = (influenceChartData && influenceChartData.length > 0 && ((epicMeta || {}).title || (rulerProps || {})[0] !== "Unknown"))
@@ -665,7 +666,7 @@ class EpicTimeline extends React.Component {
                 background: 'transparent',
                 boxShadow: 'rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset'
               }}>
-              {epicLinkedArticles.map((epicContent, i) => (
+              {epicLinkedArticles.sort((a, b) => (a.i > b.i) ? 1 : ((b.i > a.i) ? -1 : 0)).map((epicContent, i) => (
                 <div title={epicContent.name || epicContent.wiki} key={i} style={styles.stepContainer}>
                   <StepButton
                     icon={

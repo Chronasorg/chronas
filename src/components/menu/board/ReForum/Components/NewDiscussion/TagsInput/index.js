@@ -19,6 +19,11 @@ class TagsInput extends Component {
     };
   }
 
+  componentDidMount() {
+    const { value } = this.props;
+    this.setState({ tags: value, errorMsg: null });
+  }
+
   componentWillReceiveProps(nextProps) {
     const { value } = nextProps;
     this.setState({ tags: value, errorMsg: null });
