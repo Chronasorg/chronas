@@ -104,6 +104,11 @@ const backgroundByYear = [
     year: 1862,
     image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Confederate_prisoners_captured_in_the_Battle_of_Front_Royal_being_guarded_in_a_Union_camp_in_the_Shenandoah_Valley%2Cjpg.jpg/1024px-Confederate_prisoners_captured_in_the_Battle_of_Front_Royal_being_guarded_in_a_Union_camp_in_the_Shenandoah_Valley%2Cjpg.jpg',
     description: '1862: Confederate prisoners captured in the Battle of Front Royal'
+  },
+  {
+    year: 1871,
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Wernerprokla.jpg/1280px-Wernerprokla.jpg',
+    description: '1871: Proclamation of the German Empire in Versailles'
   }
 ]
 
