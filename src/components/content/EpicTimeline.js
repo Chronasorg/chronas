@@ -379,7 +379,7 @@ class EpicTimeline extends React.Component {
       rulerSetup: epicData.id,
       stepIndex: -1,
       influenceChartData,
-      yearsSupported: (dateRange && dateRange.length !== 0) ? [+dateRange[0].left, +dateRange[dateRange.length - 1].left] : [0, 0],
+      yearsSupported: (dateRange && dateRange.length !== 0) ? [+dateRange[0].left+1, +dateRange[dateRange.length - 1].left-1] : [0, 0],
     })
 
     if ((selectedItem || {}).type === TYPE_AREA && ((epicData || {}).content || []).length > 0) {
