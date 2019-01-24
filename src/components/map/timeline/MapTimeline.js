@@ -278,7 +278,7 @@ class MapTimeline extends Component {
 
     if (groupItems.length !== nextProps.groupItems) {
       this.setState({
-        epicSearchOptions: groupItems.map(el => {
+        epicSearchOptions: nextProps.groupItems.map(el => {
           return {
             value: el.id,
             text: el.wiki.replace(/_/g, ' ') + ' (' + el.start.getFullYear() + ')',
