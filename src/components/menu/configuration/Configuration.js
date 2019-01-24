@@ -50,7 +50,7 @@ class Configuration extends PureComponent {
     const { theme, locale, changeTheme, changeLocale, changeMarkerTheme, markerTheme, setBodyFont, setFullscreen, translate } = this.props
 
     const currBodyClasses = Array.from(document.body.classList) || []
-    const selectedFontValue = (properties.markerOptions.find(el => currBodyClasses.includes(el.id)) || {}).id
+    const selectedFontValue = (properties.markerOptions.find(el => currBodyClasses.includes(el.id)) || {}).id || localStorage.getItem('chs_font') || "cinzelFont"
 
     return (
       <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open
@@ -84,25 +84,35 @@ class Configuration extends PureComponent {
             {/* onClick={() => changeTheme('golden')} /> */}
           </CardText>
           <CardText>
-            <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.language')}</div>
-            <RaisedButton style={styles.button} label='en' primary={locale === 'en'}
-              onClick={() => changeLocale('en')} />
-            <RaisedButton style={styles.button} label='fr' primary={locale === 'fr'}
-              onClick={() => changeLocale('fr')} />
-          </CardText>
-          <CardText>
             <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.goFullScreen')}</div>
             <RaisedButton style={styles.button} label={'Toggle'}
-              onClick={() => setFullscreen()} />
+                          onClick={() => setFullscreen()} />
           </CardText>
-
+          <CardText>
+            <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.language')}</div>
+            <SelectField
+              value={locale}
+              onChange={(event, index, value) => {
+                changeLocale(value)
+              }}
+              style={{ ...styles.label, color: themes[theme].foreColors[0] }}
+              floatingLabelStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
+              inputStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
+              textareaStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
+              hintStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
+            >
+              {properties.languageOptions.map((el) => {
+                return <MenuItem value={el.id} primaryText={el.name} />
+              })}
+            </SelectField>
+          </CardText>
           <CardText style={{ float: 'left' }}>
             <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.theme.font')}</div>
             <SelectField
-              floatingLabelText={translate('pos.fontType')}
               value={selectedFontValue}
               onChange={(event, index, value) => {
                 setBodyFont(value)
+                this.forceUpdate()
               }}
               style={{ ...styles.label, color: themes[theme].foreColors[0] }}
               floatingLabelStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}

@@ -223,6 +223,7 @@ class ArticleIframe extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      localizedArticle: false,
       isFullScreen: false,
       iframeLoading: true,
       iframeLoadingFull: true,
@@ -230,6 +231,7 @@ class ArticleIframe extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    // https://www.wikidata.org/w/api.php?action=wbgetentities&titles=Vietnamese_Wikipedia&sites=enwiki&format=json
     if (this.props.selectedWiki !== nextProps.selectedWiki) {
       this.setState({ iframeLoading: true })
       this.forceUpdate()

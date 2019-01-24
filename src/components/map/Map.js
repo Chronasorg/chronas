@@ -24,7 +24,7 @@ import MapGL, { FlyToInterpolator, Marker, Popup } from 'react-map-gl'
 import WebMercatorViewport from 'viewport-mercator-project'
 import { setYear } from './timeline/actionReducers'
 import DeckGLOverlay from './deckGlComponents/deckgl-overlay.js'
-import { changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
+import { setMarker, changeAreaData as changeAreaDataAction } from '../menu/layers/actionReducers'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import {
   addModData as addModDataAction,
@@ -82,6 +82,7 @@ const getRandomInt = (min, max) => {
 
 let animationInterval = -1
 let areaActive = true
+let rememberedMarker
 
 const styles = {
   chip: {},
@@ -495,12 +496,12 @@ class Map extends Component {
       //   })))
       // this.setState({ mapStyle })
     } else if (entityId.toString() !== '') {
-      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + (isNaN(newYear) ? this.props.selectedYear : newYear) + '&count=' + (!isNaN(newLimit) ? newLimit : this.props.activeMarkers.limit))
+      axios.get(properties.chronasApiHost + '/markers?types=' + entityId + '&year=' + ((!newYear || isNaN(newYear)) ? this.props.selectedYear : newYear) + '&count=' + ((typeof newLimit !== "undefined" && !isNaN(newLimit)) ? newLimit : this.props.activeMarkers.limit))
         .then(features => {
           // const mapStyle = this.state.mapStyle
           //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
           // this.setState({ mapStyle })
-          if (!isNaN(newYear)) {
+          if (typeof newYear !== "undefined" && !isNaN(newYear)) {
             this.setState({ markerData: features.data.filter(p => (p.coo || []).length === 2) })
           } else {
             this.setState({ markerData: this.state.markerData.concat(features.data.filter(p => (p.coo || []).length === 2)) })
@@ -520,7 +521,7 @@ class Map extends Component {
               let divBlocks = ''
               const pEndYear = +el.data.end
               const startYear = +el.data.start || +el.year
-              const endYear = isNaN(pEndYear) ? (startYear + 1) : pEndYear
+              const endYear = (!pEndYear || isNaN(pEndYear)) ? (startYear + 1) : pEndYear
 
               if (subtype.includes('ew')) {
                 battlesByWars[el._id] && battlesByWars[el._id].forEach((bEl, index) => {
@@ -541,7 +542,7 @@ class Map extends Component {
                 className: 'timelineItem_' + elsubtype,
                 editable: false,
                 subtype: el.subtype,
-                end: !isNaN(pEndYear) ? new Date(new Date(0, 1, 1).setFullYear(+pEndYear)) : undefined, // new Date(new Date(0, 1, 1).setFullYear(+startYear+1)),
+                end: (typeof pEndYear !== "undefined" && !isNaN(pEndYear)) ? new Date(new Date(0, 1, 1).setFullYear(+pEndYear)) : undefined, // new Date(new Date(0, 1, 1).setFullYear(+startYear+1)),
                 content: '<div class="warContainer">' + ((elsubtype === 'ei') ? '<img class="tsTicks discoveryIcon" src="/images/transparent.png">' : (elsubtype === 'ps') ? '<img class="tsTicks esIcon' + ((index % 3 === 0) ? 1 : 2) + '" src="/images/transparent.png">' : elTitle) + divBlocks + '</div>',
                 title: ((elsubtype === 'ew') ? ('<img class="tsTicks warIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '-' + pEndYear + ' </span>: ') : (elsubtype === 'ei') ? ('<img class="tsTicks discoveryIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : (elsubtype === 'ps') ? ('<img class="tsTicks esIcon timelineTooltipIcon" src="/images/transparent.png"><span style="padding-left: 20px">' + startYear + '</span>: ') : '') + '<b>' + elTitle + '</b>',
                 wiki: el.data.wiki || el.wiki,
@@ -561,6 +562,7 @@ class Map extends Component {
     })
   }
   _removeGeoJson = (prevMapStyle, sourceId, entityId) => {
+    const isArray = typeof entityId === "object"
     if (entityId === TYPE_EPIC) {
       return prevMapStyle
         .updateIn(['sources', TYPE_MARKER, 'data', 'features'], list => list.filter(function (obj) {
@@ -573,12 +575,21 @@ class Map extends Component {
           'features': []
         }))
     } else {
-      this.setState({
-        markerData: this.state.markerData.filter(function (obj) {
-          return ((obj.properties || {}).t !== entityId) && (obj.subtype !== entityId)
-          // return ((obj.properties || {}).t !== entityId)
+      if (isArray) {
+        this.setState({
+          markerData: this.state.markerData.filter(function (obj) {
+            return !entityId.includes((obj.properties || {}).t) && !entityId.includes((obj.subtype))
+            // return ((obj.properties || {}).t !== entityId)
+          })
         })
-      })
+      } else {
+        this.setState({
+          markerData: this.state.markerData.filter(function (obj) {
+            return ((obj.properties || {}).t !== entityId) && (obj.subtype !== entityId)
+            // return ((obj.properties || {}).t !== entityId)
+          })
+        })
+      }
       return prevMapStyle
     }
   }
@@ -602,7 +613,7 @@ class Map extends Component {
       }
     })
   }
-  _changeYear = (year) => {
+  _changeYear = (year, migrationActive) => {
     const { activeArea, activeMarkers, changeAreaData, selectedItem, setYear, metadata } = this.props
     let prevActiveprovinceValue = (activeArea.data[selectedItem.value] || {})[utils.activeAreaDataAccessor(activeArea.color)]
 
@@ -614,6 +625,11 @@ class Map extends Component {
       return setYear(2000)
     } else if (year < -2000) {
       return setYear(-2000)
+    }
+
+    if (migrationActive) {
+      // api call here
+      this._queryMigrationData(year)
     }
 
     this._addGeoJson(TYPE_MARKER, activeMarkers.list, false, year)
@@ -786,6 +802,7 @@ class Map extends Component {
       expanded: false,
       markerData: [],
       geoData: [],
+      migrationData: [],
       clusterRawData: [],
       epics: [],
       arcData: [],
@@ -811,7 +828,7 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { mapStyles, activeArea, selectedYear, metadata, modActive, history, activeEpics, activeMarkers, selectedItem, selectAreaItem, selectMarkerItem } = this.props
+    const { activeEpics, activeMarkers, activeArea, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, selectAreaItem, selectMarkerItem } = this.props
 
     const contentIndex = ((selectedItem || {}).data || {}).contentIndex
     const nextContentIndex = ((nextProps.selectedItem || {}).data || {}).contentIndex
@@ -826,6 +843,24 @@ class Map extends Component {
       this.setState({ mapTimelineContainerClass: 'mapTimeline discoverActive' })
     } else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '' && this.state.mapTimelineContainerClass !== 'mapTimeline') {
       this.setState({ mapTimelineContainerClass: 'mapTimeline' })
+    }
+
+    // Migration changed?
+    if (migrationActive !== nextProps.migrationActive) {
+      if (nextProps.migrationActive) {
+        rememberedMarker = activeMarkers.list.slice(0)
+        setMarker(['c', 'cp'])
+        // api call here
+        this._queryMigrationData(nextProps.selectedYear)
+      //   this.setState({
+      //     migrationData: [[[32.6, 31.05], [29.917, 31.2]], [[12.617, 41.433], [12.483, 41.893]], [[4.819, 45.76], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.698, 41.675], [12.483, 41.893]], [[11.878, 45.406], [12.483, 41.893]], [[28.517, 47.25], [28.517, 47.25]], [[-4.522, 41.218], [9.19, 45.464]], [[29.917, 31.2], [29.917, 31.2]], [[19.61, 44.98], [4.841, 45.759]], [[13.25, 41.283], [12.483, 41.893]], [[14.633, 40.75], [12.483, 41.893]], [[8.026, 44.692], [12.483, 41.893]], [[9.185, 45.463], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[19.61, 44.98], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.2, 33.267], [12.483, 41.893]], [[4.629, 43.677], [12.483, 41.893]], [[29.917, 31.2], [12.483, 41.893]], [[27.183, 39.117], [12.483, 41.893]], [[29.067, 40.183], [23.716, 37.979]], [[29.917, 31.2], [29.917, 31.2]], [[27.15, 38.433], [4.841, 45.759]], [[14.015, 37.6], [29.917, 31.2]], [[10.926, 44.646], [10.926, 44.646]], [[6.641, 49.757], [12.483, 41.893]], [[10.867, 43.4], [12.483, 41.893]], [[-1.965, 42.303], [12.483, 41.893]], [[35.217, 31.783], [12.483, 41.893]], [[-4.767, 37.883], [12.483, 41.893]], [[13.7, 41.5], [12.483, 41.893]], [[77, 13], [77, 22]], [[25.25, 39.917], [23.716, 37.979]], [[6.641, 49.757], [9.19, 45.464]], [[29.917, 31.2], [12.483, 41.893]], [[-3, 40], [12.483, 41.893]], [[23, 38.5], [12.483, 41.893]], [[29, 27], [29.917, 31.2]], [[29, 27], [29, 27]], [[29.917, 31.2], [29, 27]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29, 27]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[40, 9], [38.583, 35.217]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [9.67, 45.695]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[14.5, 35.883], [14.5, 35.883]], [[4.841, 45.759], [4.841, 45.759]], [[11.878, 45.406], [12.483, 41.893]], [[38.583, 35.217], [12.483, 41.893]], [[2.177, 41.383], [12.483, 41.893]], [[2.177, 41.383], [2.177, 41.383]], [[23.716, 37.979], [29.917, 31.2]], [[38.267, 34.56], [12.483, 41.893]], [[-4.767, 37.883], [12.483, 41.893]], [[3.004, 43.185], [12.483, 41.893]], [[12.65, 42.567], [12.483, 41.893]], [[-0.409, 42.14], [12.483, 41.893]], [[22.95, 40.633], [12.483, 41.893]], [[31, 39], [12.483, 41.893]], [[2.298, 49.892], [4.841, 45.759]], [[35.2, 33.267], [12.483, 41.893]], [[19.82, 39.624], [12.483, 41.893]], [[36.717, 34.733], [12.483, 41.893]], [[34.9, 36.917], [12.483, 41.893]], [[38.334, 38.355], [35.217, 31.783]], [[26.5, 45.7], [9.19, 45.464]], [[12.386, 42.46], [12.483, 41.893]], [[12.74, 31.8], [12.483, 41.893]], [[14.291, 32.639], [12.483, 41.893]], [[36.15, 36.2], [12.483, 41.893]], [[36.15, 36.2], [12.483, 41.893]], [[36.15, 36.2], [12.483, 41.893]], [[6.736, 43.433], [12.483, 41.893]], [[34.839, 38.671], [29.917, 31.2]], [[12.9, 41.833], [12.483, 41.893]], [[31.167, 30.967], [29.917, 31.2]], [[32.556, 25.293], [29, 27]], [[7.767, 36.9], [12, 43]], [[7.595, 50.361], [12.483, 41.893]], [[33.609, 35.085], [33, 35]], [[35.217, 31.783], [35.217, 31.783]], [[12.74, 31.8], [12.483, 41.893]], [[12.483, 41.893], [0.688, 47.393]], [[29.917, 31.2], [29.917, 31.2]], [[35.266, 32.216], [12.483, 41.893]], [[2.9, 46.5], [0.197, 48.004]], [[-4.767, 37.883], [12.483, 41.893]], [[9.086, 45.81], [12.483, 41.893]], [[35.15, 42.027], [12.483, 41.893]], [[6.612, 36.368], [12.483, 41.893]], [[29.917, 31.2], [12.483, 41.893]], [[-5.454, 36.128], [12.483, 41.893]], [[29.917, 31.2], [29, 27]], [[36.717, 34.733], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.206, 31.704], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[29, 27], [29.917, 31.2]], [[12.483, 41.893], [12.483, 41.893]], [[12.48, 41.89], [12.483, 41.893]], [[35.527, 32.76], [35.217, 31.783]], [[29.917, 31.2], [29.917, 31.2]], [[35.145, 31.625], [35.217, 31.783]], [[34.083, -1.617], [136, 35]], [[12.483, 41.893], [-3, 40]], [[14.015, 37.6], [-9.183, 38.7]], [[30.855, 31.046], [29, 27]], [[29, 27], [29, 27]], [[29, 27], [29, 27]], [[4.841, 45.759], [29, 27]], [[29, 27], [29, 27]], [[29, 27], [29, 27]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[12.483, 41.893], [12.483, 41.893]], [[29.108, 37.836], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[36.717, 34.733], [12.483, 41.893]], [[2.9, 46.5], [12.483, 41.893]], [[14.49, 40.751], [12.483, 41.893]], [[35.527, 32.76], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.195, 32.276], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.891, 32.272], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[10.017, 44.064], [12.483, 41.893]], [[10.767, 34.733], [12.483, 41.893]], [[29.917, 31.2], [12.483, 41.893]], [[9.19, 45.464], [12.483, 41.893]], [[29.917, 31.2], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[31, 40.5], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.133, 42.489], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[31, 39], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[34.45, 31.517], [33, 35]], [[36.717, 34.733], [33, 35]], [[12, 43], [12.483, 41.893]], [[23, 38.5], [12.483, 41.893]], [[23, 38.5], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[29.26, 37.787], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.667, 41.733], [12.483, 41.893]], [[82.9, 41.65], [103, 35]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.527, 32.76], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[0.683, 47.4], [0.688, 47.393]], [[28, 37.5], [12.483, 41.893]], [[15.166, 37.613], [12.483, 41.893]], [[13.15, 41.75], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[31, 39], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[28.517, 47.25], [28.517, 47.25]], [[12.483, 41.893], [12.483, 41.893]], [[36.15, 36.2], [12.483, 41.893]], [[4.841, 45.759], [4.841, 45.759]], [[9.19, 45.464], [7.1, 50.734]], [[31, 39], [4.841, 45.759]], [[31, 40.5], [9.19, 45.464]], [[2.597, 48.285], [12.483, 41.893]], [[36.398, 35.418], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[11.55, 45.55], [12.483, 41.893]], [[6.641, 49.757], [9.19, 45.464]], [[12.483, 41.893], [12.483, 41.893]], [[6.641, 49.757], [9.19, 45.464]], [[10.639, 35.824], [4.819, 45.76]], [[44.432, 32.542], [38.583, 35.217]], [[38.784, 37.146], [38.583, 35.217]], [[35, 31], [35, 31]], [[45, 28], [38.583, 35.217]], [[12.483, 41.893], [35.217, 31.783]], [[34.9, 32.5], [35.217, 31.783]], [[12.483, 41.893], [35.217, 31.783]], [[35.298, 32.702], [35.217, 31.783]], [[35.145, 31.625], [35.217, 31.783]], [[35.217, 31.783], [35.217, 31.783]], [[22.519, 40.76], [-0.579, 44.838]], [[12.483, 41.893], [23.716, 37.979]], [[12.588, 37.652], [16.5, 40.5]]]
+      // })
+      }
+      else {
+        if (rememberedMarker) setMarker(rememberedMarker)
+        rememberedMarker = false
+        this.setState({ migrationData: [] })
+      }
     }
 
     // Leaving Epic? -> cleanup
@@ -843,7 +878,7 @@ class Map extends Component {
         activeArea.data[selectedItem.value][utils.activeAreaDataAccessor(nextProps.activeArea.color)] === (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)])
       if (nextProps.selectedItem.wiki === 'random') {
         const { markerData } = this.state
-        const markerDataLength = markerData.find(el => el.subtype !== 'c' && el.subtype !== 'cp').length
+        const markerDataLength = (markerData.find(el => el.subtype !== 'c' && el.subtype !== 'cp') || []).length
         if (markerDataLength > 0) {
           const toSelectMarker = markerData.filter(el => el.subtype !== 'c' && el.subtype !== 'cp')[getRandomInt(0, markerDataLength - 1)]
           selectMarkerItem(toSelectMarker._id, toSelectMarker)
@@ -1014,7 +1049,7 @@ class Map extends Component {
 
           if (typeof multiPolygonToOutlines !== 'undefined') {
             const warEndYear = ((nextProps.selectedItem.data || {}).data || {}).end
-            if (!isNaN(warEndYear)) {
+            if (typeof warEndYear !== "undefined" && !isNaN(warEndYear)) {
               axios.get(properties.chronasApiHost + '/areas/' + (+warEndYear + 10))
                 .then((endYearDataRes) => {
                   const endYearData = endYearDataRes.data
@@ -1169,7 +1204,7 @@ class Map extends Component {
       // reload
       if (nextProps.modActive.toUpdate === 'area') {
         // refresh this year data
-        this._changeYear(nextProps.selectedYear)
+        this._changeYear(nextProps.selectedYear, nextProps.migrationActive)
       }
     } else if (modActive.type === TYPE_MARKER && nextProps.modActive.type === '') {
       // Leaving Metadata Mod
@@ -1263,7 +1298,7 @@ class Map extends Component {
     // Year changed?
     if (selectedYear !== nextProps.selectedYear) {
       console.debug('###### Year changed from ' + selectedYear + ' to ' + nextProps.selectedYear)
-      this._changeYear(nextProps.selectedYear)
+      this._changeYear(nextProps.selectedYear, nextProps.migrationActive)
     }
 
     // Basemap changed?
@@ -1356,16 +1391,21 @@ class Map extends Component {
       const addedMarkers = _.difference(nextProps.activeMarkers.list, activeMarkers.list)
 
       // iterate to remove
-      for (const removedMarker of removedMarkers) {
-        console.log('removing Marker', removedMarker)
-        mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, removedMarker)
+      // for (const removedMarker of removedMarkers) {
+      if (removedMarkers && (typeof removedMarkers === "string" || (removedMarkers || []).length !== 0)) {
+        console.log('removing Marker', removedMarkers)
+        mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, removedMarkers)
       }
 
-      // iterate to add
-      for (const addedMarker of addedMarkers) {
-        console.log('addedMarker', addedMarker)
-        this._addGeoJson(TYPE_MARKER, addedMarker)
+      if (addedMarkers && (typeof addedMarkers === "string" || (addedMarkers || []).length !== 0)) {
+        console.log('adding Marker', addedMarkers)
+        this._addGeoJson(TYPE_MARKER, addedMarkers, false, false, nextProps.activeMarkers.limit)
       }
+      // iterate to add
+      // for (const addedMarker of addedMarkers) {
+      //   console.log('addedMarker', addedMarker)
+      //   this._addGeoJson(TYPE_MARKER, addedMarker)
+      // }
     }
 
     // Markers Limit changed?
@@ -1402,6 +1442,16 @@ class Map extends Component {
 
   componentWillUnmount () {
     window.removeEventListener('resize', this._resize)
+  }
+
+  _queryMigrationData (year) {
+    axios.get(properties.chronasApiHost + '/markers?migration=true&year=' + ((!year || isNaN(year)) ? this.props.selectedYear : year))
+      .then(migrationRes => {
+          this.setState({ migrationData: migrationRes.data })
+      })
+      .catch(() => {
+        this.props.showNotification('Migration query failed')
+      })
   }
 
   _onDeckHover ({ x, y, object }) {
@@ -1527,7 +1577,7 @@ class Map extends Component {
                 </IconButton>
    */
   _renderPopup () {
-    const { activeArea, metadata, markerTheme, mapStyles, selectMarkerItem, history, theme } = this.props
+    const { activeArea, metadata, markerTheme, mapStyles, selectMarkerItem, history, theme, translate } = this.props
     const { categories, clusterRawData, filtered, hoverInfo, expanded, searchMarkerText } = this.state
     const isCluster = mapStyles.clusterMarkers
 
@@ -1634,7 +1684,7 @@ class Map extends Component {
                           top: '16px',
                           fontSize: '15px'
                         }}>
-                          {name || wiki || _id}
+                          {decodeURIComponent(name || wiki || _id)}
                         </div>
                         <div style={{
                           overflow: 'hidden',
@@ -1677,7 +1727,7 @@ class Map extends Component {
                 const cofficient = 80 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
                 const backgroundPosition = 'url(/images/' + markerTheme + '-atlas.png) -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][fSubtype] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][fSubtype] || {}).y * cofficient)) + 'px'
                 const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '242px 556px' : '308px 448px'
-
+                const isCity = ['c', 'cp'].includes(fSubtype)
                 return (
                   <div key={name}>
                     <Stepper linear={false} connector={null} activeStep={-1} orientation='vertical'
@@ -1717,12 +1767,12 @@ class Map extends Component {
                             marginTop: '-18px',
                             left: '60px',
                             top: '-46px',
-                            fontSize: '15px'
+                            fontSize: '16px'
                           }}>
-                            {name || wiki || _id}
+                            {decodeURIComponent(name || wiki || _id)}
                           </div>
                           <div style={{
-                            overflow: 'hidden',
+                            // overflow: 'hidden',
                             whiteSpace: 'nowrap',
                             textOverflow: 'ellipsis',
                             position: 'absolute',
@@ -1732,6 +1782,7 @@ class Map extends Component {
                             fontSize: '20px',
                             fontWeight: 'bolder'
                           }}>
+                            { isCity && <span style={{ marginLeft: -10, marginRight: 2, fontSize: '12px', fontWeight: 400 }}>{translate('pos.founded')} </span>}
                             {year}
                           </div>
                         </StepButton>
@@ -1841,7 +1892,7 @@ class Map extends Component {
   }
 
   render () {
-    const { epics, markerData, geoData, clusterRawData, hoverInfo, mapStyle, mapTimelineContainerClass, viewport, arcData } = this.state
+    const { arcData, clusterRawData, epics, markerData, geoData, hoverInfo, mapStyle, mapTimelineContainerClass, migrationData, viewport } = this.state
     const { activeArea, modActive, menuDrawerOpen, metadata, rightDrawerOpen, history, location, theme, mapStyles, markerTheme, selectedItem, selectedYear } = this.props
 
     let leftOffset = isStatic ? 0 : (menuDrawerOpen) ? 156 : 56
@@ -1935,6 +1986,7 @@ class Map extends Component {
             selectedItem={selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_EPIC ? selectedItem : (selectedItem.type === TYPE_AREA && possibleHiglightedAREAitem) ? possibleHiglightedAREAitem : {}}
             updateLine={this._updateLine}
             geoData={geoData}
+            migrationData={migrationData}
             clusterRawData={activeCluster ? Array.isArray(possibleClusterRaw) ? possibleClusterRaw.length === 1 ? -1 : possibleClusterRaw : [] : []}
             markerData={markerData}
             metadata={metadata}
@@ -1975,6 +2027,7 @@ const enhance = compose(
     selectedItem: state.selectedItem,
     markerTheme: state.markerTheme,
     metadata: state.metadata,
+    migrationActive: state.migrationActive,
     menuDrawerOpen: state.menuDrawerOpen,
     modActive: state.modActive,
     rightDrawerOpen: state.rightDrawerOpen,
@@ -1984,6 +2037,7 @@ const enhance = compose(
     setRightDrawerVisibility,
     selectAreaItem: selectAreaItemAction,
     selectValue,
+    setMarker,
     setWikiId,
     setModToUpdate,
     selectEpicItem,

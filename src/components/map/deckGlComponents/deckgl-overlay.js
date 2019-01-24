@@ -6,6 +6,7 @@ import DeckGL, { ArcLayer, IconLayer, ScatterplotLayer, WebMercatorViewport } fr
 import TagmapLayer from './tagmap-layer'
 import { iconMapping, iconSize, properties, RGBAtoArray } from '../../../properties'
 import utilsQuery from '../utils/query'
+import MovementLayerWrapper from './movement-wrapper'
 
 const Arc = require('arc')
 
@@ -75,11 +76,8 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
-  componentDidMount () {
-  }
-
   componentWillReceiveProps (nextProps) {
-    const { activeColor, clusterRawData, contentIndex, markerData, arcData, markerTheme, selectedYear, selectedItem, geoData, updateLine, goToViewport } = this.props
+    const { activeColor, clusterRawData, contentIndex, markerData, arcData, markerTheme, migrationData, selectedYear, selectedItem, geoData, updateLine, goToViewport } = this.props
     const { strokeWidth, onHover, showCluster, theme, metadata, onMarkerClick, sizeScale } = nextProps
     // const { layers } = this.state
 
@@ -120,6 +118,7 @@ export default class DeckGLOverlay extends Component {
       this.props.showCluster !== showCluster ||
       nextProps.activeColor !== activeColor ||
       nextProps.markerData.length !== markerData.length ||
+      nextProps.migrationData.length !== migrationData.length ||
       nextProps.geoData.length !== geoData.length ||
       nextProps.clusterRawData.length !== clusterRawData.length ||
       viewport.width !== oldViewport.width ||
@@ -181,7 +180,7 @@ export default class DeckGLOverlay extends Component {
         layers[4] = new IconLayer({
           id: 'icon',
           autoHighlight: true,
-          highlightColor: showCluster ? [0, 0, 0, 0] : RGBAtoArray(theme.highlightColors[0]), // showCluster
+          highlightColor: showCluster ? [0, 50, 0, 1] : RGBAtoArray(theme.highlightColors[0]), // showCluster
           // ? [0,0,0,0] : RGBAtoArray(theme.highlightColors[0]),
           data: this._getMarker({
             ...{
@@ -290,8 +289,8 @@ export default class DeckGLOverlay extends Component {
         layers[0] = new ScatterplotLayer({
           id: 'cities-dots',
           data: myTexts.filter(el => !(el.capital && el.capital.find((ell) => {
-            return ell[0] <= +selectedYear && ell[1] >= +selectedYear
-          })
+              return ell[0] <= +selectedYear && ell[1] >= +selectedYear
+            })
           )),
           // outline: true,
           radiusScale: 10000,
@@ -306,6 +305,86 @@ export default class DeckGLOverlay extends Component {
           getColor: [50, 50, 50, 200], // d => (d[2] === 1 ? maleColor : femaleColor),
           radiusMinPixels: 0,
           radiusMaxPixels: 10,
+        })
+      }
+
+      // epic and migration movement
+      // let eData = nextProps.geoData.filter(el => el.subtype === "b" || el.subtype === "si").map(el => el.coo)
+      if (nextProps.migrationData.length !== migrationData.length) {
+        // preData =
+        // const preData = []
+        // for (let i = 0; i < eData.length - 1; i++) {
+        //   preData.push([eData[i], eData[i + 1]])
+        // }
+
+        const migrationLocations = {}
+
+        nextProps.migrationData.forEach( el => {
+          const idLeave = el[0][0] + " " + el[0][1]
+          const idAdd = el[1][0] + " " + el[1][1]
+          if (typeof migrationLocations[idLeave] === "undefined") migrationLocations[idLeave] = [-1,el[0]]
+          else migrationLocations[idLeave][0]--
+          if (typeof migrationLocations[idAdd] === "undefined") migrationLocations[idAdd] = [1,el[1]]
+          else migrationLocations[idAdd][0]++
+        })
+
+        const migrationLocationValues = Object.values(migrationLocations).filter(el => el[0] !== -1)
+        const finalMigrationLocation = {
+          min: migrationLocationValues.reduce((min, p) => p[0] < min ? p[0] : min, Infinity),
+          max: migrationLocationValues.reduce((max, p) => p[0] > max ? p[0] : max, -Infinity),
+        }
+
+        const MAXRADIUS = 30000
+        const locMin = finalMigrationLocation.min
+        const locMax = finalMigrationLocation.max
+        const absMax = -1 * locMin + locMax
+        const hideThreshold = (0.005 * absMax) + 1
+
+        finalMigrationLocation.data = migrationLocationValues.filter(d => Math.abs(d[0]) > hideThreshold).map(d => {
+          const val = d[0] // (Math.sqrt(Math.abs(d[0]) / absMax))
+          const color = (val > 0)
+            ? [100 - (100 * val / locMax), 100 + (100 * val / locMax), 0, 100 + (155 * val / locMax)]
+            : (val < 0)
+              ? [100 + (100 * val / locMin), 100 - (100 * val / locMin), 0, 100 + (155 * val / locMin)]
+              : [100, 100, 0, 80]
+
+          return [(Math.sqrt(Math.abs(d[0]) / absMax) * MAXRADIUS), d[1], color]
+        })
+
+        isDirty = true
+        if (!layers) layers = Object.assign([], this.state.layers)
+        layers[5] = !nextProps.migrationData.length ? undefined : new MovementLayerWrapper({
+          id: 'movement-wrapper',
+          preData: {
+            data: nextProps.migrationData
+          },
+          year: nextProps.selectedYear
+        })
+        layers[6] = !(finalMigrationLocation.data || []).length ? undefined : new ScatterplotLayer({
+          id: 'scatterplot-layer',
+          data: finalMigrationLocation.data,
+          pickable: false,
+          opacity: 0.3,
+          radiusScale: 6,
+          radiusMinPixels: 2,
+          radiusMaxPixels: 50,
+          getRadius: d => d[0],
+          getPosition: d => d[1],
+          getColor: d => d[2],
+        })
+        layers[7] = !(finalMigrationLocation.data || []).length ? undefined : new ScatterplotLayer({
+          id: 'scatterplot-outline-layer',
+          data: finalMigrationLocation.data,
+          pickable: false,
+          outline: true,
+          opacity: 1,
+          radiusScale: 6,
+          radiusMinPixels: 2,
+          radiusMaxPixels: 50,
+          strokeWidth: 3,
+          getRadius: d => d[0],
+          getPosition: d => d[1],
+          getColor: d => d[2],
         })
       }
     }
@@ -333,7 +412,7 @@ export default class DeckGLOverlay extends Component {
         if (selectedFeature.connect !== true && (selectedFeature.coo || []).length === 2) {
           let prevCoords
           for (let i = +nextProps.contentIndex - 1; i > -1; i--) {
-            const currCoords = (geoData[i] || {}).coo || []
+            const currCoords = (geoData.find(f => f.index === i) || {}).coo || []
             if (currCoords.length === 2) {
               prevCoords = currCoords
               break
@@ -551,7 +630,7 @@ export default class DeckGLOverlay extends Component {
     const { layers } = this.state
 
     return <DeckGL {...viewport}
-      getCursor={() => 'pointer'}
-      layers={layers} />
+                   getCursor={() => 'pointer'}
+                   layers={layers} />
   }
 }

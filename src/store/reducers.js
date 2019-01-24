@@ -5,7 +5,7 @@ import { adminReducer } from 'admin-on-rest'
 import { modActiveReducer } from '../components/restricted/shared/buttons/actionReducers'
 import { loadingReducer, metadataReducer } from '../components/map/data/actionReducers'
 import { localeReducer, markerThemeReducer, themeReducer } from '../components/menu/configuration/actionReducers'
-import { areaReducer, epicReducer, mapStylesReducer, markerReducer } from '../components/menu/layers/actionReducers'
+import { areaReducer, epicReducer, migrationReducer, mapStylesReducer, markerReducer } from '../components/menu/layers/actionReducers'
 import { userReducer } from '../components/menu/authentication/actionReducers'
 import { rightDrawerReducer } from '../components/content/actionReducers'
 import { selectedItemReducer } from '../components/map/actionReducers'
@@ -34,6 +34,7 @@ export const makeRootReducer = (asyncReducers) => {
     metadata: metadataReducer(),
     menuDrawerOpen: menuDrawerReducer(),
     menuItemActive: menuIdReducer(),
+    migrationActive: migrationReducer(),
     modActive: modActiveReducer(),
     userDetails: userReducer(),
     rightDrawerOpen: rightDrawerReducer(),

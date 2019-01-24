@@ -1,3 +1,5 @@
+import utilsQuery from "../../map/utils/query";
+
 export const CHANGE_BASEMAP = 'CHANGE_BASEMAP'
 export const SET_AREA = 'SET_AREA'
 export const SET_AREA_COLOR_LABEL = 'SET_AREA_COLOR_LABEL'
@@ -18,6 +20,9 @@ export const ADD_EPIC = 'ADD_EPIC'
 export const REMOVE_EPIC = 'REMOVE_EPIC'
 export const SET_EPIC = 'SET_EPIC'
 export const TOGGLE_EPIC = 'TOGGLE_EPIC'
+
+export const TOGGLE_MIGRATION = 'TOGGLE_MIGRATION'
+export const SET_MIGRATION = 'SET_MIGRATION'
 
 /** Actions **/
 
@@ -114,6 +119,15 @@ export const toggleEpic = epic => ({
   payload: epic,
 })
 
+export const setMigration = migrationActive => ({
+  type: SET_MIGRATION,
+  payload: migrationActive,
+})
+
+export const toggleMigration = () => ({
+  type: TOGGLE_MIGRATION,
+})
+
 /** Reducers **/
 
 export const mapStylesReducer = (initial = {
@@ -190,7 +204,7 @@ export const areaReducer = (initial = { 'data': {}, 'color': 'ruler', 'label': '
 
 export const markerReducer = (initial = {
   list: [],
-  limit: (localStorage.getItem('chs_markerLimit') ? +localStorage.getItem('chs_markerLimit') : 3000)
+  limit: utilsQuery.getURLParameter('limit') || '2000' // (localStorage.getItem('chs_markerLimit') ? +localStorage.getItem('chs_markerLimit') : 2000)
 }) =>
   (prevMarker = initial, { type, payload }) => {
     switch (type) {
@@ -273,5 +287,17 @@ export const epicReducer = (initial = []) =>
         ]
       default:
         return prevEpic
+    }
+  }
+
+export const migrationReducer = (defaultState = false) =>
+  (previousState = defaultState, { type, payload }) => {
+    switch (type) {
+      case TOGGLE_MIGRATION:
+        return !previousState
+      case SET_MIGRATION:
+        return payload
+      default:
+        return previousState
     }
   }

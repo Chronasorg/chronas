@@ -3,7 +3,8 @@ import { CompositeLayer } from 'deck.gl'
 import MovementLayer from './movement-layer'
 
 const FULLTIMEINTERVAL = 1000
-const lightAmount = 4
+const TRAILLENGTH = 0.3 * FULLTIMEINTERVAL
+const lightAmount = 2
 const defaultProps = {
 }
 
@@ -21,14 +22,15 @@ export default class MovementLayerWrapper extends CompositeLayer {
     const movementData = []
     const sliceTime = FULLTIMEINTERVAL / lightAmount
     this.props.preData.data.forEach(el => {
+      const randomizer = Math.random() * sliceTime * 0.3
       if (el[0].toString() !== el[1].toString()) {
         // const distance = Math.abs(el[0][0] - el[1][0]) + Math.abs(el[0][1] - el[1][1])
         // console.debug(distance, Math.floor(distance/12) + 1)
         // lightAmount = Math.floor(distance/12) + 2
-        for (var i = 1; i < lightAmount -2; i++) {
+        for (var i = 1; i < lightAmount + 2; i++) {
           movementData.push([
-            [el[0][0], el[0][1], -FULLTIMEINTERVAL +(i*sliceTime)],
-            [el[1][0], el[1][1], i*sliceTime],
+            [el[0][0], el[0][1], randomizer + -FULLTIMEINTERVAL +(i*sliceTime)], // -FULLTIMEINTERVAL +(i*sliceTime)
+            [el[1][0], el[1][1], randomizer + i*sliceTime - (TRAILLENGTH)], // i*sliceTime
           ])
         }
       }
@@ -58,7 +60,7 @@ export default class MovementLayerWrapper extends CompositeLayer {
       loopLength = FULLTIMEINTERVAL, // unit corresponds to the timestamp in source data
       animationSpeed = FULLTIMEINTERVAL/10 // unit time per second
     } = this.props;
-    const timestamp = Date.now() / 1000;
+    const timestamp = Date.now() / FULLTIMEINTERVAL;
     const loopTime = loopLength / animationSpeed;
 
     this.setState({
@@ -77,7 +79,7 @@ export default class MovementLayerWrapper extends CompositeLayer {
   }
 
   renderLayers () {
-    const { trailLength = 800, year } = this.props
+    const { year } = this.props
     const { movementData, time } = this.state
     return new MovementLayer({
       id: 'movement',
@@ -88,7 +90,7 @@ export default class MovementLayerWrapper extends CompositeLayer {
       strokeWidth: 20,
       year,
       getColor: () => [32, 74, 0], // (d.vendor === 0 ? [253, 128, 93] : [80, 0, 0]
-      trailLength,
+      TRAILLENGTH,
     })
   }
 }

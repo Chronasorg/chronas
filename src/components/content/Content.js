@@ -277,8 +277,8 @@ class Content extends Component {
                 title: imageItem.name || (imageItem.data || {}).title || imageItem.properties.n,
                 subtype: imageItem.subtype || imageItem.properties.t,
                 source: (imageItem.data || {}).source || imageItem.properties.src,
-                subtitle: isNaN(imageItem.year) ? imageItem.properties.n : imageItem.year,
-                year: isNaN(imageItem.year) ? imageItem.properties.y : imageItem.year,
+                subtitle: (imageItem.year && isNaN(imageItem.year)) ? imageItem.properties.n : imageItem.year,
+                year: (imageItem.year && isNaN(imageItem.year)) ? imageItem.properties.y : imageItem.year,
                 score: imageItem.score || imageItem.properties.s,
               })
             })

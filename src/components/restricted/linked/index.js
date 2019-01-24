@@ -189,7 +189,7 @@ export const LinkedEdit = (props) => {
           defaultValue={((props.selectedItem || {}).value || {}).wiki || props.selectedItem.wiki || ''} />
         {/* <h4>Markers and areas with the same Wikipedia article, are automatically linked with this item. If neither exist yet, consider creating a new [Marker]() or [Area]().</h4> */}
         <NumberInput style={isEpic ? { width: '50%', float: 'left' } : {}} validate={required}
-          defaultValue={!isNaN(props.selectedItem.value.year) ? props.selectedItem.value.year : !isNaN(potentialYear) ? potentialYear : props.selectedItem.value.subtitle }
+          defaultValue={(typeof props.selectedItem.value.year !== "undefined" && !isNaN(props.selectedItem.value.year)) ? props.selectedItem.value.year : (potentialYear && !isNaN(potentialYear)) ? potentialYear : props.selectedItem.value.subtitle }
           source='year' label='resources.linked.fields.year' type='number' />
         {isEpic && <NumberInput style={{ width: '50%', float: 'right' }} source='end'
           defaultValue={!isNaN((props.selectedItem.value.data || {}).end) ? (props.selectedItem.value.data || {}).end : !isNaN(props.selectedItem.value.year) ? props.selectedItem.value.year : props.selectedItem.value.subtitle}

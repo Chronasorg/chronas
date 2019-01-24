@@ -12,12 +12,15 @@ import Checkbox from 'material-ui/Checkbox'
 import RadioButton from 'material-ui/RadioButton'
 import Toggle from 'material-ui/Toggle'
 import Slider from 'material-ui/Slider'
+import IconButton from 'material-ui/IconButton'
 import AreaIcon from 'material-ui/svg-icons/maps/map'
 import MarkerIcon from 'material-ui/svg-icons/maps/place'
+import InfoIcon from 'material-ui/svg-icons/action/help-outline'
 import EpicIcon from 'material-ui/svg-icons/image/burst-mode'
 import LockOpenIcon from 'material-ui/svg-icons/action/lock-open'
 import LockClosedIcon from 'material-ui/svg-icons/action/lock'
 import LinkIcon from 'material-ui/svg-icons/content/link'
+import MigrationIcon from 'material-ui/svg-icons/action/compare-arrows'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn, } from 'material-ui/Table'
 import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actionReducers'
 import {
@@ -30,9 +33,11 @@ import {
   setPopOpacity as setPopOpacityAction,
   setProvinceBorders as setProvinceBordersAction,
   toggleEpic as toggleEpicAction,
-  toggleMarker as toggleMarkerAction
+  toggleMarker as toggleMarkerAction,
+  setMigration as setMigrationAction,
 } from './actionReducers'
 import { epicIdNameArray, iconMapping, markerIdNameArray, themes } from '../../../properties'
+import utilsQuery from "../../map/utils/query";
 
 const colorArray = ['ruler', 'culture', 'religion', 'religionGeneral', 'population']
 const styles = {
@@ -86,17 +91,29 @@ class LayerContent extends Component {
     super(props)
     this.state = {
       basemapId: 0,
-      markerLimit: localStorage.getItem('chs_markerLimit') !== 'undefined' ? +localStorage.getItem('chs_markerLimit') : 3000,
+      markerLimit: utilsQuery.getURLParameter('limit') || '2000', // localStorage.getItem('chs_markerLimit') !== 'undefined' ? +localStorage.getItem('chs_markerLimit') : 2000,
       locked: true,
       selectedBasemap: 'topographic',
     }
   }
 
+  toggleMigration = () => {
+    const { migrationActive } = this.props
+    this.props.setMigration(!migrationActive)
+  }
+
   // TODO: FEATURE: ADD + SELECT, SEARCH EPIC
+
+  // componentWillReceiveProps (nextProps) {
+  //   const { migrationActive } = this.props
+  //   if (nextProps.migrationActive !== migrationActive) {
+  //
+  //   }
+  // }
 
   render () {
     const { basemapId, locked } = this.state
-    const { activeArea, setPopOpacity, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme } = this.props
+    const { activeArea, setPopOpacity, migrationActive, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme } = this.props
 
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
@@ -345,7 +362,8 @@ class LayerContent extends Component {
                     value={this.state.markerLimit}
                     onDragStop={() => {
                       const value = this.state.markerLimit
-                      localStorage.setItem('chs_markerLimit', value)
+                      utilsQuery.updateQueryStringParameter('limit', value),
+                      // localStorage.setItem('chs_markerLimit', value)
                       setMarkerLimit(value)
                     }}
                     onChange={(event, value) => {
@@ -390,6 +408,34 @@ class LayerContent extends Component {
                   }} src='/images/transparent.png' /> {id[1]}</div>}
               />
             })}
+          />
+          <ListItem
+            style={migrationActive ? {
+              marginRight: -1,
+              backgroundColor: themes[theme].highlightColors[0],
+              color: themes[theme].backColors[0]
+            } : {
+              marginRight: -1,
+              color: themes[theme].foreColors[0]
+            }
+            }
+            onClick={this.toggleMigration}
+            primaryText='Migration'
+            leftIcon={<MigrationIcon color={ migrationActive ? themes[theme].backColors[0] : themes[theme].foreColors[0] } />}
+            rightIcon={<IconButton
+              iconStyle={{ color: migrationActive ? themes[theme].backColors[0] : themes[theme].foreColors[0] }}
+              style={{
+                position: 'fixed',
+                top: 'inherit',
+                right: 18,
+                marginTop: -17
+              }}
+              touch={true}
+              tooltip="Displays routes from people place of birth to place of death and aggregates per location."
+              tooltipPosition="bottom-right"
+            >
+              <InfoIcon />
+            </IconButton>}
           />
         </List>
         <List style={{
@@ -436,6 +482,7 @@ const enhance = compose(
     activeArea: state.activeArea,
     activeMarkers: state.activeMarkers,
     activeEpics: state.activeEpics,
+    migrationActive: state.migrationActive,
     selectedYear: state.selectedYear,
     markerTheme: state.markerTheme,
     mapStyles: state.mapStyles,
@@ -452,6 +499,7 @@ const enhance = compose(
     setMarkerLimit,
     toggleMarker: toggleMarkerAction,
     toggleEpic: toggleEpicAction,
+    setMigration: setMigrationAction,
     toggleMenuDrawer: toggleMenuDrawerAction,
   }),
   pure,

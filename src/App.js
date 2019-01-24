@@ -145,6 +145,7 @@ class App extends Component {
 
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 2000))
     const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,l,m,op,p,r,s,si')
+    const markerLimit = (utilsQuery.getURLParameter('limit') || '2000')
     const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ei,es,ew')
     const activeArea = {
       data: {},
@@ -166,6 +167,7 @@ class App extends Component {
       '?year=' + selectedYear +
       '&epics=' + selectedEpics +
       '&markers=' + selectedMarker +
+      '&limit=' + markerLimit +
       '&type=' + selectedItem.type +
       '&fill=' + activeArea.color +
       '&label=' + activeArea.label +

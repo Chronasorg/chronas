@@ -260,7 +260,7 @@ class Discover extends PureComponent {
       if (activeArea.color !== 'ruler') {
         setAreaColorLabel('ruler', 'ruler')
       }
-      selectEpicItem(fullData.wiki, +(isNaN(fullData.year) ? selectedYear : fullData.year), fullData._id)
+      selectEpicItem(fullData.wiki, +((!fullData.year || isNaN(fullData.year)) ? selectedYear : fullData.year), fullData._id)
     } else {
       selectLinkedItem(((el || {}).properties || {}).w || (fullData || {}).wiki, fullData)
     }

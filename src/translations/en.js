@@ -115,6 +115,7 @@ export default {
       reset: 'Reset Timeline View',
       searchEpics: 'Search Epics'
     },
+    founded: "est.",
     about: 'About Chronas',
     account: 'Manage Account',
     back: 'Back',
