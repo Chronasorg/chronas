@@ -135,7 +135,6 @@ class Board extends PureComponent {
   _setForums = () => {
 
     getForums().then( (data) => {
-      console.debug(data)
       if (data) {
         let generalIndex = data.findIndex(e => e.forum_slug === 'general')
         let reorderedForums = (generalIndex !== 0) ? array_move(data, generalIndex, 0) : data

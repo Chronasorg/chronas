@@ -88,7 +88,6 @@ export default (type, params) => {
   }
 
   if (type === AUTH_GET_PERMISSIONS) {
-    console.debug('AUTH_GET_PERMISSIONS')
     return Promise.resolve(localStorage.getItem('chs_privilege'))
   }
 

@@ -68,7 +68,7 @@ export default class TagMapWrapper {
 
     // transform tags to the format that are used to be visualized as icons in the deckgl layer
     tags.forEach(tag => {
-      tag.position = worldToLngLat(tag.center, scale)
+      tag.position = tag.weight === 4 ? tag.coords[0] : worldToLngLat(tag.center, scale)
     })
 
     return tags

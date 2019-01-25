@@ -28,23 +28,23 @@ const zoomFontSizes = [
   },
   {
     minFontSize: 0,
-    maxFontSize: 16,
-    weightThreshold: 3,
+    maxFontSize: 0,
+    weightThreshold: 0,
   }, {
     minFontSize: 0,
-    maxFontSize: 22,
+    maxFontSize: 18,
     weightThreshold: 1.5,
   }, {
     minFontSize: 12,
-    maxFontSize: 28,
+    maxFontSize: 32,
     weightThreshold: 1,
   }, {
     minFontSize: 24,
-    maxFontSize: 34,
+    maxFontSize: 38,
     weightThreshold: 1,
   }, {
     minFontSize: 34,
-    maxFontSize: 50,
+    maxFontSize: 54,
     weightThreshold: 1,
   }
 ]
@@ -126,16 +126,21 @@ export default class TagmapLayer extends CompositeLayer {
       }
     }
 
-    tags = tagMap.getTags({
-      bbox,
-      minFontSize: (zoomFontSizes[discreteZoomLevel] || {}).minFontSize || 0,
-      maxFontSize: (zoomFontSizes[discreteZoomLevel] || {}).maxFontSize || 74,
-      weightThreshold: (zoomFontSizes[discreteZoomLevel] || {}).weightThreshold || 1,
-      zoom: discreteZoomLevel
-    })
+    if (discreteZoomLevel > 2) {
+      tags = tagMap.getTags({
+        bbox,
+        minFontSize: zoomFontSizes[discreteZoomLevel] ? zoomFontSizes[discreteZoomLevel].minFontSize : 0,
+        maxFontSize: zoomFontSizes[discreteZoomLevel] ? zoomFontSizes[discreteZoomLevel].maxFontSize : 74,
+        weightThreshold: zoomFontSizes[discreteZoomLevel] ? zoomFontSizes[discreteZoomLevel].weightThreshold : 1,
+        zoom: discreteZoomLevel
+      })
 
-    if (discreteZoomLevel <= MAX_CACHED_ZOOM_LEVEL) {
-      tagsCache[discreteZoomLevel] = tags
+      if (discreteZoomLevel <= MAX_CACHED_ZOOM_LEVEL) {
+        tagsCache[discreteZoomLevel] = tags
+      }
+    }
+    else {
+      tags = []
     }
     this.setState({ tags })
   }
@@ -150,14 +155,12 @@ export default class TagmapLayer extends CompositeLayer {
         data: tags,
         fontFamily: 'Cinzel, serif', //  'Times New Roman, serif',
         getAlignmentBaseline: 'bottom',
-        getPixelOffset: [0, -10],
+        getPixelOffset: d => (d.weight === 4) ? [0, 25] : [0, -10],
         onClick: onMarkerClick,
         getText: d => d.label,
         getPosition: d => d.position,
         // getColor: d => TEXTCOLOR,
-        getSize: (d) => { /* console.debug(d); */
-          return d.capital ? (1.5 * d.height) : d.height
-        },
+        getSize: (d) => d.height, // /*(d.weight === 2) ? (1.2 * d.height) : */
         pickable: false,
       })
     ]

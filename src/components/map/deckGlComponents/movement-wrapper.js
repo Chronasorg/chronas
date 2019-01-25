@@ -13,7 +13,6 @@ let _animationFrame = false
 export default class MovementLayerWrapper extends CompositeLayer {
   initializeState () {
     this.finalizeState()
-    console.debug("!!-!! initialize")
     this.state = {
       currentYear: '',
       // Cached tags per zoom level
@@ -35,7 +34,6 @@ export default class MovementLayerWrapper extends CompositeLayer {
         }
       }
     })
-    console.debug("!!-!! movementData", movementData.length)
     this.setState({
       movementData
     })

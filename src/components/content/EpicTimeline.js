@@ -208,7 +208,7 @@ class EpicTimeline extends React.Component {
     const { stepIndex, setYearByArticle, yearsSupported } = this.state
     if ((this.props.selectedItem || {}).type === TYPE_AREA) {
       this.setState({ stepIndex: stepIndex + 1, selectedWiki: false })
-      if ((typeof newYear !== "undefined" && !isNaN(newYear)) && setYearByArticle && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
+      if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && setYearByArticle && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
     }
     this.props.setEpicContentIndex(stepIndex + 1)
   };
@@ -217,7 +217,7 @@ class EpicTimeline extends React.Component {
     const { stepIndex, setYearByArticle, yearsSupported } = this.state
     if ((this.props.selectedItem || {}).type === TYPE_AREA) {
       this.setState({ stepIndex: stepIndex - 1, selectedWiki: false })
-      if ((typeof newYear !== "undefined" && !isNaN(newYear)) && setYearByArticle && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
+      if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && setYearByArticle && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
     }
     this.props.setEpicContentIndex(stepIndex - 1)
   };
@@ -246,7 +246,7 @@ class EpicTimeline extends React.Component {
       if ((this.props.selectedItem || {}).type === TYPE_AREA) {
         const { setYearByArticle, yearsSupported } = this.state
         this.setState({ stepIndex: index, selectedWiki: false })
-        if ((typeof newYear !== "undefined" && !isNaN(newYear)) && setYearByArticle && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
+        if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && setYearByArticle && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
       }
       this.props.setEpicContentIndex(index)
     }
@@ -264,7 +264,7 @@ class EpicTimeline extends React.Component {
   }
   setYearWrapper = (newYear) => {
     const { yearsSupported } = this.state
-    if ((typeof newYear !== "undefined" && !isNaN(newYear)) && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
+    if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
   }
 
   _roundToTwo = (val) => {
@@ -423,7 +423,7 @@ class EpicTimeline extends React.Component {
       this.setState({ stepIndex: nextProps.contentIndex, selectedWiki: false })
       if (setYearByArticle) {
         const newYear = (((((nextProps.selectedItem || {}).data || {}).content || [])[nextProps.contentIndex] || {}).properties || {}).y
-        if ((typeof newYear !== "undefined" && !isNaN(newYear)) && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
+        if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
       }
     }
   }

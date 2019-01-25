@@ -410,7 +410,6 @@ class LinkedGallery extends React.Component {
       if (showMax < tileLength) {
         this.setState({ showMax: (showMax + GALLERYBATCHSIZE) })
       }
-      console.debug('bottom reached!', tileLength)
     }
   }
 

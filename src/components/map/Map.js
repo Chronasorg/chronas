@@ -501,7 +501,7 @@ class Map extends Component {
           // const mapStyle = this.state.mapStyle
           //   .updateIn(['sources', sourceId, 'data', 'features'], list => list.concat(features.data))
           // this.setState({ mapStyle })
-          if (typeof newYear !== "undefined" && !isNaN(newYear)) {
+          if (typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) {
             this.setState({ markerData: features.data.filter(p => (p.coo || []).length === 2) })
           } else {
             this.setState({ markerData: this.state.markerData.concat(features.data.filter(p => (p.coo || []).length === 2)) })

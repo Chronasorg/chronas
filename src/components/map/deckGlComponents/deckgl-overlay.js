@@ -138,7 +138,7 @@ export default class DeckGLOverlay extends Component {
         }
       })) : nextProps.markerData
       // }
-      const nextTextMarker = nextProps.markerData.filter(el => el.subtype === 'c')
+      const nextTextMarker = nextProps.markerData.filter(el => el.subtype === 'c' || el.subtype === 'cp')
       const iconMarker = (geoData.length !== 0 || wasEpic) ? geoData : markerData
       const textMarker = markerData.filter(el => el.subtype === 'c')
 
@@ -278,13 +278,13 @@ export default class DeckGLOverlay extends Component {
           id: 'cities-labels',
           data: myTexts,
           pickable: false,
-          getWeight: d => d.capital ? 2 : 1,
+          getWeight: d => d.subtype === 'cp' ? 4 : d.capital ? 2 : 1,
           // getWeight: x => /*normalize(x.pop) ||*/ Math.random() * 100,
           getLabel: d => d.name,
           // onMarkerClick: onMarkerClick,
           getPosition: d => d.coo,
           minFontSize: 18,
-          maxFontSize: 24
+          maxFontSize: 68
         })
         layers[0] = new ScatterplotLayer({
           id: 'cities-dots',
