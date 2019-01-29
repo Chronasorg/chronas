@@ -606,7 +606,7 @@ class Information extends PureComponent {
               </div>
               <br />
             </Tab>
-            <Tab label='New Features' value='pro'>
+            <Tab label='Support' style={{ color: themes[theme].highlightColors[0] }} value='pro'>
               <br />
               <div className=''>
                 <br />
@@ -620,10 +620,18 @@ class Information extends PureComponent {
                 <p>
                   We decided to try out yet another funding model which gives the <b>sustaining users</b> who ensure the
                   future of Chronas also the ability to decide where the journey is headed. If you believe in our
-                  project, please consider supporting us on <a className='customLink' target='_blank'
-                    href='https://www.patreon.com/chronas'>Patreon</a> where
-                  we will have regular <b>votes</b> on the priority of proposed <b>new features</b> as well as <b>major
+                  project, please consider supporting us on <a className='customLink' target='_blank' href='https://www.patreon.com/chronas'><Avatar
+                  style={{ marginRight: 8, marginLeft: 6 }} src='/images/240px-Patreon_logo.svg.png' />
+                  Patreon</a> where we will have regular <b>votes</b> on the priority of proposed <b>new features</b> as well as <b>major
                   design decisions</b>.
+                </p>
+                <p>
+                  <form className="donateButton" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+                    <span>If you don't like to use Patreon, one time contributions are possible via PayPal:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <input type="hidden" name="cmd" value="_s-xclick"/>
+                    <input type="hidden" name="hosted_button_id" value="DLRUFHZSBTBNN"/>
+                    <input type="image" src="/images/button-PayPal.png" style={{ "height": 34 }} border="0" name="submit" alt="Donate with PayPal" title="Donate with PayPal" /><img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1"/>
+                  </form>
                 </p>
                 {/* <ol> */}
                 {/* <li>There will always be a completely free version with at least the amount of features you can use now. Nothing will be cut.</li> */}

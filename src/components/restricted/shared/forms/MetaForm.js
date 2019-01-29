@@ -133,7 +133,7 @@ export class MetaForm extends Component {
         const iconURL = values.icon || ''
         const fileIndex = iconURL.indexOf('media/File:') + 6
         const iconUrlPromise = new Promise((resolve, reject) => {
-          if (values.icon === initialValues.icon) {
+          if (values.icon === initialValues.icon || values.type === "province") {
             resolve(iconURL)
           } else if (fileIndex !== 5) {
             const filePath = iconURL.substr(fileIndex)
@@ -183,8 +183,7 @@ export class MetaForm extends Component {
             culture: [values.name, values.color, newWikiURL, iconUrl],
             religion: [values.name, values.color, newWikiURL, values.parentname, iconUrl],
             religionGeneral: [values.name, values.color, newWikiURL, iconUrl],
-            capital: [values.url, iconUrl],
-            province: [values.url, iconUrl]
+            province: newWikiURL
           }
 
           const bodyToSend = {}

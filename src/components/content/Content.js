@@ -442,7 +442,7 @@ class Content extends Component {
         />
         : provinceTimelineOpen
           ? <ProvinceTimeline deselectItem={deselectItem} history={history} selectedItem={selectedItem}
-            metadata={metadata} setMetadataType={setMetadataType} selectedYear={selectedYear}
+            metadata={metadata} setMetadataEntity={setMetadataEntity} setMetadataType={setMetadataType} selectedYear={selectedYear}
             provinceEntity={provinceEntity} activeArea={activeArea} />
           : <div style={{ height: '100%' }}>
             <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim}

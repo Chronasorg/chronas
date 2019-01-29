@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import Avatar from 'material-ui/Avatar'
 import { Card, CardActions, CardText } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
+import Divider from 'material-ui/Divider'
 import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
@@ -80,14 +81,21 @@ class PledgeDialog extends PureComponent {
           <p>
               Patreons will be able to steer the project by voting on feature priorities and major design decisions.
           </p>
+          <form className="donateButton" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+            <span>If you don't like to use Patreon, one time contributions are possible via PayPal:&nbsp;&nbsp;</span>
+            <input type="hidden" name="cmd" value="_s-xclick"/>
+            <input type="hidden" name="hosted_button_id" value="DLRUFHZSBTBNN"/>
+            <input type="image" src="/images/button-PayPal.png" style={{ height: 34 }} border="0" name="submit" alt="Donate with PayPal" title="Donate with PayPal" /><img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1"/>
+          </form>
         </CardText>
+        <Divider />
         <CardActions>
           <FlatButton label='Remind me in another 15 minutes' onClick={() => snooze()} />
           <FlatButton label='Open Patreon in new tab' onClick={() => {
             var win = window.open('https://www.patreon.com/chronas', '_blank')
             win.focus()
           }} />
-          <FlatButton label='Close' onClick={() => closePledge()} />
+          <FlatButton style={{ right: 0, position: 'absolute' }} label='Close' onClick={() => closePledge()} />
         </CardActions>
       </Card>
     </Dialog>

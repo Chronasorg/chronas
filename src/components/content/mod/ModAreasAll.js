@@ -38,9 +38,16 @@ import AssignAddEditNavigation from '../../restricted/shared/AssignAddEditNaviga
 import AutocompleteInput from '../../restricted/shared/inputs/AutocompleteInput'
 import AreaForm from '../../restricted/shared/forms/AreaForm'
 import utils from '../../map/utils/general'
+import {
+  TYPE_AREA,
+  TYPE_EPIC,
+  TYPE_LINKED,
+  TYPE_MARKER,
+  WIKI_PROVINCE_TIMELINE
+} from '../../map/actionReducers'
 
 export const ModAreasAll = (props) => {
-  const selectedProvince = props.selectedItem.value || ''
+  const selectedProvince = props.selectedItem.type !== TYPE_LINKED && props.selectedItem.type !== TYPE_MARKER ? (props.selectedItem.value || '') : ''
 
   const defaultValues = {
     'provinces': [selectedProvince] || [],

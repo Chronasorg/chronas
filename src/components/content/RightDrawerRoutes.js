@@ -210,8 +210,9 @@ class RightDrawerRoutes extends PureComponent {
 
     this.setState({ linkedItemData: prevLinkedItemData })
   }
-  setMetadataType = (metadataType) => {
-    this.setState({ metadataType, metadataEntity: '' })
+  setMetadataType = (metadataType, metadataEntity=false) => {
+    if (metadataEntity !== "province") { this.setState({ metadataType, metadataEntity: '' }) }
+    else { this.setState({ metadataType }) }
   }
   actOnRootTypeChange = (contentTypeRaw) => {
     const { location, history } = this.props

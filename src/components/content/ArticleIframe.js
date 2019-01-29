@@ -182,12 +182,10 @@ class ArticleIframe extends React.Component {
 
     const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== 'undefined'
     const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
-
     let fModUrl = modUrl
 
-    if (isProvince) {
-      setData({ id: selectedTypeId.id })
-      setMetadataType(selectedTypeId.type)
+    if (isProvince && selectedItem.value) {
+      setMetadataEntity(selectedItem.value)
     } else if (epicContentItem) {
       if (((epicContentItem || {}).properties || {}).ct === 'marker') {
         fModUrl = '/mod/markers'

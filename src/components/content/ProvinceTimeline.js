@@ -110,7 +110,7 @@ class ProvinceTimeline extends React.Component {
 
   render () {
     const { timelineOptions, selectedWiki, selectedTypeId } = this.state
-    const { activeArea, history, selectedItem, selectedYear, setMetadataType, provinceEntity, metadata, deselectItem } = this.props
+    const { activeArea, history, selectedItem, selectedYear, setMetadataType, setMetadataEntity, provinceEntity, metadata, deselectItem } = this.props
     const contentStyle = {
       padding: '8px 0px 0px 8px',
       height: '100%',
@@ -182,7 +182,7 @@ class ProvinceTimeline extends React.Component {
         />
         <div style={contentStyle}>
           <ArticleIframe history={history} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki}
-            selectedTypeId={selectedTypeId} selectedItem={selectedItem} setMetadataType={setMetadataType}
+            selectedTypeId={selectedTypeId} setMetadataEntity={setMetadataEntity} selectedItem={selectedItem} setMetadataType={setMetadataType}
             provinceType={''} deselectItem={deselectItem} />
         </div>
       </div>

@@ -1091,3 +1091,17 @@ div.vis-tooltip {
 .displayed-records {
   white-space: nowrap;
 }
+
+.donateButton input {
+  cursor: pointer;
+}
+
+.donateButton span {
+  float: left;
+  height: 34px;
+  line-height: 34px;
+}
+
+.donateButton input:hover {
+  opacity: 0.5
+}

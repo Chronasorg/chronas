@@ -47,13 +47,17 @@ export const ModMetaEdit = (props) => {
 
   if (routeNotYetSetup()) {
     if (selectedItem.type === TYPE_EPIC || selectedItem.wiki === 'WIKI_PROVINCE_TIMELINE') {
-      if (selectedItem.wiki !== 'WIKI_PROVINCE_TIMELINE') props.setMetadataType('e')
+      if (selectedItem.wiki !== 'WIKI_PROVINCE_TIMELINE') {
+        props.setMetadataType('e')
+      } else {
+        props.setMetadataType('province', 'province')
+      }
       newEntity = ((props.selectedItem || {}).data || {}).id
     } else if (props.activeArea.color && (!props.metadataType || props.metadataType !== props.activeArea.color)) {
       props.setMetadataType(props.activeArea.color)
     }
 
-    if (newEntity && props.selectedItem.value && ((!props.metadataEntity || props.metadataEntity !== newEntity) || props.metadataEntity !== newEntity)) {
+    if (newEntity && selectedItem.wiki !== 'WIKI_PROVINCE_TIMELINE' && props.selectedItem.value && ((!props.metadataEntity || props.metadataEntity !== newEntity) || props.metadataEntity !== newEntity)) {
       props.setMetadataEntity(newEntity, selectedItem.type === TYPE_EPIC)
     }
   }
@@ -62,8 +66,8 @@ export const ModMetaEdit = (props) => {
   const defaultValues = {
     dataName: modObj[0] || '',
     dataColor: modObj[1] || '',
-    dataUrl: (props.metadataType === 'capital' || props.metadataType === 'province') ? 'https://en.wikipedia.org/wiki/' + modObj[0] || '' : 'https://en.wikipedia.org/wiki/' + modObj[2] || '',
-    dataIcon: (props.metadataType === 'capital' || props.metadataType === 'province')
+    dataUrl: (props.metadataType === 'province') ? 'https://en.wikipedia.org/wiki/' + modObj || '' : 'https://en.wikipedia.org/wiki/' + modObj[2] || '',
+    dataIcon: (props.metadataType === 'province')
       ? modObj[1] || ''
       : (props.metadataType === 'religion')
         ? modObj[4] || ''
@@ -91,8 +95,8 @@ export const ModMetaEdit = (props) => {
   //   return { id: capitalId, name: metadata['capital'][capitalId][0]}
   // }) || {}
 
-  const choicesProvince = Object.keys(metadata['province']).map((capitalId) => {
-    return { id: capitalId, name: metadata['province'][capitalId][0] }
+  const choicesProvince = Object.keys(metadata['province']).map((provId) => {
+    return { id: provId, name: provId }
   }) || {}
 
   const contentType = [
@@ -325,9 +329,6 @@ export const ModMetaEdit = (props) => {
     {(props.metadataEntity !== '')
       ? <TextInput options={{ fullWidth: true }} type='url' source='url' label='resources.areas.fields.province_url'
         defaultValue={defaultValues.dataUrl} /> : null}
-    {(props.metadataEntity !== '')
-      ? <TextInput options={{ fullWidth: true }} type='url' source='icon' label='resources.areas.fields.icon_url'
-        defaultValue={defaultValues.dataIcon} /> : null}
   </MetaForm>,
     'default':
   <MetaForm validate={validateValueInput} {...props} >
