@@ -1,7 +1,10 @@
+import utilsQuery from '../../map/utils/query'
+
 const CHANGE_THEME = 'CHANGE_THEME'
 const CHANGE_LOCALE = 'CHANGE_LOCALE'
 const CHANGE_MARKERTHEME = 'CHANGE_MARKERTHEME'
 
+const INITIALLOCALE = utilsQuery.getURLParameter('locale') || localStorage.getItem('chs_locale') || 'en'
 /** Actions **/
 
 export const changeTheme = theme => ({
@@ -21,7 +24,7 @@ export const changeMarkerTheme = theme => ({
 
 /** Reducers **/
 
-export const localeReducer = (initialLocale = 'en') =>
+export const localeReducer = (initialLocale = INITIALLOCALE) =>
   (previousLocale = initialLocale, { type, payload }) => {
     switch (type) {
       case CHANGE_LOCALE:

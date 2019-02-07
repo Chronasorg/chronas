@@ -331,7 +331,7 @@ class Login extends Component {
 
           <IconButton
             tooltipPosition='bottom-left'
-            tooltip={'Close'} className='closeTopRight'
+            tooltip={translate("aor.action.close")} className='closeTopRight'
             iconStyle={{ width: 24, height: 24, color: themes[theme].foreColors[0] }} touch key={'close'}
             containerElement={<Link to='/' />}>
             <CloseIcon hoverColor={themes[theme].highlightColors[0]} />

@@ -118,9 +118,9 @@ class LayerContent extends Component {
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
         <List style={{ ...styles.listStyle, background: themes[theme].backColors[0] }}>
-          <Subheader>General</Subheader>
+          <Subheader>{translate("pos.general")}</Subheader>
           <ListItem
-            primaryText='Area'
+            primaryText={translate("pos.area")}
             leftIcon={<AreaIcon />}
             initiallyOpen={false}
             primaryTogglesNestedList
@@ -150,7 +150,7 @@ class LayerContent extends Component {
                       <TableHeaderColumn style={{
                         // top: -8,
                         // left: 0, height: 0
-                      }}>Area
+                      }}>{translate("pos.area")}
                       </TableHeaderColumn>
                       <TableHeaderColumn
                         style={{
@@ -163,10 +163,6 @@ class LayerContent extends Component {
                           }}
                           style={{
                             left: -3
-                          /*
-   position: 'absolute',
-   left: 57,
-           top: -2 */
                           }}
                           checked={locked}
                           checkedIcon={<LockClosedIcon />}
@@ -177,7 +173,7 @@ class LayerContent extends Component {
                         paddingLeft: 12
                         // left: 7,
                         // top: -8, height: 0
-                      }}>Label</TableHeaderColumn>
+                      }}>{translate("pos.label")}</TableHeaderColumn>
                     </TableRow>
                   </TableHeader>
                   <TableBody
@@ -185,7 +181,7 @@ class LayerContent extends Component {
                     showRowHover
                     displayRowCheckbox={false}>
                     <TableRow style={styles.customHeightColumn}>
-                      <TableRowColumn style={styles.firstColumn}>Ruler</TableRowColumn>
+                      <TableRowColumn style={styles.firstColumn}>{translate("resources.areas.fields.ruler")}</TableRowColumn>
                       <TableRowColumn style={styles.customHeightColumn}>
                         <RadioButton
                           label=''
@@ -213,7 +209,7 @@ class LayerContent extends Component {
                       </TableRowColumn>
                     </TableRow>
                     <TableRow style={styles.customHeightColumn}>
-                      <TableRowColumn style={styles.firstColumn}>Culture</TableRowColumn>
+                      <TableRowColumn style={styles.firstColumn}>{translate("resources.areas.fields.culture")}</TableRowColumn>
                       <TableRowColumn style={styles.customHeightColumn}>
                         <RadioButton
                           label=''
@@ -241,7 +237,7 @@ class LayerContent extends Component {
                       </TableRowColumn>
                     </TableRow>
                     <TableRow style={styles.customHeightColumn}>
-                      <TableRowColumn style={styles.firstColumn}>Religion</TableRowColumn>
+                      <TableRowColumn style={styles.firstColumn}>{translate("resources.areas.fields.religion")}</TableRowColumn>
                       <TableRowColumn style={styles.customHeightColumn}>
                         <RadioButton
                           label=''
@@ -269,7 +265,7 @@ class LayerContent extends Component {
                       </TableRowColumn>
                     </TableRow>
                     <TableRow style={styles.customHeightColumn}>
-                      <TableRowColumn style={styles.firstColumn}>Religion Gen.</TableRowColumn>
+                      <TableRowColumn style={styles.firstColumn}>{translate("resources.areas.fields.religionGen")}</TableRowColumn>
                       <TableRowColumn style={styles.customHeightColumn}>
                         <RadioButton
                           label=''
@@ -297,7 +293,7 @@ class LayerContent extends Component {
                       </TableRowColumn>
                     </TableRow>
                     <TableRow style={styles.customHeightColumn}>
-                      <TableRowColumn style={styles.firstColumn}>Population</TableRowColumn>
+                      <TableRowColumn style={styles.firstColumn}>{translate("resources.areas.fields.population")}</TableRowColumn>
                       <TableRowColumn style={styles.customHeightColumn}>
                         <RadioButton
                           label=''
@@ -316,7 +312,7 @@ class LayerContent extends Component {
             />]}
           />
           <ListItem
-            primaryText='Markers'
+            primaryText={translate("pos.markers")}
             leftIcon={<MarkerIcon />}
             initiallyOpen={false}
             primaryTogglesNestedList
@@ -340,7 +336,7 @@ class LayerContent extends Component {
                   background: backgroundPosition,
                   backgroundSize: backgroundSize,
                   opacity: activeMarkers.list.includes(id[0]) ? 1 : 0.2
-                }} src='/images/transparent.png' /> {id[2]}</div>}
+                }} src='/images/transparent.png' /> {translate("pos.markerIdNameArray." + id[1])}</div>}
               />
             }).concat(
               [<ListItem
@@ -348,7 +344,7 @@ class LayerContent extends Component {
                 style={{ height: 60 }}
                 innerDivStyle={{ padding: 0 }}
                 primaryText={<div className='listAvatar'>
-                  <div style={{ marginBottom: -20, paddingTop: 18 }}>Marker Limit <span style={{
+                  <div style={{ marginBottom: -20, paddingTop: 18 }}>{translate("pos.markerLimit")} <span style={{
                     fontWeight: 'bolder',
                     paddingLeft: 8,
                     position: 'absolute',
@@ -372,7 +368,7 @@ class LayerContent extends Component {
                   />
                 </div>}
               />,
-                <ListItem primaryText='Cluster Marker'
+                <ListItem primaryText={translate("pos.clusterMarker")}
                   style={{
                   padding: '16px 72px 16px 0px',
                   whiteSpace: 'nowrap'
@@ -385,7 +381,7 @@ class LayerContent extends Component {
           />
 
           <ListItem
-            primaryText='Epics'
+            primaryText={translate("pos.epics")}
             leftIcon={<EpicIcon />}
             initiallyOpen={false}
             primaryTogglesNestedList
@@ -405,7 +401,7 @@ class LayerContent extends Component {
                     height: 30,
                     width: 30,
                     opacity: activeEpics.includes(id[0]) ? 1 : 0.4
-                  }} src='/images/transparent.png' /> {id[1]}</div>}
+                  }} src='/images/transparent.png' /> {translate("pos.epicIdNameArray." + id[0])}</div>}
               />
             })}
           />
@@ -431,7 +427,7 @@ class LayerContent extends Component {
                 marginTop: -17
               }}
               touch={true}
-              tooltip="Displays routes from people place of birth to place of death and aggregates per location."
+              tooltip={translate("pos.migrationTooltip")}
               tooltipPosition="bottom-right"
             >
               <InfoIcon />
@@ -443,32 +439,32 @@ class LayerContent extends Component {
           background: themes[theme].backColors[0],
           borderBottom: '1px solid rgb(217, 217, 217)'
         }}>
-          <Subheader>Advanced</Subheader>
+          <Subheader>{translate("pos.advanced")}</Subheader>
           <DropDownMenu className='dropdownAvatarMenu' selectedMenuItemStyle={{
             fontWeight: 'bolder',
             color: themes[theme].highlightColors[0],
             paddingLeft: 0
           }} value={this.state.selectedBasemap} onChange={this.handleChange} openImmediately={false}>
-            <MenuItem value='topographic' primaryText='Topographic' leftIcon={<Avatar style={{ borderRadius: 0 }}
+            <MenuItem value='topographic' primaryText={translate("pos.basemapTypes.topographic")} leftIcon={<Avatar style={{ borderRadius: 0 }}
               src='https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/2/1/2' />}
               label={<ListItem style={styles.listItem} leftAvatar={<Avatar style={{ borderRadius: 0 }}
-                src='https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/2/1/2' />}>Basemap</ListItem>}
+                src='https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/2/1/2' />}>{translate("pos.basemap")}</ListItem>}
             />
-            <MenuItem value='watercolor' primaryText='Watercolor' leftIcon={<Avatar style={{ borderRadius: 0 }}
+            <MenuItem value='watercolor' primaryText={translate("pos.basemapTypes.watercolor")} leftIcon={<Avatar style={{ borderRadius: 0 }}
               src='https://stamen-tiles.a.ssl.fastly.net/watercolor/2/2/1.jpg' />}
               label={<ListItem style={styles.listItem} leftAvatar={<Avatar style={{ borderRadius: 0 }}
-                src='https://stamen-tiles.a.ssl.fastly.net/watercolor/2/2/1.jpg' />}>Basemap</ListItem>}
+                src='https://stamen-tiles.a.ssl.fastly.net/watercolor/2/2/1.jpg' />}>{translate("pos.basemap")}</ListItem>}
             />
-            <MenuItem value='none' primaryText='None'
+            <MenuItem value='none' primaryText={translate("pos.basemapTypes.none")}
               leftIcon={<Avatar style={{ borderRadius: 0 }} src='/images/transparent.png' />}
               label={<ListItem style={styles.listItem} leftAvatar={<Avatar style={{ borderRadius: 0 }}
-                src='/images/transparent.png' />}>Basemap</ListItem>}
+                src='/images/transparent.png' />}>{translate("pos.basemap")}</ListItem>}
             />
           </DropDownMenu>
-          <ListItem primaryText='Show Provinces'
+          <ListItem primaryText={translate("pos.showProvinces")}
             rightToggle={<Toggle onToggle={() => setProvinceBorders(!mapStyles.showProvinceBorders)} />}
             open={mapStyles.showProvinceBorders} />
-          <ListItem primaryText='Opacity by Population'
+          <ListItem primaryText={translate("pos.opacityByPopulation")}
             rightToggle={<Toggle onToggle={() => setPopOpacity(!mapStyles.popOpacity)} />}
             open={mapStyles.popOpacity} />
         </List>

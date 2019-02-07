@@ -236,18 +236,26 @@ const utils = {
     }
 
     for (var key in myId) {
+
+      const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
+
+      const metadataRuler = hasLocaleMetadata ? metadata.locale['ruler'] : metadata['ruler']
+      const metadataReligion = hasLocaleMetadata ? metadata.locale['religion'] : metadata['religion']
+      const metadataReligionGeneral = hasLocaleMetadata ? metadata.locale['religionGeneral'] : metadata['religionGeneral']
+      const metadataCulture = hasLocaleMetadata ? metadata.locale['culture'] : metadata['culture']
+
       if (postfix === 'r') {
-        tmpName = ''
-        if (metadata['ruler'][key]) tmpName = metadata['ruler'][key][0] || ''
+        if (hasLocaleMetadata) tmpName = metadataRuler[key] || (metadata['ruler'][key] || {})[0] || ''
+        else tmpName = (metadata['ruler'][key] || {})[0] || ''
       } else if (postfix === 'e') {
-        tmpName = ''
-        if (metadata['religion'][key]) tmpName = metadata['religion'][key][0] || ''
+        if (hasLocaleMetadata) tmpName = metadataReligion[key] || (metadata['religion'][key] || {})[0] || ''
+        else tmpName = (metadata['religion'][key] || {})[0] || ''
       } else if (postfix === 'g') {
-        tmpName = ''
-        if (metadata['religionGeneral'][key]) tmpName = metadata['religionGeneral'][key][0] || ''
+        if (hasLocaleMetadata) tmpName = metadataReligionGeneral[key] || (metadata['religionGeneral'][key] || {})[0] || ''
+        else tmpName = (metadata['religionGeneral'][key] || {})[0] || ''
       } else if (postfix === 'c') {
-        tmpName = ''
-        if (metadata['culture'][key]) tmpName = metadata['culture'][key][0] || ''
+        if (hasLocaleMetadata) tmpName = metadataCulture[key] || (metadata['culture'][key] || {})[0] || ''
+        else tmpName = (metadata['culture'][key] || {})[0] || ''
       }
 
       for (var j1 = 1; j1 < myId[key].length; j1++) {
@@ -440,15 +448,15 @@ const utils = {
           // metadata.provinces.features[i].properties.g = tmpPop
           // metadata.provinces.features[i].properties.a = tmpCap
 
-          if (this.activeTextFeat === 'ruler' && metadata['ruler'][tmpRul]) {
-            metadata.provinces.features[i].properties.nameLabel = metadata['ruler'][tmpRul][0]
-          } else if (this.activeTextFeat === 'religion' && metadata['religion'][tmpRel]) {
-            metadata.provinces.features[i].properties.nameLabel = (metadata['religion'][tmpRel] || {})[0]
-          } else if (this.activeTextFeat === 'religionGeneral' && metadata['religionGeneral'][tmpRelGen]) {
-            metadata.provinces.features[i].properties.nameLabel = (metadata['religionGeneral'][tmpRelGen] || {})[0]
-          } else if (this.activeTextFeat === 'culture' && metadata['culture'][tmpCul]) {
-            metadata.provinces.features[i].properties.nameLabel = metadata['culture'][tmpCul][0]
-          }
+          // if (this.activeTextFeat === 'ruler' && metadata['ruler'][tmpRul]) {
+          //   metadata.provinces.features[i].properties.nameLabel = metadata['ruler'][tmpRul][0]
+          // } else if (this.activeTextFeat === 'religion' && metadata['religion'][tmpRel]) {
+          //   metadata.provinces.features[i].properties.nameLabel = (metadata['religion'][tmpRel] || {})[0]
+          // } else if (this.activeTextFeat === 'religionGeneral' && metadata['religionGeneral'][tmpRelGen]) {
+          //   metadata.provinces.features[i].properties.nameLabel = (metadata['religionGeneral'][tmpRelGen] || {})[0]
+          // } else if (this.activeTextFeat === 'culture' && metadata['culture'][tmpCul]) {
+          //   metadata.provinces.features[i].properties.nameLabel = metadata['culture'][tmpCul][0]
+          // }
         }
 
         if (this.activeTextFeat === 'ruler' && !this.rulIsSetup) {

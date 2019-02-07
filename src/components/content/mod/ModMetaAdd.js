@@ -149,7 +149,7 @@ export const ModMetaAdd = (props) => {
         label='resources.areas.fields.defender' />
     </EmbeddedArrayInput>
     <EmbeddedArrayInput validate={required} source='content'
-      label='Content (shows up in left content column, if it doesnt exist yet, you can create _media/ others_ and _markers_ to be added here)'>
+      label='Content (shows up in left content column)'>
       <SelectInput validate={required} source='contentType' choices={contentType} onChange={(val, v) => {
         props.setContentType(v)
       }} defaultValue={props.contentType} />

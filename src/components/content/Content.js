@@ -132,7 +132,7 @@ class Content extends Component {
   }
 
   componentDidCatch(error, info) {
-    this.props.showNotification('Something went wrong', 'confirm')
+    this.props.showNotification('somethingWentWrong', 'confirm')
   }
 
   componentWillUnmount = () => {
@@ -201,21 +201,37 @@ class Content extends Component {
             const religion = metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {}
             const religionGeneral = metadata['religionGeneral'][(metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {})[3]] || {}
 
+
+            const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
+
+            let newRuler, newCulture, newReligion, newReligionGeneral
+            if (hasLocaleMetadata) {
+              newRuler = metadata.locale['ruler'][currProvData[utils.activeAreaDataAccessor('ruler')]] || ruler[0]
+              newCulture = metadata.locale['culture'][currProvData[utils.activeAreaDataAccessor('culture')]] || culture[0]
+              newReligion = metadata.locale['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || religion[0]
+              newReligionGeneral = metadata.locale['religionGeneral'][currProvData[utils.activeAreaDataAccessor('religionGeneral')]] || religionGeneral[0]
+            } else {
+              newRuler = ruler[0]
+              newCulture = culture[0]
+              newReligion = religion[0]
+              newReligionGeneral = religionGeneral[0]
+            }
+
             const objectToPush =
               {
                 province: provKey,
-                ruler: ruler[0],
-                culture: culture[0],
-                religion: religion[0],
-                religionGeneral: religionGeneral[0],
+                ruler: newRuler,
+                culture: newCulture,
+                religion: newReligion,
+                religionGeneral: newReligionGeneral,
                 size: currProvData[utils.activeAreaDataAccessor('population')]
               }
 
             sunburstDataMeta[provKey] = (metadata['province'][provKey] || {})
-            sunburstDataMeta[ruler[0]] = ruler
-            sunburstDataMeta[culture[0]] = culture
-            sunburstDataMeta[religion[0]] = religion
-            sunburstDataMeta[religionGeneral[0]] = religionGeneral
+            sunburstDataMeta[newRuler] = ruler
+            sunburstDataMeta[newCulture] = culture
+            sunburstDataMeta[newReligion] = religion
+            sunburstDataMeta[newReligionGeneral] = religionGeneral
 
             delete objectToPush[activeAreaDim]
             sunburstData.push(objectToPush)
@@ -277,8 +293,8 @@ class Content extends Component {
                 title: imageItem.name || (imageItem.data || {}).title || imageItem.properties.n,
                 subtype: imageItem.subtype || imageItem.properties.t,
                 source: (imageItem.data || {}).source || imageItem.properties.src,
-                subtitle: (imageItem.year && isNaN(imageItem.year)) ? imageItem.properties.n : imageItem.year,
-                year: (imageItem.year && isNaN(imageItem.year)) ? imageItem.properties.y : imageItem.year,
+                subtitle: (!imageItem.year || isNaN(imageItem.year)) ? imageItem.properties.n : imageItem.year,
+                year: (!imageItem.year || isNaN(imageItem.year)) ? imageItem.properties.y : imageItem.year,
                 score: imageItem.score || imageItem.properties.s,
               })
             })
@@ -342,6 +358,19 @@ class Content extends Component {
     const hasLinkedAudio = (finalLinkedItems.media || []).some(lI => AUDIOTYPES.includes(lI.subtype))
     const hasLinkedOther = linkedCount > 0
     const linkedActive = ((activeContentMenuItem === 'linked' && hasLinkedOther) || (activeContentMenuItem ===  'forcelinked'))
+    const haslocale = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
+    let rulerProps
+    if ((entityTimelineOpen || epicTimelineOpen)) {
+      if (entityTimelineOpen) {
+        rulerProps = metadata[activeAreaDim][influenceRawData.id]
+        if (haslocale) {
+          const newName = metadata.locale[activeAreaDim][influenceRawData.id]
+          if (newName) rulerProps[0] = newName
+        }
+      } else {
+        rulerProps = (selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id])
+      }
+    }
 
     return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
       {(entityTimelineOpen || epicTimelineOpen || isMarker || isMedia) && <div>
@@ -432,7 +461,7 @@ class Content extends Component {
           activeAreaDim={activeAreaDim}
           setMetadataEntity={setMetadataEntity}
           influenceRawData={influenceRawData}
-          rulerProps={entityTimelineOpen ? metadata[activeAreaDim][influenceRawData.id] : (selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id])}
+          rulerProps={rulerProps}
           selectedYear={selectedYear}
           selectedItem={selectedItem}
           // epicData={entityTimelineOpen ? rulerEntity : selectedItem.data}

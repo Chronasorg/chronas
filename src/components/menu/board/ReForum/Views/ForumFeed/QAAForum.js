@@ -5,17 +5,12 @@ import classnames from 'classnames'
 
 import {
   getDiscussions,
-  updateSortingMethod,
 } from './actions'
 
 import Button from '../../Components/Button'
 import FeedBox from '../../Components/FeedBox'
 
-import appLayout from '../../SharedStyles/appLayout.css'
-import styles from './styles.css'
-import {getForums} from '../../App/actions'
-
-import {didYouKnows, properties, themes} from '../../../../../../properties'
+import { properties, themes } from '../../../../../../properties'
 
 const inlineStyles = {
   addButton: {
@@ -107,7 +102,8 @@ class QAAForum extends Component {
     const {
       error,
       qaaEntity,
-      theme
+      theme,
+      translate
     } = this.props;
 
 
@@ -132,7 +128,7 @@ class QAAForum extends Component {
           <div className='addContainer'>
             <Link to={`/community/${properties.QAID}/new_discussion/${qaaEntity}`}>
               <Button style={{ ...inlineStyles.addButton, background: themes[theme].highlightColors[0], borderColor: themes[theme].highlightColors[0], color: themes[theme].backColors[0], boxShadow: '0 2px 2px 0 rgb(114, 114, 114), 0 3px 1px -2px rgba(171, 171, 171, 0.7), 0 1px 5px 0 rgba(128, 128, 128, 0.69)' }} type='outline' fullWidth noUppercase>
-                <b>Ask question</b>
+                <b>{translate('askQuestion')}</b>
               </Button>
             </Link>
           </div>

@@ -3,6 +3,7 @@ import { Card } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
 import utilsQuery from '../map/utils/query'
 import { themes } from '../../properties'
+import { translate } from 'admin-on-rest'
 
 const backgroundByYear = [
   {
@@ -151,16 +152,16 @@ const LoadingPage = (props) => {
     ...styles.parent,
     background: `url("/images/logoChronasWhite.png") no-repeat 80% 20% fixed, url("${closestImage.image}") center center/cover fixed`
   }}>
-    {!props.failAndNotify && <div className='splash_description'>{closestImage.description}</div>}
+    {!props.failAndNotify && <div className='splash_description'>
+      {props.translate('loadingPage.loadingScreenDescription.' + closestImage.year)}</div>}
     {props.failAndNotify &&
     <Dialog bodyStyle={{ backgroundImage: themes['light'].gradientColors[0] }} open contentClassName={'classReveal'}
       contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0 }}>
       <Card style={styles.card}>
-        <div><h1>There is something wrong...</h1>
+        <div><h1>{props.translate('somethingWentWrong')}</h1>
           <br />
           <p>
-            Chronas seems to be under too much load right now.
-            Please try again in a couple of minutes.
+            {props.translate('loadingPage.errorMessage')}
           </p>
         </div>
       </Card>
@@ -168,4 +169,4 @@ const LoadingPage = (props) => {
   </div>
 }
 
-export default LoadingPage
+export default (translate(LoadingPage))

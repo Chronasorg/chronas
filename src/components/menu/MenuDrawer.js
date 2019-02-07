@@ -9,6 +9,7 @@ import { toggleMenuDrawer as toggleMenuDrawerAction } from './actionReducers'
 import { themes } from '../../properties'
 
 import Responsive from './Responsive'
+import {translate} from "admin-on-rest";
 
 // We shouldn't need PureComponent here as it's connected
 // but for some reason it keeps rendering even though mapStateToProps returns the same object
@@ -22,7 +23,7 @@ class MenuDrawer extends PureComponent {
   }
 
   render () {
-    const { menuDrawerOpen, setMenuDrawerVisibility, children, theme } = this.props
+    const { children, menuDrawerOpen, setMenuDrawerVisibility, translate, theme } = this.props
 
     return (
       <Responsive
@@ -45,14 +46,14 @@ class MenuDrawer extends PureComponent {
                   color: themes[theme].foreColors[0],
                   fontSize: 20
                 }}
-                >LAYERS</span>
+                >{translate("pos.layers")}</span>
               }
               showMenuIconButton={false}
               style={{ backgroundColor: themes[theme].backColors[0], boxShadow: 'rgba(0, 0, 0, 0.4) 3px 6px 6px -3px' }}
               iconElementRight={
                 <IconButton
                   tooltipPosition='bottom-left'
-                  tooltip={'Close'}
+                  tooltip={translate('aor.action.close')}
                   iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
                   onClick={() => this.handleClose()}>
                   <FontIcon hoverColor={themes[theme].highlightColors[0]} style={{ color: themes[theme].foreColors[0] }}
@@ -78,4 +79,5 @@ export default compose(
   connect(mapStateToProps, {
     toggleMenuDrawer: toggleMenuDrawerAction,
   }),
+  translate,
 )(MenuDrawer)

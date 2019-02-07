@@ -3,7 +3,6 @@ import React, { PureComponent } from 'react'
 import BoardIcon from 'material-ui/svg-icons/communication/forum'
 import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
-import ShareIcon from 'material-ui/svg-icons/social/share'
 import HelpIcon from 'material-ui/svg-icons/action/help'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
@@ -197,19 +196,7 @@ class Menu extends PureComponent {
                 }
               </IconButton>
             </div>
-          ) : null
-          }
-          {false && <IconButton
-            key={'share'}
-            containerElement={<Link to='/share' />}
-            tooltipPosition='bottom-right'
-            tooltip={translate('pos.share')}
-            tooltipStyles={tooltip}
-            onClick={() => setActiveMenu('share')}
-            iconStyle={{ color: themes[theme].foreColors[0] }}
-          >
-            <ShareIcon hoverColor={themes[theme].highlightColors[0]} />
-          </IconButton>}
+          ) : null }
           <IconButton
             key={'help'}
             containerElement={<Link to='/info' />}

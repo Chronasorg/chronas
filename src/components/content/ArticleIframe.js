@@ -32,6 +32,8 @@ import {
   WIKI_PROVINCE_TIMELINE
 } from '../map/actionReducers'
 
+const jsonp = require('jsonp');
+
 const styles = {
   closeButton: {
     boxShadow: 'inherit',
@@ -100,10 +102,6 @@ const styles = {
 }
 
 class ArticleIframe extends React.Component {
-  componentDidMount = () => {
-    this.setState({ iframeLoading: true })
-    this.setState({ iframeLoadingFull: true })
-  }
   _exitFullscreen = () => {
     this.setState({ isFullScreen: false })
   }
@@ -221,6 +219,7 @@ class ArticleIframe extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      fullfinalWiki: (props.locale === "en" && props.selectedWiki && props.selectedWiki !== -1) ? ('https://en.wikipedia.org/wiki/' + props.selectedWiki) : -1,
       localizedArticle: false,
       isFullScreen: false,
       iframeLoading: true,
@@ -228,17 +227,77 @@ class ArticleIframe extends React.Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillMount () {
+    const { locale, selectedWiki } = this.props
     // https://www.wikidata.org/w/api.php?action=wbgetentities&titles=Vietnamese_Wikipedia&sites=enwiki&format=json
-    if (this.props.selectedWiki !== nextProps.selectedWiki) {
-      this.setState({ iframeLoading: true })
-      this.forceUpdate()
+    if (locale !== "en" && selectedWiki && selectedWiki !== -1) {
+      jsonp('https://www.wikidata.org/w/api.php?action=wbgetentities&titles=' + selectedWiki + '&sites=enwiki&format=json&callback=JSON_CALLBACK', null, (err, data) => {
+        if (err) {
+          this.props.showNotification('pos.localeWikiNotFound', 'confirm')
+          this.setState({
+            fullfinalWiki: 'https://en.wikipedia.org/wiki/' + selectedWiki
+          })
+        } else {
+          const wikiLabelKey = (Object.keys((data || {}).entities) || {})[0]
+          const wikiLabel = (((data.entities[wikiLabelKey] || {}).labels || {})[locale] || {}).value
+          if (wikiLabel) {
+            this.setState({
+              fullfinalWiki: 'https://' + locale + '.wikipedia.org/wiki/' + wikiLabel
+            })
+          } else {
+            this.props.showNotification('pos.localeWikiNotFound', 'confirm')
+            this.setState({
+              fullfinalWiki: 'https://en.wikipedia.org/wiki/' + selectedWiki
+            })
+          }
+        }
+      })
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
+    const { locale, selectedWiki } = nextProps
+    // https://www.wikidata.org/w/api.php?action=wbgetentities&titles=Vietnamese_Wikipedia&sites=enwiki&format=json
+    if (this.props.selectedWiki !== selectedWiki) {
+      if (locale === "en") {
+        this.setState({
+          iframeLoading: true,
+          fullfinalWiki: 'https://en.wikipedia.org/wiki/' + selectedWiki
+        })
+      } else {
+        jsonp('https://www.wikidata.org/w/api.php?action=wbgetentities&titles=' + selectedWiki + '&sites=enwiki&format=json&callback=JSON_CALLBACK', null, (err, data) => {
+          if (err) {
+            this.props.showNotification('pos.localeWikiNotFound', 'confirm')
+            this.setState({
+              fullfinalWiki: 'https://en.wikipedia.org/wiki/' + selectedWiki
+            })
+          } else {
+            const wikiLabelKey = (Object.keys((data || {}).entities) || {})[0]
+            const wikiLabel = (((data.entities[wikiLabelKey] || {}).labels || {})[locale] || {}).value
+            if (wikiLabel) {
+              this.setState({
+                fullfinalWiki: 'https://' + locale + '.wikipedia.org/wiki/' + wikiLabel
+              })
+            } else {
+              this.props.showNotification('pos.localeWikiNotFound', 'confirm')
+              this.setState({
+                fullfinalWiki: 'https://en.wikipedia.org/wiki/' + selectedWiki
+              })
+            }
+          }
+        })
+
+        this.setState({
+          iframeLoading: true,
+          fullfinalWiki: -1
+        })
+      }
     }
   }
 
   render () {
-    const { isFullScreen, iframeLoading, iframeLoadingFull } = this.state
-    const { hasChart, selectedItem, selectedWiki, theme, isEntity, customStyle, htmlContent, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
+    const { isFullScreen, fullfinalWiki, iframeLoading, iframeLoadingFull } = this.state
+    const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
     const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== 'undefined'
@@ -250,7 +309,7 @@ class ArticleIframe extends React.Component {
     const potentialSource = ((selectedItem.value || {}).data || {}).source || (selectedItem.value || {}).source
     const isPsWithSource = selectedItem.value.subtype === 'ps' && (potentialSource || '').indexOf('wikisource') > -1
     const isProvince = selectedItem.wiki === WIKI_PROVINCE_TIMELINE
-    const noWiki = (!selectedItem || !selectedWiki || selectedWiki === -1)
+    const noWiki = (!selectedItem || !fullfinalWiki || fullfinalWiki === -1)
     const modUrl = isEpic || isArea
       ? (((epicContentItem || {}).properties || {}).ct === 'marker' ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
       : (isMarker ? '/mod/markers' : '/mod/metadata')
@@ -270,7 +329,7 @@ class ArticleIframe extends React.Component {
             hoverColor={themes[theme].foreColors[0]}
             color={themes[theme].backColors[0]}
             style={{ margin: 12, marginLeft: -8, marginTop: 8, color: themes[theme].backColors[0] }}
-            label='Read Document'
+            label={translate("pos.readDocument")}
             labelPosition='before'
             primary
             onClick={() => window.open(decodeURIComponent(potentialSource), '_blank').focus()}
@@ -287,7 +346,7 @@ class ArticleIframe extends React.Component {
       backgroundColor: themes[theme].backColors[0]
     }}>
         {toggleYearByArticle && <Toggle
-          label='Set year by article'
+          label={translate("pos.setYearByArticle")}
           disabled={toggleYearByArticleDisabled}
           onToggle={() => toggleYearByArticle()}
           defaultToggled={yearByArticleValue}
@@ -300,42 +359,42 @@ class ArticleIframe extends React.Component {
       />}
         <IconButton
           tooltipPosition='bottom-left'
-          tooltip={'Edit'}
+          tooltip={translate('aor.action.edit')}
           style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px' }}
           onClick={() => this._goToMod(modUrl, isProvince)}>
           <IconEdit style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
         <IconButton
           tooltipPosition='bottom-left'
-          tooltip={'Revision history'}
+          tooltip={translate('pos.revisionHistory')}
           style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px' }}
           onClick={() => this._goToRevision(modUrl, isProvince)}>
           <IconHistory style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
         <IconButton
           tooltipPosition='bottom-left'
-          tooltip={'Fullscreen Article'}
+          tooltip={translate('pos.fullscreenArticle')}
           onClick={() => this._enterFullscreen()}
           style={{ ...styles.fullscreenButton, width: !(isEntity || isProvince) ? 32 : 'inherit' }}>
           <FullscreenEnterIcon style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
         {!(isEntity || isProvince) && <IconButton
           tooltipPosition='bottom-left'
-          tooltip={'Go Back'}
+          tooltip={translate('aor.action.back')}
           style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px' }}
           onClick={() => this.props.history.goBack()}>
           <IconBack style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>}
         {!(isEntity || isProvince) && <IconButton
           tooltipPosition='bottom-left'
-          tooltip={'Close'}
+          tooltip={translate("aor.action.close")}
           style={{}} iconStyle={{ textAlign: 'right', fontSize: '12px' }} onClick={() => this._handleClose()}>
           <IconClose style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>}
       </div>
     </div>
 
-    const shouldLoad = !htmlContent && (noWiki || iframeLoading || selectedWiki === null || +selectedWiki === -1)
+    const shouldLoad = !htmlContent && (noWiki || iframeLoading || fullfinalWiki === null || +fullfinalWiki === -1)
 
     return (
       <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
@@ -352,13 +411,13 @@ class ArticleIframe extends React.Component {
           style={{ zIndex: 15000, height: '100%', width: '100%', backgroundColor: 'transparent', overflow: 'auto' }}
           titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
           autoScrollBodyContent={false}>
-          {(selectedWiki !== '') && shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} />}
-          {(selectedWiki === '') &&
+          {(fullfinalWiki !== '') && shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} />}
+          {(fullfinalWiki === '') &&
           <span>no wiki article found, consider adding one by clicking the edit button...</span>}
-          {(+selectedWiki !== -1) && (selectedWiki !== '') && (selectedWiki !== null) &&
+          {(+fullfinalWiki !== -1) && (fullfinalWiki !== '') && (fullfinalWiki !== null) &&
           <iframe id='articleFullIframe' onLoad={this._handlFullURLChange} height='100%' width='100%'
             style={{ height: '100%', width: '100%', display: (shouldLoad ? 'none' : '') }}
-            src={'https://en.wikipedia.org/wiki/' + selectedWiki} frameBorder='0' />}
+            src={fullfinalWiki} frameBorder='0' />}
           {isFullScreen &&
           <FloatingActionButton
             backgroundColor={'white'}
@@ -375,10 +434,10 @@ class ArticleIframe extends React.Component {
         {modMenu}
         {shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} />}
         {htmlContent && <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />}
-        {!htmlContent && (+selectedWiki !== -1) && (selectedWiki !== '') && (selectedWiki !== null) &&
+        {!htmlContent && (+fullfinalWiki !== -1) && (fullfinalWiki !== '') && (fullfinalWiki !== null) &&
         <iframe id='articleIframe' onLoad={this._handleUrlChange}
           style={{ ...styles.iframe, display: (shouldLoad ? 'none' : ''), height: (!hasChart && isEntity ? 'calc(100% - 56px)' : '100%') }}
-          src={'https://en.wikipedia.org/wiki/' + selectedWiki + '?printable=yes'} height='100%'
+          src={fullfinalWiki +  '?printable=yes'} height='100%'
           frameBorder='0' />}
       </div>
     )
@@ -395,7 +454,8 @@ const enhance = compose(
     setData,
     selectEpicItem,
     selectMarkerItem,
-    selectLinkedItem
+    selectLinkedItem,
+    showNotification
   }),
   pure,
   translate,

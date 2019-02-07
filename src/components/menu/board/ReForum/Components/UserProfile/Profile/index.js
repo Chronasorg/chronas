@@ -55,7 +55,7 @@ class Profile extends Component {
           <div className='UserProfile_gitHandler'> { authTypeIcon } { gitHandler }</div>
           { website && <div className='UserProfile_website'>
             <a target="_blank" href={website}>{website}</a></div>}
-          <div className='UserProfile_location' style={{ whiteSpace: 'nowrap' }}>member since { Moment(profile.createdAt).from(Moment()) }</div>
+          <div className='UserProfile_location' style={{ whiteSpace: 'nowrap' }}>{translate('community.memberSince')} { Moment(profile.createdAt).from(Moment()) }</div>
         </div>
         <div className='UserProfile_infoContainer'>
           { (localStorageUsername === gitHandler) ? <FlatButton
@@ -67,7 +67,7 @@ class Profile extends Component {
         </div>
         </div>
         { bio && <p style={{ padding: '2em' }}>
-        <span style={{ fontWeight: 800, paddingRight: '1em'}}>Bio:</span>
+        <span style={{ fontWeight: 800, paddingRight: '1em'}}>{translate('community.biographyShort')}:</span>
           {bio}
          </p>}
       </div>

@@ -189,7 +189,7 @@ export class AutocompleteInput extends Component {
         }
         fullWidth
         filter={filter}
-        hintText={'Start typing'}
+        hintText={translate('pos.startTyping')}
         onNewRequest={this.handleNewRequest}
         onUpdateInput={this.handleUpdateInput}
         openOnFocus

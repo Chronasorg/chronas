@@ -41,7 +41,7 @@ import {
   getFullIconURL,
   getYoutubeId,
   itemTypeToColor,
-  itemTypeToName,
+  // itemTypeToName,
   properties,
   themes
 } from '../../properties'
@@ -582,7 +582,7 @@ class EpicTimeline extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    this.props.showNotification('Something went wrong', 'confirm')
+    this.props.showNotification('somethingWentWrong', 'confirm')
   }
 
   render () {
@@ -601,6 +601,7 @@ class EpicTimeline extends React.Component {
       <div style={{ height: '100%' }}>
         {isEntity && <ChartSunburst
           theme={theme}
+          translate={translate}
           activeAreaDim={activeAreaDim}
           setContentMenuItem={setContentMenuItem}
           isMinimized={activeContentMenuItem !== 'sunburst'}
@@ -714,7 +715,7 @@ class EpicTimeline extends React.Component {
                       textDecoration: 'none',
                       borderBottom: '2px solid ' + itemTypeToColor[epicContent.type],
                     }}>
-                      {itemTypeToName[epicContent.type]}
+                      {translate('pos.markerMetadataTypes.' + epicContent.type)}
                     </div>
                   </StepButton>
                   {epicIdNameArray.concat(aeIdNameArray).map(el => el[0]).includes(epicContent.type) && epicContent.type !== 'ei' &&
@@ -761,13 +762,13 @@ class EpicTimeline extends React.Component {
             </div>}
             {contentDetected && <div style={styles.navButtons}>
               <FlatButton
-                label='Back'
+                label={translate('pos.back')}
                 disabled={stepIndex < 1}
                 onClick={() => this.handlePrev(epicLinkedArticles[stepIndex - 1].date)}
                 style={{ color: '#333', marginRight: 12 }}
               />
               <RaisedButton
-                label='Next'
+                label={translate('pos.next')}
                 disabled={stepIndex >= epicLinkedArticles.length - 1}
                 primary
                 onClick={() => this.handleNext(epicLinkedArticles[stepIndex + 1].date)}
@@ -818,7 +819,7 @@ class EpicTimeline extends React.Component {
                 tooltipPosition='bottom-center'
                 tooltip={translate('pos.discover_component.edit')}>
                 <RaisedButton
-                  label='Edit'
+                  label={translate('pos.edit')}
                   primary
                   onClick={() => this._handleEdit(selectedImage.source)} />
               </IconButton>

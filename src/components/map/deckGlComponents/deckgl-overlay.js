@@ -87,7 +87,7 @@ export default class DeckGLOverlay extends Component {
 
     const { animatedFeature, arcs, marker, texts, /* geo */} = this.state
     const z = Math.floor(viewport.zoom)
-    const size = /* showCluster ? 1 : */ Math.min(Math.pow(1.5, viewport.zoom - 10), 1)
+    const size = /* showCluster ? 1 : */ Math.min(Math.pow(1.55, viewport.zoom - 10), 1)
     const updateTrigger = z * showCluster
 
     const wasEpic = (selectedItem || {}).type === 'epic'

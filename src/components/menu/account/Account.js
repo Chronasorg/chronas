@@ -175,12 +175,12 @@ class Account extends PureComponent {
               <ToolbarGroup>
                 <IconButton
                   tooltipPosition='bottom-left'
-                  tooltip={'Go Back'} touch key={'back'} onClick={() => this.props.history.goBack()}>
+                  tooltip={translate('aor.action.back')} touch key={'back'} onClick={() => this.props.history.goBack()}>
                   <IconBack />
                 </IconButton>
                 <IconButton
                   tooltipPosition='bottom-left'
-                  tooltip={'Close'} touch key={'close'} containerElement={<Link to='/' />}>
+                  tooltip={translate('aor.action.close')} touch key={'close'} containerElement={<Link to='/' />}>
                   <CloseIcon />
                 </IconButton>
               </ToolbarGroup>

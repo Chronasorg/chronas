@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react'
+import ReactHtmlParser from 'react-html-parser'
 import Avatar from 'material-ui/Avatar'
 import { Card, CardActions, CardText } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
@@ -60,7 +61,7 @@ class PledgeDialog extends PureComponent {
               <IconButton
                 onClick={closePledge}
                 tooltipPosition='bottom-left'
-                tooltip={'Close'} touch key={'close'}>
+                tooltip={translate("aor.action.close")} touch key={'close'}>
                 <CloseIcon hoverColor={themes[theme].highlightColors[0]} />
               </IconButton>
             </ToolbarGroup>
@@ -69,20 +70,21 @@ class PledgeDialog extends PureComponent {
 
         <CardText>
           <p>
-              You have now been on Chronas for over <b>15 minutes</b>!
+            { ReactHtmlParser(translate('pos.block.pledge1')) }
           </p>
           <p>
-              Chronas depends on user support to survive and grow.
-              If you find this project useful head over to <a className='customLink' target='_blank'
+            {translate('pos.block.pledge2')}
+              <a className='customLink' target='_blank'
                 href='https://www.patreon.com/chronas'><Avatar
                   style={{ marginRight: 8, marginLeft: 6 }} src='/images/240px-Patreon_logo.svg.png' />
-              Patreon</a> and consider pledging an amount of your choice.
+              Patreon</a>
+            {translate('pos.block.pledge3')}
           </p>
           <p>
-              Patreons will be able to steer the project by voting on feature priorities and major design decisions.
+            {translate('pos.block.pledge4')}
           </p>
           <form className="donateButton" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <span>If you don't like to use Patreon, one time contributions are possible via PayPal:&nbsp;&nbsp;</span>
+            <span>{translate('pos.block.pledge5')}&nbsp;&nbsp;</span>
             <input type="hidden" name="cmd" value="_s-xclick"/>
             <input type="hidden" name="hosted_button_id" value="DLRUFHZSBTBNN"/>
             <input type="image" src="/images/button-PayPal.png" style={{ height: 34 }} border="0" name="submit" alt="Donate with PayPal" title="Donate with PayPal" /><img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1"/>
@@ -90,12 +92,12 @@ class PledgeDialog extends PureComponent {
         </CardText>
         <Divider />
         <CardActions>
-          <FlatButton label='Remind me in another 15 minutes' onClick={() => snooze()} />
-          <FlatButton label='Open Patreon in new tab' onClick={() => {
+          <FlatButton label={translate('pos.pledgeRemind')} onClick={() => snooze()} />
+          <FlatButton label={translate('pos.pledgeOpen')} onClick={() => {
             var win = window.open('https://www.patreon.com/chronas', '_blank')
             win.focus()
           }} />
-          <FlatButton style={{ right: 0, position: 'absolute' }} label='Close' onClick={() => closePledge()} />
+          <FlatButton style={{ right: 0, position: 'absolute' }} label={translate('aor.action.close')} onClick={() => closePledge()} />
         </CardActions>
       </Card>
     </Dialog>

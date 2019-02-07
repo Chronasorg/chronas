@@ -1,261 +1,679 @@
 export default {
   "aor": {
     "action": {
-      "delete": "Löschen",
-      "show": "Zeigen",
-      "list": "Liste",
-      "save": "Speichern",
-      "create": "Erstellen",
-      "edit": "Bearbeiten",
-      "cancel": "Abbrechen",
-      "refresh": "Aktualisieren",
-      "add_filter": "Filter hinzufügen",
-      "remove_filter": "Diesen filter entfernen",
-      "back": "Gehen Sie Zurück"
-    },
-    "boolean": {"true": "Ja", "false": "Keine"},
-    "page": {
-      "list": "%{name} - Liste",
-      "edit": "%{name} #%{id}",
-      "show": "%{name} #%{id}",
-      "create": "Erstellen von %{name}",
-      "delete": "Löschen von %{name} #%{id}",
-      "dashboard": "Dashboard",
-      "not_found": "Nicht Gefunden"
-    },
-    "input": {
-      "autocomplete": {"none": ""},
-      "file": {
-        "upload_several": "Drop einige Dateien zu laden, oder klicken Sie auf auswählen.",
-        "upload_single": "Legen Sie eine Datei hochladen möchten, oder klicken Sie auf, um es auszuwählen."
-      },
-      "image": {
-        "upload_several": "Drop ein paar Bilder hochzuladen, oder klicken Sie auf auswählen.",
-        "upload_single": "Drop ein Bild hochzuladen, oder klicken Sie auf, um es auszuwählen."
-      }
-    },
-    "message": {
-      "yes": "Ja",
-      "no": "Keine",
-      "are_you_sure": "Sind Sie sicher?",
-      "about": "Über",
-      "not_found": "Entweder Sie haben einen falschen URL, oder Sie folgten einem schlechten link."
-    },
-    "navigation": {
-      "no_more_results": "Keine Ergebnisse mehr gefunden",
-      "no_results": "Diese Entität noch nicht geändert wurde: keine Geschichte, um zu zeigen,",
-      "page_out_of_boundaries": "Seite Anzahl %{page} von Grenzen",
-      "page_out_from_end": "Kann nicht gehen, nachdem Letzte Seite",
-      "page_out_from_begin": "Kann nicht gehen, bevor Seite 1",
-      "page_range_info": "%{offsetBegin}-%{offsetEnd} von %{total}",
-      "next": "Nächste",
-      "prev": "Prev"
+      "add_filter": "Add filter",
+      "back": "Go Back",
+      "cancel": "Cancel",
+      "close": "Close",
+      "create": "Create",
+      "delete": "Delete",
+      "edit": "Edit",
+      "list": "List",
+      "refresh": "Refresh",
+      "remove_filter": "Remove this filter",
+      "save": "Save",
+      "show": "Show"
     },
     "auth": {
-      "logged_in": "Angemeldet",
-      "logged_out": "Abgemeldet",
+      "avatar": "Your Photo URL (optional)",
+      "bio": "Short Bio (optional)",
+      "education": "Your Education (optional)",
+      "email": "Email",
+      "first_name": "First Name (optional)",
+      "last_name": "Last Name (optional)",
+      "logged_in": "Logged in",
+      "logged_out": "Logged out",
+      "logging_in": "Logged in",
       "login": "Login",
       "logout": "Logout",
       "name": "Name",
-      "last_name": "Nachname (optional)",
-      "first_name": "Vorname (optional)",
-      "avatar": "Die Foto-URL (optional)",
-      "bio": "Kurz-Bio (optional)",
-      "education": "Ihre Ausbildung (optional)",
-      "website": "Ihre Website (optional)",
-      "username": "Benutzername",
-      "password": "Passwort",
-      "email": "E-Mail",
-      "sign_in": "Anmelden",
-      "sign_up": "Anmelden",
-      "sign_up_error": "Anmeldung fehlgeschlagen, bitte wiederholen",
-      "sign_in_error": "Authentifizierung fehlgeschlagen, bitte wiederholen",
-      "logging_in": "Angemeldet",
-      "signing_up": "Angemeldet"
+      "password": "Password",
+      "sign_in": "Sign in",
+      "sign_in_error": "Authentication failed, please retry",
+      "sign_up": "Sign up",
+      "sign_up_error": "Sign up failed, please retry",
+      "signing_up": "Signed up",
+      "username": "Username",
+      "website": "Your Website (optional)"
+    },
+    "boolean": {
+      "false": "No",
+      "true": "Yes"
+    },
+    "edit_profile": "Edit Profile",
+    "input": {
+      "autocomplete": {
+        "none": ""
+      },
+      "file": {
+        "upload_several": "Drop some files to upload, or click to select one.",
+        "upload_single": "Drop a file to upload, or click to select it."
+      },
+      "image": {
+        "upload_several": "Drop some pictures to upload, or click to select one.",
+        "upload_single": "Drop a picture to upload, or click to select it."
+      }
+    },
+    "message": {
+      "about": "About",
+      "are_you_sure": "Are you sure?",
+      "no": "No",
+      "not_found": "Either you typed a wrong URL, or you followed a bad link.",
+      "yes": "Yes"
+    },
+    "navigation": {
+      "next": "Next",
+      "no_more_results": "No more results found",
+      "no_results": "This entity hasn't been modified: no history to show",
+      "page_out_from_begin": "Cannot go before page 1",
+      "page_out_from_end": "Cannot go after last page",
+      "page_out_of_boundaries": "Page number %{page} out of boundaries",
+      "page_range_info": "%{offsetBegin}-%{offsetEnd} of %{total}",
+      "prev": "Prev"
     },
     "notification": {
-      "updated": "Erfolgreich aktualisiert",
-      "created": "Erfolgreich erstellt",
-      "deleted": "Wurde erfolgreich gelöscht",
-      "item_doesnt_exist": "Element nicht vorhanden",
-      "http_error": "Server-Kommunikation Fehler"
+      "created": "Successfully created",
+      "deleted": "Successfully deleted",
+      "http_error": "Server communication error",
+      "item_doesnt_exist": "Element does not exist",
+      "updated": "Successfully updated"
     },
-    "validation": {
-      "required": "Erforderlich",
-      "minLength": "Muss %{min} Zeichen mindestens",
-      "maxLength": "Muss %{max} Zeichen oder weniger",
-      "minValue": "Muss mindestens %{min}",
-      "maxValue": "Muss %{max} oder weniger",
-      "number": "Muss eine Zahl",
-      "email": "Muss eine gültige E-Mail"
+    "page": {
+      "create": "Create %{name}",
+      "dashboard": "Dashboard",
+      "delete": "Delete %{name} #%{id}",
+      "edit": "%{name} #%{id}",
+      "list": "%{name} List",
+      "not_found": "Not Found",
+      "show": "%{name} #%{id}"
     },
     "profile_image": "Avatar",
-    "edit_profile": "Profil Bearbeiten"
+    "validation": {
+      "email": "Must be a valid email",
+      "maxLength": "Must be %{max} characters or less",
+      "maxValue": "Must be %{max} or less",
+      "minLength": "Must be %{min} characters at least",
+      "minValue": "Must be at least %{min}",
+      "number": "Must be a number",
+      "required": "Required"
+    }
   },
+  "askQuestion": "Ask question",
   "auth": {
-    "logged_in": "Angemeldet",
-    "logged_out": "Abgemeldet",
+    "logged_in": "Logged in",
+    "logged_out": "Logged out",
     "login": "Login",
     "logout": "Logout",
-    "sign_in": "Anmelden",
-    "sign_up": "Beitreten"
+    "sign_in": "Sign In",
+    "sign_up": "Join"
+  },
+  "chartSunburst": {
+    "breakdownTitle": "Breakdown of %{dontTranslate} subjects",
+    "hoverClickItems": "hover/ click items",
+    "switchChart": "SWITCH CHART"
+  },
+  "community": {
+    "biographyShort": "Bio",
+    "board": "Board",
+    "highscore": "Member Data Highscore",
+    "memberSince": "member since",
+    "myProfile": "My Profile",
+    "supportingMember": "Supporting Members"
+  },
+  "didYouKnow": {
+    "coloring": "You can change map coloring to religion, culture or population via the layers icon on the menu bar",
+    "discover": "You can browse images and other media by clicking the compass icon on the menu bar",
+    "distribution": "You can see a complete distribution of people of a realm by clicking the circle chart icon on an article",
+    "link": "You can link any articles together to show up in a content section (articles) or the media section",
+    "markerlimit": "You can improve performance by decreasing marker count via the layers icon on the menu bar",
+    "province": "You can see a complete history of a province by clicking Province on the article header",
+    "question": "You can ask questions about articles and answer others in the Forum",
+    "timeline": "You can mouse scroll the timeline to scale"
+  },
+  "introHints": {
+    step1: "Scroll to zoom and click anywhere on the timeline (1/3)",
+    step2: "Open the Layers menu and select some Markers and Epics (2/3)",
+    step3: "Open the Media menu to browse images, videos etc. related to selected year (3/3)",
+    stepFinal: "Those are the basics. There are tons of other features waiting for you to discover. Enjoy the journey!",
+    close: "Close introduction"
+  },
+  benchmarkPage: {
+    title: "Detault settings",
+    tier1Header: "Clean & Fast",
+    tier1Description: "Only map borders and labels.",
+    tier2Header: "Intermediate",
+    tier2Description: "Borders, labels and a maximum of 2000 markers per year.",
+    tier3Header: "Complete",
+    tier3Description: "Epics in timeline and a maximum of 5000 markers per year.",
+    hint: "Don't worry, you can also customize all settings later!"
+  },
+  "loadingPage": {
+    "errorMessage": "Chronas seems to be under too much load right now. Please try again in a couple of minutes.",
+    "loadingScreenDescription": {
+      "218": "Young Roman emperor Elagabalus (203-222 AD) hosting a banquet",
+      "400": "Honorius, Son of Theodosius I; appointed as junior Augustus for the west by Theodosius in 393",
+      "450": "450-511: Education of the Children of Clovis",
+      "711": "711: Battle of Guadalete of the Visigoths and the beginning of the Umayyad conquest of Hispania",
+      "881": "881: Battle of Danish forces of pagan Viking warriors and the Christian troops of Carolingian",
+      "1121": "1121: The aftermath of the Didgori battle portrayed in \"Spirit of the Rider\" made by Augusto Ferrer-Dalmau",
+      "1331": "1331: Siege of Akasaka near Osaka was one of the earlier battles of the Genkō War",
+      "1582": "1582: Battle of Chuvash Cape",
+      "1627": "1627–1628: Siege of La Rochelle (Kingdom of France)",
+      "1649": "1649: Cromwell at Dunbar. Oliver Cromwell united the whole of the British Isles by force and created the Commonwealth of England",
+      "1832": "1832: Pont Neuf bridge in Paris",
+      "1862": "1862: Confederate prisoners captured in the Battle of Front Royal",
+      "1871": "1871: Proclamation of the German Empire in Versailles",
+      "-1400": "1400 BC: The Trundholm sun chariot, is a Nordic Bronze Age artifact discovered in Denmark.",
+      "-2000": "26th century BC: The Standard of Ur, a hollow wooden box with scenes of war and peace",
+      "-332": "332 BCE: Alexander the Great's uncontested entry into the city of Babylon",
+      "-519": "519 BC: Lucius Quinctius became a legendary Roman opponent of the rights of the plebeians (the common citizens)",
+      "-52": "52 BCE: The surrender of the Gallic chieftain after the Battle of Alesia",
+      "-600": "605-562 BCE: Striding Lion, Neo-Babylonian Empire",
+      "-620": "620-570 BCE: Sappho and Alcaeus",
+      "-668": "668 BC: Sculpted reliefs depicting Ashurbanipal, the last great Assyrian king, hunting lions"
+    }
   },
   "pos": {
-    "marker": {
-      "Abstract": "Abstrakt",
-      "Themed": "Historisch"
+    "about": "About Chronas",
+    "account": "Manage Account",
+    "addMedia": "Add Media",
+    "advanced": "Advanced",
+    "area": "Area",
+    "areas": "Areas",
+    "back": "back",
+    "basemap": "Basemap",
+    "basemapTypes": {
+      "none": "None",
+      "topographic": "Topographic",
+      "watercolor": "Watercolor"
     },
-    "founded": "est.",
-    "timeline": {"expand": "Erweitern Timeline", "reset": "Reset-Timeline-Ansicht", "searchEpics": "Suche Epen"},
-    "about": "Über Chronas",
-    "account": "Konto Verwalten",
-    "back": "Zurück",
+    "block": {
+      "about1": "<h4>What is Chronas?</h4> <br /> <h5>In Brief</h5>",
+      "about2": "Chronas may be described as a mix of <a target='_blank' href='https://www.openstreetmap.org'>Open  Street Map</a>, <a target='_blank' href='https://www.wikipedia.org/'>Wikipedia</a> and <a\n                    target='_blank' href='https://earth.google.com/web/'>Google Earth</a>. It maps 4000 years of historic\n                  rulers (polictical entities), cultures, and religions on a map linking to related Wikipedia articles\n                  as well as various kinds of different markers such as people, battles, cities, castles etc. All of\n                  those can be linked to express a relation of each other (for example linking the siege of a city to\n                  the specific city marker). On top of that, other kinds of media such as videos, images or podcasts can\n                  be linked to create an even bigger knowledge web. Users can rate, edit and add new markers, area\n                  entities or media items and create links all tracked by a revision history system. They can also ask\n                  questions on specific articles and create article collections (called Epics) on major topics such as\n                  wars or explorations (all area entities are on default Epics). A video showcasing those features can\n                  be found ",
+      "about3": "here",
+      "about4": "<h5>From the beginning</h5>\n                <p>The name <b>Chronas</b> is a combination of <b>Chron</b>os and Atl<b>as</b> indicating the\n                  chronological and cartographical approach of the history application.</p>\n                <p>The initial idea in mid-2014 was to add a time slider to a Google Maps like application, making it\n                  possible to travel back in time: watching realms being founded, grow and disappear again. The goal was\n                  to get a better understanding of how the world's history is interconnected. <i>What happened in Asia\n                    when Rome dominated Europe? What happened in Arabia when Kublai Khan proclaimed himself the emperor\n                    of China?</i></p>\n                <p>The original version of Chronas was released in 2015 and attracted over 5000 registered users. It was\n                  based on a fork of <a target='_blank' href='https://umap.openstreetmap.fr/en'>Open Street Map</a> and\n                  used the raster map library <a target='_blank' href='https://leafletjs.com/'>Leaflet</a> with the\n                  relational <a target='_blank' href='https://www.postgresql.org/'>PostgreSQL</a> database.\n                </p>\n                <p>\n                  Here is a ~5 min video showing the basic features of the original version:\n                </p>",
+      "about5": "<p>\n                  If you are interested in trying out the original version, it is still available at <a target='_blank'\n                    href='http://v0.chronas.org'>http://v0.chronas.org</a>.\n                  It also includes the <a target='_blank' href='http://v0.chronas.org/blog'>development blog</a> which\n                  explains in more detail the technical approach of the initial version as well as two 3D spin-off apps\n                  showing <a target='_blank' href='http://app.chronas.org/castles/#/wikidata'>castles</a> and <a\n                    target='_blank' href='http://app.chronas.org/battles/#/wikidata'>battles</a> by wikipedia language.\n                </p>\n                <br />\n                <p>\n                  Development of the current version of Chronas began in July 2017 and represented a complete rewrite of\n                  logic and architecture focusing on improved performance as well as easy edits, revisions and linking\n                  related articles. In place of Leaflet, the WebGL map library <a target='_blank'\n                    href='https://www.mapbox.com/mapbox-gl-js/api/'>Mapbox\n                  GL</a> was used with a <a target='_blank' href='https://reactjs.org/'>React JS</a> UI. For the backend\n                  a dedicated API written in <a target='_blank' href='https://expressjs.com'>Express</a> <a\n                    target='_blank' href='https://nodejs.org/'>Node JS</a> uses a NoSQL <a target='_blank'\n                      href='https://nodejs.org/'>Mongo</a> database\n                  for complex queries and revisioning.\n                </p>\n                <p>You can find a detailed feature walkthrough of the new Chronas version in the <b>How To</b> section.</p>",
+      "contact1": "Developers",
+      "contact10": "Send",
+      "contact2": "Front and Backend Development",
+      "contact3": "DevOps and development support",
+      "contact4": "Translations by",
+      "contact5": "Contact",
+      "contact6": "Send us an email directly (hover over the email icon to display our email addresses) or use the form below:",
+      "contact7": "Your Email Address*",
+      "contact8": "Subject*",
+      "contact9": "Message*",
+      "howTo1": "How to use in about 5 minute",
+      "howTo2": "How to edit data in about 6 minutes (with English commentary)",
+      "pledge1": "You have now been on Chronas for over <b>15 minutes</b>!",
+      "pledge2": "Chronas depends on user support to survive and grow. If you find this project useful head over to ",
+      "pledge3": " and consider pledging an amount of your choice.",
+      "pledge4": "Patreons will be able to steer the project by voting on feature priorities and major design decisions.",
+      "pledge5": "If you don't like to use Patreon, one time contributions are possible via PayPal:",
+      "rules1": "<br />\n                <h4>Rules For Data Curation</h4>\n                <ol>\n                  <li><i>No Vandalism</i>: This is not the place to paint an alternative history map. Vandalism hurts\n                    the project immensely (costly backups) and will get you banned.\n                  </li>\n                  <li><i>Watch the tutorial videos</i> before you start editing. Some controls may lead\n                    to <i>unwanted</i> results.\n                  </li>\n                  <li>Your data inputs should be based on <i>accepted history</i> and you should be ready to cite\n                    sources if asked.\n                  </li>\n                  <li><i>Report</i> Users That Break those Rules.</li>\n                </ol>\n                <br />\n                <h4>Rules For The Forums</h4>\n                <ol>\n                  <li><i>No Vandalism</i>: No Racism, Bigotry, or Offensive Behavior.</li>\n                  <li>Ask <i>Clear and Specific Questions</i>, with <i>Time and Place in Mind</i>.</li>\n                  <li>Provide preferably <i>Primary and Secondary Sources</i> If Asked Rather Than Tertiary Sources\n                    Like <i>Wikipedia</i>.\n                  </li>\n                  <li>Serious On-Topic Questions Only: <i>No Jokes</i>, <i>Anecdotes</i>, <i>Clutter</i>, or\n                    other <i>Digressions</i>.\n                  </li>\n                  <li><i>Report</i> Answers That Break those Rules.</li>\n                </ol>",
+      "statistics1": "The following statistics are live data counts and represent a snapshot of the current Chronas database",
+      "statistics2": "Map Datapoints",
+      "statistics3": "Users and Engagements",
+      "statistics4": "Marker Breakdown",
+      "statistics5": "Map Datapoints",
+      "statistics6": "Details",
+      "statistics7": "Media Breakdown",
+      "statistics8": "Users By Auth Type",
+      "statisticsTooltip1": "Area datapoints: 4000 years mapped with 2479 provinces with 4 dimensions",
+      "statisticsTooltip2": "Markers include people and battle markers, but also cities etc",
+      "statisticsTooltip3": "Media includes media (videos, images...) as well as epics (compilation of articles)",
+      "statisticsTooltip4": "Number of unique area entities for rulers, cultures and religions",
+      "statisticsTooltip5": "Signed up users",
+      "statisticsTooltip6": "Edits made to the data by users",
+      "statisticsTooltip7": "Forum threads (includes auto-generated and migrated threads)",
+      "statisticsTooltip8": "Forum comments (includes auto-generated and migrated replies)",
+      "support1": "There are a couple of ways to finance the upkeep and the development of new features and fixing of\n                  issues. For example Wikipedia or public broadcasters use reoccurring campaigns to raise donations (<b>pledge\n                  drives</b>), many web applications use <b>advertisements</b> (which can decrease the useability/\n                  enojoyment of the app). Another way is to introduce a <b>pro version</b> or try to find <b>venture\n                  capital investors</b>.",
+      "support10": " the developers.",
+      "support11": "If you are interested in running Chronas on your (or our) server with a complete data replica of which you are in complete control, ",
+      "support12": "contact",
+      "support13": " us and we are happy to discuss further.",
+      "support2": "We decided to try out yet another funding model which gives the <b>sustaining users</b> who ensure the\n                  future of Chronas also the ability to decide where the journey is headed. If you believe in our\n                  project, please consider supporting us on",
+      "support3": " where we will have regular <b>votes</b> on the priority of proposed <b>new features</b> as well as <b>major design decisions</b>.",
+      "support4": "If you don't like to use Patreon, one time contributions are possible via PayPal:",
+      "support5": "New Features",
+      "support6": "You can propose features in the feature request",
+      "support7": "forum",
+      "support8": " or by directly ",
+      "support9": "contacting",
+      "welcome11": "<b>Chronas</b> is a history map application with over ",
+      "welcome12": "50 million data points",
+      "welcome13": " which every registered user can curate and contribute to (just like <a>Wikipedia</a>).",
+      "welcome21": "Before you dive in, make sure to watch the short ",
+      "welcome22": "Tutorial Video",
+      "welcome23": " in the How To section.",
+      "welcome31": "Join",
+      "welcome32": " our community of <b>%{dontTranslate}</b> members to add and edit data, earn points, ask questions about history articles and access our ",
+      "welcome33": "Forums",
+      "welcome34": " to suggest new features and report bugs.",
+      "welcome41": "Visit the ",
+      "welcome42": "About",
+      "welcome43": " section to read more about the Chronas project and send the developers your inquiries, comments or questions through the ",
+      "welcome44": "Contact",
+      "welcome45": " form.",
+      "welcome51": "We believe in the potential of this project to become a popular history tool alongside Wikipedia. If you share our enthusiasm and want to see the project succeed, please consider becoming a sustainer. For more information on <b>support</b> and the <b>future of Chronas</b>, visit the ",
+      "welcome52": "Support",
+      "welcome53": " section."
+    },
+    "clusterMarker": "Cluster Marker",
     "community": "Community Board",
-    "information": "Informationen",
-    "areas": "Bereiche",
-    "edit": "Bearbeiten",
-    "fontType": "Schriftart",
-    "markerType": "Marker-Typ",
-    "pledgeTitle": "Hey Reisender!",
-    "goFullScreen": "Vollbild",
-    "noLinkedContents": "Es gibt keine verknüpften Medien noch überlegen, hinzufügen und verknüpfen.",
-    "downvote": "Unpassende, kaputte oder fehlerhafte",
-    "feedbackSuccess": "Vielen Dank für das kuratieren der Daten!",
-    "signupToGatherPoints": "Anmelden, um Punkte zu bekommen für Ihre curations",
-    "pointsAdded": "Punkte Ihrem Konto Hinzugefügt",
-    "mod": "Änderung",
-    "markers": "Marker",
-    "metadata": "Metadaten",
-    "revisions": "Revisionen",
-    "images": "Bilder",
-    "search": "Suche",
+    "configuration": "Configuration",
+    "discover": "Discover",
+    "discover_component": {
+      "edit": "Edit this item",
+      "hasNoArticle": "No Wiki article linked yet, please consider editing this item",
+      "hasNoSource": "No source linked yet, please consider editing this item",
+      "openArticle": "Open related Wikipedia article",
+      "openSource": "Open source in new tab",
+      "tabs": {
+        "HIGHLIGHTS": "HIGHLIGHTS",
+        "ARTEFACTS": "ARTEFACTS",
+        "EPICS": "EPICS",
+        "PEOPLE": "PEOPLE",
+        "CITIES": "CITIES",
+        "BATTLES": "BATTLES",
+        "OTHER": "OTHER",
+        "VIDEOS": "VIDEOS",
+        "PRIMARY SOURCES": "PRIMARY SOURCES"
+      },
+    },
+    "discover_label": "Discover the year ",
+    "downvote": "Inappropriate, broken or inaccurate",
+    "edit": "Edit",
+    "epicIdNameArray": {
+      "ee": "Exploration",
+      "ei": "Discovery",
+      "eo": "Other Epic",
+      "es": "Primary Source",
+      "ew": "War"
+    },
+    "epics": "Epics",
+    "feedbackSuccess": "Thanks for curating the data!",
+    "filterMedia": "Filter Media",
+    "fontType": "Font Type",
+    "founded": "est.",
+    "fullscreenArticle": "Fullscreen Article",
+    "general": "General",
+    "goFullScreen": "Fullscreen",
+    "goTutorial": "Go to Tutorial",
+    "help": "Intro and Information",
+    "images": "Images",
+    "info": {
+      "followUs": "Follow us on",
+      "lastDataEdit": "last data edit",
+      "tabs": {
+        "about": "About",
+        "contact": "Contact",
+        "howTo": "How To",
+        "rules": "Rules",
+        "statistics": "Statistics",
+        "support": "Support",
+        "welcome": "Welcome"
+      },
+      "welcomeTo": "Welcome to"
+    },
+    "information": "Information",
+    "label": "Label",
+    "language": "Language",
+    "layers": "Layers",
+    "linkedTypes": {
+      "artefacts": "[Image] Artefact",
+      "audios": "[Podcast & Audio]",
+      "battles": "[Image] Battle",
+      "cities": "[Image] City & Building",
+      "eb": "[Epic] Biography",
+      "ee": "[Epic] Explorations",
+      "ei": "[Epic] Discoveries",
+      "eo": "[Epic] Other",
+      "ew": "[Epic] Wars",
+      "h": "[HTML or Text]",
+      "misc": "[Image] Other",
+      "o": "Other",
+      "people": "[Image] Person",
+      "ps": "[Link] Primary Source",
+      "v": "[Video]",
+      "w|a": "[Wiki Article] People -> Artists",
+      "w|ar": "[Wiki Article] Artifacts",
+      "w|at": "[Wiki Article] People -> Athletes",
+      "w|b": "[Wiki Article] Battles -> Battles",
+      "w|c": "[Wiki Article] Cities -> Cities",
+      "w|ca": "[Wiki Article] Cities -> Castles",
+      "w|e": "[Wiki Article] People -> Explorers",
+      "w|l": "[Wiki Article] Other -> Landmark",
+      "w|m": "[Wiki Article] People -> Military",
+      "w|o": "[Wiki Article] Other -> Unknown",
+      "w|op": "[Wiki Article] People -> Unclassified",
+      "w|p": "[Wiki Article] People -> Politicians",
+      "w|r": "[Wiki Article] People -> Religious",
+      "w|s": "[Wiki Article] People -> Scientists",
+      "w|si": "[Wiki Article] Battles -> Sieges"
+    },
+    "loading": "loading...",
+    "localeWikiNotFound": "Could not find English article",
     "map": "",
-    "layers": "Schichten",
-    "loading": "wird geladen...",
-    "configuration": "Konfiguration",
-    "discover": "Entdecken",
-    "discover_label": "Entdecken Sie die Jahr ",
-    "language": "Sprache",
-    "random": "Zufälliger Artikel",
-    "help": "Intro und Informationen",
-    "share": "Freigabe als link oder Bild exportieren",
-    "resources": "Ressourcen",
-    "related_item": "VERWANDTE ARTIKEL...",
-    "users": "Benutzer Verwalten",
-    "upvote": "Interessant und zutreffend",
-    "openEpic": "Öffnen Sie Eigenen Epischen",
+    "markerIdNameArray": {
+      "Artifact": "Artifact",
+      "Artist": "Artists",
+      "Athlete": "Athletes",
+      "Battle": "Battle",
+      "Capital": "Capital",
+      "Castle": "Castle",
+      "City": "City",
+      "Explorer": "Explorer",
+      "Landmark": "Landmark",
+      "Military": "Military",
+      "Politician": "Politician",
+      "Religious": "Religious",
+      "Scientist": "Scientists",
+      "Siege": "Siege",
+      "Unclassified": "Unclassified",
+      "Unknown": "Unknown"
+    },
+    "markerLimit": "Marker Limit",
+    "markerMetadataTypes": {
+      "a": "Artist",
+      "ae|culture": "Culture",
+      "ae|religion": "Religion",
+      "ae|religionGeneral": "Religion General",
+      "ae|ruler": "Ruler",
+      "ar": "Artifact",
+      "at": "Athlete",
+      "b": "Battle",
+      "c": "City",
+      "ca": "Castle",
+      "cp": "Capital",
+      "e": "Explorer",
+      "ee": "Exploration",
+      "ei": "Discovery",
+      "eo": "Other Epic",
+      "es": "Primary Source",
+      "ew": "War",
+      "l": "Landmark",
+      "m": "Military",
+      "o": "Unknown",
+      "op": "Unclassified",
+      "p": "Politician",
+      "ps": "Primary Source",
+      "r": "Religious",
+      "s": "Scientist",
+      "si": "Siege"
+    },
+    "markers": "Markers",
+    "markersMedia": "Markers & Media",
+    "markerType": "Marker Type",
+    "markerTypes": {
+      "abstract": "Abstract",
+      "themed": "Themed"
+    },
+    "mediaTitle": "Media: %{dontTranslate}",
+    "metadata": "Metadata",
+    "migration": "Migration",
+    "migrationTooltip": "Displays routes from people place of birth to place of death and aggregates per location.",
+    "minimize": "Minimize",
+    "mod": "Modification",
+    "next": "next",
+    "noLinkedContents": "There are no linked media items yet, consider adding and linking one.",
+    "opacityByPopulation": "Opacity By Population",
+    "openArticle": "Open Article",
+    "openEpic": "Open Own Epic",
+    "openImage": "Open Image",
+    "openSource": "Open Source",
+    "partOf": "Part Of",
+    "pledgeOpen": "Open Patreon in new tab",
+    "pledgeRemind": "Remind me in another 15 minutes",
+    "pledgeTitle": "Hey there traveler!",
+    "pointsAdded": "Points added to your account",
+    "privacyPolicy": "Privacy Policy",
+    "random": "Random Article",
+    "readDocument": "Read Document",
+    "related_item": "RELATED ITEMS...",
+    "resources": "Resources",
+    "revisionHistory": "Revision history",
+    "revisions": "Revisions",
+    "search": "Search",
+    "searchMarkers": "Search Markers",
+    "setYearByArticle": "Set year by article",
+    "share": "Share as link or export image",
+    "showProvinces": "Show Provinces",
+    "signupToGatherPoints": "Sign up to get points for your curations",
+    "skipTutorial": "I know what I am doing (skip tutorial)",
+    "startTyping": "Start typing",
+    "statistics": {
+      "area": "Area",
+      "edits": "Edits",
+      "entities": "Entities",
+      "markers": "Markers",
+      "media": "Media",
+      "replies": "Replies",
+      "threads": "Threads",
+      "users": "Users"
+    },
+    "termsofService": "Terms of Service",
     "theme": {
-      "name": "Thema",
-      "dark": "Dunkel",
+      "dark": "Dark",
+      "font": "Font",
+      "light": "Light",
       "luther": "Concordia",
       "marker": "Marker",
-      "light": "Hell",
-      "font": "Schriftart"
+      "name": "Theme"
     },
-    "discover_component": {
-      "openArticle": "Öffnen des entsprechenden Wikipedia-Artikel",
-      "hasNoArticle": "Kein Wiki-Artikel verlinkt doch bitte Bearbeiten Sie dieses Element",
-      "openSource": "Open source in neuem tab",
-      "hasNoSource": "Keine Quelle verlinkt doch bitte Bearbeiten Sie dieses Element",
-      "edit": "Eintrag Bearbeiten"
+    "timeline": {
+      "expand": "Expand Timeline",
+      "reset": "Reset Timeline View",
+      "searchEpics": "Search Epics"
     },
-    "welcome": "Willkommen"
+    "toggle": "Toggle",
+    "upvote": "Interesting and accurate",
+    "users": "Manage Users",
+    "welcome": "Welcome"
   },
   "resources": {
-    "links": {
-      "fields": {
-        "source": "Quelle Artikel erhalten links",
-        "media_list": "Gegenstände erscheinen in der Medien-Sektion",
-        "content_list": "Elemente erscheinen in der linken Liste Inhalt Abschnitt"
-      }
-    },
     "areas": {
       "fields": {
-        "province_list": "Klicken Sie auf die Provinzen, um selecect/ deaktivieren",
-        "display_name": "Anzeigename",
-        "replaceWith": "Ersetzen Mit",
-        "search_name": "Wählen Sie Nach Name",
-        "main_ruler_name": "Main Herrscher Name",
-        "color": "Bereich Farbe",
+        "capital": "Capital",
+        "color": "Area Color",
+        "culture": "Culture",
+        "display_name": "Display Name",
+        "endYear": "Until Year",
+        "genReligion": "General Religion",
+        "icon_url": "Icon (Full commons.wikimedia or Wikipedia URL)",
+        "key": "Entity Key",
         "main_religion_name": "Main Religion Name",
-        "icon_url": "Symbol (Full commons.wikimedia oder Wikipedia URL)",
-        "wiki_url": "Artikel (Vollständigen Wikipedia-URL)",
-        "ruler": "Lineal",
-        "culture": "Kultur",
+        "main_ruler_name": "Main Ruler Name",
+        "population": "Population",
+        "province": "Province",
+        "province_list": "Click on provinces to selecect/ deselect",
         "religion": "Religion",
-        "capital": "Hauptstadt",
-        "population": "Bevölkerung",
-        "startYear": "Von Jahr",
-        "key": "Entity-Schlüssel",
-        "endYear": "Bis Zum Jahr"
+        "religionGen": "Religion Gen.",
+        "replaceWith": "Replace With",
+        "ruler": "Ruler",
+        "search_name": "Select By Name",
+        "startYear": "From Year",
+        "wiki_url": "Article (Full Wikipedia URL)"
       }
+    },
+    "categories": {
+      "fields": {
+        "products": "Products"
+      },
+      "name": "Category |||| Categories"
+    },
+    "commands": {
+      "fields": {
+        "basket": {
+          "delivery": "Delivery",
+          "quantity": "Quantity",
+          "reference": "Reference",
+          "sum": "Sum",
+          "tax_rate": "Tax Rate",
+          "total": "Total",
+          "unit_price": "Unit Price"
+        },
+        "customer_id": "Customer",
+        "date_gte": "Passed Since",
+        "date_lte": "Passed Before",
+        "total_gte": "Min amount"
+      },
+      "name": "Order |||| Orders"
     },
     "linked": {
       "fields": {
-        "description": "Titel",
-        "content": "Beschreibung",
-        "subtype": "Geben",
-        "source": "Link zur Quelle",
-        "wiki": "Zugehörigen Wikipedia-Artikel",
-        "year": "Jahr",
-        "geojson": "Geojson (Epen)",
-        "poster": "Link zu poster Bild",
-        "onlyEpicContent": "Nur als verlinkten Artikel von einem anderen Artikel (Sie werden weitergeleitet auf den link Formular beim speichern)",
-        "src": "Link zur Quelle/ ID"
+        "content": "Description",
+        "description": "Title",
+        "geojson": "Geojson (for epics)",
+        "onlyEpicContent": "Only used as linked part of another article (you will be forwarded to the link form upon saving)",
+        "poster": "Link to poster image",
+        "source": "Link to source",
+        "src": "Link to source/ ID",
+        "subtype": "Type",
+        "wiki": "Associated Wikipedia Article",
+        "year": "Year"
       }
     },
-    "users": {
-      "name": "User |||| Users",
+    "links": {
       "fields": {
-        "username": "Benutzername",
-        "name": "Name",
-        "createdAt": "Erstellt am",
-        "education": "Bildung",
-        "email": "E-Mail",
-        "privilege": "Privileg",
-        "karma": "Karma"
-      },
-      "page": {"delete": "Konto Löschen"}
+        "content_list": "Items to appear in the left content list section",
+        "media_list": "Items to appear in the media section",
+        "source": "Source article receiving links"
+      }
     },
-    "page": {"delete": "Löschen"},
     "markers": {
-      "name": "Marker |||| Marker",
-      "place_marker": "Marker Platzieren",
-      "deleted": "Marker Gelöscht",
+      "deleted": "Marker Deleted",
       "fields": {
-        "name": "Name",
-        "url": "URL",
-        "capitalStart": "Anfang Jahr",
-        "capitalEnd": "Ende Jahr",
-        "coo": "Koordinaten",
-        "capitalOwner": "Hauptstadt Lineal",
-        "type": "Geben",
+        "capitalEnd": "End Year",
+        "capitalOwner": "Capital Ruler",
+        "capitalStart": "Start Year",
+        "coo": "Coordinates",
+        "date": "Date",
+        "endYear": "Year End",
+        "lastUpdated": "Last Updated",
         "lat": "Latitude",
         "lng": "Longitude",
-        "subtype": "Untertitel",
-        "lastUpdated": "Zuletzt Aktualisiert",
-        "startYear": "Jahr Starten",
-        "endYear": "Zum Jahresende",
-        "year": "Jahr",
-        "date": "Datum",
-        "rating": "Bewertung"
-      },
-    },
-    "revisions": {
-      "name": "Revision |||| Revisionen",
-      "fields": {
         "name": "Name",
-        "type": "Geben",
-        "resource": "Ressource",
-        "user": "Benutzer",
-        "subtype": "Untertyp",
-        "nextBody": "nextBody",
-        "prevBody": "prevBody",
-        "reverted": "Rückgängig gemacht",
-        "timestamp": "Timestamp",
-        "id": "Id",
-        "entityId": "Person Id"
+        "rating": "Rating",
+        "startYear": "Year Start",
+        "subtype": "Subtype",
+        "type": "Type",
+        "url": "URL",
+        "year": "Year"
+      },
+      "name": "Marker |||| Markers",
+      "place_marker": "Place Marker",
+      "tabs": {
+        "address": "Address",
+        "identity": "Identity",
+        "orders": "Orders",
+        "reviews": "Reviews",
+        "stats": "Stats"
       }
     },
-  }
+    "page": {
+      "delete": "Delete"
+    },
+    "products": {
+      "fields": {
+        "category_id": "Category",
+        "height": "Height",
+        "height_gte": "Min height",
+        "height_lte": "Max height",
+        "image": "Image",
+        "price": "Price",
+        "reference": "Reference",
+        "stock": "Stock",
+        "stock_lte": "Low Stock",
+        "thumbnail": "Thumbnail",
+        "width": "Width",
+        "width_gte": "Min width",
+        "width_lte": "mx_width"
+      },
+      "name": "Poster |||| Posters",
+      "tabs": {
+        "description": "Description",
+        "details": "Details",
+        "image": "Image",
+        "reviews": "Reviews"
+      }
+    },
+    "reviews": {
+      "action": {
+        "accept": "Accept",
+        "reject": "Reject"
+      },
+      "fields": {
+        "command_id": "Order",
+        "comment": "Comment",
+        "customer_id": "Customer",
+        "date": "Date",
+        "date_gte": "Posted since",
+        "date_lte": "Posted before",
+        "product_id": "Product",
+        "rating": "Rating"
+      },
+      "name": "Review |||| Reviews",
+      "notification": {
+        "approved_error": "Error: Review not approved",
+        "approved_success": "Review approved",
+        "rejected_error": "Error: Review not rejected",
+        "rejected_success": "Review rejected"
+      }
+    },
+    "revisions": {
+      "fields": {
+        "entityId": "Entity Id",
+        "id": "Id",
+        "name": "Name",
+        "nextBody": "Next Body",
+        "prevBody": "Prev Body",
+        "resource": "Resource",
+        "reverted": "Reverted",
+        "subtype": "Subtype",
+        "timestamp": "Timestamp",
+        "type": "Type",
+        "user": "User"
+      },
+      "name": "Revision |||| Revisions"
+    },
+    "segments": {
+      "data": {
+        "collector": "Collector",
+        "compulsive": "Compulsive",
+        "ordered_once": "Ordered once",
+        "regular": "Regular",
+        "returns": "Returns",
+        "reviewer": "Reviewer"
+      },
+      "fields": {
+        "customers": "Customers",
+        "name": "Name"
+      },
+      "name": "Segments"
+    },
+    "users": {
+      "fields": {
+        "createdAt": "Created at",
+        "education": "Education",
+        "email": "Email",
+        "karma": "Karma",
+        "name": "Name",
+        "privilege": "Privilege",
+        "username": "Username"
+      },
+      "name": "User |||| Users",
+      "page": {
+        "delete": "Delete Account"
+      },
+      "tabs": {
+        "address": "Address",
+        "identity": "Identity",
+        "orders": "Orders",
+        "reviews": "Reviews",
+        "stats": "Stats"
+      }
+    }
+  },
+  "somethingWentWrong": "Something went wrong"
 }

@@ -54,15 +54,18 @@ function updateData (data, keyPath) {
   return data
 }
 
-const defaultPathValue = '<span style="font-style: italic">hover/ click items</span>'
+const defaultPathValue = (translate) => '<span style="font-style: italic">' + translate("chartSunburst.hoverClickItems") + '</span>'
 
 export default class ChartSunburst extends React.Component {
-  state = {
-    pathValue: defaultPathValue,
-    data: {},
-    finalValue: 'hover/ click items',
-    total: 1,
-    modeIndex: -1
+  constructor(props) {
+    super(props);
+    this.state = {
+      pathValue: defaultPathValue(props.translate),
+      data: {},
+      finalValue: 'hover/ click items',
+      total: 1,
+      modeIndex: -1
+    }
   }
 
   getKeyPath = (node) => {
@@ -137,9 +140,10 @@ export default class ChartSunburst extends React.Component {
       let sunBurstDataPartial = nest()
       groupBys.forEach((dim) => {
         if (activeAreaDim.indexOf(dim) === -1) {
-          sunBurstDataPartial = sunBurstDataPartial.key(function (d) {
+          const newSunBurstDataPartial = sunBurstDataPartial.key(function (d) {
             return d[dim]
           })
+          if (newSunBurstDataPartial) sunBurstDataPartial = newSunBurstDataPartial
         }
       })
       this.setState({
@@ -156,7 +160,7 @@ export default class ChartSunburst extends React.Component {
   }
 
   render () {
-    const { isMinimized, theme } = this.props
+    const { isMinimized, theme, translate } = this.props
     const { data, finalValue, pathValue, modeIndex } = this.state
 
     const chartProps = (isMinimized) ? false : {
@@ -187,13 +191,13 @@ export default class ChartSunburst extends React.Component {
       hideRootNode: true,
       onValueMouseOver: this._handleMouseOver,
       onValueMouseOut: () => this.setState({
-        pathValue: defaultPathValue,
+        pathValue: defaultPathValue(translate),
         finalValue: false,
         data: updateData(this.state.data, false)
       }),
       onLeafMouseOver: this._handleMouseOver,
       onLeafMouseOut: () => this.setState({
-        pathValue: defaultPathValue,
+        pathValue: defaultPathValue(translate),
         finalValue: false,
         data: updateData(this.state.data, false)
       }),
@@ -234,8 +238,7 @@ export default class ChartSunburst extends React.Component {
               boxShadow: 'rgba(0, 0, 0, 0.4) -1px 2px 3px 1px'
             }
           }
-          title={<span style={{ color: themes[theme].foreColors[0] }}>Breakdown <span
-            style={{ fontSize: 'inherit', color: 'inherit' }}>of {this.state.total} subjects</span></span>}
+          title={<span style={{ color: themes[theme].foreColors[0] }}>{translate('chartSunburst.breakdownTitle', { dontTranslate: this.state.total })}</span>}
           iconElementLeft={<div />}
           iconElementRight={this.state.isMinimized
             ? <IconButton style={{ left: '-9px' }} onClick={() => this._maximize()}><CompositionChartIcon
@@ -267,7 +270,7 @@ export default class ChartSunburst extends React.Component {
             top: '-418px',
             left: '352px'
           }}
-          label='SWITCH CHART' onClick={() => this._updateModeIndex(true)}
+          label={translate('chartSunburst.switchChart')} onClick={() => this._updateModeIndex(true)}
         />
         <div style={{
           width: '450px',

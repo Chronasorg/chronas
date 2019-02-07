@@ -1,7 +1,7 @@
 import React, { Component, createElement } from 'react'
 import { connect, Provider } from 'react-redux'
 import axios from 'axios'
-import { defaultTheme, Delete, Restricted, showNotification, TranslationProvider } from 'admin-on-rest'
+import {defaultTheme, Delete, Restricted, showNotification, TranslationProvider} from 'admin-on-rest'
 import decodeJwt from 'jwt-decode'
 import 'font-awesome/css/font-awesome.css'
 import { Route, Switch } from 'react-router-dom'
@@ -29,7 +29,6 @@ import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
 import TOS from './components/menu/tos/TOS'
 import Information from './components/menu/information/Information'
-import Share from './components/menu/share/Share'
 import RightDrawerRoutes from './components/content/RightDrawerRoutes'
 import Discover from './components/menu/discover/Discover'
 import Login from './components/menu/authentication/Login'
@@ -162,6 +161,7 @@ class App extends Component {
     if (selectedToken) localStorage.setItem('chs_temptoken', selectedToken)
     else localStorage.removeItem('chs_temptoken')
 
+    const newLocale = (utilsQuery.getURLParameter('locale') || localStorage.getItem('chs_locale') || 'en')
     // initialize queryparameters
     window.history.pushState('', '',
       '?year=' + selectedYear +
@@ -173,45 +173,51 @@ class App extends Component {
       '&label=' + activeArea.label +
       // (selectedToken ? ('&token=' + selectedToken) : '') +
       '&value=' + selectedItem.value +
+      '&locale=' + newLocale +
       '&position=' + (utilsQuery.getURLParameter('position') || '37,37,2.5') +
       window.location.hash)
 
-    axios.all([
+    const requestList = [
       axios.get(properties.chronasApiHost + '/metadata?type=g&f=provinces,ruler,culture,religion,capital,province,religionGeneral'),
       axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
-    ])
-      .then(axios.spread((metadata, areaDefsRequest) => {
+    ]
+
+    if (newLocale && newLocale !== "en") {
+      requestList.push(axios.get(properties.chronasApiHost + '/metadata?type=g&locale=' + newLocale + '&f=' + ('ruler,culture,religion,capital,province,religionGeneral'.split(',').join('_' + newLocale + ',')) + ('_' + newLocale)))
+    }
+    axios.all(requestList)
+      .then(axios.spread((metadata, areaDefsRequest, metadataLocale) => {
         if (this.state.failAndNotify) return
-        setMetadata(metadata.data)
+        setMetadata({ ...metadata.data, locale: (metadataLocale || {}).data })
 
         const didYouKnowInterval = setInterval(() => {
           let selectedItem
           if (!localStorage.getItem('chs_dyk_timeline')) {
-            selectedItem = didYouKnows[0][1]
+            selectedItem = didYouKnows[0]
             localStorage.setItem('chs_dyk_timeline', true)
           } else if (!localStorage.getItem('chs_dyk_discover')) {
-            selectedItem = didYouKnows[1][1]
+            selectedItem = didYouKnows[1]
             localStorage.setItem('chs_dyk_discover', true)
           } else if (!localStorage.getItem('chs_dyk_coloring')) {
-            selectedItem = didYouKnows[2][1]
+            selectedItem = didYouKnows[2]
             localStorage.setItem('chs_dyk_coloring', true)
           } else if (!localStorage.getItem('chs_dyk_markerlimit')) {
-            selectedItem = didYouKnows[3][1]
+            selectedItem = didYouKnows[3]
             localStorage.setItem('chs_dyk_markerlimit', true)
           } else if (!localStorage.getItem('chs_dyk_province')) {
-            selectedItem = didYouKnows[4][1]
+            selectedItem = didYouKnows[4]
             localStorage.setItem('chs_dyk_province', true)
           } else if (!localStorage.getItem('chs_dyk_question')) {
-            selectedItem = didYouKnows[5][1]
+            selectedItem = didYouKnows[5]
             localStorage.setItem('chs_dyk_question', true)
           } else if (!localStorage.getItem('chs_dyk_distribution')) {
-            selectedItem = didYouKnows[6][1]
+            selectedItem = didYouKnows[6]
             localStorage.setItem('chs_dyk_distribution', true)
           } else if (!localStorage.getItem('chs_dyk_link')) {
-            selectedItem = didYouKnows[7][1]
+            selectedItem = didYouKnows[7]
             localStorage.setItem('chs_dyk_link', true)
           }
-          if (selectedItem) return showNotification(selectedItem)
+          if (selectedItem) return showNotification("didYouKnow." + selectedItem)
           else return clearInterval(didYouKnowInterval)
         }, 30000)
 
@@ -251,8 +257,8 @@ class App extends Component {
     setTimeout(() => {
       if (failAndNotify) return
       const selectedIndex = Math.floor(Math.random() * didYouKnows.length)
-      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex][0], true)
-      showNotification(didYouKnows[selectedIndex][1])
+      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex], true)
+      showNotification("didYouKnow." + didYouKnows[selectedIndex])
     }, 500)
 
     if (!localStorage.getItem('chs_pledge_closed')) {
@@ -265,8 +271,8 @@ class App extends Component {
     setTimeout(() => {
       if (failAndNotify) return
       const selectedIndex = Math.floor(Math.random() * didYouKnows.length)
-      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex][0], true)
-      showNotification(didYouKnows[selectedIndex][1])
+      localStorage.setItem('chs_dyk_' + didYouKnows[selectedIndex], true)
+      showNotification("didYouKnow." + didYouKnows[selectedIndex])
     }, 500)
 
     // const parsedQuery = queryString.parse(location.search)
@@ -426,10 +432,9 @@ class App extends Component {
                         }} />
                         <Route exact path='/discover' component={Discover} />
                         <Route exact path='/login' component={Login} />
-                        <Route exact path='/share' component={Share} />
-                        <Route exact path='/info' render={(props) => {
+                        <Route path='/info/:id?' render={(props) => {
                           return (
-                            <Information theme={theme} history={history} showNotification={showNotification} />
+                            <Information activeTab={props.match.params.id} theme={theme} history={history} showNotification={showNotification} />
                           )
                         }} />
                       </Switch>

@@ -30,7 +30,7 @@ class AdminHeader extends Component {
     return (
       <div className={classnames('appLayout_constraintWidth')}>
         <div className='headerTop'>
-          <Logo translate={translate}  theme={theme} history={history} />
+          <Logo translate={translate} theme={theme} history={history} />
           Welcome Admin
         </div>
         <NavigationBar

@@ -65,6 +65,7 @@ import utilsQuery from './utils/query'
 import MapTimeline from './timeline/MapTimeline'
 import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
+import {updateSingleMetadata} from "./data/actionReducers";
 
 const turf = require('@turf/turf')
 const FLYTOANIMATIONDURATION = 2000
@@ -150,7 +151,8 @@ class Map extends Component {
   }
   _initializeMap = () => {
     console.log('### initializing map')
-    const { metadata, activeArea, changeAreaData, selectedYear, selectedItem } = this.props
+    const { metadata, activeArea, changeAreaData, selectedYear, selectedItem, locale } = this.props
+
     this._loadGeoJson('provinces', metadata.provinces)
     this._updateMetaMapStyle()
     this._simulateYearChange(activeArea.data)
@@ -165,29 +167,34 @@ class Map extends Component {
     console.log('### updating metadata mapstyles')
     const { metadata, setModToUpdate } = this.props
 
+    const metadataRuler = metadata['ruler']
+    const metadataReligion = metadata['religion']
+    const metadataReligionGeneral = metadata['religionGeneral']
+    const metadataCulture = metadata['culture']
+
     const rulStops = []
     const relStops = []
     const relGenStops = []
     const culStops = []
 
-    const rulKeys = Object.keys(metadata['ruler'])
+    const rulKeys = Object.keys(metadataRuler)
     for (let i = 0; i < rulKeys.length; i++) {
-      rulStops.push([rulKeys[i], metadata['ruler'][rulKeys[i]][1]])
+      rulStops.push([rulKeys[i], metadataRuler[rulKeys[i]][1]])
     }
 
-    const relKeys = Object.keys(metadata['religion'])
+    const relKeys = Object.keys(metadataReligion)
     for (let i = 0; i < relKeys.length; i++) {
-      relStops.push([relKeys[i], metadata['religion'][relKeys[i]][1]])
+      relStops.push([relKeys[i], metadataReligion[relKeys[i]][1]])
     }
 
-    const relGenKeys = Object.keys(metadata['religionGeneral'])
+    const relGenKeys = Object.keys(metadataReligionGeneral)
     for (let i = 0; i < relGenKeys.length; i++) {
-      relGenStops.push([relGenKeys[i], metadata['religionGeneral'][relGenKeys[i]][1]])
+      relGenStops.push([relGenKeys[i], metadataReligionGeneral[relGenKeys[i]][1]])
     }
 
-    const culKeys = Object.keys(metadata['culture'])
+    const culKeys = Object.keys(metadataCulture)
     for (let i = 0; i < culKeys.length; i++) {
-      culStops.push([culKeys[i], metadata['culture'][culKeys[i]][1]])
+      culStops.push([culKeys[i], metadataCulture[culKeys[i]][1]])
     }
 
     const mapStyle = this.state.mapStyle
@@ -417,6 +424,7 @@ class Map extends Component {
       this.setState({ mapStyle })
     }
   }
+
   _simulateYearChange = (areaDefs) => {
     const { religionGeneral, religion } = this.props.metadata
     const { activeArea, mapStyles } = this.props
@@ -823,12 +831,12 @@ class Map extends Component {
   }
 
   componentDidCatch(error, info) {
-    this.props.showNotification('Something went wrong', 'confirm')
+    this.props.showNotification('somethingWentWrong', 'confirm')
   }
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { activeEpics, activeMarkers, activeArea, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, selectAreaItem, selectMarkerItem } = this.props
+    const { activeEpics, activeMarkers, activeArea, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, selectAreaItem, selectMarkerItem, updateSingleMetadata, locale } = this.props
 
     const contentIndex = ((selectedItem || {}).data || {}).contentIndex
     const nextContentIndex = ((nextProps.selectedItem || {}).data || {}).contentIndex
@@ -845,6 +853,27 @@ class Map extends Component {
       this.setState({ mapTimelineContainerClass: 'mapTimeline' })
     }
 
+    // Locale changed?
+    if (locale !== nextProps.locale) {
+      const newLocale = nextProps.locale
+
+      if (newLocale && newLocale !== "en") {
+        axios.get(properties.chronasApiHost + '/metadata?type=g&locale=' + newLocale + '&f=' + ('ruler,culture,religion,capital,province,religionGeneral'.split(',').join('_' + newLocale + ',')) + ('_' + newLocale))
+          .then(localeMetadata => {
+            updateSingleMetadata('locale', localeMetadata.data)
+            setTimeout(() => {
+              this._changeArea(nextProps.activeArea.data, nextProps.activeArea.label, nextProps.activeArea.color, nextProps.selectedItem.value, activeArea.color)
+            }, 500)
+          })
+      }
+
+      if (newLocale === "en" || ((metadata || {}).locale || {}).ruler) {
+        updateSingleMetadata('locale', {})
+        setTimeout(() => {
+          this._changeArea(nextProps.activeArea.data, nextProps.activeArea.label, nextProps.activeArea.color, nextProps.selectedItem.value, activeArea.color)
+        }, 500)
+      }
+    }
     // Migration changed?
     if (migrationActive !== nextProps.migrationActive) {
       if (nextProps.migrationActive) {
@@ -852,9 +881,6 @@ class Map extends Component {
         setMarker(['c', 'cp'])
         // api call here
         this._queryMigrationData(nextProps.selectedYear)
-      //   this.setState({
-      //     migrationData: [[[32.6, 31.05], [29.917, 31.2]], [[12.617, 41.433], [12.483, 41.893]], [[4.819, 45.76], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.698, 41.675], [12.483, 41.893]], [[11.878, 45.406], [12.483, 41.893]], [[28.517, 47.25], [28.517, 47.25]], [[-4.522, 41.218], [9.19, 45.464]], [[29.917, 31.2], [29.917, 31.2]], [[19.61, 44.98], [4.841, 45.759]], [[13.25, 41.283], [12.483, 41.893]], [[14.633, 40.75], [12.483, 41.893]], [[8.026, 44.692], [12.483, 41.893]], [[9.185, 45.463], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[19.61, 44.98], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.2, 33.267], [12.483, 41.893]], [[4.629, 43.677], [12.483, 41.893]], [[29.917, 31.2], [12.483, 41.893]], [[27.183, 39.117], [12.483, 41.893]], [[29.067, 40.183], [23.716, 37.979]], [[29.917, 31.2], [29.917, 31.2]], [[27.15, 38.433], [4.841, 45.759]], [[14.015, 37.6], [29.917, 31.2]], [[10.926, 44.646], [10.926, 44.646]], [[6.641, 49.757], [12.483, 41.893]], [[10.867, 43.4], [12.483, 41.893]], [[-1.965, 42.303], [12.483, 41.893]], [[35.217, 31.783], [12.483, 41.893]], [[-4.767, 37.883], [12.483, 41.893]], [[13.7, 41.5], [12.483, 41.893]], [[77, 13], [77, 22]], [[25.25, 39.917], [23.716, 37.979]], [[6.641, 49.757], [9.19, 45.464]], [[29.917, 31.2], [12.483, 41.893]], [[-3, 40], [12.483, 41.893]], [[23, 38.5], [12.483, 41.893]], [[29, 27], [29.917, 31.2]], [[29, 27], [29, 27]], [[29.917, 31.2], [29, 27]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29, 27]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[40, 9], [38.583, 35.217]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [9.67, 45.695]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[14.5, 35.883], [14.5, 35.883]], [[4.841, 45.759], [4.841, 45.759]], [[11.878, 45.406], [12.483, 41.893]], [[38.583, 35.217], [12.483, 41.893]], [[2.177, 41.383], [12.483, 41.893]], [[2.177, 41.383], [2.177, 41.383]], [[23.716, 37.979], [29.917, 31.2]], [[38.267, 34.56], [12.483, 41.893]], [[-4.767, 37.883], [12.483, 41.893]], [[3.004, 43.185], [12.483, 41.893]], [[12.65, 42.567], [12.483, 41.893]], [[-0.409, 42.14], [12.483, 41.893]], [[22.95, 40.633], [12.483, 41.893]], [[31, 39], [12.483, 41.893]], [[2.298, 49.892], [4.841, 45.759]], [[35.2, 33.267], [12.483, 41.893]], [[19.82, 39.624], [12.483, 41.893]], [[36.717, 34.733], [12.483, 41.893]], [[34.9, 36.917], [12.483, 41.893]], [[38.334, 38.355], [35.217, 31.783]], [[26.5, 45.7], [9.19, 45.464]], [[12.386, 42.46], [12.483, 41.893]], [[12.74, 31.8], [12.483, 41.893]], [[14.291, 32.639], [12.483, 41.893]], [[36.15, 36.2], [12.483, 41.893]], [[36.15, 36.2], [12.483, 41.893]], [[36.15, 36.2], [12.483, 41.893]], [[6.736, 43.433], [12.483, 41.893]], [[34.839, 38.671], [29.917, 31.2]], [[12.9, 41.833], [12.483, 41.893]], [[31.167, 30.967], [29.917, 31.2]], [[32.556, 25.293], [29, 27]], [[7.767, 36.9], [12, 43]], [[7.595, 50.361], [12.483, 41.893]], [[33.609, 35.085], [33, 35]], [[35.217, 31.783], [35.217, 31.783]], [[12.74, 31.8], [12.483, 41.893]], [[12.483, 41.893], [0.688, 47.393]], [[29.917, 31.2], [29.917, 31.2]], [[35.266, 32.216], [12.483, 41.893]], [[2.9, 46.5], [0.197, 48.004]], [[-4.767, 37.883], [12.483, 41.893]], [[9.086, 45.81], [12.483, 41.893]], [[35.15, 42.027], [12.483, 41.893]], [[6.612, 36.368], [12.483, 41.893]], [[29.917, 31.2], [12.483, 41.893]], [[-5.454, 36.128], [12.483, 41.893]], [[29.917, 31.2], [29, 27]], [[36.717, 34.733], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.206, 31.704], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[29, 27], [29.917, 31.2]], [[12.483, 41.893], [12.483, 41.893]], [[12.48, 41.89], [12.483, 41.893]], [[35.527, 32.76], [35.217, 31.783]], [[29.917, 31.2], [29.917, 31.2]], [[35.145, 31.625], [35.217, 31.783]], [[34.083, -1.617], [136, 35]], [[12.483, 41.893], [-3, 40]], [[14.015, 37.6], [-9.183, 38.7]], [[30.855, 31.046], [29, 27]], [[29, 27], [29, 27]], [[29, 27], [29, 27]], [[4.841, 45.759], [29, 27]], [[29, 27], [29, 27]], [[29, 27], [29, 27]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29.917, 31.2], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[29, 27], [29.917, 31.2]], [[12.483, 41.893], [12.483, 41.893]], [[29.108, 37.836], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[36.717, 34.733], [12.483, 41.893]], [[2.9, 46.5], [12.483, 41.893]], [[14.49, 40.751], [12.483, 41.893]], [[35.527, 32.76], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.195, 32.276], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.891, 32.272], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[10.017, 44.064], [12.483, 41.893]], [[10.767, 34.733], [12.483, 41.893]], [[29.917, 31.2], [12.483, 41.893]], [[9.19, 45.464], [12.483, 41.893]], [[29.917, 31.2], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[31, 40.5], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.133, 42.489], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[31, 39], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[34.45, 31.517], [33, 35]], [[36.717, 34.733], [33, 35]], [[12, 43], [12.483, 41.893]], [[23, 38.5], [12.483, 41.893]], [[23, 38.5], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[29.26, 37.787], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.667, 41.733], [12.483, 41.893]], [[82.9, 41.65], [103, 35]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[35.527, 32.76], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[0.683, 47.4], [0.688, 47.393]], [[28, 37.5], [12.483, 41.893]], [[15.166, 37.613], [12.483, 41.893]], [[13.15, 41.75], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[31, 39], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[28.517, 47.25], [28.517, 47.25]], [[12.483, 41.893], [12.483, 41.893]], [[36.15, 36.2], [12.483, 41.893]], [[4.841, 45.759], [4.841, 45.759]], [[9.19, 45.464], [7.1, 50.734]], [[31, 39], [4.841, 45.759]], [[31, 40.5], [9.19, 45.464]], [[2.597, 48.285], [12.483, 41.893]], [[36.398, 35.418], [12.483, 41.893]], [[12.483, 41.893], [12.483, 41.893]], [[11.55, 45.55], [12.483, 41.893]], [[6.641, 49.757], [9.19, 45.464]], [[12.483, 41.893], [12.483, 41.893]], [[6.641, 49.757], [9.19, 45.464]], [[10.639, 35.824], [4.819, 45.76]], [[44.432, 32.542], [38.583, 35.217]], [[38.784, 37.146], [38.583, 35.217]], [[35, 31], [35, 31]], [[45, 28], [38.583, 35.217]], [[12.483, 41.893], [35.217, 31.783]], [[34.9, 32.5], [35.217, 31.783]], [[12.483, 41.893], [35.217, 31.783]], [[35.298, 32.702], [35.217, 31.783]], [[35.145, 31.625], [35.217, 31.783]], [[35.217, 31.783], [35.217, 31.783]], [[22.519, 40.76], [-0.579, 44.838]], [[12.483, 41.893], [23.716, 37.979]], [[12.588, 37.652], [16.5, 40.5]]]
-      // })
       }
       else {
         if (rememberedMarker) setMarker(rememberedMarker)
@@ -1076,7 +1102,6 @@ class Map extends Component {
                         const rulerColorPr = metadata.ruler[newRuler][1]
                         const rulerColor = participants[0].includes(newRuler) ? [255, 0, 0, 200] : [0, 0, 255, 200]
                         const rulerColor2 = (rulerColorPr.indexOf('rgb(') > -1) ? rulerColorPr.substring(4, rulerColorPr.length - 1).split(',').map(el => +el).concat([100]) : [100, 100, 100]
-                        /* (rulerColorPr.indexOf('rgb(') > -1) ? rulerColorPr.substring(4, rulerColorPr.length - 1).split(',').map(el => +el) : [100, 100, 100] */
 
                         if (sourceCentroid && targetCentroid) {
                           arcData.push([sourceCentroid.geometry.coordinates, targetCentroid.geometry.coordinates, rulerColor2, rulerColor])
@@ -1588,9 +1613,9 @@ class Map extends Component {
           const menuRow = <div style={styles.rootMenu}>
             <TextField
               style={{ width: 160, marginRight: 20, marginTop: -16 /*, height: 48 */}}
-              hintText='Search'
+              hintText={translate('pos.search')}
               value={searchMarkerText}
-              floatingLabelText='Search Markers'
+              floatingLabelText={translate('pos.searchMarkers')}
               onChange={(event, newValue) => this.setState({ searchMarkerText: newValue })}
             />
             <IconMenu
@@ -1715,7 +1740,6 @@ class Map extends Component {
             closeButton={false}>
             <div className='county-info' style={showClustExpandButton ? { height: 20, marginTop: -10 } : {}}
               onClick={() => {
-                console.debug('set expanded to true')
                 this.setState({ expanded: true })
               }}>
               {showClustExpandButton ? <div><FlatButton
@@ -1811,6 +1835,10 @@ class Map extends Component {
         const cultureIcon = selectedValues['c'][3]
         const religionIcon = selectedValues['e'][4]
         const religionGeneralIcon = selectedValues['g'][3]
+
+
+        const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
+
         return (
           <Popup className='dimsTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]}
             closeButton={false}>
@@ -1826,7 +1854,7 @@ class Map extends Component {
                     icon: <RulerIcon viewBox={'0 0 64 64'} />
                   })}
                 />
-                {selectedValues['r'][0] || 'n/a'}
+                {hasLocaleMetadata ? (metadata.locale['ruler'][properties.r] || selectedValues['r'][0] || 'n/a') : (selectedValues['r'][0] || 'n/a')}
               </Chip>
               <Chip
                 className='chipAvatar'
@@ -1839,7 +1867,7 @@ class Map extends Component {
                     icon: <CultureIcon viewBox={'0 0 64 64'} />
                   })}
                 />
-                {selectedValues['c'][0] || 'n/a'}
+                {hasLocaleMetadata ? (metadata.locale['culture'][properties.c] || selectedValues['c'][0] || 'n/a') : (selectedValues['c'][0] || 'n/a')}
               </Chip>
               <Chip
                 className='chipAvatar'
@@ -1853,7 +1881,7 @@ class Map extends Component {
                       viewBox={'0 0 200 168'} />
                   })}
                 />
-                {selectedValues['e'][0] || 'n/a'}
+                {hasLocaleMetadata ? (metadata.locale['religion'][properties.e] || selectedValues['e'][0] || 'n/a') : (selectedValues['e'][0] || 'n/a')}
               </Chip>
               <Chip
                 className='chipAvatar'
@@ -1867,7 +1895,7 @@ class Map extends Component {
                       viewBox={'0 0 200 168'} />
                   })}
                 />
-                {selectedValues['g'][0] || 'n/a'}
+                {hasLocaleMetadata ? (metadata.locale['religionGeneral'][properties.g] || selectedValues['g'][0] || 'n/a') : (selectedValues['g'][0] || 'n/a')}
               </Chip>
               <Chip
                 className='chipAvatar'
@@ -1879,7 +1907,7 @@ class Map extends Component {
                   backgroundColor={'#6a6a6a'}
                   {...({ icon: <ProvinceIcon viewBox={'0 0 64 64'} /> })}
                 />
-                {selectedValues['p']} ({properties.p > 1000000 ? (properties.p / 1000000 + ' M') : (properties.p > 1000 ? (properties.p / 1000 + ' k') : properties.p)})
+                  {hasLocaleMetadata ? ((metadata.locale['province'] || {})[properties.p] || selectedValues['p']) : selectedValues['p']} ({properties.p > 1000000 ? (properties.p / 1000000 + ' M') : (properties.p > 1000 ? (properties.p / 1000 + ' k') : properties.p)})
               </Chip>
             </div>
           </Popup>
@@ -1960,7 +1988,6 @@ class Map extends Component {
             filter: (history.location.pathname === '/' || (mapTimelineContainerClass === 'mapTimeline' &&
               history.location.pathname !== '/info' &&
               history.location.pathname !== '/login' &&
-              history.location.pathname !== '/share' &&
               history.location.pathname !== '/configuration' &&
               history.location.pathname !== '/account' &&
               history.location.pathname.indexOf('/community/') === -1)) ? 'inherit' : 'blur(10px)'
@@ -2019,6 +2046,7 @@ const enhance = compose(
   connect(state => ({
     theme: state.theme,
     location: state.location,
+    locale: state.locale,
     mapStyles: state.mapStyles,
     activeArea: state.activeArea,
     activeEpics: state.activeEpics,
@@ -2046,6 +2074,7 @@ const enhance = compose(
     setEpicContentIndex,
     setModData: setModDataAction,
     removeModData: removeModDataAction,
+    updateSingleMetadata,
     addModData: addModDataAction,
     showNotification
   }),

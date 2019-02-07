@@ -583,7 +583,7 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   componentDidCatch(error, info) {
-    this.props.showNotification('Something went wrong', 'confirm')
+    this.props.showNotification('somethingWentWrong', 'confirm')
   }
 
   _getFullIconURL (iconPath) {
@@ -677,7 +677,7 @@ class RightDrawerRoutes extends PureComponent {
             themeBackColors={themes[theme].backColors[1]}
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/markers/create' />}
-            label='Markers & Media'
+            label={translate('pos.markersMedia')}
             icon={nearbyIcon}
             // onClick={() => this.select(0)}
           />
@@ -685,7 +685,7 @@ class RightDrawerRoutes extends PureComponent {
             themeBackColors={themes[theme].backColors[1]}
             className='bottomNavigationItem'
             containerElement={<Link to='/mod/areas' />}
-            label='Area'
+            label={translate('pos.area')}
             icon={nearbyIcon}
             // onClick={() => { this.select(4) }}
           />
@@ -701,13 +701,13 @@ class RightDrawerRoutes extends PureComponent {
           </IconButton>
           <IconButton
             tooltipPosition='bottom-left'
-            tooltip={'Go Back'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
+            tooltip={translate('aor.action.back')} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
             onClick={() => this.handleBack()}>
             <IconBack />
           </IconButton>
           <IconButton
             tooltipPosition='bottom-left'
-            tooltip={'Close'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
+            tooltip={translate('aor.action.close')} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
             onClick={() => this.handleClose()}>
             <IconClose />
           </IconButton>
@@ -761,25 +761,37 @@ class RightDrawerRoutes extends PureComponent {
       // capital: ((metadata['capital'][(activeArea.data[selectedProvince] || {})[3]]) || {}),
       province: (metadata['province'][selectedProvince] || {}),
     }
+
+    const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
+
     const entityMeta = {
       ruler: {
-        name: entityObject.ruler[0] || 'n/a', icon: entityObject.ruler[3]
+        name: hasLocaleMetadata
+          ? (metadata.locale['ruler'][rulerId] || entityObject.ruler[0] || 'n/a')
+          : (entityObject.ruler[0] || 'n/a'),
+        icon: entityObject.ruler[3]
       },
       religion: {
-        name: entityObject.religion[0] || 'n/a', icon: entityObject.religion[4]
+        name: hasLocaleMetadata
+          ? (metadata.locale['religion'][religionId] || entityObject.religion[0] || 'n/a')
+          : (entityObject.religion[0] || 'n/a'),
+        icon: entityObject.religion[4]
       },
       religionGeneral: {
-        name: entityObject.religionGeneral[0] || 'n/a',
+        name: hasLocaleMetadata
+          ? (metadata.locale['religionGeneral'][(metadata['religion'][religionId] || [])[3]] || entityObject.religionGeneral[0] || 'n/a')
+          : (entityObject.religionGeneral[0] || 'n/a'),
         icon: entityObject.religionGeneral[3]
       },
       culture: {
-        name: entityObject.culture[0] || 'n/a', icon: entityObject.culture[3]
+        name: hasLocaleMetadata
+          ? (metadata.locale['culture'][cultureId] || entityObject.culture[0] || 'n/a')
+          : (entityObject.culture[0] || 'n/a')
       },
-      // capital: {
-      //   name: entityObject.capital[0] || 'n/a', icon: entityObject.capital[1] || defaultIcons.capital
-      // },
       province: {
-        name: entityObject.province[0] || 'n/a', icon: entityObject.province[1]
+        name: hasLocaleMetadata
+          ? ((metadata.locale['province'] || {})[selectedProvince] || entityObject.province[0] || 'n/a')
+          : (entityObject.province[0] || 'n/a')
       }
     }
 
@@ -808,7 +820,7 @@ class RightDrawerRoutes extends PureComponent {
                 subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
                 titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
                 style={styles.cardHeader.style}
-                subtitle='Summary'
+                subtitle={translate('resources.areas.fields.province')}
                 avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
                   icon={<ProvinceIcon
                     viewBox={'0 0 64 64'} />} />/* this._getFullIconURL(entityMeta.ruler.icon) */}
@@ -826,7 +838,7 @@ class RightDrawerRoutes extends PureComponent {
                 subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
                 titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
                 style={styles.cardHeader.style}
-                subtitle='Ruler'
+                subtitle={translate('resources.areas.fields.ruler')}
                 avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
                   {...(entityMeta.ruler.icon ? (entityMeta.ruler.icon[0] === '/' ? { src: entityMeta.ruler.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.ruler.icon)) }) : {
                     icon: <RulerIcon viewBox={'0 0 64 64'} />
@@ -845,7 +857,7 @@ class RightDrawerRoutes extends PureComponent {
                 subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
                 titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
                 style={styles.cardHeader.style}
-                subtitle='Culture'
+                subtitle={translate('resources.areas.fields.culture')}
                 avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
 
                   {...(entityMeta.culture.icon ? (entityMeta.culture.icon[0] === '/' ? { src: entityMeta.culture.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.culture.icon)) }) : {
@@ -865,7 +877,7 @@ class RightDrawerRoutes extends PureComponent {
                 subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
                 titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
                 style={styles.cardHeader.style}
-                subtitle='Religion'
+                subtitle={translate('resources.areas.fields.religion')}
                 avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
                   {...(entityMeta.religion.icon ? (entityMeta.religion.icon[0] === '/' ? { src: entityMeta.religion.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.religion.icon)) }) : {
                     icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
@@ -885,7 +897,7 @@ class RightDrawerRoutes extends PureComponent {
                 subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
                 titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
                 style={styles.cardHeader.style}
-                subtitle='General Religion'
+                subtitle={translate('resources.areas.fields.genReligion')}
                 avatar={<Avatar color={themes[theme].foreColors[0]} backgroundColor={themes[theme].backColors[1]}
                   {...(entityMeta.religionGeneral.icon ? (entityMeta.religionGeneral.icon[0] === '/' ? { src: entityMeta.religionGeneral.icon } : { src: this._getFullIconURL(decodeURIComponent(entityMeta.religionGeneral.icon)) }) : {
                     icon: <ReligionGeneralIcon style={{ height: 32, width: 32, margin: 0 }}
@@ -904,13 +916,13 @@ class RightDrawerRoutes extends PureComponent {
           </IconButton>
           <IconButton
             tooltipPosition='bottom-left'
-            tooltip={'Go Back'} style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+            tooltip={translate('aor.action.back')} style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleBack()}>
             <IconBack hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
           <IconButton
             tooltipPosition='bottom-left'
-            tooltip={'Close'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+            tooltip={translate('aor.action.close')} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             onClick={() => this.handleClose()}>
             <IconClose hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
@@ -982,7 +994,7 @@ class RightDrawerRoutes extends PureComponent {
                   hoverColor={themes[theme].highlightColors[0]}// '#8AA62F'
                   onClick={() => this._openPartOf(partOfEntities[0])}
                   labelStyle={{ paddingLeft: 0, paddingRight: 0 }}
-                  label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>Part Of <span style={{
+                  label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>{translate('pos.partOf')}<span style={{
                   paddingLeft: 0,
                   paddingRight: 0,
                   fontWeight: 'bolder'
@@ -1114,7 +1126,7 @@ class RightDrawerRoutes extends PureComponent {
                   </IconButton>
                   <IconButton
                     tooltipPosition='bottom-left'
-                    tooltip={'Close'} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
+                    tooltip={translate('aor.action.close')} iconStyle={{ textAlign: 'right', fontSize: '12px', color: themes[theme].foreColors[0] }}
                     onClick={() => this.handleClose()}>
                     <IconClose />
                   </IconButton>
@@ -1176,12 +1188,12 @@ class RightDrawerRoutes extends PureComponent {
                   onClick={() => {
                     localStorage.setItem('chs_newToMod', 'true')
                     localStorage.setItem('chs_info_section', 'tutorial')
-                  }} label='Go to Tutorial' />
+                  }} label={translate('pos.goTutorial')}/>
                 <FlatButton
                   onClick={() => {
                     localStorage.setItem('chs_newToMod', 'true')
                     this.forceUpdate()
-                  }} label='I know what I am doing (skip tutorial)' />
+                  }} label={translate('pos.skipTutorial')} />
               </CardActions>
             </Card>, route, commonProps, routeProps) }
         </Restricted>

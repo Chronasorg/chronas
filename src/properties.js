@@ -39,20 +39,14 @@ const styles = {
 }
 // <InfoIcon style={styles.icon} />
 export const didYouKnows = [
-  ['timeline', <div>You can mouse scroll the timeline to scale</div>],
-  ['discover', <div>You can browse images and other media by clicking <DiscoverIcon /> on the menu bar</div>],
-  ['coloring',
-    <div>You can change map coloring to religion, culture or population at <LayersIcon /> on the menu bar</div>],
-  ['markerlimit', <div>You can improve performance by decreasing marker count at <LayersIcon /> on the menu bar</div>],
-  ['province',
-    <div>You can see a complete history of a province by clicking <ProvinceIcon viewBox={'0 0 64 64'} /> on the article
-      header</div>],
-  ['question', <div>You can ask questions about articles and answer others in the <CommentIcon /> section</div>],
-  ['distribution',
-    <div>You can see a complete distribution of people of a realm by clicking <CompositionChartIcon /> on an article
-    </div>],
-  ['link',
-    <div>You can link any articles together to show up in a content section (articles) or the media section</div>],
+  'timeline',
+  'discover',
+  'coloring',
+  'markerlimit',
+  'province',
+  'question',
+  'distribution',
+  'link',
 ]
 
 const arrayToObject = (array, ind = 1) =>
@@ -95,8 +89,7 @@ export const aeIdNameArray = [
   ['ae|religionGeneral', 'Religion General', 'rgba(214, 0, 0, 0.5)', false, 'rgb(214, 0, 0)'],
 ]
 
-export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray).concat([['ps', 'Primary Source', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)']]))
-
+// export const itemTypeToName = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray).concat([['ps', 'Primary Source', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)']]))
 export const itemTypeToColor = arrayToObject(markerIdNameArray.concat(epicIdNameArray).concat(aeIdNameArray).concat([['ps', 'Primary Source', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)']]), 4)
 
 const iconWidthModern = 128
@@ -107,11 +100,11 @@ const iconHeightCluster = 117
 const iconWidthCluster = 125
 
 export const iconSize = {
-  'cp': 6,
+  'cp': 5,
   'ca': 4,
-  'b': 6,
-  'si': 6,
-  'c0': 6,
+  'b': 5,
+  'si': 5,
+  'c0': 5,
 }
 
 export const iconMapping = {
@@ -609,9 +602,9 @@ export const iconMapping = {
   }
 }
 
-export const markerIdNameObject = arrayToObject(markerIdNameArray)
+// export const markerIdNameObject = arrayToObject(markerIdNameArray)
 
-export const epicIdNameObject = arrayToObject(epicIdNameArray)
+// export const epicIdNameObject = arrayToObject(epicIdNameArray)
 
 export const properties = {
   // defines the zoom level to toggle provinces
@@ -705,21 +698,21 @@ export const properties = {
     'o': 'Other'
   },
   languageOptions: [
-    // { id: 'ar', name: 'العربية' },
-    // { id: 'de', name: 'Deutsch' },
-    // { id: 'el', name: 'Ελληνικά' },
+    { id: 'ar', name: ' (no UI translation yet)العربية' },
+    { id: 'de', name: 'Deutsch (no UI translation yet)' },
+    { id: 'el', name: 'Ελληνικά (no UI translation yet)' },
     { id: 'en', name: 'English' },
-    // { id: 'es', name: 'Español' },
-    // { id: 'fr', name: 'Français' },
-    // { id: 'nl', name: 'Nederlands' },
-    // { id: 'hi', name: 'हिन्दी' },
-    // { id: 'it', name: 'Italiano' },
-    // { id: 'ja', name: '日本語' },
-    // { id: 'pl', name: 'Polski' },
-    // { id: 'ru', name: 'Русский' },
-    // { id: 'sv', name: 'Svenska' },
-    // { id: 'vi', name: 'Tiếng Việt' },
-    // { id: 'zh', name: '中文' },
+    { id: 'es', name: 'Español (no UI translation yet)' },
+    { id: 'fr', name: 'Français (no UI translation yet)' },
+    { id: 'nl', name: 'Nederlands (no UI translation yet)' },
+    { id: 'hi', name: 'हिन्दी (no UI translation yet)' },
+    { id: 'it', name: 'Italiano (no UI translation yet)' },
+    { id: 'ja', name: '日本語 (no UI translation yet)' },
+    { id: 'pl', name: 'Polski (no UI translation yet)' },
+    { id: 'ru', name: 'Русский (no UI translation yet)' },
+    { id: 'sv', name: 'Svenska (no UI translation yet)' },
+    { id: 'vi', name: 'Tiếng Việt (no UI translation yet)' },
+    { id: 'zh', name: '中文 (no UI translation yet)' },
   ],
   fontOptions: [
     { name: 'Cinzel', id: 'cinzelFont' },

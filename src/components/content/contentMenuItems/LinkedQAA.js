@@ -248,7 +248,7 @@ class LinkedQAA extends React.Component {
   }
 
   render () {
-    const { isMinimized, options, qId, qName, setHasQuestions, theme } = this.props
+    const { isMinimized, options, qId, qName, setHasQuestions, theme, translate } = this.props
 
     const commonProps = {
       options,
@@ -295,7 +295,7 @@ class LinkedQAA extends React.Component {
         />
         <div style={styles.container}>
           {qId && qId !== '' &&
-          <QAAForum setHasQuestions={setHasQuestions} forums={[]} qaaEntity={qId} users={this.state.users}
+          <QAAForum setHasQuestions={setHasQuestions} forums={[]} qaaEntity={qId} users={this.state.users} translate={translate}
             discussions={this.state.discussions} />}
         </div>
       </Paper>

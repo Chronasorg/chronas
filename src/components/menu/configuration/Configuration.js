@@ -13,6 +13,7 @@ import { Restricted, translate } from 'admin-on-rest'
 import { properties, themes } from '../../../properties'
 
 import { changeLocale as changeLocaleAction, changeMarkerTheme, changeTheme as changeThemeAction } from './actionReducers'
+import utilsQuery from "../../map/utils/query";
 
 const styles = {
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
@@ -85,14 +86,17 @@ class Configuration extends PureComponent {
           </CardText>
           <CardText>
             <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.goFullScreen')}</div>
-            <RaisedButton style={styles.button} label={'Toggle'}
+            <RaisedButton style={styles.button} label={translate('pos.toggle')}
                           onClick={() => setFullscreen()} />
           </CardText>
           <CardText>
             <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.language')}</div>
             <SelectField
+              autoWidth={true}
               value={locale}
               onChange={(event, index, value) => {
+                localStorage.setItem('chs_locale', value)
+                utilsQuery.updateQueryStringParameter('locale', value)
                 changeLocale(value)
               }}
               style={{ ...styles.label, color: themes[theme].foreColors[0] }}
@@ -105,6 +109,10 @@ class Configuration extends PureComponent {
                 return <MenuItem value={el.id} primaryText={el.name} />
               })}
             </SelectField>
+            <br />
+            <p><i>We are looking for native speakers to translate our UI in various languages, please send an email through the <a
+              className='customLink' style={{ color: themes[theme].highlightColors[0] }}
+              onClick={() => this.props.history.push('/info/contact')}>Contact form</a> if interested.</i></p>
           </CardText>
           <CardText style={{ float: 'left' }}>
             <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.theme.font')}</div>
@@ -126,7 +134,7 @@ class Configuration extends PureComponent {
             </SelectField>
           </CardText>
           <CardText style={{ float: 'right', marginTop: 14 }}>
-            <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.theme.marker')}</div>
+            <div style={{ ...styles.label, color: themes[theme].foreColors[0] }}>{translate('pos.markerType')}</div>
             <SelectField
               value={markerTheme}
               onChange={(event, index, value) => {
@@ -139,7 +147,7 @@ class Configuration extends PureComponent {
               hintStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
             >
               {properties.markerOptions.map((el) => {
-                return <MenuItem value={el.id} primaryText={el.name} />
+                return <MenuItem value={el.id} primaryText={translate('pos.markerTypes.' + el.id)} />
               })}
             </SelectField>
           </CardText>

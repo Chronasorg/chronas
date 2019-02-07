@@ -528,6 +528,58 @@ class Discover extends PureComponent {
     }
   }
 
+  slideButtons = (score, id, source, stateData, hasNoWiki) => {
+    const { translate, theme } = this.props
+    const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
+    const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
+    const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'white' : 'green'
+    const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'white' : 'red'
+    const sourceSelected = decodeURIComponent(source !== 'undefined' ? source : id)
+
+    return <div className='slideButtons' style={(stateData[2] !== 'audios') ? styles.buttonContainer : {
+      ...styles.buttonContainer,
+      bottom: 100
+    }}>
+      <IconButton
+        onClick={() => this._handleUpvote(id, stateData[0])}
+        color='red'
+        style={styles.upArrow}
+        tooltipPosition='center-left'
+        tooltip={translate('pos.upvote')}
+        iconStyle={styles.iconButton}
+      ><IconThumbUp hoverColor={themes[theme].highlightColors[0]} color={upvoteColor} />
+      </IconButton>
+      <IconButton
+        onClick={() => this._handleDownvote(id, stateData[0])}
+        style={styles.downArrow}
+        iconStyle={styles.iconButton}
+        tooltipPosition='center-left'
+        tooltip={translate('pos.downvote')}
+      ><IconThumbDown hoverColor={themes[theme].highlightColors[0]} color={downvoteColor} /></IconButton>
+      <div style={styles.scoreLabel}>{score} </div>
+      {(stateData[2] === 'audios' || stateData[2] === 'articles' || (stateData[2] === 'ps' && (sourceSelected || '').indexOf('http') > -1) || stateData[2] === 'v')
+        ? <IconButton
+          style={styles.sourceButton}
+          tooltipPosition='bottom-center'
+          tooltip={sourceSelected}
+          onClick={() => this._handleOpenSource(sourceSelected)}>
+          tooltip={hasNoWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
+          <FloatingActionButton
+            mini
+            backgroundColor='#aaaaaaba'
+          ><IconOutbound hoverColor={themes[theme].highlightColors[0]} color='white' style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
+          </FloatingActionButton>
+        </IconButton> : null}
+      <FloatingActionButton
+        mini
+        onClick={() => this._handleEdit(id, stateData[0])}
+        backgroundColor='#aaaaaaba'
+        style={styles.editButton}
+      ><IconEdit hoverColor={themes[theme].highlightColors[0]} color='white' />
+      </FloatingActionButton>
+    </div>
+  }
+
   render () {
     const { selectedYear, translate, rightDrawerOpen, theme, setRightDrawerVisibility } = this.props
     const { slidesData, selectedImage, slideIndex, tileData, tabDataKeys, isFetchingImages } = this.state
@@ -536,59 +588,6 @@ class Discover extends PureComponent {
     const hasNoSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
     const hasNoImage = typeof selectedImage.src === 'undefined' || selectedImage.src === ''
     const hasNoWiki = typeof selectedImage.wiki === 'undefined' || selectedImage.wiki === '' || (selectedImage.wiki || []).length === 0
-
-    const slideButtons = (score, id, source, stateData) => {
-      const upvotedItems = (localStorage.getItem('chs_upvotedItems') || '').split(',')
-      const downvotedItems = (localStorage.getItem('chs_downvotedItems') || '').split(',')
-      const upvoteColor = (upvotedItems.indexOf(id) === -1) ? 'white' : 'green'
-      const downvoteColor = (downvotedItems.indexOf(id) === -1) ? 'white' : 'red'
-
-      const sourceSelected = decodeURIComponent(source !== 'undefined' ? source : id)
-
-      return <div className='slideButtons' style={(stateData[2] !== 'audios') ? styles.buttonContainer : {
-        ...styles.buttonContainer,
-        bottom: 100
-      }}>
-        <IconButton
-          onClick={() => this._handleUpvote(id, stateData[0])}
-          color='red'
-          style={styles.upArrow}
-          tooltipPosition='center-left'
-          tooltip={translate('pos.upvote')}
-          iconStyle={styles.iconButton}
-        ><IconThumbUp hoverColor={themes[theme].highlightColors[0]} color={upvoteColor} />
-        </IconButton>
-        <IconButton
-          onClick={() => this._handleDownvote(id, stateData[0])}
-          style={styles.downArrow}
-          iconStyle={styles.iconButton}
-          tooltipPosition='center-left'
-          tooltip={translate('pos.downvote')}
-        ><IconThumbDown hoverColor={themes[theme].highlightColors[0]} color={downvoteColor} /></IconButton>
-        <div style={styles.scoreLabel}>{score} </div>
-        {(stateData[2] === 'audios' || stateData[2] === 'articles' || (stateData[2] === 'ps' && (sourceSelected || '').indexOf('http') > -1) || stateData[2] === 'v')
-          ? <IconButton
-            style={styles.sourceButton}
-            tooltipPosition='bottom-center'
-            tooltip={sourceSelected}
-            onClick={() => this._handleOpenSource(sourceSelected)}>
-            tooltip={hasNoWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
-            <FloatingActionButton
-              mini
-              backgroundColor='#aaaaaaba'
-            ><IconOutbound hoverColor={themes[theme].highlightColors[0]} color='white'
-              style={{ padding: '0px', paddingLeft: 0, marginLeft: 0 }} />
-            </FloatingActionButton>
-          </IconButton> : null}
-        <FloatingActionButton
-          mini
-          onClick={() => this._handleEdit(id, stateData[0])}
-          backgroundColor='#aaaaaaba'
-          style={styles.editButton}
-        ><IconEdit hoverColor={themes[theme].highlightColors[0]} color='white' />
-        </FloatingActionButton>
-      </div>
-    }
 
     const titleText = (selectedImage.src !== '') ? '' : translate('pos.discover_label') + selectedYear
 
@@ -693,7 +692,7 @@ class Discover extends PureComponent {
             {tabDataKeys.map((tabKey, i) => (
               <Tab disabled={!(tileData[tabKey[0]].length > 0)}
                 style={tileData[tabKey[0]].length > 0 ? {} : { opacity: 0.3, cursor: 'not-allowed' }}
-                key={'tabHeader_' + i} label={tabKey[1]} value={i} />
+                key={'tabHeader_' + i} label={translate('pos.discover_component.tabs.' + tabKey[1])} value={i} />
             ))}
           </Tabs>
           <SwipeableViews
@@ -720,7 +719,7 @@ class Discover extends PureComponent {
                         subtitleStyle={styles.subtitle}
                         title={tile.subtitle}
                         subtitle={tile.title}
-                        actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
+                        actionIcon={this.slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i], hasNoWiki)}
                         actionPosition='right'
                         titlePosition='bottom'
                         titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
@@ -768,7 +767,7 @@ class Discover extends PureComponent {
                           subtitleStyle={styles.subtitle}
                           title={tile.subtitle}
                           subtitle={tile.title}
-                          actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
+                          actionIcon={this.slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i], hasNoWiki)}
                           actionPosition='right'
                           titlePosition='bottom'
                           titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 10%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
@@ -811,7 +810,7 @@ class Discover extends PureComponent {
                           subtitleStyle={styles.subtitle}
                           title={tile.subtitle}
                           subtitle={tile.title}
-                          actionIcon={slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i])}
+                          actionIcon={this.slideButtons(tile.score, encodeURIComponent(tile.src), encodeURIComponent(tile.source), tabDataKeys[i], hasNoWiki)}
                           actionPosition='right'
                           titlePosition='bottom'
                           titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
@@ -864,7 +863,7 @@ class Discover extends PureComponent {
                   <RaisedButton
                     hoverColor={themes[theme].highlightColors[0]}
                     disabled={hasNoWiki}
-                    label='Open Article'
+                    label={translate('pos.discover_component.openArticle')}
                     onClick={() => this._openPartOf(selectedImage.wiki[0], selectedImage.fullData)}
                     primary
                   />
@@ -928,7 +927,7 @@ class Discover extends PureComponent {
                 <RaisedButton
                   hoverColor={themes[theme].highlightColors[0]}
                   disabled={hasNoImage}
-                  label='Open Image'
+                  label={translate('pos.discover_component.openArticle')}
                   primary
                   onClick={() => this._handleOpenSource(selectedImage.src)}>
                   <IconOutbound color='white'
@@ -942,7 +941,7 @@ class Discover extends PureComponent {
                 <RaisedButton
                   hoverColor={themes[theme].highlightColors[0]}
                   disabled={hasNoSource}
-                  label='Open Source'
+                  label={translate('pos.openSource')}
                   primary
                   onClick={() => this._handleOpenSource(selectedImage.source)}>
                   <IconOutbound color='white'
@@ -955,7 +954,7 @@ class Discover extends PureComponent {
                 tooltip={translate('pos.discover_component.edit')}>
                 <RaisedButton
                   hoverColor={themes[theme].highlightColors[0]}
-                  label='Edit'
+                  label={translate('pos.edit')}
                   primary
                   onClick={() => this._handleEdit(selectedImage.source)} />
               </IconButton>

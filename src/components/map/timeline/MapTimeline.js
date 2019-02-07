@@ -522,7 +522,7 @@ class MapTimeline extends Component {
           {showEpicSearch && <SearchEpicAutocomplete
             key={'searchInput'}
             // targetOrigin={'top'}
-            hintText='Search Epics'
+            hintText={translate('pos.timeline.searchEpics')}
             maxSearchResults={200}
             onNewRequest={(val) => {
               if (val.subtype === 'ei') {
