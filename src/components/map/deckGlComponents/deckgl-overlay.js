@@ -409,10 +409,10 @@ export default class DeckGLOverlay extends Component {
         let step = 0
         let lineToAnimate
 
-        if (selectedFeature.connect !== true && (selectedFeature.coo || []).length === 2) {
+        if (selectedFeature.connect !== true && (selectedFeature.coo || []).length === 2 && (selectedFeature.subtype === "b" || selectedFeature.subtype === "si")) {
           let prevCoords
           for (let i = +nextProps.contentIndex - 1; i > -1; i--) {
-            const currCoords = (geoData.find(f => f.index === i) || {}).coo || []
+            const currCoords = (geoData.find(f => f.index === i && (f.subtype === "b" || f.subtype === "si")) || {}).coo || []
             if (currCoords.length === 2) {
               prevCoords = currCoords
               break

@@ -790,8 +790,8 @@ class RightDrawerRoutes extends PureComponent {
       },
       province: {
         name: hasLocaleMetadata
-          ? ((metadata.locale['province'] || {})[selectedProvince] || entityObject.province[0] || 'n/a')
-          : (entityObject.province[0] || 'n/a')
+          ? ((metadata.locale['province'] || {})[selectedProvince] || selectedProvince || 'n/a')
+          : (selectedProvince || 'n/a')
       }
     }
 
@@ -816,7 +816,7 @@ class RightDrawerRoutes extends PureComponent {
               }}
               className='bottomNavigationItem'
               icon={<CardHeader
-                title={selectedProvince}
+                title={entityMeta.province.name}
                 subtitleStyle={{ ...styles.cardHeader.titleStyle, color: themes[theme].foreColors[1] }}
                 titleStyle={{ ...styles.cardHeader.textStyle, color: themes[theme].foreColors[0] }}
                 style={styles.cardHeader.style}

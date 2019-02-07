@@ -49,6 +49,16 @@ export const didYouKnows = [
   'link',
 ]
 
+function getDefaultCharacterSet(ranges) {
+  const charSet = [];
+  ranges.forEach(range => {
+    for (let i = range[0]; i < range[1]; i++) {
+      charSet.push(String.fromCharCode(i));
+    }
+  })
+  return charSet;
+}
+
 const arrayToObject = (array, ind = 1) =>
   array.reduce((obj, item) => {
     obj[item[0]] = item[ind]
@@ -73,6 +83,11 @@ export const markerIdNameArray = [
   ['op', 'Unclassified', 'Unclassified', 'People', '#55a650'],
   ['o', 'Unknown', 'Unknown', 'Other', '#5b5b5b']
 ]
+
+export const charSets = {
+  // "western":  getDefaultCharacterSet([[32, 128]]),
+  // "el": getDefaultCharacterSet([[32, 128], []]),
+}
 
 export const epicIdNameArray = [
   ['ei', 'Discovery', 'rgba(255, 216, 0, 0.5)', false, 'rgb(255, 165, 0)'],
@@ -784,6 +799,24 @@ export const themes = {
   //   gradientColors: ['linear-gradient(180deg,#3a2931 0,#3e2931)', 'linear-gradient(180deg,#a3886e 0,#967757)'],
   //   className: 'goldenTheme'
   // }
+}
+
+export const languageToFont = {
+  ar: "Cairo",
+  fr: "Cinzel Regular",
+  en: "Cinzel Regular",
+  zh: "Noto Sans SC",
+  nl: "Cinzel Regular",
+  de: "Cinzel Regular",
+  el: "Noto Sans",
+  hi: "Noto Sans SC",
+  it: "Cinzel Regular",
+  ja: "Noto Sans",
+  pl: "Cinzel Regular",
+  ru: "Noto Sans",
+  es: "Cinzel Regular",
+  sv: "Cinzel Regular",
+  vi: "Noto Sans SC",
 }
 
 export const getPercent = (min, max, val) => {

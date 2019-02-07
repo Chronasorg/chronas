@@ -5,7 +5,7 @@ import { properties } from '../../../properties'
 export const defaultMapStyle = fromJS(MAP_STYLE)
 export const highlightLayerIndex = MAP_STYLE.layers.findIndex(layer => layer.id === 'provinces-highlighted')
 export const basemapLayerIndex = MAP_STYLE.layers.findIndex(layer => layer.id === 'basemap')
-export const areaColorLayerIndex = properties.areaColorLayers.reduce(function (acc, cur) {
+export const areaColorLayerIndex = properties.areaColorLayers.concat(["area-labels"]).reduce(function (acc, cur) {
   acc[cur] = MAP_STYLE.layers.findIndex(layer => layer.id === cur)
   return acc
 }, {})

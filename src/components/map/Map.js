@@ -49,7 +49,7 @@ import {
   WIKI_PROVINCE_TIMELINE,
   WIKI_RULER_TIMELINE
 } from './actionReducers'
-import { getFullIconURL, getPercent, iconMapping, markerIdNameArray, properties, themes } from '../../properties'
+import { getFullIconURL, getPercent, languageToFont, iconMapping, markerIdNameArray, properties, themes } from '../../properties'
 import {
   areaColorLayerIndex,
   basemapLayerIndex,
@@ -154,7 +154,7 @@ class Map extends Component {
     const { metadata, activeArea, changeAreaData, selectedYear, selectedItem, locale } = this.props
 
     this._loadGeoJson('provinces', metadata.provinces)
-    this._updateMetaMapStyle()
+    this._updateMetaMapStyle(false, true)
     this._simulateYearChange(activeArea.data)
     this._changeArea(activeArea.data, activeArea.label, activeArea.color, selectedItem.value)
 
@@ -163,9 +163,9 @@ class Map extends Component {
       selectEpicItem((utilsQuery.getURLParameter('value') || ''), +(utilsQuery.getURLParameter('year') || selectedYear), (utilsQuery.getURLParameter('value') || ''))
     }
   }
-  _updateMetaMapStyle = (shouldReset = false) => {
+  _updateMetaMapStyle = (shouldReset = false, fromInit = false) => {
     console.log('### updating metadata mapstyles')
-    const { metadata, setModToUpdate } = this.props
+    const { metadata, setModToUpdate, locale } = this.props
 
     const metadataRuler = metadata['ruler']
     const metadataReligion = metadata['religion']
@@ -197,7 +197,7 @@ class Map extends Component {
       culStops.push([culKeys[i], metadataCulture[culKeys[i]][1]])
     }
 
-    const mapStyle = this.state.mapStyle
+    let mapStyle = this.state.mapStyle
       .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-color'], fromJS(
         {
           'property': 'r',
@@ -232,6 +232,9 @@ class Map extends Component {
       ))
 
     if (shouldReset) setModToUpdate('')
+    if (fromInit && languageToFont[locale] !== "Cinzel Regular") {
+      mapStyle = mapStyle.setIn(['layers', areaColorLayerIndex['area-labels'], 'layout', 'text-font'], fromJS([languageToFont[locale]]))
+    }
     this.setState({ mapStyle })
   }
   _getAreaViewportAndOutlines = (nextActiveColorDim, nextActiveColorValue, prevActiveColorDim = false, prevActiveColorValue = false, teams = false) => {
@@ -856,6 +859,9 @@ class Map extends Component {
     // Locale changed?
     if (locale !== nextProps.locale) {
       const newLocale = nextProps.locale
+
+      mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
+        .setIn(['layers', areaColorLayerIndex['area-labels'], 'layout', 'text-font'], fromJS([languageToFont[newLocale]]))
 
       if (newLocale && newLocale !== "en") {
         axios.get(properties.chronasApiHost + '/metadata?type=g&locale=' + newLocale + '&f=' + ('ruler,culture,religion,capital,province,religionGeneral'.split(',').join('_' + newLocale + ',')) + ('_' + newLocale))
@@ -1827,7 +1833,7 @@ class Map extends Component {
           'c': metadata.culture[properties.c] || [],
           'e': metadata.religion[properties.e] || [],
           'g': metadata.religionGeneral[properties.g] || [],
-          'p': metadata.province[properties.name] || []
+          'p': properties.name || ''
         }
 
         // TODO: only color if selected
@@ -1907,7 +1913,7 @@ class Map extends Component {
                   backgroundColor={'#6a6a6a'}
                   {...({ icon: <ProvinceIcon viewBox={'0 0 64 64'} /> })}
                 />
-                  {hasLocaleMetadata ? ((metadata.locale['province'] || {})[properties.p] || selectedValues['p']) : selectedValues['p']} ({properties.p > 1000000 ? (properties.p / 1000000 + ' M') : (properties.p > 1000 ? (properties.p / 1000 + ' k') : properties.p)})
+                  {hasLocaleMetadata ? ((metadata.locale['province'] || {})[properties.name] || selectedValues['p']) : selectedValues['p']} ({properties.p > 1000000 ? (properties.p / 1000000 + ' M') : (properties.p > 1000 ? (properties.p / 1000 + ' k') : properties.p)})
               </Chip>
             </div>
           </Popup>
