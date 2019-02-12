@@ -113,15 +113,15 @@ class UserProfile extends Component {
             education={education}
           />
           <div className='user_stats'>
-            { (typeof profile.karma !== "undefined") && statItem('Total Points', profile.karma) }
-            { (typeof profile.loginCount !== "undefined") && statItem('Login Count', profile.loginCount) }
-            { (typeof profile.count_voted !== "undefined") && statItem('Vote Count', profile.count_voted) }
-            { (typeof profile.count_created !== "undefined") && statItem('Create Count', profile.count_created) }
-            { (typeof profile.count_updated !== "undefined") && statItem('Edit Count', profile.count_updated) }
-            { (typeof profile.count_deleted !== "undefined") && statItem('Delete Count', profile.count_deleted) }
-            { (typeof profile.count_mistakes !== "undefined") && statItem('Mistakes Count', profile.count_mistakes) }
-            { (typeof profile.count_reverted !== "undefined") && statItem('Revert Count', profile.count_reverted) }
-            { (typeof profile.count_linked !== "undefined") && statItem('Linked Count', profile.count_linked) }
+            { (typeof profile.karma !== "undefined") && statItem(translate('community.totalPoints'), profile.karma) }
+            { (typeof profile.loginCount !== "undefined") && statItem(translate('community.loginCount'), profile.loginCount) }
+            { (typeof profile.count_voted !== "undefined") && statItem(translate('community.voteCount'), profile.count_voted) }
+            { (typeof profile.count_created !== "undefined") && statItem(translate('community.createCount'), profile.count_created) }
+            { (typeof profile.count_updated !== "undefined") && statItem(translate('community.editCount'), profile.count_updated) }
+            { (typeof profile.count_deleted !== "undefined") && statItem(translate('community.deleteCount'), profile.count_deleted) }
+            { (typeof profile.count_mistakes !== "undefined") && statItem(translate('community.mistakesCount'), profile.count_mistakes) }
+            { (typeof profile.count_reverted !== "undefined") && statItem(translate('community.revertCount'), profile.count_reverted) }
+            { (typeof profile.count_linked !== "undefined") && statItem(translate('community.linkedCount'), profile.count_linked) }
           </div>
           <FeedBox
             customTheme={themes[theme]}

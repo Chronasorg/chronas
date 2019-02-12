@@ -67,7 +67,7 @@ class Configuration extends PureComponent {
               <ToolbarGroup>
                 <IconButton
                   tooltipPosition='bottom-left'
-                  tooltip={'Close'} touch key={'close'} containerElement={<Link to='/' />}>
+                  tooltip={translate("aor.action.close")} touch key={'close'} containerElement={<Link to='/' />}>
                   <CloseIcon hoverColor={themes[theme].highlightColors[0]} />
                 </IconButton>
               </ToolbarGroup>

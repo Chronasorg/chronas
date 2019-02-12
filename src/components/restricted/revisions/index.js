@@ -94,7 +94,7 @@ export const RevisionList = (props) => {
   const nextStyle = (record) => (record || {}).reverted ? { color: 'green' } : { color: 'red' }
   const prevStyle = { color: 'green' }
 
-  return <div style={styles.container}><div style={styles.subContainer}><List {...props} filters={<RevisionFilter />} style={styles.container} title={'Revision History'} perPage={5}>
+  return <div style={styles.container}><div style={styles.subContainer}><List {...props} filters={<RevisionFilter />} style={styles.container} title={translate('pos.revisionHistory')} perPage={5}>
     <Datagrid bodyOptions={{ overflow: 'auto', stripedRows: true, showRowHover: true }} rowStyle={rowStyle}>
       <RevertButton style={{ overflow: 'visible', maxWidth: '1em' }} {...props} isRedo={false} />
       <TextField style={{ maxWidth: '1em' }} source='entityId' label='resources.revisions.fields.entityId' />

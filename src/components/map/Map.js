@@ -1602,11 +1602,6 @@ class Map extends Component {
     if (layerClicked.object) history.push('/article')
   }
 
-  /*
-                <IconButton touch key={'close'} containerElement={<Link to='/' />}>
-                  <CloseIcon />
-                </IconButton>
-   */
   _renderPopup () {
     const { activeArea, metadata, markerTheme, mapStyles, selectMarkerItem, history, theme, translate } = this.props
     const { categories, clusterRawData, filtered, hoverInfo, expanded, searchMarkerText } = this.state
@@ -1626,7 +1621,7 @@ class Map extends Component {
             />
             <IconMenu
               style={{ /* top: -16, */float: 'right' }}
-              iconButtonElement={<IconButton tooltip='Close'><CloseIcon hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+              iconButtonElement={<IconButton tooltip={translate('aor.action.close')}><CloseIcon hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
               onClick={() => this.setState({
                 expanded: false,
                 clusterRawData: [],
@@ -1635,7 +1630,7 @@ class Map extends Component {
                 searchMarkerText: ''
               })} />
             <IconMenu
-              iconButtonElement={<IconButton tooltip='Filter'><ContentFilter
+              iconButtonElement={<IconButton tooltip={translate('pos.filter')}><ContentFilter
                 hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
               onChange={this.handleChangeFilter}
               // value={filtered}

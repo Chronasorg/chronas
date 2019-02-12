@@ -911,7 +911,7 @@ class RightDrawerRoutes extends PureComponent {
         <div style={{ ...styles.iconElementRightStyle, backgroundColor: themes[theme].backColors[0] }}>
           <IconButton
             tooltipPosition='bottom-left'
-            tooltip={'Edit'} style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
+            tooltip={translate('aor.action.edit')} style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px', color: grey600 }}
             containerElement={<Link to={modUrl} />}><EditIcon hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
           <IconButton
@@ -1160,8 +1160,7 @@ class RightDrawerRoutes extends PureComponent {
                   }} onClick={() => {
                     localStorage.setItem('chs_newToMod', 'true')
                     localStorage.setItem('chs_info_section', 'tutorial')
-                  }}>quick look at a short tutorial video</a> to see how it works, then <b>come
-              }right back</b> to this page by clicking the back icon <IconArrowLeft style={{ paddingRight: 2 }} /> and start
+                  }}>quick look at a short tutorial video</a> to see how it works, then <b>come right back</b> to this page by clicking the back icon <IconArrowLeft style={{ paddingRight: 2 }} /> and start
               editing!
                 </p>
                 <Divider />

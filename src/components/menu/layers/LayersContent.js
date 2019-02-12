@@ -416,7 +416,7 @@ class LayerContent extends Component {
             }
             }
             onClick={this.toggleMigration}
-            primaryText='Migration'
+            primaryText={translate("pos.migration")}
             leftIcon={<MigrationIcon color={ migrationActive ? themes[theme].backColors[0] : themes[theme].foreColors[0] } />}
             rightIcon={<IconButton
               iconStyle={{ color: migrationActive ? themes[theme].backColors[0] : themes[theme].foreColors[0] }}

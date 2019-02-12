@@ -274,7 +274,7 @@ class Information extends PureComponent {
               <ToolbarGroup>
                 <IconButton
                   tooltipPosition='bottom-left'
-                  tooltip={'Go Back'} touch key={'back'} onClick={() => {
+                  tooltip={translate('aor.action.back')} touch key={'back'} onClick={() => {
                     const { prevValue } = this.state
                     if (prevValue) {
                       this.handleChange(prevValue)
@@ -286,7 +286,7 @@ class Information extends PureComponent {
                 </IconButton>
                 <IconButton
                   tooltipPosition='bottom-left'
-                  tooltip={'Close'} touch key={'close'} containerElement={<Link to='/' />}>
+                  tooltip={translate('aor.action.close')} touch key={'close'} containerElement={<Link to='/' />}>
                   <CloseIcon hoverColor={themes[theme].highlightColors[0]} />
                 </IconButton>
               </ToolbarGroup>
@@ -365,7 +365,8 @@ class Information extends PureComponent {
                     className='customLink' style={highlightColorStyle}
                     onClick={() => this.handleChange('pro')}>
                     { translate('pos.block.welcome52') }</a>
-                  { translate('pos.block.welcome53') }</p>
+                  { ReactHtmlParser(translate('pos.block.welcome53')) }
+                  </p>
                 <div style={{
                   zIndex: 2,
                   background: 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 50%)',
