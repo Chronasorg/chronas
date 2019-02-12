@@ -616,7 +616,7 @@ class Information extends PureComponent {
                 </Card>
                 <br />
                 <p>
-                  {translate('pos.block.contact4')} Dietmar Aumann (German), ..</p>
+                  {translate('pos.block.contact4')} Ilya Vorontsov (Russian), ..</p>
                 <br />
                 <h4>{translate('pos.block.contact5')}</h4>
                 <p>{translate('pos.block.contact6')}</p>
