@@ -157,7 +157,7 @@ export const MarkerEdit = (props) => {
             <NumberInput options={{ fwidth: '30%', float: 'right' }} label='resources.markers.fields.capitalEnd'
               type='number' source='capitalEnd' />
             <AutocompleteInput options={{ fwidth: '30%', float: 'right' }} choices={choicesRuler}
-              label='resources.areas.fields.capitalOwner' source='capitalOwner' />
+              label='resources.markers.fields.capitalOwner' source='capitalOwner' />
           </EmbeddedArrayInput>
           <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent'
             defaultValue={props.selectedItem.value.type === '0'} />
@@ -203,7 +203,7 @@ export const MarkerCreate = (props) => {
           <NumberInput options={{ fwidth: '30%', float: 'right' }} label='resources.markers.fields.capitalEnd'
             type='number' source='capitalEnd' />
           <AutocompleteInput options={{ fwidth: '30%', float: 'right' }} choices={choicesRuler}
-            label='resources.areas.fields.capitalOwner' source='capitalOwner' />
+            label='resources.markers.fields.capitalOwner' source='capitalOwner' />
         </EmbeddedArrayInput>
         <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={false} />
       </MarkerForm>
