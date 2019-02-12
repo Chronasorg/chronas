@@ -112,6 +112,12 @@ export default {
     "hoverClickItems": "наведите/кликните на сектор",
     "switchChart": "ПОМЕНЯТЬ ТИП ДИАГРАММЫ"
   },
+  "influence": {
+    "year": "Year",
+    "provinces": "Provinces",
+    "populationTotal": "Population Total",
+    "populationShare": "Population Share",
+  },
   "community": {
     "biographyShort": "О себе",
     "board": "Форум",

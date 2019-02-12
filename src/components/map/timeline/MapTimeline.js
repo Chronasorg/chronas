@@ -437,7 +437,7 @@ class MapTimeline extends Component {
                   marginLeft: '2em'
                 }} />
               </button>
-              <input className='searchForm__input mt_color--white' placeholder='Year' autoComplete='off' title='search'
+              <input className='searchForm__input mt_color--white' placeholder={translate('influence.year')} autoComplete='off' title={translate('pos.search')}
                 type='number' min='-2000' max='2000' step='1' name='y'
                 onChange={(e) => this.setState({ inputYear: +e.target.value })} />
             </form>

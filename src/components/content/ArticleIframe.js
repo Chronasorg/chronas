@@ -321,7 +321,7 @@ class ArticleIframe extends React.Component {
     const modMenu = <div>{isEpicInfo
       ? <div style={styles.epicInfoContainer}><img className='tsTicks discoveryIcon articleEpic'
         src='/images/transparent.png' /><h6
-          style={{ paddingLeft: 40, paddingTop: 22 }}>Discovery</h6></div> : isPsWithSource
+          style={{ paddingLeft: 40, paddingTop: 22 }}>{translate('pos.markerMetadataTypes.ei')}</h6></div> : isPsWithSource
         ? <div style={styles.epicInfoContainer}>
 
           <FlatButton

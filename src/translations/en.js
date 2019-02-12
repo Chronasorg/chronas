@@ -112,6 +112,12 @@ export default {
     "hoverClickItems": "hover/ click items",
     "switchChart": "SWITCH CHART"
   },
+  "influence": {
+    "year": "Year",
+    "provinces": "Provinces",
+    "populationTotal": "Population Total",
+    "populationShare": "Population Share",
+  },
   "community": {
     "biographyShort": "Bio",
     "board": "Board",

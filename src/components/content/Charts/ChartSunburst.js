@@ -62,7 +62,7 @@ export default class ChartSunburst extends React.Component {
     this.state = {
       pathValue: defaultPathValue(props.translate),
       data: {},
-      finalValue: 'hover/ click items',
+      finalValue: props.translate("chartSunburst.hoverClickItems"),
       total: 1,
       modeIndex: -1
     }
@@ -245,7 +245,7 @@ export default class ChartSunburst extends React.Component {
               color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>
             : <IconButton
               tooltipPosition='bottom-left'
-              tooltip={'Minimize'} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}
+              tooltip={translate('pos.minimize')} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}
                 hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
         <div style={styles.chartContainer}>

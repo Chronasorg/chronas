@@ -273,7 +273,7 @@ class EpicTimeline extends React.Component {
   _setUpInfluenceDataAndMediaAndLinkedContent = (epicData, influenceRawData, isEntity) => {
     if (!epicData || (!epicData.content || !epicData.data) && !influenceRawData) return
 
-    const { selectedItem } = this.props
+    const { selectedItem, translate } = this.props
 
     console.error('setting up influenceChartData, this should only be done once for so many entities', influenceRawData.id)
 
@@ -283,21 +283,21 @@ class EpicTimeline extends React.Component {
         id: influenceRawData.id,
         data: [
           {
-            title: 'Provinces',
+            title: translate("influence.provinces"),
             disabled: false,
             data: influenceRawData.data.influence.map((el) => {
               return { left: Object.keys(el)[0], top: this._roundToTwo(Object.values(el)[0][0]) }
             })
           },
           {
-            title: 'Population Total',
+            title: translate("influence.populationTotal"),
             disabled: false,
             data: influenceRawData.data.influence.map((el) => {
               return { left: Object.keys(el)[0], top: this._roundToTwo(Object.values(el)[0][1]) }
             })
           },
           {
-            title: 'Population Share',
+            title: translate("influence.populationShare"),
             disabled: false,
             data: influenceRawData.data.influence.map((el) => {
               return { left: Object.keys(el)[0], top: this._roundToTwo(Object.values(el)[0][2]) }
@@ -310,7 +310,7 @@ class EpicTimeline extends React.Component {
           id: epicEntity._id,
           data: [
             {
-              title: 'Population Share',
+              title: translate("influence.populationShare"),
               disabled: false,
               data: epicEntity.data.influence.map((el) => {
                 return { left: Object.keys(el)[0], top: this._roundToTwo(Object.values(el)[0][2]) }
@@ -619,7 +619,9 @@ class EpicTimeline extends React.Component {
           linkedItems={linkedMediaItems} selectedYear={selectedYear} />
         {influenceChartData && influenceChartData.length > 0 && entityName !== "Unknown" &&
         <div style={{ height: (!isEntity) ? '256px' : '200px', width: '100%' }}>
-          <InfluenceChart qName={entityName || ''} epicMeta={isEntity ? false : epicMeta}
+          <InfluenceChart
+            translate={translate}
+            qName={entityName || ''} epicMeta={isEntity ? false : epicMeta}
             chartIcons={epicLinkedArticles.filter(el => el.type === 'b' || el.type === 'si' || el.type === 'ei' || el.type === 'ew')}
             rulerProps={rulerProps} setYear={this.setYearWrapper} setEpicContentIndex={setEpicContentIndex} newData={influenceChartData}
             selectedYear={selectedYear} />

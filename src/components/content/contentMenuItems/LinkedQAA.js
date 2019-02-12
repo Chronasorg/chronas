@@ -290,7 +290,7 @@ class LinkedQAA extends React.Component {
               onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
             : <IconButton
               tooltipPosition='bottom-left'
-              tooltip={'Minimize'} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}
+              tooltip={translate('pos.minimize')} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}
                 hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
         />
         <div style={styles.container}>
