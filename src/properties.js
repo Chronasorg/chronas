@@ -115,11 +115,11 @@ const iconHeightCluster = 117
 const iconWidthCluster = 125
 
 export const iconSize = {
-  'cp': 5,
+  'cp': 7,
   'ca': 4,
   'b': 5,
   'si': 5,
-  'c0': 5,
+  'c0': 7,
 }
 
 export const iconMapping = {

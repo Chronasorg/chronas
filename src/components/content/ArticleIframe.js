@@ -200,8 +200,6 @@ class ArticleIframe extends React.Component {
         selectEpicItem('modOnly', +selectedYear, ((epicContentItem || {}).properties || {}).id)
 
         if (epicIdNameArray.map(el => el[0]).includes(((epicContentItem || {}).properties || {}).t)) fModUrl = '/mod/linked'
-        // selectLinkedItem(epicContentItem.wiki)
-        // setData({ id: epicContentItem.wiki })
       } else if (((epicContentItem || {}).properties || {}).ct === 'area' && ((epicContentItem || {}).properties || {}).aeId) {
         const [ae, colorToSelect, rulerToHold] = ((epicContentItem || {}).properties || {}).aeId.split('|')
         selectAreaItemWrapper(rulerToHold, colorToSelect)

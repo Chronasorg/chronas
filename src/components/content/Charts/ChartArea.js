@@ -55,7 +55,7 @@ export default class InfluenceChart extends React.Component {
 
     this.setState({
       sortedData: newData[0].data[0].data.map((el) => {
-        if (!isNaN(el.left)) return el.left
+        if (el.left !== false && !isNaN(el.left)) return el.left
       }).sort((a, b) => +a - +b),
       series: nextSeries,
       currentYearMarkerValues,

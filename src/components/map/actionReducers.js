@@ -10,7 +10,9 @@ export const SET_VALUE = 'SET_VALUE'
 export const SET_FULL_ITEM = 'SET_FULL_ITEM'
 export const SET_EPIC_ITEM = 'SET_EPIC_ITEM'
 export const DESELECT_ITEM = 'DESELECT_ITEM'
+export const SET_AUTOPLAY = 'SET_AUTOPLAY'
 
+export const TYPE_AUTOPLAY = 'autoplay'
 export const TYPE_AREA = 'areas'
 export const TYPE_MARKER = 'markers'
 export const TYPE_METADATA = 'metadata'
@@ -47,6 +49,11 @@ export const setFullItem = (wiki, province, type, data) => {
 
 export const setData = data => ({
   type: SET_DATA,
+  payload: data,
+})
+
+export const setAutoplay = data => ({
+  type: SET_AUTOPLAY,
   payload: data,
 })
 
@@ -130,6 +137,13 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
           value: payload[1],
           type: payload[2],
           data: payload[3]
+        }
+      case SET_AUTOPLAY:
+        return {
+          wiki: '',
+          value: '',
+          type: TYPE_AUTOPLAY,
+          data: payload
         }
       case SET_AREA_ITEM:
         return {

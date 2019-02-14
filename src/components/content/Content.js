@@ -304,18 +304,7 @@ class Content extends Component {
             linkedItems.media = linkedItems.media.sort((a, b) => (+b.score || 0) - (+a.score || 0))
 
             showNotification(linkedItems.media.length + ' linked media item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
-
-            // if (res.map) {
-            //   if (isMarker || isMedia) {
-            //     this.props.setPartOfItems(res.map)
-            //   }
-            //   else {
-            //     // add to entityList
-            //   }
-            // }
-
             setData(linkedItems)
-            // this.setState({ linkedItems })
           } else {
             showNotification('No linked items found, consider adding one') // TODO: notifications don't seem to work on this page
           }

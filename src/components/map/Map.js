@@ -43,11 +43,12 @@ import {
   setWikiId,
   TYPE_AREA,
   TYPE_EPIC,
+  TYPE_AUTOPLAY,
   TYPE_LINKED,
   TYPE_MARKER,
   TYPE_METADATA,
   WIKI_PROVINCE_TIMELINE,
-  WIKI_RULER_TIMELINE
+  WIKI_RULER_TIMELINE, deselectItem
 } from './actionReducers'
 import { getFullIconURL, getPercent, languageToFont, iconMapping, markerIdNameArray, properties, themes } from '../../properties'
 import {
@@ -124,7 +125,7 @@ const styles = {
     width: 105,
     height: 134,
     border: 'medium none',
-    visibility: 'visibile',
+    visibility: 'visible',
     color: '#fff',
     paddingTop: '60px',
     textShadow: 'none',
@@ -625,7 +626,7 @@ class Map extends Component {
     })
   }
   _changeYear = (year, migrationActive) => {
-    const { activeArea, activeMarkers, changeAreaData, selectedItem, setYear, metadata } = this.props
+    const { activeArea, activeMarkers, changeAreaData, deselectItem, selectedItem, setYear, metadata } = this.props
     let prevActiveprovinceValue = (activeArea.data[selectedItem.value] || {})[utils.activeAreaDataAccessor(activeArea.color)]
 
     if (activeArea.color === 'religionGeneral') {
@@ -651,6 +652,24 @@ class Map extends Component {
         this._changeArea(areaDefsRequest.data, activeArea.label, activeArea.color, selectedItem.value, false, prevActiveprovinceValue)
         utilsQuery.updateQueryStringParameter('year', year)
         this.setState({ showYear: true })
+
+        if (this.props.selectedItem.type === TYPE_AUTOPLAY) {
+          const autoplayData = this.props.selectedItem.data
+          const nextYear = +year + autoplayData[2]
+          if (nextYear <= autoplayData[1]) {
+            setTimeout(() => {
+              setYear(nextYear)
+            }, autoplayData[4]*1000)
+          } else if (autoplayData[3]) {
+            // go back to the beginning if repeat is on
+            setTimeout(() => {
+              setYear(autoplayData[0])
+            }, autoplayData[4]*1000)
+          } else {
+            // stop if not
+            deselectItem()
+          }
+        }
       })
   }
   _goToViewport = ({ longitude, latitude, zoomIn }) => {
@@ -839,7 +858,7 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { activeEpics, activeMarkers, activeArea, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, selectAreaItem, selectMarkerItem, updateSingleMetadata, locale } = this.props
+    const { activeEpics, activeMarkers, activeArea, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, setYear, selectAreaItem, selectMarkerItem, updateSingleMetadata, locale } = this.props
 
     const contentIndex = ((selectedItem || {}).data || {}).contentIndex
     const nextContentIndex = ((nextProps.selectedItem || {}).data || {}).contentIndex
@@ -895,6 +914,26 @@ class Map extends Component {
       }
     }
 
+    // entering AUTOPLAY
+    if (selectedItem.type !== TYPE_AUTOPLAY && nextProps.selectedItem.type === TYPE_AUTOPLAY) {
+      rememberedMarker = activeMarkers.list.slice(0)
+      setMarker([])
+
+      setTimeout(() => {
+        const autoplayData = nextProps.selectedItem.data
+        if (autoplayData[0] !== nextProps.selectedYear) {
+          setYear(autoplayData[0])
+        } else {
+          setYear(+nextProps.selectedYear + autoplayData[2])
+        }
+      }, 500)
+    }
+
+    // leaving AUTOPLAY
+    if (nextProps.selectedItem.type !== TYPE_AUTOPLAY && selectedItem.type === TYPE_AUTOPLAY) {
+      if (rememberedMarker) setMarker(rememberedMarker)
+      rememberedMarker = false
+    }
     // Leaving Epic? -> cleanup
     if (selectedItem.type === TYPE_EPIC && nextProps.selectedItem.type !== TYPE_EPIC) {
       mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, TYPE_EPIC)
@@ -1971,7 +2010,7 @@ class Map extends Component {
           selectedYear={+selectedYear}
           open={!infoOpen}// this.state.showYear}
           message={messageYearNotification(selectedYear, (selectedYear < 1), themes[theme].foreColors[2])}
-          contentStyle={styles.yearNotificationContent}
+          contentStyle={{ ...styles.yearNotificationContent, transition: (selectedItem.type === TYPE_AUTOPLAY) ? 'opacity 100ms' : 'opacity 500ms cubic-bezier(0.23, 1, 0.32, 1) 100ms' }}
           bodyStyle={styles.yearNotificationBody}
           style={{
             ...styles.yearNotification,
@@ -2036,7 +2075,7 @@ class Map extends Component {
         </MapGL>
         {!isStatic && <div className={mapTimelineContainerClass}>
           <MapTimeline history={history}
-            groupItems={mapTimelineContainerClass !== 'mapTimeline discoverActive' ? epics : []} />
+            groupItems={(mapTimelineContainerClass !== 'mapTimeline discoverActive' && selectedItem.type !== TYPE_AUTOPLAY) ? epics : []} />
         </div>}
       </div>
     )
@@ -2062,6 +2101,7 @@ const enhance = compose(
     rightDrawerOpen: state.rightDrawerOpen,
   }), {
     changeAreaData: changeAreaDataAction,
+    deselectItem,
     setData,
     setRightDrawerVisibility,
     selectAreaItem: selectAreaItemAction,
