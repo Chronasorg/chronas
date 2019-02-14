@@ -480,6 +480,8 @@ export default {
       "name": "Theme"
     },
     "timeline": {
+      "openAutoplayMenu": "Open Autoplay Menu",
+      "stopAutoplay": "Stop Autoplay",
       "expand": "Expand Timeline",
       "reset": "Reset Timeline View",
       "searchEpics": "Search Epics"
