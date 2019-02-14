@@ -994,7 +994,7 @@ class RightDrawerRoutes extends PureComponent {
                   hoverColor={themes[theme].highlightColors[0]}// '#8AA62F'
                   onClick={() => this._openPartOf(partOfEntities[0])}
                   labelStyle={{ paddingLeft: 0, paddingRight: 0 }}
-                  label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>{translate('pos.partOf')}<span style={{
+                  label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>{translate('pos.partOf')} <span style={{
                   paddingLeft: 0,
                   paddingRight: 0,
                   fontWeight: 'bolder'

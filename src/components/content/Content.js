@@ -190,6 +190,7 @@ class Content extends Component {
       const sunburstData = []
       const sunburstDataMeta = {}
       const activeData = activeArea.data
+
       if (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
         console.error('setting up sunburst data, this should only be done once', activeprovinceValue)
         Object.keys(activeData).forEach((provKey) => {
@@ -200,7 +201,6 @@ class Content extends Component {
             const culture = metadata['culture'][currProvData[utils.activeAreaDataAccessor('culture')]] || {}
             const religion = metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {}
             const religionGeneral = metadata['religionGeneral'][(metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {})[3]] || {}
-
 
             const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
 

@@ -617,7 +617,7 @@ class Information extends PureComponent {
                 </Card>
                 <br />
                 <p>
-                  {translate('pos.block.contact4')} Ilya Vorontsov (Russian), ..</p>
+                  {translate('pos.block.contact4')} <a className='customLink' target='_blank' href='http://twitter.com/vorontsovie'>Ilya Vorontsov</a> (Russian), ..</p>
                 <br />
                 <h4>{translate('pos.block.contact5')}</h4>
                 <p>{translate('pos.block.contact6')}</p>

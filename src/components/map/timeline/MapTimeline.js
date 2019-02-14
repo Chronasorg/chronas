@@ -647,8 +647,8 @@ class MapTimeline extends Component {
                 {/*/>*/}
                 {/*<Divider />*/}
                 <ListItem
-                  primaryText="Autoplay"
-                  secondaryText="Changes year by step size"
+                  primaryText={translate('pos.timeline.autoplay')}
+                  secondaryText={translate('pos.timeline.autoplaySubtitle')}
                   disabled={true}
                 />
                 <ListItem
@@ -665,7 +665,7 @@ class MapTimeline extends Component {
                   min={-2000}
                   max={2000}
                   step={1}
-                  floatingLabelText="Start Year"
+                  floatingLabelText={translate('resources.markers.fields.capitalStart')}
                   style={{ width: 'calc(50% - 2px)', float: 'left', zIndex: 10, marginRight: 4 }}
                 />} />
                 <ListItem
@@ -681,7 +681,7 @@ class MapTimeline extends Component {
                   min={-2000}
                   max={2000}
                   step={1}
-                  floatingLabelText="End Year"
+                  floatingLabelText={translate('resources.markers.fields.capitalEnd')}
                   style={{ width: 'calc(50% - 2px)' }}
                 />} />
                 <ListItem
@@ -697,7 +697,7 @@ class MapTimeline extends Component {
                     min={1}
                     max={4000}
                     step={1}
-                    floatingLabelText="Step Size in Years"
+                    floatingLabelText={translate('pos.timeline.stepSize')}
                     style={{ width: 'calc(50% - 2px)', float: 'left', zIndex: 10, marginRight: 4 }}
                   />} />
                 <ListItem
@@ -713,7 +713,7 @@ class MapTimeline extends Component {
                     min={0.1}
                     max={100}
                     step={0.1}
-                    floatingLabelText="Delay in sec"
+                    floatingLabelText={translate('pos.timeline.delay')}
                     style={{ width: 'calc(50% - 2px)' }}
                   />} />
                 <ListItem
@@ -731,11 +731,11 @@ class MapTimeline extends Component {
                     //   this.setState({ animation })
                     // }}
                     checked={animation[3]}
-                    label='Repeat'
+                    label={translate('pos.timeline.repeat')}
                   />} />
                 {/*<ListItem leftIcon={<Checkbox*/}
                 {/*/>} secondaryText="Generate GIF" rightIcon={<IconGif />} />*/}
-                <ListItem primaryText="Start Slideshow" rightIcon={<IconPlay />}
+                <ListItem primaryText={translate('pos.timeline.startSlideshow')} rightIcon={<IconPlay />}
                 onClick={() => {
                   setAutoplay(this.state.animation)
                   this.setState({ showSubMenu: false })

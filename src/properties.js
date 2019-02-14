@@ -91,10 +91,10 @@ export const charSets = {
 
 export const epicIdNameArray = [
   ['ei', 'Discovery', 'rgba(255, 216, 0, 0.5)', false, 'rgb(255, 165, 0)'],
-  ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)', false, 'rgb(0, 0, 255)'],
+  // ['ee', 'Exploration', 'rgba(0, 0, 255, 0.5)', false, 'rgb(0, 0, 255)'],
   ['es', 'Primary Source', 'rgba(175, 124, 90, 0.5)', false, 'rgb(175, 124, 90)'],
   ['ew', 'War', 'rgba(158, 50, 36, 0.5)', false, 'rgb(158, 50, 36)'],
-  ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)', false, 'rgb(255, 255, 255)']
+  // ['eo', 'Other Epic', 'rgba(255, 255, 255, 0.5)', false, 'rgb(255, 255, 255)']
 ]
 
 export const aeIdNameArray = [
@@ -724,7 +724,7 @@ export const properties = {
     { id: 'it', name: 'Italiano (no UI translation yet)' },
     { id: 'ja', name: '日本語 (no UI translation yet)' },
     { id: 'pl', name: 'Polski (no UI translation yet)' },
-    { id: 'ru', name: 'Русский (no UI translation yet)' },
+    { id: 'ru', name: 'Русский' },
     { id: 'sv', name: 'Svenska (no UI translation yet)' },
     { id: 'vi', name: 'Tiếng Việt (no UI translation yet)' },
     { id: 'zh', name: '中文 (no UI translation yet)' },

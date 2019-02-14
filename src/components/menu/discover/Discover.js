@@ -927,7 +927,7 @@ class Discover extends PureComponent {
                 <RaisedButton
                   hoverColor={themes[theme].highlightColors[0]}
                   disabled={hasNoImage}
-                  label={translate('pos.discover_component.openArticle')}
+                  label={translate('pos.discover_component.openSource')}
                   primary
                   onClick={() => this._handleOpenSource(selectedImage.src)}>
                   <IconOutbound color='white'

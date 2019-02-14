@@ -463,7 +463,7 @@ class LayerContent extends Component {
           </DropDownMenu>
           <ListItem primaryText={translate("pos.showProvinces")}
             rightToggle={<Toggle onToggle={() => setProvinceBorders(!mapStyles.showProvinceBorders)} />}
-            open={mapStyles.showProvinceBorders} />
+            open={!mapStyles.showProvinceBorders} />
           <ListItem primaryText={translate("pos.opacityByPopulation")}
             rightToggle={<Toggle onToggle={() => setPopOpacity(!mapStyles.popOpacity)} />}
             open={mapStyles.popOpacity} />

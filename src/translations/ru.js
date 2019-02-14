@@ -480,6 +480,14 @@ export default {
       "name": "Тема"
     },
     "timeline": {
+      "openAutoplayMenu": "Open Autoplay Menu",
+      "stopAutoplay": "Stop Autoplay",
+      "autoplay": "Autoplay",
+      "autoplaySubtitle": "Changes year by step size",
+      "stepSize": "Step Size in Years",
+      "delay": "Delay in sec",
+      "repeat": "Repeat",
+      "startSlideshow": "Start Slideshow",
       "expand": "Раскрыть таймлайн",
       "reset": "Вернуть таймлайн в исходный вид",
       "searchEpics": "Поиск эпопеи"
@@ -513,30 +521,6 @@ export default {
         "startYear": "С какого года",
         "wiki_url": "Статья (полная URL-ссылка на википедию)"
       }
-    },
-    "categories": {
-      "fields": {
-        "products": "Товары"
-      },
-      "name": "Категория |||| Категории"
-    },
-    "commands": {
-      "fields": {
-        "basket": {
-          "delivery": "Доставка",
-          "quantity": "Количество",
-          "reference": "Ссылка",
-          "sum": "Сумма",
-          "tax_rate": "Величина налога",
-          "total": "Итог",
-          "unit_price": "Цена единицы"
-        },
-        "customer_id": "Покупатель",
-        "date_gte": "Прошло с",
-        "date_lte": "Прошло до",
-        "total_gte": "Минимальное количество"
-      },
-      "name": "Заказ |||| Заказы"
     },
     "linked": {
       "fields": {
@@ -592,53 +576,6 @@ export default {
     "page": {
       "delete": "Удалить"
     },
-    "products": {
-      "fields": {
-        "category_id": "Категория",
-        "height": "Высота",
-        "height_gte": "Минимальная высота",
-        "height_lte": "Максимальная высота",
-        "image": "Изображение",
-        "price": "Цена",
-        "reference": "Ссылка",
-        "stock": "Запас",
-        "stock_lte": "Небольшой запас",
-        "thumbnail": "Миниатюра",
-        "width": "Ширина",
-        "width_gte": "Минимальная ширина",
-        "width_lte": "Максимальная ширина"
-      },
-      "name": "Эмблема |||| Эмблемы",
-      "tabs": {
-        "description": "Описание",
-        "details": "Подробности",
-        "image": "Изображение",
-        "reviews": "Рецензии"
-      }
-    },
-    "reviews": {
-      "action": {
-        "accept": "Принять",
-        "reject": "Отклонить"
-      },
-      "fields": {
-        "command_id": "Заказ",
-        "comment": "Комментарий",
-        "customer_id": "Покупатель",
-        "date": "Дата",
-        "date_gte": "Опубликовано с",
-        "date_lte": "Опубликовано до",
-        "product_id": "Товар",
-        "rating": "Рейтинг"
-      },
-      "name": "Рецензия |||| Рецензии",
-      "notification": {
-        "approved_error": "Ошибка: Рецензия не принята",
-        "approved_success": "Рецензия принята",
-        "rejected_error": "Ошибка: Рецензия не отклонена",
-        "rejected_success": "Рецензия отклонена"
-      }
-    },
     "revisions": {
       "fields": {
         "entityId": "Id сущности",
@@ -655,21 +592,6 @@ export default {
       },
       "name": "Правка |||| Правки"
     },
-    "segments": {
-      "data": {
-        "collector": "Коллекционер",
-        "compulsive": "Заядлый",
-        "ordered_once": "Заказал единожды",
-        "regular": "Регулярный",
-        "returns": "Возвращается",
-        "reviewer": "Рецензент"
-      },
-      "fields": {
-        "customers": "Покупатели",
-        "name": "Имя"
-      },
-      "name": "Сегменты"
-    },
     "users": {
       "fields": {
         "createdAt": "Создан",
@@ -684,13 +606,6 @@ export default {
       "page": {
         "delete": "Удалить аккаунт"
       },
-      "tabs": {
-        "address": "Адрес",
-        "identity": "Личность",
-        "orders": "Заказы",
-        "reviews": "Рецензии",
-        "stats": "Статистика"
-      }
     }
   },
   "somethingWentWrong": "Что-то пошло не так"
