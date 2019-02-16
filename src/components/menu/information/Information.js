@@ -369,7 +369,6 @@ class Information extends PureComponent {
                   </p>
                 <div style={{
                   zIndex: 2,
-                  background: 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 50%)',
                   bottom: 0,
                   right: 0,
                   width: 400,
