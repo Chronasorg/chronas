@@ -325,7 +325,7 @@ class Information extends PureComponent {
               </div>
               <br />
               <div style={{
-                background: 'url(/images/compass.jpg) center bottom no-repeat #f9f9f9',
+                background: 'url(/images/compass.png) center bottom no-repeat #f9f9f9',
                 backgroundColor: themes[theme].backColors[0],
                 minHeight: 512,
                 marginBottom: -40
