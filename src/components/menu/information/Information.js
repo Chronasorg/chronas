@@ -325,7 +325,7 @@ class Information extends PureComponent {
               </div>
               <br />
               <div style={{
-                background: 'url(/images/compass.jpg) center bottom no-repeat #f9f9f9',
+                background: 'url(/images/compass.png) center bottom no-repeat #f9f9f9',
                 backgroundColor: themes[theme].backColors[0],
                 minHeight: 512,
                 marginBottom: -40
@@ -367,7 +367,6 @@ class Information extends PureComponent {
                   </p>
                 <div style={{
                   zIndex: 2,
-                  background: 'linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgb(255, 255, 255) 50%)',
                   bottom: 0,
                   right: 0,
                   width: 400,
