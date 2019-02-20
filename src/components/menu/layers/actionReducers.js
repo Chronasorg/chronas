@@ -1,4 +1,4 @@
-import utilsQuery from "../../map/utils/query";
+import utilsQuery from '../../map/utils/query'
 
 export const CHANGE_BASEMAP = 'CHANGE_BASEMAP'
 export const SET_AREA = 'SET_AREA'

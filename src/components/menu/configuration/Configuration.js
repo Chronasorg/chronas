@@ -106,7 +106,7 @@ class Configuration extends PureComponent {
               hintStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
             >
               {properties.languageOptions.map((el) => {
-                return <MenuItem value={el.id} primaryText={el.name} />
+                return <MenuItem key={el.id} value={el.id} primaryText={el.name} />
               })}
             </SelectField>
             <br />

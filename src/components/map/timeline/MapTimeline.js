@@ -402,13 +402,13 @@ class MapTimeline extends Component {
 
     setTimeout(() => {
       this.setState({ timelineHeight: SMALLTIMELINEHEIGHT })
+      this.forceUpdate();
     }, 1000)
     // this.props.ready();
   }
 
   shouldComponentUpdate (nextProps) {
     // return false;
-
     if (nextProps.groupItems.length !== this.props.groupItems.length || nextProps.selectedYear !== this.props.selectedYear) {
       return true
     } else return false

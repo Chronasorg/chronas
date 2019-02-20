@@ -27,6 +27,7 @@ import { history } from './store/createStore'
 import Account from './components/menu/account/Account'
 import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
+import Performance from './components/menu/performanceSelector/PerformanceSelector'
 import TOS from './components/menu/tos/TOS'
 import Information from './components/menu/information/Information'
 import RightDrawerRoutes from './components/content/RightDrawerRoutes'
@@ -222,8 +223,10 @@ class App extends Component {
         }, 30000)
 
         setYear(selectedYear)
-        if (selectedMarker !== '') setMarker(selectedMarker.split(','))
-        if (selectedEpics !== '') setEpic(selectedEpics.split(','))
+        if (!selectedToken && (!window.location.hash || window.location.hash === '#/')) {
+          if (selectedMarker !== '') setMarker(selectedMarker.split(','))
+          if (selectedEpics !== '') setEpic(selectedEpics.split(','))
+        }
         // if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
         if (selectedItem.type === TYPE_AREA) {
           selectAreaItem('-1', selectedItem.value)
@@ -245,15 +248,6 @@ class App extends Component {
     const { setUser, showNotification } = this.props
     const { failAndNotify } = this.state
 
-    // enable for time based error out
-    //
-    // setTimeout(() => {
-    //   if (this.props.isLoading) {
-    //     this.setState({ failAndNotify: true })
-    //     this.forceUpdate()
-    //   }
-    // }, 25000)
-
     setTimeout(() => {
       if (failAndNotify) return
       const selectedIndex = Math.floor(Math.random() * didYouKnows.length)
@@ -264,7 +258,7 @@ class App extends Component {
     if (!localStorage.getItem('chs_pledge_closed')) {
       setTimeout(() => {
         this.setState({ pledgeOpen: true })
-        this.forceUpdate();
+        this.forceUpdate()
       }, PLEDGEREMINDERDURATION)
     }
 
@@ -302,7 +296,7 @@ class App extends Component {
       setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar)
     } else if (!window.location.hash || window.location.hash === '#/') {
       // show welcome page if user is not logged in and no specific article or other page is specified
-      history.push('/info')
+      history.push('/performance')
     }
   }
 
@@ -406,6 +400,15 @@ class App extends Component {
                         <Route exact path='/configuration' render={(props) => {
                           return (
                             <Configuration
+                              setFullscreen={this._setFullscreen}
+                              setBodyFont={this._setBodyFont}
+                              {...props}
+                            />
+                          )
+                        }} />
+                        <Route exact path='/performance' render={(props) => {
+                          return (
+                            <Performance
                               setFullscreen={this._setFullscreen}
                               setBodyFont={this._setBodyFont}
                               {...props}

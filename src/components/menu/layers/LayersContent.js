@@ -355,7 +355,7 @@ class LayerContent extends Component {
                     max={10000}
                     step={1}
                     style={{ paddingRight: 16 }}
-                    value={this.state.markerLimit}
+                    value={+this.state.markerLimit}
                     onDragStop={() => {
                       const value = this.state.markerLimit
                       utilsQuery.updateQueryStringParameter('limit', value),
@@ -369,6 +369,7 @@ class LayerContent extends Component {
                 </div>}
               />,
                 <ListItem primaryText={translate("pos.clusterMarker")}
+                          key={'clusterMarker'}
                   style={{
                   padding: '16px 72px 16px 0px',
                   whiteSpace: 'nowrap'
@@ -381,6 +382,7 @@ class LayerContent extends Component {
           />
 
           <ListItem
+            key={'epics'}
             primaryText={translate("pos.epics")}
             leftIcon={<EpicIcon />}
             initiallyOpen={false}
@@ -406,6 +408,7 @@ class LayerContent extends Component {
             })}
           />
           <ListItem
+            key={'migration'}
             style={migrationActive ? {
               marginRight: -1,
               backgroundColor: themes[theme].highlightColors[0],

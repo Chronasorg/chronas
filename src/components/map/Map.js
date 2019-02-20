@@ -144,9 +144,10 @@ const messageYearNotification = (year, isBC, foreColor) => <div><span style={{
 
 class Map extends Component {
   componentDidMount = () => {
-    const { selectedYear } = this.props
-    this._addGeoJson(TYPE_MARKER, this.props.activeMarkers.list, false, +(utilsQuery.getURLParameter('year') || selectedYear))
-    this._addEpic(this.props.activeEpics)
+    const { selectedYear, history } = this.props
+    const fromPerformance = (((history || {}).location || {}).pathname || "").indexOf('performance') > -1
+      this._addGeoJson(TYPE_MARKER, fromPerformance ? [] : this.props.activeMarkers.list, false, +(utilsQuery.getURLParameter('year') || selectedYear))
+      this._addEpic(fromPerformance ? [] : this.props.activeEpics)
     window.addEventListener('resize', this._resize, {passive: true})
     this._resize()
   }

@@ -1,5 +1,4 @@
 export default {
-
   updateQueryStringParameter: function (key, value) {
     let updatedSearchQuery
     const uri = location.search

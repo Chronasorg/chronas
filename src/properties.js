@@ -714,7 +714,7 @@ export const properties = {
   },
   languageOptions: [
     { id: 'ar', name: ' (no UI translation yet)العربية' },
-    { id: 'de', name: 'Deutsch (no UI translation yet)' },
+    { id: 'de', name: 'Deutsch' },
     { id: 'el', name: 'Ελληνικά (no UI translation yet)' },
     { id: 'en', name: 'English' },
     { id: 'es', name: 'Español (no UI translation yet)' },

@@ -145,14 +145,21 @@ export default {
     close: "Close introduction"
   },
   benchmarkPage: {
+    tier5Header: "None",
     title: "Detault settings",
     tier1Header: "Clean & Fast",
-    tier1Description: "Only map borders and labels.",
+    tier1Description: "Only map borders and labels",
     tier2Header: "Intermediate",
-    tier2Description: "Borders, labels and a maximum of 2000 markers per year.",
+    tier2Description: "Borders, labels and a maximum of 2000 markers per year",
     tier3Header: "Complete",
-    tier3Description: "Epics in timeline and a maximum of 5000 markers per year.",
-    hint: "Don't worry, you can also customize all settings later!"
+    tier3Description: "Epics in timeline and a maximum of 5000 markers per year",
+    suggestion1: "We suggest <b>%{dontTranslate}</b> based on ",
+    suggestion2: "your machine's specs",
+    warning1: "While mobile support is on our roadmap, we do not have a mobile version yet. Please check back later.",
+    warning2: "While tablet support is on our roadmap, we do not support touch screens yet. Please check back later.",
+    continue: "continue",
+    specsTitle: "Your Machine's Specs",
+    hint: "You can customize all settings through the layers menu later."
   },
   "loadingPage": {
     "errorMessage": "Chronas seems to be under too much load right now. Please try again in a couple of minutes.",

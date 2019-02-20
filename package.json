@@ -47,6 +47,7 @@
     "d3-ease": "^1.0.5",
     "d3-scale": "^1.0.6",
     "deck.gl": "^6.3.2",
+    "detect-features": "0.1",
     "draft-js": "^0.10.5",
     "express": "^4.16.4",
     "font-awesome": "^4.7.0",

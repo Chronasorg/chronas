@@ -344,9 +344,7 @@ class Information extends PureComponent {
                   <a className='customLink' style={highlightColorStyle}
                     onClick={() => history.push('/login')}>{translate('pos.block.welcome31')}</a>
                   { ReactHtmlParser(translate('pos.block.welcome32', { dontTranslate: welcomeStatistics ? welcomeStatistics.user : '...' })) }
-                  <a
-                    className='customLink' style={highlightColorStyle}
-                    onClick={() => history.push('/community/general')}>{ translate('pos.block.welcome33') }</a>
+                  <a className='customLink' style={highlightColorStyle} onClick={() => history.push('/community/general')}>{ translate('pos.block.welcome33') }</a>
                   { translate('pos.block.welcome34') }
                 </p>
                 <p>
@@ -617,7 +615,7 @@ class Information extends PureComponent {
                 </Card>
                 <br />
                 <p>
-                  {translate('pos.block.contact4')} <a className='customLink' target='_blank' href='http://twitter.com/vorontsovie'>Ilya Vorontsov</a> (Russian), ..</p>
+                  {translate('pos.block.contact4')} <a className='customLink' target='_blank' href='http://twitter.com/vorontsovie'>Ilya Vorontsov</a> (Russian), Dietmar Aumann (German), ...</p>
                 <br />
                 <h4>{translate('pos.block.contact5')}</h4>
                 <p>{translate('pos.block.contact6')}</p>

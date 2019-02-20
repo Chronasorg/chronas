@@ -140,6 +140,7 @@ export default {
     "close": "Intro schließen"
   },
   "benchmarkPage": {
+    "tier5Header": "Keine",
     "title": "Einstellungen",
     "tier1Header": "Sauber & Schnell",
     "tier1Description": "Nur die Karten Grenzen und Beschriftungen.",
@@ -147,7 +148,13 @@ export default {
     "tier2Description": "Karten Grenzen, Beschriftungen und maximal 2000 Marker pro Jahr.",
     "tier3Header": "Komplett",
     "tier3Description": "Epen in der Zeitleiste und ein Maximum von 5000 Marker pro Jahr.",
-    "hint": "Keine Sorge, Sie können alle Einstellungen auch später anpassen!"
+    "hint": "Keine Sorge, Sie können alle Einstellungen auch später anpassen!",
+    "suggestion1": "Die Option <b>%{dontTranslate}</b> passt am besten auf ",
+    "suggestion2": "ihr System",
+    "warningMobile": "Leider haben wir noch keine Mobilversion.",
+    "warningTablet": "Leider haben wir noch keine Unterstuetzung fuer touch screens.",
+    "continue": "Weiter",
+    "specsTitle": "Ihre Systemdetails",
   },
   "loadingPage": {
     "errorMessage": "Chronas scheint unter zu viel Last zu sein. Bitte versuchen Sie es in ein paar Minuten erneut.",
