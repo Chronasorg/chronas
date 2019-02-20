@@ -21,7 +21,7 @@ const events = [
   // 'timechange',
   // 'timechanged',
   // 'mouseOver',
-  // 'mouseMove',
+  'mouseMove',
   // 'itemover',
   // 'itemout',
 ]

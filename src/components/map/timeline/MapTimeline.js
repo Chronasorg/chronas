@@ -23,7 +23,8 @@ import Paper from 'material-ui/Paper'
 import { List, ListItem } from 'material-ui/List'
 import SearchEpicAutocomplete from '../../overwrites/SearchEpicAutocomplete'
 import PortalYear from './PortalYear'
-import { setYear } from './actionReducers'
+import TimelineSelectedYear from './TimelineSelectedYear'
+import { setYear, setSuggestedYear } from './actionReducers'
 import { selectEpicItem, selectMarkerItem, deselectItem, setAutoplay, TYPE_AUTOPLAY, TYPE_EPIC } from '../actionReducers'
 import TimelinePlus from './TimelinePlus'
 import './mapTimeline.scss'
@@ -249,13 +250,6 @@ class MapTimeline extends Component {
       showNextYear: true,
       timelineHeight: SMALLTIMELINEHEIGHT,
       timelineOptions: {
-        // visibleFrameTemplate: function(item) {
-        //   if (item.visibleFrameTemplate) {
-        //     return item.visibleFrameTemplate;
-        //   }
-        //   var percentage = item.value * 100 + '%';
-        //   return '<div class="progress-wrapper"><div class="progress" style="width:' + percentage + '"></div><label class="progress-label">' + percentage + '<label></div>';
-        // },
         width: '100%',
         zoomMin: 315360000000,
         min: min,
@@ -272,7 +266,7 @@ class MapTimeline extends Component {
         content: 'Epics',
       }],
       nextYear: '',
-      yearDialogVisible: false
+      yearDialogVisible: false,
     }
   }
 
@@ -370,7 +364,7 @@ class MapTimeline extends Component {
     }
     this.forceUpdate()
   }
-  _toggleYearDialog = (isVisible) => {
+  _toggleYearDialog = (isVisible = true) => {
     this.setState({ yearDialogVisible: isVisible })
     this.forceUpdate()
   }
@@ -402,7 +396,7 @@ class MapTimeline extends Component {
 
     setTimeout(() => {
       this.setState({ timelineHeight: SMALLTIMELINEHEIGHT })
-      this.forceUpdate();
+      this.forceUpdate()
     }, 1000)
     // this.props.ready();
   }
@@ -522,7 +516,7 @@ class MapTimeline extends Component {
             tooltip={translate('pos.timeline.searchEpics')}
             tooltipStyles={tooltip}
             onClick={() => {
-              this.setState({ showSubMenu: (this.state.showSubMenu !== "showEpicSearch") ? "showEpicSearch" : false })
+              this.setState({ showSubMenu: (this.state.showSubMenu !== 'showEpicSearch') ? 'showEpicSearch' : false })
               this.forceUpdate()
             }}
             iconStyle={{
@@ -534,7 +528,7 @@ class MapTimeline extends Component {
           >
             <IconSearch hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
-          {(showSubMenu === "showEpicSearch") && <SearchEpicAutocomplete
+          {(showSubMenu === 'showEpicSearch') && <SearchEpicAutocomplete
             key={'searchInput'}
             // targetOrigin={'top'}
             hintText={translate('pos.timeline.searchEpics')}
@@ -596,7 +590,7 @@ class MapTimeline extends Component {
                 deselectItem()
                 this.setState({ showSubMenu: false })
               } else {
-                this.setState({ showSubMenu: (this.state.showSubMenu !== "showAnimation") ? "showAnimation" : false })
+                this.setState({ showSubMenu: (this.state.showSubMenu !== 'showAnimation') ? 'showAnimation' : false })
               }
               this.forceUpdate()
             }}
@@ -611,7 +605,7 @@ class MapTimeline extends Component {
           >
             {(selectedItemType === TYPE_AUTOPLAY) ? <IconStop color={themes[theme].highlightColors[0]} /> : <IconAnimation hoverColor={themes[theme].highlightColors[0]} />}
           </IconButton>
-          {(showSubMenu === "showAnimation") && <Paper style={{
+          {(showSubMenu === 'showAnimation') && <Paper style={{
             zIndex: 1,
             // width: 280,
             // height: 380,
@@ -622,39 +616,39 @@ class MapTimeline extends Component {
             display: 'inline-block',
             // margin: '16px 32px 16px 0',
           }}>
-              <List autoWidth={true}>
-                {/*<ListItem*/}
-                  {/*primaryText="Take Screenshot"*/}
-                  {/*rightIcon={<IconCamera />}*/}
-                  {/*onClick={() => {*/}
-                    {/*// html2canvas(document.querySelector(".body > div")).then(canvas => {*/}
-                      {/*const canvas = document.querySelector(".mapboxgl-canvas")*/}
+            <List autoWidth>
+              {/* <ListItem */}
+              {/* primaryText="Take Screenshot" */}
+              {/* rightIcon={<IconCamera />} */}
+              {/* onClick={() => { */}
+              {/* // html2canvas(document.querySelector(".body > div")).then(canvas => { */}
+              {/* const canvas = document.querySelector(".mapboxgl-canvas") */}
 
-                      {/*canvas.toBlob(function(blob) {*/}
-                        {/*saveAs(blob, "chronas-" + selectedYear + ".png");*/}
-                      {/*});*/}
-                    {/*//*/}
-                    {/*// const img = canvas.toDataURL('image/png').replace(/^data:image\/[^;]+/, 'data:application/octet-stream')*/}
-                    {/*// window.open(img)*/}
-                    {/*// window.location.href = img*/}
-                      {/*// const a = document.createElement('a');*/}
-                      {/*// document.body.appendChild(a);*/}
-                      {/*// a.download = "chronas.png";*/}
-                      {/*// a.href =  canvas.toDataURL();*/}
-                      {/*// a.click();*/}
-                    {/*// });*/}
-                  {/*}}*/}
-                {/*/>*/}
-                {/*<Divider />*/}
-                <ListItem
-                  primaryText={translate('pos.timeline.autoplay')}
-                  secondaryText={translate('pos.timeline.autoplaySubtitle')}
-                  disabled={true}
+              {/* canvas.toBlob(function(blob) { */}
+              {/* saveAs(blob, "chronas-" + selectedYear + ".png"); */}
+              {/* }); */}
+              {/* // */}
+              {/* // const img = canvas.toDataURL('image/png').replace(/^data:image\/[^;]+/, 'data:application/octet-stream') */}
+              {/* // window.open(img) */}
+              {/* // window.location.href = img */}
+              {/* // const a = document.createElement('a'); */}
+              {/* // document.body.appendChild(a); */}
+              {/* // a.download = "chronas.png"; */}
+              {/* // a.href =  canvas.toDataURL(); */}
+              {/* // a.click(); */}
+              {/* // }); */}
+              {/* }} */}
+              {/* /> */}
+              {/* <Divider /> */}
+              <ListItem
+                primaryText={translate('pos.timeline.autoplay')}
+                secondaryText={translate('pos.timeline.autoplaySubtitle')}
+                disabled
                 />
-                <ListItem
-                  innerDivStyle={{ ...styles.listItems }}
-                  primaryText={<TextField
-                  type="number"
+              <ListItem
+                innerDivStyle={{ ...styles.listItems }}
+                primaryText={<TextField
+                  type='number'
                   defaultValue={animation[0]}
                   onChange={(e, val) => {
                     console.debug(val)
@@ -668,10 +662,10 @@ class MapTimeline extends Component {
                   floatingLabelText={translate('resources.markers.fields.capitalStart')}
                   style={{ width: 'calc(50% - 2px)', float: 'left', zIndex: 10, marginRight: 4 }}
                 />} />
-                <ListItem
-                  innerDivStyle={styles.listItems}
-                  primaryText={<TextField
-                  type="number"
+              <ListItem
+                innerDivStyle={styles.listItems}
+                primaryText={<TextField
+                  type='number'
                   defaultValue={animation[1]}
                   onChange={(e, val) => {
                     const { animation } = this.state
@@ -684,64 +678,64 @@ class MapTimeline extends Component {
                   floatingLabelText={translate('resources.markers.fields.capitalEnd')}
                   style={{ width: 'calc(50% - 2px)' }}
                 />} />
-                <ListItem
-                  innerDivStyle={styles.listItems}
-                  primaryText={<TextField
-                    type="number"
-                    defaultValue={animation[2]}
-                    onChange={(e, val) => {
+              <ListItem
+                innerDivStyle={styles.listItems}
+                primaryText={<TextField
+                  type='number'
+                  defaultValue={animation[2]}
+                  onChange={(e, val) => {
                       const { animation } = this.state
                       animation[2] = +val
                       this.setState({ animation })
                     }}
-                    min={1}
-                    max={4000}
-                    step={1}
-                    floatingLabelText={translate('pos.timeline.stepSize')}
-                    style={{ width: 'calc(50% - 2px)', float: 'left', zIndex: 10, marginRight: 4 }}
+                  min={1}
+                  max={4000}
+                  step={1}
+                  floatingLabelText={translate('pos.timeline.stepSize')}
+                  style={{ width: 'calc(50% - 2px)', float: 'left', zIndex: 10, marginRight: 4 }}
                   />} />
-                <ListItem
-                  innerDivStyle={styles.listItems}
-                  primaryText={<TextField
-                    type="number"
-                    defaultValue={animation[4]}
-                    onChange={(e, val) => {
+              <ListItem
+                innerDivStyle={styles.listItems}
+                primaryText={<TextField
+                  type='number'
+                  defaultValue={animation[4]}
+                  onChange={(e, val) => {
                       const { animation } = this.state
                       animation[4] = +val
                       this.setState({ animation })
                     }}
-                    min={0.1}
-                    max={100}
-                    step={0.1}
-                    floatingLabelText={translate('pos.timeline.delay')}
-                    style={{ width: 'calc(50% - 2px)' }}
+                  min={0.1}
+                  max={100}
+                  step={0.1}
+                  floatingLabelText={translate('pos.timeline.delay')}
+                  style={{ width: 'calc(50% - 2px)' }}
                   />} />
-                <ListItem
-                  innerDivStyle={{ ...styles.listItems, paddingTop: 4, zIndex: 11 }}
-                  onClick={() => {
+              <ListItem
+                innerDivStyle={{ ...styles.listItems, paddingTop: 4, zIndex: 11 }}
+                onClick={() => {
                     const { animation } = this.state
                     animation[3] = !animation[3]
                     this.setState({ animation })
                     this.forceUpdate()
                   }}
-                  primaryText={<Checkbox
+                primaryText={<Checkbox
                     // onCheck={() => {
                     //   const { animation } = this.state
                     //   animation[3] = !animation[3]
                     //   this.setState({ animation })
                     // }}
-                    checked={animation[3]}
-                    label={translate('pos.timeline.repeat')}
+                  checked={animation[3]}
+                  label={translate('pos.timeline.repeat')}
                   />} />
-                {/*<ListItem leftIcon={<Checkbox*/}
-                {/*/>} secondaryText="Generate GIF" rightIcon={<IconGif />} />*/}
-                <ListItem primaryText={translate('pos.timeline.startSlideshow')} rightIcon={<IconPlay />}
+              {/* <ListItem leftIcon={<Checkbox */}
+              {/* />} secondaryText="Generate GIF" rightIcon={<IconGif />} /> */}
+              <ListItem primaryText={translate('pos.timeline.startSlideshow')} rightIcon={<IconPlay />}
                 onClick={() => {
                   setAutoplay(this.state.animation)
                   this.setState({ showSubMenu: false })
                   this.forceUpdate()
                 }} />
-              </List>
+            </List>
             </Paper>}
         </div>
         <TimelinePlus
@@ -774,14 +768,19 @@ class MapTimeline extends Component {
           clickHandler={(event) => {
             if (freeToChange) this._onClickTimeline(event)
           }}
+          mouseMoveHandler={(event) => {
+            const { suggestedYear, selectedYear } = this.props
+            const nextYear = new Date(event.time).getFullYear()
+            if (+suggestedYear !== nextYear && selectedYear !== nextYear) {
+              this.props.setSuggestedYear(+nextYear)
+            }
+          }}
         />
         <PortalYear node={document && document.querySelector('.vis-custom-time.selectedYear')}>
-          <button className='currentYearLabel' title='click to select exact year' onClick={(event) => {
-            event.stopPropagation()
-            this._toggleYearDialog(true)
-          }}>
-            {selectedYear}
-          </button>
+          <TimelineSelectedYear
+            _toggleYearDialog={this._toggleYearDialog}
+            selectedYear={selectedYear}
+          />
         </PortalYear>
       </div>
     )
@@ -793,8 +792,10 @@ const enhance = compose(
     theme: state.theme,
     selectedItemType: (state.selectedItem || {}).type,
     selectedYear: state.selectedYear,
+    suggestedYear: state.suggestedYear,
   }), {
     setYear,
+    setSuggestedYear,
     setAutoplay,
     deselectItem,
     selectEpicItem,
