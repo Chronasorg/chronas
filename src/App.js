@@ -190,7 +190,6 @@ class App extends Component {
       .then(axios.spread((metadata, areaDefsRequest, metadataLocale) => {
         if (this.state.failAndNotify) return
         setMetadata({ ...metadata.data, locale: (metadataLocale || {}).data })
-
         const didYouKnowInterval = setInterval(() => {
           let selectedItem
           if (!localStorage.getItem('chs_dyk_timeline')) {
@@ -377,7 +376,7 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
-                  {!isStatic && <LoadingBar failAndNotify={failAndNotify} theme={theme} />}
+                  {!isStatic && <LoadingBar history={history} failAndNotify={failAndNotify} theme={theme} />}
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     {(isLoading || failAndNotify) && !isStatic && <LoadingPage failAndNotify={failAndNotify} />}
                     {!isLoading && !failAndNotify && createElement(Map, { history, isLoading })}

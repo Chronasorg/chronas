@@ -103,6 +103,9 @@ export default class LoadingBar extends React.Component {
       clearInterval(this.state.isLoadingInterval)
       this._errorOut()
     }
+    if ((((nextProps.history || {}).location || {}).pathname || "").indexOf('performance') > -1) {
+      this._resetLoadingBar()
+    }
   }
 
   componentWillUnmount () {
