@@ -785,7 +785,8 @@ class RightDrawerRoutes extends PureComponent {
       culture: {
         name: hasLocaleMetadata
           ? (metadata.locale['culture'][cultureId] || entityObject.culture[0] || 'n/a')
-          : (entityObject.culture[0] || 'n/a')
+          : (entityObject.culture[0] || 'n/a'),
+        icon: entityObject.culture[3]
       },
       province: {
         name: hasLocaleMetadata
