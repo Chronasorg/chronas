@@ -14,6 +14,8 @@ import Toggle from 'material-ui/Toggle'
 import Slider from 'material-ui/Slider'
 import IconButton from 'material-ui/IconButton'
 import AreaIcon from 'material-ui/svg-icons/maps/map'
+import CheckAllIcon from 'material-ui/svg-icons/action/check-circle'
+import UncheckAllIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked'
 import MarkerIcon from 'material-ui/svg-icons/maps/place'
 import InfoIcon from 'material-ui/svg-icons/action/help-outline'
 import EpicIcon from 'material-ui/svg-icons/image/burst-mode'
@@ -30,6 +32,7 @@ import {
   setAreaColorLabel as setAreaColorLabelAction,
   setClusterMarkers as setClusterMarkersAction,
   setMarkerLimit,
+  setAllMarker,
   setPopOpacity as setPopOpacityAction,
   setProvinceBorders as setProvinceBordersAction,
   toggleEpic as toggleEpicAction,
@@ -90,10 +93,24 @@ class LayerContent extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      isAllMarker: props.activeMarkers.list.length === markerIdNameArray.length,
       basemapId: 0,
       markerLimit: utilsQuery.getURLParameter('limit') || '2000', // localStorage.getItem('chs_markerLimit') !== 'undefined' ? +localStorage.getItem('chs_markerLimit') : 2000,
       locked: true,
       selectedBasemap: 'topographic',
+    }
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    const { activeMarkers } = this.props
+    const { isAllMarker } = this.state
+
+    if (activeMarkers.list.length !== nextProps.activeMarkers.list.length) {
+      if (nextProps.activeMarkers.list.length === markerIdNameArray.length && !isAllMarker) {
+        this.setState({ isAllMarker: true })
+      } else if (nextProps.activeMarkers.list.length < markerIdNameArray.length && isAllMarker) {
+        this.setState({ isAllMarker: false })
+      }
     }
   }
 
@@ -102,8 +119,13 @@ class LayerContent extends Component {
     this.props.setMigration(!migrationActive)
   }
 
-  // TODO: FEATURE: ADD + SELECT, SEARCH EPIC
+  toggleAllMarker = () => {
+    const { isAllMarker } = this.state
+    this.props.setAllMarker(!isAllMarker)
+    this.setState({ isAllMarker: !isAllMarker })
+  }
 
+  // TODO: FEATURE: ADD + SELECT, SEARCH EPIC
   // componentWillReceiveProps (nextProps) {
   //   const { migrationActive } = this.props
   //   if (nextProps.migrationActive !== migrationActive) {
@@ -112,7 +134,7 @@ class LayerContent extends Component {
   // }
 
   render () {
-    const { basemapId, locked } = this.state
+    const { basemapId, locked, isAllMarker } = this.state
     const { activeArea, setPopOpacity, migrationActive, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme } = this.props
 
     return (
@@ -150,6 +172,10 @@ class LayerContent extends Component {
                       <TableHeaderColumn style={{
                         // top: -8,
                         // left: 0, height: 0
+                        overflow: 'hidden',
+                        width: '59px',
+                        paddingRight: '0',
+                        textOverflow: 'ellipsis',
                       }}>{translate("pos.area")}
                       </TableHeaderColumn>
                       <TableHeaderColumn
@@ -316,7 +342,26 @@ class LayerContent extends Component {
             leftIcon={<MarkerIcon />}
             initiallyOpen={false}
             primaryTogglesNestedList
-            nestedItems={markerIdNameArray.map(id => {
+            nestedItems={[<ListItem value={'toggleAll'}
+              // style={{ display: (id[0] === 'c' ? 'none' : 'inherit') }}
+                                    key={'toggleAll'}
+                                    onClick={this.toggleAllMarker}
+                                    innerDivStyle={{ padding: 0 }}
+                                    primaryText={<div className='listAvatar'>{isAllMarker ? <CheckAllIcon style={{
+                                      borderRadius: '50%',
+                                      marginRight: '1em',
+                                      height: 30,
+                                      width: 30,
+                                      opacity: 1
+                                    }} /> : <UncheckAllIcon style={{
+                                      borderRadius: '50%',
+                                      marginRight: '1em',
+                                      height: 30,
+                                      width: 30,
+                                      opacity: 1
+                                    }} /> }
+                                    { isAllMarker ? translate("pos.markerUncheckAll") : translate("pos.markerCheckAll") }</div>}
+            />].concat(markerIdNameArray.map(id => {
               const cofficient = 40 / (markerTheme.substr(0, 4) === 'abst' ? 169 : 135)
               const backgroundPosition = 'url(/images/' + markerTheme + '-atlas.png) -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][id[0]] || {}).x * cofficient)) + 'px -' + (Math.round((iconMapping[markerTheme.substr(0, 4)][id[0]] || {}).y * cofficient)) + 'px'
               const backgroundSize = markerTheme.substr(0, 4) === 'abst' ? '121px 278px' : '154px 224px'
@@ -338,7 +383,7 @@ class LayerContent extends Component {
                   opacity: activeMarkers.list.includes(id[0]) ? 1 : 0.2
                 }} src='/images/transparent.png' /> {translate("pos.markerIdNameArray." + id[1])}</div>}
               />
-            }).concat(
+            })).concat(
               [<ListItem
                 key={'markerLimit'}
                 style={{ height: 60 }}
@@ -496,6 +541,7 @@ const enhance = compose(
     changeLabel: changeLabelAction,
     changeColor: changeColorAction,
     setMarkerLimit,
+    setAllMarker,
     toggleMarker: toggleMarkerAction,
     toggleEpic: toggleEpicAction,
     setMigration: setMigrationAction,

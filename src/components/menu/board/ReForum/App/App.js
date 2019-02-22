@@ -8,14 +8,7 @@ import appLayout from '../SharedStyles/appLayout.css';
 import styles from './styles.css';
 
 import { updateCurrentForum, getUser } from './actions';
-import {toggleRightDrawer as toggleRightDrawerAction} from "../../../../content/actionReducers";
 import {showNotification, translate, userLogout} from "admin-on-rest";
-import {logout, setToken} from "../../../authentication/actionReducers";
-import {selectAreaItem as selectAreaItemAction} from "../../../../map/actionReducers";
-import {
-  setActiveMenu as setActiveMenuAction,
-  toggleMenuDrawer as toggleMenuDrawerAction
-} from "../../../actionReducers";
 
 class AppContainer extends Component {
   componentDidMount() {

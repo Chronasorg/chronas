@@ -6,6 +6,7 @@ import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
+import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left'
 import nest from './utilsNest'
 import { themes } from '../../../properties'
 
@@ -214,16 +215,23 @@ export default class ChartSunburst extends React.Component {
       }
     }
 
+    const articleContentContainer = (document.getElementsByClassName("articleContentContainer") || {})[0]
+    const articleWidth = isMinimized ? 0 : (articleContentContainer || {}).offsetWidth || 0
+    let dynamicWidth = isMinimized ? 0 : (((document.getElementsByClassName("body") || {})[0] || {}).offsetWidth || 0) - articleWidth - 148
+    let isFlip = false
+
+    if (dynamicWidth < 500) isFlip = true
+
     return (
       <Paper zDepth={3} style={{
         position: 'fixed',
-        left: (isMinimized ? '-52px' : '-574px'),
+        left: (isMinimized ? '-52px' : isFlip ? 0 : '-574px'),
         top: '4px',
         zIndex: 2147483647,
         padding: '0em',
         transition: 'all .3s ease-in-out',
         background: (isMinimized ? 'white' : themes[theme].backColors[1]),
-        width: (isMinimized ? '30px' : '500px'),
+        width: (isMinimized ? '30px' : isFlip ? (articleWidth + 'px') : '500px'),
         height: (isMinimized ? '30px' : '524px'),
         pointerEvents: (isMinimized ? 'none' : 'inherit'),
         opacity: (isMinimized ? '0' : 'inherit'),
@@ -245,8 +253,11 @@ export default class ChartSunburst extends React.Component {
               color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /></IconButton>
             : <IconButton
               tooltipPosition='bottom-left'
-              tooltip={translate('pos.minimize')} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}
-                hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+              tooltip={translate('pos.minimize')} onClick={() => this._minimize()}>
+              { isFlip
+                ? <ChevronLeft color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} />
+                : <ChevronRight color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /> }
+              </IconButton>}
         />
         <div style={styles.chartContainer}>
           {!isMinimized && (modeIndex === -1) && <Sunburst {...chartProps}>

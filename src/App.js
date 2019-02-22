@@ -144,7 +144,7 @@ class App extends Component {
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 2000))
-    const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,l,m,op,p,r,s,si')
+    const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,l,m,op,p,r,s,si,o')
     const markerLimit = (utilsQuery.getURLParameter('limit') || '2000')
     const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ei,es,ew')
     const activeArea = {
@@ -216,6 +216,9 @@ class App extends Component {
           } else if (!localStorage.getItem('chs_dyk_link')) {
             selectedItem = didYouKnows[7]
             localStorage.setItem('chs_dyk_link', true)
+          } else if (!localStorage.getItem('chs_dyk_escape')) {
+            selectedItem = didYouKnows[8]
+            localStorage.setItem('chs_dyk_escape', true)
           }
           if (selectedItem) return showNotification("didYouKnow." + selectedItem)
           else return clearInterval(didYouKnowInterval)
@@ -293,8 +296,13 @@ class App extends Component {
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       localStorage.setItem('chs_token', token)
       setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar)
-    } else if (!window.location.hash || window.location.hash === '#/') {
+    } else if (!localStorage.getItem('chs_performance') && (!window.location.hash || window.location.hash === '#/')) {
       // show welcome page if user is not logged in and no specific article or other page is specified
+
+      utilsQuery.updateQueryStringParameter('markers', '')
+      utilsQuery.updateQueryStringParameter('epics', '')
+      utilsQuery.updateQueryStringParameter('limit', 2000)
+
       history.push('/performance')
     }
   }

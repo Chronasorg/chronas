@@ -144,14 +144,14 @@ export default class InfluenceChart extends React.Component {
       return values.map((v, i) => {
         return {
           title: ((rulerProps || {})[i] || {})[0],
-          value: v.top
+          value: (v || {}).top
         }
       })
     } else {
       return values.map((v, i) => {
         return {
           title: series[0][i].title,
-          value: v.top
+          value: (v || {}).top
         }
       })
     }

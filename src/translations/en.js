@@ -128,6 +128,7 @@ export default {
     "linkedCount": "Linked Count",
   },
   "didYouKnow": {
+    "escape": "You can close opened articles by pressing Escape key",
     "coloring": "You can change map coloring to religion, culture or population via the layers icon on the menu bar",
     "discover": "You can browse images and other media by clicking the compass icon on the menu bar",
     "distribution": "You can see a complete distribution of people of a realm by clicking the circle chart icon on an article",
@@ -313,6 +314,7 @@ export default {
     "fontType": "Font Type",
     "founded": "est.",
     "fullscreenArticle": "Fullscreen Article",
+    "openArticleInNewTab": "Open article in new tab",
     "general": "General",
     "goFullScreen": "Fullscreen",
     "goTutorial": "Go to Tutorial",
@@ -425,9 +427,10 @@ export default {
       "abstract": "Abstract",
       "themed": "Themed"
     },
+    "markerCheckAll": "Select All Marker",
+    "markerUncheckAll": "Hide All Marker",
     "mediaTitle": "Media: %{dontTranslate}",
     "metadata": "Metadata",
-    "migration": "Migration",
     "migrationTooltip": "Displays routes from people place of birth to place of death and aggregates per location.",
     "minimize": "Minimize",
     "mod": "Modification",

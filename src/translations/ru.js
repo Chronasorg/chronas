@@ -136,6 +136,7 @@ export default {
     "linkedCount": "Linked Count",
   },
   "didYouKnow": {
+    "escape": "You can close opened articles by pressing Escape key",
     "coloring": "При помощи значка «Слои» в меню вы можете поменять раскраску карты, чтобы цветами были размечены не страны, а различные религии, культуры или население",
     "discover": "Вы можете исследовать изображения и другие мультимедийные материалы, щелкнув на значок компаса в меню",
     "distribution": "Вы можете посмотреть распределение людей по принадлежности, щёлкнув значок круговой диаграммы на статье",
@@ -426,9 +427,10 @@ export default {
       "abstract": "Абстрактные",
       "themed": "Тематические"
     },
+    "markerCheckAll": "Select All Marker",
+    "markerUncheckAll": "Hide All Marker",
     "mediaTitle": "Мультимедиа: %{dontTranslate}",
     "metadata": "Метаданные",
-    "migration": "Миграции",
     "migrationTooltip": "Показать пути людей из места рождения к месту смерти и их агрегацию по областям.",
     "minimize": "Уменьшить",
     "mod": "Изменение",

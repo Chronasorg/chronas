@@ -1,4 +1,5 @@
 import utilsQuery from '../../map/utils/query'
+import {markerIdNameArray} from "../../../properties";
 
 export const CHANGE_BASEMAP = 'CHANGE_BASEMAP'
 export const SET_AREA = 'SET_AREA'
@@ -23,6 +24,8 @@ export const TOGGLE_EPIC = 'TOGGLE_EPIC'
 
 export const TOGGLE_MIGRATION = 'TOGGLE_MIGRATION'
 export const SET_MIGRATION = 'SET_MIGRATION'
+
+const SET_ALL_MARKER = 'SET_ALL_MARKER'
 
 /** Actions **/
 
@@ -97,6 +100,11 @@ export const setMarker = markers => ({
 export const toggleMarker = marker => ({
   type: TOGGLE_MARKER,
   payload: marker,
+})
+
+export const setAllMarker = isAll => ({
+  type: SET_ALL_MARKER,
+  payload: isAll,
 })
 
 export const addEpic = epic => ({
@@ -218,6 +226,11 @@ export const markerReducer = (initial = {
         return {
           ...prevMarker,
           list: payload,
+        }
+      case SET_ALL_MARKER:
+        return {
+          ...prevMarker,
+          list: payload ? markerIdNameArray.map(el => el[0]) : [],
         }
       case TOGGLE_MARKER:
         if (prevMarker.list.indexOf(payload) > -1) {

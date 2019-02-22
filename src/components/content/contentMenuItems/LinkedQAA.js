@@ -4,6 +4,7 @@ import Paper from 'material-ui/Paper'
 import IconButton from 'material-ui/IconButton'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
+import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
@@ -227,12 +228,17 @@ class LinkedQAA extends React.Component {
   }
   componentDidMount = () => {
     this.setState({ hiddenElement: false })
+    window.addEventListener('resize', this._resize, {passive: true})
   }
   componentWillUnmount = () => {
     this.setState({ hiddenElement: true })
+    window.removeEventListener('resize', this._resize)
   }
   _minimize = () => {
     this.props.setContentMenuItem('')
+  }
+  _resize = () => {
+    this.forceUpdate()
   }
 
   constructor (props) {
@@ -260,15 +266,23 @@ class LinkedQAA extends React.Component {
       resource: 'users',
     }
 
+    const articleContentContainer = (document.getElementsByClassName("articleContentContainer") || {})[0]
+    const articleWidth = isMinimized ? 0 : (articleContentContainer || {}).offsetWidth || 0
+    let dynamicWidth = isMinimized ? 0 : (((document.getElementsByClassName("body") || {})[0] || {}).offsetWidth || 0) - articleWidth - 148
+    let isFlip = false
+
+    if (dynamicWidth > 400) dynamicWidth = 400
+    if (dynamicWidth < 319) isFlip = true
+
     return (
       <Paper zDepth={3} style={{
         position: 'fixed',
-        left: (isMinimized ? '-52px' : '-574px'),
+        left: (isMinimized ? '-52px' : isFlip ? 0 : ((-dynamicWidth - 74) + 'px')),
         zIndex: 2147483647,
         top: '4px',
         padding: '0em',
         transition: 'all .3s ease-in-out',
-        width: (isMinimized ? '30px' : '500px'),
+        width: (isMinimized ? '30px' : isFlip ? (articleWidth + 'px') : (dynamicWidth + 'px')),
         maxHeight: (isMinimized ? '30px' : 'calc(100% - 200px)'),
         pointerEvents: (isMinimized ? 'none' : 'inherit'),
         opacity: (isMinimized ? '0' : 'inherit'),
@@ -290,8 +304,11 @@ class LinkedQAA extends React.Component {
               onClick={() => this._maximize()}><CompositionChartIcon /></IconButton>
             : <IconButton
               tooltipPosition='bottom-left'
-              tooltip={translate('pos.minimize')} onClick={() => this._minimize()}><ChevronRight color={themes[theme].foreColors[0]}
-                hoverColor={themes[theme].highlightColors[0]} /></IconButton>}
+              tooltip={translate('pos.minimize')} onClick={() => this._minimize()}>
+              { isFlip
+                ? <ChevronLeft color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} />
+                : <ChevronRight color={themes[theme].foreColors[0]} hoverColor={themes[theme].highlightColors[0]} /> }
+              </IconButton>}
         />
         <div style={styles.container}>
           {qId && qId !== '' &&

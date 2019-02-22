@@ -47,6 +47,7 @@ export const didYouKnows = [
   'question',
   'distribution',
   'link',
+  'escape',
 ]
 
 function getDefaultCharacterSet(ranges) {

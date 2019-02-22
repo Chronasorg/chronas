@@ -367,6 +367,11 @@ class MapTimeline extends Component {
   _toggleYearDialog = (isVisible = true) => {
     this.setState({ yearDialogVisible: isVisible })
     this.forceUpdate()
+    if (isVisible) {
+      setTimeout(() => {
+        document.getElementsByClassName("searchForm__input")[0].focus();
+      }, 400)
+    }
   }
   _flyTo = (s, e, doReset, optId) => {
     if (isNaN(new Date(e).getFullYear())) return

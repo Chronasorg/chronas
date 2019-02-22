@@ -66,7 +66,6 @@ import utilsQuery from '../map/utils/query'
 import { changeColor, setAreaColorLabel } from '../menu/layers/actionReducers'
 import utils from '../map/utils/general'
 import { epicIdNameArray, properties, themes } from '../../properties'
-import { setActiveMenu as setActiveMenuAction } from '../menu/actionReducers'
 
 const nearbyIcon = <EditIcon />
 
@@ -974,7 +973,7 @@ class RightDrawerRoutes extends PureComponent {
                 this.handleMousedown(event)
               }}
             />
-            <div style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
+            <div className="articleContentContainer" style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
               {component && createElement(component, {
                 ...commonProps,
                 ...routeProps
@@ -1087,7 +1086,7 @@ class RightDrawerRoutes extends PureComponent {
               // onMouseUp={this.handleMouseUp.bind(this)}
               // onClick={(event) => console.debug('onClick', event)}
             />
-            <div style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
+            <div className="articleContentContainer" style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
               {!isEpic && headerComponent}
               {component && createElement(component, {
                 ...commonProps,
@@ -1442,7 +1441,6 @@ const enhance = compose(
   connect(mapStateToProps,
     {
       setAreaColorLabel,
-      setActiveMenu: setActiveMenuAction,
       changeColor,
       setWikiId,
       selectEpicItem,

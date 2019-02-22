@@ -123,6 +123,7 @@ export default {
     "linkedCount": "Verknüpft"
   },
   "didYouKnow": {
+    "escape": "Artikel können auch mit der ESC Taste geschlossen werden",
     "coloring": "Sie können den Kartentype von Politisch zu Religiös, Kulturell und Anwohnerzahl ändern",
     "discover": "Durch das Kompass-Symbol in der Menüleiste können sie Bilder und Filme zum ausgewählten Jahr anzusehen",
     "distribution": "Sie können die Verteilung der Menschen in einem Reich analysieren, indem Sie auf das Kreis-Symbol auf einem Artikel klicken",
@@ -414,6 +415,8 @@ export default {
     "markerType": "Marker-Typ",
     "markerTypes": {"abstract": "Abstrakt", "themed": "Thema"},
     "mediaTitle": "Medien: %{dontTranslate}",
+    "markerCheckAll": "Alle Marker",
+    "markerUncheckAll": "Keine Marker",
     "metadata": "Metadaten",
     "migrationTooltip": "Verbindet Geburtsort mit Todesort und aggregiert nach Standort.",
     "minimize": "Minimieren",

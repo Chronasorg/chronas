@@ -20,7 +20,7 @@ import {
   setMarker,
   setEpic } from '../layers/actionReducers'
 import { Restricted, translate } from 'admin-on-rest'
-import { properties, themes } from '../../../properties'
+import {markerIdNameArray, properties, themes} from '../../../properties'
 
 import { changeLocale as changeLocaleAction } from '../configuration/actionReducers'
 import utilsQuery from "../../map/utils/query";
@@ -56,17 +56,17 @@ function syntaxHighlight(json) {
   }
   json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-    var cls = 'number';
+    var cls = 'syntaxHighlight_number';
     if (/^"/.test(match)) {
       if (/:$/.test(match)) {
-        cls = 'key';
+        cls = 'syntaxHighlight_key';
       } else {
-        cls = 'string';
+        cls = 'syntaxHighlight_string';
       }
     } else if (/true|false/.test(match)) {
-      cls = 'boolean';
+      cls = 'syntaxHighlight_boolean';
     } else if (/null/.test(match)) {
-      cls = 'null';
+      cls = 'syntaxHighlight_null';
     }
     return '<span class="' + cls + '">' + match + '</span>';
   });
@@ -266,13 +266,14 @@ class PerformanceSelector extends PureComponent {
             <div><RaisedButton label={translate('benchmarkPage.continue')} onClick={() => {
               const { selectedIndex } = this.state
               const { setEpic, setMarker, setMarkerLimit } = this.props
-              let selectedMarker = selectedIndex === 0 ? [] : ['a', 'ar', 'at', 'b', 'c', 'ca', 'cp', 'e', 'l', 'm', 'op', 'p', 'r', 's', 'si']
+              let selectedMarker = selectedIndex === 0 ? [] : markerIdNameArray.map(el => el[0])
               let selectedEpics = selectedIndex === 2 ? ['ei', 'es', 'ew'] : []
               let selectedLimit = selectedIndex === 2 ? 5000 : 2000
               setMarker(selectedMarker)
               setEpic(selectedEpics)
               if (selectedLimit !== 2000) setMarkerLimit(selectedLimit)
 
+              localStorage.setItem('chs_performance', true)
               utilsQuery.updateQueryStringParameter('markers', selectedMarker)
               utilsQuery.updateQueryStringParameter('epics', selectedEpics)
               utilsQuery.updateQueryStringParameter('limit', selectedLimit)

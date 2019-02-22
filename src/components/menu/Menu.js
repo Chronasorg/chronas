@@ -209,7 +209,7 @@ class Menu extends PureComponent {
             <HelpIcon hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
           <IconButton
-            tooltipPosition='bottom-center'
+            tooltipPosition='bottom-left'
             tooltip={translate(isLoggedIn ? 'aor.auth.logout' : 'aor.auth.login')}
             tooltipStyles={tooltip}
             onClick={isLoggedIn ? this.handleLogout : userLogout}

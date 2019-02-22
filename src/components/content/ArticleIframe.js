@@ -10,6 +10,7 @@ import IconHistory from 'material-ui/svg-icons/action/view-list'
 import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
+import IconOpenInNew from 'material-ui/svg-icons/action/open-in-new'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import FlatButton from 'material-ui/FlatButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
@@ -253,6 +254,17 @@ class ArticleIframe extends React.Component {
     }
   }
 
+  componentDidMount() {
+    window.addEventListener('keyup', this._handleEsc, {passive: true})
+  }
+  componentWillUnmount() {
+    window.removeEventListener('keyup', this._handleEsc)
+  }
+
+  _handleEsc = (e) => {
+    if (e.key === "Escape") this._handleClose()
+  }
+
   componentWillReceiveProps(nextProps){
     const { locale, selectedWiki } = nextProps
     // https://www.wikidata.org/w/api.php?action=wbgetentities&titles=Vietnamese_Wikipedia&sites=enwiki&format=json
@@ -371,6 +383,13 @@ class ArticleIframe extends React.Component {
         </IconButton>
         <IconButton
           tooltipPosition='bottom-left'
+          tooltip={translate('pos.openArticleInNewTab')}
+          onClick={() => { const win = window.open(fullfinalWiki, '_blank'); win.focus();}}
+          style={{ width: 32, marginRight: -8, zIndex: 10 }} iconStyle={{ textAlign: 'right', width: '20px', height: '20px', fontSize: '12px' }}>
+          <IconOpenInNew style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
+        </IconButton>
+        <IconButton
+          tooltipPosition='bottom-left'
           tooltip={translate('pos.fullscreenArticle')}
           onClick={() => this._enterFullscreen()}
           style={{ ...styles.fullscreenButton, width: !(isEntity || isProvince) ? 32 : 'inherit' }}>
@@ -386,7 +405,7 @@ class ArticleIframe extends React.Component {
         {!(isEntity || isProvince) && <IconButton
           tooltipPosition='bottom-left'
           tooltip={translate("aor.action.close")}
-          style={{}} iconStyle={{ textAlign: 'right', fontSize: '12px' }} onClick={() => this._handleClose()}>
+          style={{}} iconStyle={{ textAlign: 'right', fontSize: '12px' }} onClick={this._handleClose}>
           <IconClose style={{ color: 'rgb(106, 106, 106)' }} hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>}
       </div>

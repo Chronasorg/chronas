@@ -731,7 +731,6 @@ class EpicTimeline extends React.Component {
                       float: 'right',
                       position: 'relative'
                     }}
-                    iconStyle={{ height: 20, width: 20 }}
                     // style={{...styles.buttonOpenArticle, zIndex: 1000, padding: 0, position: 'absolute', top: 15 }}
                     tooltipPosition='bottom-left'
                     tooltip={translate('pos.openEpic')}

@@ -65,6 +65,8 @@
 }
 
 .FeedBox_sortList {
+  white-space: nowrap;
+
   & .FeedBox_sort {
     color: white;
     display: inline-block;

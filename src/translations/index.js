@@ -30,21 +30,21 @@ import customSwedishMessages from './sv'
 import customVietnameseMessages from './vi'
 
 export default {
-  ar: { ...arabicMessages, ...customArabicMessages },
-  fr: { ...frenchMessages, ...customFrenchMessages },
+  ar: { ...arabicMessages, ...customEnglishMessages },
+  fr: { ...frenchMessages, ...customEnglishMessages },
   en: { ...englishMessages, ...customEnglishMessages },
-  zh: { ...chineseMessages, ...customChineseMessages },
-  nl: { ...dutchMessages, ...customDutchMessages },
+  zh: { ...chineseMessages, ...customEnglishMessages },
+  nl: { ...dutchMessages, ...customEnglishMessages },
   de: { ...germanMessages, ...customGermanMessages },
-  el: { ...greekMessages, ...customGreekMessages },
-  hi: { ...customHindiMessages },
-  it: { ...italianMessages, ...customItalianMessages },
-  ja: { ...japaneseMessages, ...customJapaneseMessages },
-  pl: { ...polishMessages, ...customPolishMessages },
+  el: { ...greekMessages, ...customEnglishMessages },
+  hi: { ...englishMessages, ...customEnglishMessages },
+  it: { ...italianMessages, ...customEnglishMessages },
+  ja: { ...japaneseMessages, ...customEnglishMessages },
+  pl: { ...polishMessages, ...customEnglishMessages },
   ru: { ...russianMessages, ...customRussianMessages },
-  es: { ...spanishMessages, ...customSpanishMessages },
-  sv: { ...swedishMessages, ...customSwedishMessages },
-  vi: { ...vietnameseMessages, ...customVietnameseMessages },
+  es: { ...spanishMessages, ...customEnglishMessages },
+  sv: { ...swedishMessages, ...customEnglishMessages },
+  vi: { ...vietnameseMessages, ...customEnglishMessages },
 }
 
 /*

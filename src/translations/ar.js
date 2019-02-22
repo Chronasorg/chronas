@@ -45,14 +45,6 @@ export default {
       "autocomplete": {
         "none": ""
       },
-      "file": {
-        "upload_several": "Drop some files to upload, or click to select one.",
-        "upload_single": "Drop a file to upload, or click to select it."
-      },
-      "image": {
-        "upload_several": "Drop some pictures to upload, or click to select one.",
-        "upload_single": "Drop a picture to upload, or click to select it."
-      }
     },
     "message": {
       "about": "About",
@@ -136,6 +128,7 @@ export default {
     "linkedCount": "Linked Count",
   },
   "didYouKnow": {
+    "escape": "You can close opened articles by pressing Escape key",
     "coloring": "You can change map coloring to religion, culture or population via the layers icon on the menu bar",
     "discover": "You can browse images and other media by clicking the compass icon on the menu bar",
     "distribution": "You can see a complete distribution of people of a realm by clicking the circle chart icon on an article",
@@ -153,14 +146,21 @@ export default {
     close: "Close introduction"
   },
   benchmarkPage: {
+    tier5Header: "None",
     title: "Detault settings",
     tier1Header: "Clean & Fast",
-    tier1Description: "Only map borders and labels.",
+    tier1Description: "Only map borders and labels",
     tier2Header: "Intermediate",
-    tier2Description: "Borders, labels and a maximum of 2000 markers per year.",
+    tier2Description: "Borders, labels and a maximum of 2000 markers per year",
     tier3Header: "Complete",
-    tier3Description: "Epics in timeline and a maximum of 5000 markers per year.",
-    hint: "Don't worry, you can also customize all settings later!"
+    tier3Description: "Epics in timeline and a maximum of 5000 markers per year",
+    suggestion1: "We suggest <b>%{dontTranslate}</b> based on ",
+    suggestion2: "your machine's specs",
+    warning1: "While mobile support is on our roadmap, we do not have a mobile version yet. Please check back later.",
+    warning2: "While tablet support is on our roadmap, we do not support touch screens yet. Please check back later.",
+    continue: "continue",
+    specsTitle: "Your Machine's Specs",
+    hint: "You can customize all settings through the layers menu later."
   },
   "loadingPage": {
     "errorMessage": "Chronas seems to be under too much load right now. Please try again in a couple of minutes.",
@@ -204,10 +204,10 @@ export default {
     },
     "block": {
       "about1": "<h4>What is Chronas?</h4> <br /> <h5>In Brief</h5>",
-      "about2": "Chronas may be described as a mix of <a target='_blank' href='https://www.openstreetmap.org'>Open  Street Map</a>, <a target='_blank' href='https://www.wikipedia.org/'>Wikipedia</a> and <a\n                    target='_blank' href='https://earth.google.com/web/'>Google Earth</a>. It maps 4000 years of historic\n                  rulers (polictical entities), cultures, and religions on a map linking to related Wikipedia articles\n                  as well as various kinds of different markers such as people, battles, cities, castles etc. All of\n                  those can be linked to express a relation of each other (for example linking the siege of a city to\n                  the specific city marker). On top of that, other kinds of media such as videos, images or podcasts can\n                  be linked to create an even bigger knowledge web. Users can rate, edit and add new markers, area\n                  entities or media items and create links all tracked by a revision history system. They can also ask\n                  questions on specific articles and create article collections (called Epics) on major topics such as\n                  wars or explorations (all area entities are on default Epics). A video showcasing those features can\n                  be found ",
+      "about2": "Chronas may be described as a mix of <a target='_blank' href='https://www.openstreetmap.org'>Open  Street Map</a>, <a target='_blank' href='https://www.wikipedia.org/'>Wikipedia</a> and <a     target='_blank' href='https://earth.google.com/web/'>Google Earth</a>. It maps 4000 years of historic   rulers (polictical entities), cultures, and religions on a map linking to related Wikipedia articles   as well as various kinds of different markers such as people, battles, cities, castles etc. All of those can be linked to express a relation of each other (for example linking the siege of a city to   the specific city marker). On top of that, other kinds of media such as videos, images or podcasts can   be linked to create an even bigger knowledge web. Users can rate, edit and add new markers, area   entities or media items and create links all tracked by a revision history system. They can also ask   questions on specific articles and create article collections (called Epics) on major topics such as   wars or explorations (all area entities are on default Epics). A video showcasing those features can   be found ",
       "about3": "here",
-      "about4": "<h5>From the beginning</h5>\n                <p>The name <b>Chronas</b> is a combination of <b>Chron</b>os and Atl<b>as</b> indicating the\n                  chronological and cartographical approach of the history application.</p>\n                <p>The initial idea in mid-2014 was to add a time slider to a Google Maps like application, making it\n                  possible to travel back in time: watching realms being founded, grow and disappear again. The goal was\n                  to get a better understanding of how the world's history is interconnected. <i>What happened in Asia\n                    when Rome dominated Europe? What happened in Arabia when Kublai Khan proclaimed himself the emperor\n                    of China?</i></p>\n                <p>The original version of Chronas was released in 2015 and attracted over 5000 registered users. It was\n                  based on a fork of <a target='_blank' href='https://umap.openstreetmap.fr/en'>Open Street Map</a> and\n                  used the raster map library <a target='_blank' href='https://leafletjs.com/'>Leaflet</a> with the\n                  relational <a target='_blank' href='https://www.postgresql.org/'>PostgreSQL</a> database.\n                </p>\n                <p>\n                  Here is a ~5 min video showing the basic features of the original version:\n                </p>",
-      "about5": "<p>\n                  If you are interested in trying out the original version, it is still available at <a target='_blank'\n                    href='http://v0.chronas.org'>http://v0.chronas.org</a>.\n                  It also includes the <a target='_blank' href='http://v0.chronas.org/blog'>development blog</a> which\n                  explains in more detail the technical approach of the initial version as well as two 3D spin-off apps\n                  showing <a target='_blank' href='http://app.chronas.org/castles/#/wikidata'>castles</a> and <a\n                    target='_blank' href='http://app.chronas.org/battles/#/wikidata'>battles</a> by wikipedia language.\n                </p>\n                <br />\n                <p>\n                  Development of the current version of Chronas began in July 2017 and represented a complete rewrite of\n                  logic and architecture focusing on improved performance as well as easy edits, revisions and linking\n                  related articles. In place of Leaflet, the WebGL map library <a target='_blank'\n                    href='https://www.mapbox.com/mapbox-gl-js/api/'>Mapbox\n                  GL</a> was used with a <a target='_blank' href='https://reactjs.org/'>React JS</a> UI. For the backend\n                  a dedicated API written in <a target='_blank' href='https://expressjs.com'>Express</a> <a\n                    target='_blank' href='https://nodejs.org/'>Node JS</a> uses a NoSQL <a target='_blank'\n                      href='https://nodejs.org/'>Mongo</a> database\n                  for complex queries and revisioning.\n                </p>\n                <p>You can find a detailed feature walkthrough of the new Chronas version in the <b>How To</b> section.</p>",
+      "about4": "<h5>From the beginning</h5> <p>The name <b>Chronas</b> is a combination of <b>Chron</b>os and Atl<b>as</b> indicating the   chronological and cartographical approach of the history application.</p> <p>The initial idea in mid-2014 was to add a time slider to a Google Maps like application, making it   possible to travel back in time: watching realms being founded, grow and disappear again. The goal was   to get a better understanding of how the world's history is interconnected. <i>What happened in Asia     when Rome dominated Europe? What happened in Arabia when Kublai Khan proclaimed himself the emperor     of China?</i></p> <p>The original version of Chronas was released in 2015 and attracted over 5000 registered users. It was   based on a fork of <a target='_blank' href='https://umap.openstreetmap.fr/en'>Open Street Map</a> and   used the raster map library <a target='_blank' href='https://leafletjs.com/'>Leaflet</a> with the   relational <a target='_blank' href='https://www.postgresql.org/'>PostgreSQL</a> database. </p> <p>   Here is a ~5 min video showing the basic features of the original version: </p>",
+      "about5": "<p>   If you are interested in trying out the original version, it is still available at <a target='_blank'     href='http://v0.chronas.org'>http://v0.chronas.org</a>.   It also includes the <a target='_blank' href='http://v0.chronas.org/blog'>development blog</a> which   explains in more detail the technical approach of the initial version as well as two 3D spin-off apps   showing <a target='_blank' href='http://app.chronas.org/castles/#/wikidata'>castles</a> and <a     target='_blank' href='http://app.chronas.org/battles/#/wikidata'>battles</a> by wikipedia language. </p> <br /> <p>   Development of the current version of Chronas began in July 2017 and represented a complete rewrite of   logic and architecture focusing on improved performance as well as easy edits, revisions and linking   related articles. In place of Leaflet, the WebGL map library <a target='_blank'     href='https://www.mapbox.com/mapbox-gl-js/api/'>Mapbox   GL</a> was used with a <a target='_blank' href='https://reactjs.org/'>React JS</a> UI. For the backend   a dedicated API written in <a target='_blank' href='https://expressjs.com'>Express</a> <a     target='_blank' href='https://nodejs.org/'>Node JS</a> uses a NoSQL <a target='_blank'       href='https://nodejs.org/'>Mongo</a> database   for complex queries and revisioning. </p> <p>You can find a detailed feature walkthrough of the new Chronas version in the <b>How To</b> section.</p>",
       "contact1": "Developers",
       "contact10": "Send",
       "contact2": "Front and Backend Development",
@@ -225,7 +225,7 @@ export default {
       "pledge3": " and consider pledging an amount of your choice.",
       "pledge4": "Patreons will be able to steer the project by voting on feature priorities and major design decisions.",
       "pledge5": "If you don't like to use Patreon, one time contributions are possible via PayPal:",
-      "rules1": "<br />\n                <h4>Rules For Data Curation</h4>\n                <ol>\n                  <li><i>No Vandalism</i>: This is not the place to paint an alternative history map. Vandalism hurts\n                    the project immensely (costly backups) and will get you banned.\n                  </li>\n                  <li><i>Watch the tutorial videos</i> before you start editing. Some controls may lead\n                    to <i>unwanted</i> results.\n                  </li>\n                  <li>Your data inputs should be based on <i>accepted history</i> and you should be ready to cite\n                    sources if asked.\n                  </li>\n                  <li><i>Report</i> Users That Break those Rules.</li>\n                </ol>\n                <br />\n                <h4>Rules For The Forums</h4>\n                <ol>\n                  <li><i>No Vandalism</i>: No Racism, Bigotry, or Offensive Behavior.</li>\n                  <li>Ask <i>Clear and Specific Questions</i>, with <i>Time and Place in Mind</i>.</li>\n                  <li>Provide preferably <i>Primary and Secondary Sources</i> If Asked Rather Than Tertiary Sources\n                    Like <i>Wikipedia</i>.\n                  </li>\n                  <li>Serious On-Topic Questions Only: <i>No Jokes</i>, <i>Anecdotes</i>, <i>Clutter</i>, or\n                    other <i>Digressions</i>.\n                  </li>\n                  <li><i>Report</i> Answers That Break those Rules.</li>\n                </ol>",
+      "rules1": "<br /> <h4>Rules For Data Curation</h4> <ol>   <li><i>No Vandalism</i>: This is not the place to paint an alternative history map. Vandalism hurts     the project immensely (costly backups) and will get you banned.   </li>   <li><i>Watch the tutorial videos</i> before you start editing. Some controls may lead     to <i>unwanted</i> results.   </li>   <li>Your data inputs should be based on <i>accepted history</i> and you should be ready to cite     sources if asked.   </li>   <li><i>Report</i> Users That Break those Rules.</li> </ol> <br /> <h4>Rules For The Forums</h4> <ol>   <li><i>No Vandalism</i>: No Racism, Bigotry, or Offensive Behavior.</li>   <li>Ask <i>Clear and Specific Questions</i>, with <i>Time and Place in Mind</i>.</li>   <li>Provide preferably <i>Primary and Secondary Sources</i> If Asked Rather Than Tertiary Sources     Like <i>Wikipedia</i>.   </li>   <li>Serious On-Topic Questions Only: <i>No Jokes</i>, <i>Anecdotes</i>, <i>Clutter</i>, or     other <i>Digressions</i>.   </li>   <li><i>Report</i> Answers That Break those Rules.</li> </ol>",
       "statistics1": "The following statistics are live data counts and represent a snapshot of the current Chronas database",
       "statistics2": "Map Datapoints",
       "statistics3": "Users and Engagements",
@@ -242,16 +242,16 @@ export default {
       "statisticsTooltip6": "Edits made to the data by users",
       "statisticsTooltip7": "Forum threads (includes auto-generated and migrated threads)",
       "statisticsTooltip8": "Forum comments (includes auto-generated and migrated replies)",
-      "support1": "There are a couple of ways to finance the upkeep and the development of new features and fixing of\n                  issues. For example Wikipedia or public broadcasters use reoccurring campaigns to raise donations (<b>pledge\n                  drives</b>), many web applications use <b>advertisements</b> (which can decrease the useability/\n                  enojoyment of the app). Another way is to introduce a <b>pro version</b> or try to find <b>venture\n                  capital investors</b>.",
+      "support1": "There are a couple of ways to finance the upkeep and the development of new features and fixing of   issues. For example Wikipedia or public broadcasters use reoccurring campaigns to raise donations (<b>pledge   drives</b>), many web applications use <b>advertisements</b> (which can decrease the useability/   enjoyment of the app). Another way is to introduce a <b>pro version</b> or try to find <b>venture   capital investors</b>.",
       "support10": " the developers.",
       "support11": "If you are interested in running Chronas on your (or our) server with a complete data replica of which you are in complete control, ",
       "support12": "contact",
       "support13": " us and we are happy to discuss further.",
-      "support2": "We decided to try out yet another funding model which gives the <b>sustaining users</b> who ensure the\n                  future of Chronas also the ability to decide where the journey is headed. If you believe in our\n                  project, please consider supporting us on",
+      "support2": "We decided to try out yet another funding model which gives the <b>sustaining users</b> who ensure the   future of Chronas also the ability to decide where the journey is headed. If you believe in our   project, please consider supporting us on",
       "support3": " where we will have regular <b>votes</b> on the priority of proposed <b>new features</b> as well as <b>major design decisions</b>.",
       "support4": "If you don't like to use Patreon, one time contributions are possible via PayPal:",
       "support5": "New Features",
-      "support6": "You can propose features in the feature request",
+      "support6": "You can propose features in the feature request ",
       "support7": "forum",
       "support8": " or by directly ",
       "support9": "contacting",
@@ -314,6 +314,7 @@ export default {
     "fontType": "Font Type",
     "founded": "est.",
     "fullscreenArticle": "Fullscreen Article",
+    "openArticleInNewTab": "Open article in new tab",
     "general": "General",
     "goFullScreen": "Fullscreen",
     "goTutorial": "Go to Tutorial",
@@ -426,9 +427,10 @@ export default {
       "abstract": "Abstract",
       "themed": "Themed"
     },
+    "markerCheckAll": "Select All Marker",
+    "markerUncheckAll": "Hide All Marker",
     "mediaTitle": "Media: %{dontTranslate}",
     "metadata": "Metadata",
-    "migration": "Migration",
     "migrationTooltip": "Displays routes from people place of birth to place of death and aggregates per location.",
     "minimize": "Minimize",
     "mod": "Modification",
@@ -480,8 +482,16 @@ export default {
       "name": "Theme"
     },
     "timeline": {
+      "openAutoplayMenu": "Open Autoplay Menu",
+      "stopAutoplay": "Stop Autoplay",
+      "autoplay": "Autoplay",
+      "autoplaySubtitle": "Changes year by step size",
+      "stepSize": "Step Size in Years",
       "expand": "Expand Timeline",
+      "delay": "Delay in sec",
+      "repeat": "Repeat",
       "reset": "Reset Timeline View",
+      "startSlideshow": "Start Slideshow",
       "searchEpics": "Search Epics"
     },
     "toggle": "Toggle",
@@ -504,7 +514,7 @@ export default {
         "main_ruler_name": "Main Ruler Name",
         "population": "Population",
         "province": "Province",
-        "province_list": "Click on provinces to selecect/ deselect",
+        "province_list": "Click on provinces to select/ deselect",
         "religion": "Religion",
         "religionGen": "Religion Gen.",
         "replaceWith": "Replace With",
@@ -513,30 +523,6 @@ export default {
         "startYear": "From Year",
         "wiki_url": "Article (Full Wikipedia URL)"
       }
-    },
-    "categories": {
-      "fields": {
-        "products": "Products"
-      },
-      "name": "Category |||| Categories"
-    },
-    "commands": {
-      "fields": {
-        "basket": {
-          "delivery": "Delivery",
-          "quantity": "Quantity",
-          "reference": "Reference",
-          "sum": "Sum",
-          "tax_rate": "Tax Rate",
-          "total": "Total",
-          "unit_price": "Unit Price"
-        },
-        "customer_id": "Customer",
-        "date_gte": "Passed Since",
-        "date_lte": "Passed Before",
-        "total_gte": "Min amount"
-      },
-      "name": "Order |||| Orders"
     },
     "linked": {
       "fields": {
@@ -582,62 +568,12 @@ export default {
       "name": "Marker |||| Markers",
       "place_marker": "Place Marker",
       "tabs": {
-        "address": "Address",
-        "identity": "Identity",
-        "orders": "Orders",
         "reviews": "Reviews",
         "stats": "Stats"
       }
     },
     "page": {
       "delete": "Delete"
-    },
-    "products": {
-      "fields": {
-        "category_id": "Category",
-        "height": "Height",
-        "height_gte": "Min height",
-        "height_lte": "Max height",
-        "image": "Image",
-        "price": "Price",
-        "reference": "Reference",
-        "stock": "Stock",
-        "stock_lte": "Low Stock",
-        "thumbnail": "Thumbnail",
-        "width": "Width",
-        "width_gte": "Min width",
-        "width_lte": "mx_width"
-      },
-      "name": "Poster |||| Posters",
-      "tabs": {
-        "description": "Description",
-        "details": "Details",
-        "image": "Image",
-        "reviews": "Reviews"
-      }
-    },
-    "reviews": {
-      "action": {
-        "accept": "Accept",
-        "reject": "Reject"
-      },
-      "fields": {
-        "command_id": "Order",
-        "comment": "Comment",
-        "customer_id": "Customer",
-        "date": "Date",
-        "date_gte": "Posted since",
-        "date_lte": "Posted before",
-        "product_id": "Product",
-        "rating": "Rating"
-      },
-      "name": "Review |||| Reviews",
-      "notification": {
-        "approved_error": "Error: Review not approved",
-        "approved_success": "Review approved",
-        "rejected_error": "Error: Review not rejected",
-        "rejected_success": "Review rejected"
-      }
     },
     "revisions": {
       "fields": {
@@ -655,21 +591,6 @@ export default {
       },
       "name": "Revision |||| Revisions"
     },
-    "segments": {
-      "data": {
-        "collector": "Collector",
-        "compulsive": "Compulsive",
-        "ordered_once": "Ordered once",
-        "regular": "Regular",
-        "returns": "Returns",
-        "reviewer": "Reviewer"
-      },
-      "fields": {
-        "customers": "Customers",
-        "name": "Name"
-      },
-      "name": "Segments"
-    },
     "users": {
       "fields": {
         "createdAt": "Created at",
@@ -684,13 +605,6 @@ export default {
       "page": {
         "delete": "Delete Account"
       },
-      "tabs": {
-        "address": "Address",
-        "identity": "Identity",
-        "orders": "Orders",
-        "reviews": "Reviews",
-        "stats": "Stats"
-      }
     }
   },
   "somethingWentWrong": "Something went wrong"
