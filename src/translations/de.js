@@ -525,6 +525,14 @@ export default {
         "year": "Jahr"
       }
     },
+    "flags": {
+      "fields": {
+        "fixed": "Resolved",
+        "subEntityId": "SubEntityId",
+        "fullUrl": "FullUrl",
+        "wrongWiki": "wrongWiki"
+      }
+    },
     "links": {
       "fields": {
         "content_list": "Artikel erscheinen in der Inhaltsliste des Artikels",

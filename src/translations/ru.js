@@ -538,6 +538,14 @@ export default {
         "year": "Год"
       }
     },
+    "flags": {
+      "fields": {
+        "fixed": "Resolved",
+        "subEntityId": "SubEntityId",
+        "fullUrl": "FullUrl",
+        "wrongWiki": "wrongWiki"
+      }
+    },
     "links": {
       "fields": {
         "content_list": "Элементы, отображаемые в оглавлении (секция слева)",

@@ -7,10 +7,11 @@ import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
 import IconEdit from 'material-ui/svg-icons/editor/mode-edit'
 import IconHistory from 'material-ui/svg-icons/action/view-list'
-import IconOutbound from 'material-ui/svg-icons/action/open-in-new'
 import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import IconOpenInNew from 'material-ui/svg-icons/action/open-in-new'
+import IconFlagged from 'material-ui/svg-icons/content/flag'
+import IconFlaggedAlert from 'material-ui/svg-icons/action/report-problem'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import FlatButton from 'material-ui/FlatButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
@@ -20,7 +21,7 @@ import { red400 } from 'material-ui/styles/colors'
 import { LoadingCircle } from '../global/LoadingCircle'
 import { setRightDrawerVisibility } from '../content/actionReducers'
 import utilsQuery from '../map/utils/query'
-import { epicIdNameArray, themes } from '../../properties'
+import { epicIdNameArray, properties, themes } from '../../properties'
 import {
   selectEpicItem,
   selectLinkedItem,
@@ -32,6 +33,7 @@ import {
   TYPE_MARKER,
   WIKI_PROVINCE_TIMELINE
 } from '../map/actionReducers'
+import axios from "axios/index";
 
 const jsonp = require('jsonp');
 
@@ -103,6 +105,45 @@ const styles = {
 }
 
 class ArticleIframe extends React.Component {
+  constructor (props) {
+    super(props)
+    this.state = {
+      flagged: false,
+      fullfinalWiki: (props.locale === "en" && props.selectedWiki && props.selectedWiki !== -1) ? ('https://en.wikipedia.org/wiki/' + props.selectedWiki) : -1,
+      localizedArticle: false,
+      isFullScreen: false,
+      iframeLoading: true,
+      iframeLoadingFull: true,
+    }
+  }
+  _toggleFlag = () => {
+    const { selectedItem, selectedWiki } = this.props
+    const { flagged } = this.state
+    const fullUrl = encodeURIComponent(window.location.href)
+    if (!flagged) {
+      // do POST flag encodeURIComponent(window.location.href)
+      axios.post(properties.chronasApiHost + '/flags', {
+        fullUrl: fullUrl,
+        resource: selectedItem.type,
+        subEntityId: selectedItem.value,
+        wrongWiki: selectedWiki
+
+      })
+        .then(() => {
+          this.props.showNotification('pos.feedbackSuccess')
+        })
+        .catch((err) => {
+          console.error(err)
+          this.props.showNotification('somethingWentWrong')
+        })
+    } else {
+      // do DELETE flag
+      axios.delete(properties.chronasApiHost + `/flags/${fullUrl}`)
+      this.props.showNotification('Unflagged')
+    }
+
+    this.setState({ flagged: !flagged })
+  }
   _exitFullscreen = () => {
     this.setState({ isFullScreen: false })
   }
@@ -215,17 +256,6 @@ class ArticleIframe extends React.Component {
     history.push(fModUrl)
   }
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      fullfinalWiki: (props.locale === "en" && props.selectedWiki && props.selectedWiki !== -1) ? ('https://en.wikipedia.org/wiki/' + props.selectedWiki) : -1,
-      localizedArticle: false,
-      isFullScreen: false,
-      iframeLoading: true,
-      iframeLoadingFull: true,
-    }
-  }
-
   componentWillMount () {
     const { locale, selectedWiki } = this.props
     // https://www.wikidata.org/w/api.php?action=wbgetentities&titles=Vietnamese_Wikipedia&sites=enwiki&format=json
@@ -269,12 +299,14 @@ class ArticleIframe extends React.Component {
     const { locale, selectedWiki } = nextProps
     // https://www.wikidata.org/w/api.php?action=wbgetentities&titles=Vietnamese_Wikipedia&sites=enwiki&format=json
     if (this.props.selectedWiki !== selectedWiki) {
+      this.setState({ flagged: false })
       if (locale === "en") {
         this.setState({
           iframeLoading: true,
           fullfinalWiki: 'https://en.wikipedia.org/wiki/' + selectedWiki
         })
-      } else {
+      }
+      else {
         jsonp('https://www.wikidata.org/w/api.php?action=wbgetentities&titles=' + selectedWiki + '&sites=enwiki&format=json&callback=JSON_CALLBACK', null, (err, data) => {
           if (err) {
             this.props.showNotification('pos.localeWikiNotFound', 'confirm')
@@ -306,7 +338,7 @@ class ArticleIframe extends React.Component {
   }
 
   render () {
-    const { isFullScreen, fullfinalWiki, iframeLoading, iframeLoadingFull } = this.state
+    const { isFullScreen, fullfinalWiki, iframeLoading, flagged, iframeLoadingFull } = this.state
     const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
@@ -343,7 +375,7 @@ class ArticleIframe extends React.Component {
             labelPosition='before'
             primary
             onClick={() => window.open(decodeURIComponent(potentialSource), '_blank').focus()}
-            icon={<IconOutbound color={themes[theme].backColors[0]} />}
+            icon={<IconOpenInNew color={themes[theme].backColors[0]} />}
           /></div> : null}
       <div style={!(isMarker || isMedia || !hasChart) ? {
       ...styles.actionButtonContainer,
@@ -367,6 +399,13 @@ class ArticleIframe extends React.Component {
           top: 5
         }}
       />}
+        <IconButton
+          tooltipPosition='bottom-center'
+          tooltip={translate(flagged ? 'pos.unflag' : 'pos.flag')}
+          style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px' }}
+          onClick={this._toggleFlag}>
+          {flagged ? <IconFlaggedAlert color={'#fd2a00'} hoverColor={themes[theme].highlightColors[0]} /> : <IconFlagged color={'rgb(152, 70, 54)'} hoverColor={themes[theme].highlightColors[0]} />}
+        </IconButton>
         <IconButton
           tooltipPosition='bottom-left'
           tooltip={translate('aor.action.edit')}

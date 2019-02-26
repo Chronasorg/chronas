@@ -32,17 +32,10 @@ import {
   UrlField
 } from 'admin-on-rest'
 import Icon from 'material-ui/svg-icons/social/person'
-import RevertButton from './RevertButton'
+import ResolvedButton from './ResolvedButton'
 import UserTextField from '../shared/fields/UserTextField'
 import { chronasMainColor } from '../../../styles/chronasColors'
-//
-// export const RevisionIcon = Icon
-//
-// const RevisionFilter = (props) => (
-//   <Filter {...props}>
-//     <TextInput label='pos.search' source='q' value={'test123lala'} alwaysOn />
-//   </Filter>
-// )
+import OpenFullUrlButton from './OpenFullUrlButton'
 
 const colored = WrappedComponent => props => props.record[props.source] > 500
   ? <span style={{ color: 'red' }}><WrappedComponent {...props} /></span>
@@ -75,37 +68,22 @@ const styles = {
   }
 }
 
-export const RevisionFilter = (props) => (
+export const FlagFilter = (props) => (
   <Filter {...props}>
-    <TextInput source='user' />
-    <NullableBooleanInput source="reverted" defaultValue={true} />
+    <NullableBooleanInput source="fixed" defaultValue={true} />
   </Filter>
 );
 
-export const RevisionList = (props) => {
-  const prevBodyStyle = (record) => {
-    if (record.reverted) {
-      return { color: 'green', backgroundColor: '#ff0001' }
-    } else {
-      return { color: 'red', backgroundColor: '#ff0001' }
-      // return { backgroundColor: '#25ff00' }
-    }
-  }
-  const nextStyle = (record) => (record || {}).reverted ? { color: 'green' } : { color: 'red' }
-  const prevStyle = { color: 'green' }
-
-  return <div style={styles.container}><div style={styles.subContainer}><List {...props} filters={<RevisionFilter />} style={styles.container} title={'pos.revisionHistory'} perPage={5}>
+export const FlagList = (props) => {
+  return <div style={styles.container}><div style={styles.subContainer}><List {...props} filters={<FlagFilter />} style={styles.container} title={'pos.flagHistory'} perPage={5}>
     <Datagrid bodyOptions={{ overflow: 'auto', stripedRows: true, showRowHover: true }} rowStyle={rowStyle}>
-      <RevertButton style={{ overflow: 'visible', maxWidth: '1em' }} {...props} isRedo={false} />
-      <TextField style={{ maxWidth: '1em' }} source='entityId' label='resources.revisions.fields.entityId' />
+      <OpenFullUrlButton style={{ overflow: 'visible', maxWidth: '1em' }} {...props} isRedo={false} />
+      <ResolvedButton style={{ overflow: 'visible', maxWidth: '1em' }} {...props} isRedo={false} />
+      <TextField style={{ maxWidth: '1em' }} source='subEntityId' label='resources.flags.fields.subEntityId' />
       <ChipField style={{ maxWidth: '1em' }} source='resource' label='resources.revisions.fields.resource' />
-      <UserTextField style={{ maxWidth: '1em' }} source='user' label='resources.revisions.fields.user' />
-      <TextField style={{ maxWidth: '1em' }} source='nextBody' label='resources.revisions.fields.nextBody' />
-      <TextField style={{ maxWidth: '1em' }} source='prevBody' label='resources.revisions.fields.prevBody'
-                 elStyle={prevStyle} />
-      <BooleanField style={{ maxWidth: '1em' }} source='reverted' label='resources.revisions.fields.reverted' />
+      <TextField style={{ maxWidth: '1em' }} source='wrongWiki' label='resources.flags.fields.wrongWiki' />
+      <BooleanField style={{ maxWidth: '1em' }} source='fixed' label='resources.flags.fields.fixed' />
       <DateField style={{ maxWidth: '1em' }} source='timestamp' label='resources.revisions.fields.timestamp' type='date' />
-      {/* <DeleteButton style={{ maxWidth: '1em' }} {...props} /> */}
     </Datagrid>
   </List></div></div>
 }

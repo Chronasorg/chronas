@@ -309,6 +309,9 @@ export default {
     "epics": "Epics",
     "migration": "Migration",
     "feedbackSuccess": "Thanks for curating the data!",
+    "flags": "Reported as inaccurate data",
+    "flag": "Flag as inaccurate data",
+    "unflag": "Unflag inaccurate data",
     "filterMedia": "Filter Media",
     "filter": "Filter",
     "fontType": "Font Type",
@@ -522,6 +525,14 @@ export default {
         "search_name": "Select By Name",
         "startYear": "From Year",
         "wiki_url": "Article (Full Wikipedia URL)"
+      }
+    },
+    "flags": {
+      "fields": {
+        "fixed": "Resolved",
+        "subEntityId": "SubEntityId",
+        "fullUrl": "FullUrl",
+        "wrongWiki": "wrongWiki"
       }
     },
     "linked": {

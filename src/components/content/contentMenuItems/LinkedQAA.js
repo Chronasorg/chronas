@@ -271,7 +271,7 @@ class LinkedQAA extends React.Component {
     let dynamicWidth = isMinimized ? 0 : (((document.getElementsByClassName("body") || {})[0] || {}).offsetWidth || 0) - articleWidth - 148
     let isFlip = false
 
-    if (dynamicWidth > 400) dynamicWidth = 400
+    if (dynamicWidth > 600) dynamicWidth = 600
     if (dynamicWidth < 319) isFlip = true
 
     return (
