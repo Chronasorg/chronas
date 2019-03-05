@@ -32,8 +32,8 @@ metadata:
   name: chronas-map-ingress
   annotations:
     kubernetes.io/ingress.class: nginx
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod  
-spec:  
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
+spec:
   tls:
   - hosts:
     - chronas.org
@@ -45,4 +45,116 @@ spec:
       - path: /
         backend:
           serviceName: chronas-map
-          servicePort: 80    
+          servicePort: 80
+  - host: www.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: ar.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: de.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: el.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: en.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: es.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: fr.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: hi.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: it.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: ja.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: nl.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: pl.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: ru.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: sv.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: vi.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: zh.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
