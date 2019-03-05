@@ -125,9 +125,8 @@ class ArticleIframe extends React.Component {
       axios.post(properties.chronasApiHost + '/flags', {
         fullUrl: fullUrl,
         resource: selectedItem.type,
-        subEntityId: selectedItem.value,
+        subEntityId: (selectedItem.value || {}).id || selectedItem.value,
         wrongWiki: selectedWiki
-
       })
         .then(() => {
           this.props.showNotification('pos.feedbackSuccess')
