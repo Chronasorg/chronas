@@ -162,7 +162,9 @@ class App extends Component {
     if (selectedToken) localStorage.setItem('chs_temptoken', selectedToken)
     else localStorage.removeItem('chs_temptoken')
 
-    const newLocale = (utilsQuery.getURLParameter('locale') || localStorage.getItem('chs_locale') || 'en')
+    const fullHost = (window.location.host || "").split('.') || []
+    const potentialLocale = utilsQuery.getURLParameter('locale') || fullHost[0]
+    const newLocale = properties.languageOptions.map(el => el.id).includes(potentialLocale) ? potentialLocale : (localStorage.getItem('chs_locale') || 'en')
     // initialize queryparameters
     window.history.pushState('', '',
       '?year=' + selectedYear +
