@@ -1,10 +1,14 @@
 import utilsQuery from '../../map/utils/query'
+import { properties } from '../../../properties'
 
 const CHANGE_THEME = 'CHANGE_THEME'
 const CHANGE_LOCALE = 'CHANGE_LOCALE'
 const CHANGE_MARKERTHEME = 'CHANGE_MARKERTHEME'
 
-const INITIALLOCALE = utilsQuery.getURLParameter('locale') || localStorage.getItem('chs_locale') || 'en'
+const fullHost = (window.location.host || "").split('.') || []
+const potentialLocale = utilsQuery.getURLParameter('locale') || fullHost[0]
+const INITIALLOCALE = properties.languageOptions.map(el => el.id).includes(potentialLocale) ? potentialLocale : (localStorage.getItem('chs_locale') || 'en')
+
 /** Actions **/
 
 export const changeTheme = theme => ({
