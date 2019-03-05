@@ -154,6 +154,7 @@ export default {
     "close": "Закрыть обучение"
   },
   "benchmarkPage": {
+    "tier5Header": "никто",
     "title": "Настройки по умолчанию",
     "tier1Header": "Скорость и минимализм",
     "tier1Description": "Только границы и названия.",
@@ -161,7 +162,13 @@ export default {
     "tier2Description": "Границы, названия и до 2000 меток на каждый год.",
     "tier3Header": "Полностью",
     "tier3Description": "Эпопеи на временной шкале, отображать до 5000 меток на каждый год.",
-    "hint": "Не беспокойтесь, все настройки можно будет поменять позднее!"
+    "hint": "Не беспокойтесь, все настройки можно будет поменять позднее!",
+    "suggestion1": "Мы предлагаем <b>%{dontTranslate}</b> на основе ",
+    "suggestion2": "характеристики вашей машины",
+    warning1: "While mobile support is on our roadmap, we do not have a mobile version yet. Please check back later.",
+    warning2: "While tablet support is on our roadmap, we do not support touch screens yet. Please check back later.",
+    "continue": "Продолжить",
+    "specsTitle": "Характеристики вашей машины",
   },
   "loadingPage": {
     "errorMessage": "Похоже, Chronas сейчас слишком загружен. Пожалуйста, повторите запрос снова через пару минут.",

@@ -104,7 +104,11 @@ class PerformanceSelector extends PureComponent {
         // warning here
         stateToUpdate.isMobileOrTablet = (isMobile) ? 1 : 2
       } else if (isDesktop && maxRenderBufferSize) {
-        if (finalScreenSize > 1043624 && maxRenderBufferSize > 5000 && workerPoolSize >= 4) stateToUpdate.selectedIndex = 2
+        if (finalScreenSize > 1043624 && maxRenderBufferSize > 5000 && workerPoolSize >= 4) {
+          if (finalScreenSize > 1296000 && maxRenderBufferSize > 10000) {
+            stateToUpdate.selectedIndex = 2
+          } else stateToUpdate.selectedIndex = 1
+        }
         else stateToUpdate.selectedIndex = 0
       }
 
