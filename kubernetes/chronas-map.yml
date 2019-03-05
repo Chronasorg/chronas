@@ -37,6 +37,22 @@ spec:
   tls:
   - hosts:
     - chronas.org
+    - www.chronas.org
+    - ar.chronas.org
+    - de.chronas.org
+    - el.chronas.org
+    - en.chronas.org
+    - es.chronas.org
+    - fr.chronas.org
+    - hi.chronas.org
+    - it.chronas.org
+    - ja.chronas.org
+    - nl.chronas.org
+    - pl.chronas.org
+    - ru.chronas.org
+    - sv.chronas.org
+    - vi.chronas.org
+    - zh.chronas.org
     secretName: https-map
   rules:
   - host: chronas.org
