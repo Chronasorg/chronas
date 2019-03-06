@@ -31,6 +31,7 @@ import customVietnameseMessages from './vi'
 
 export default {
   ar: { ...arabicMessages, ...customEnglishMessages },
+  cat: { ...englishMessages, ...customEnglishMessages },
   fr: { ...frenchMessages, ...customEnglishMessages },
   en: { ...englishMessages, ...customEnglishMessages },
   zh: { ...chineseMessages, ...customEnglishMessages },

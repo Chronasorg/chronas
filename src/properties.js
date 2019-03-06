@@ -681,6 +681,7 @@ export const properties = {
   },
   languageOptions: [
     { id: 'ar', name: ' (no UI translation yet)العربية' },
+    { id: 'ca', name: 'Català (no UI translation yet)' },
     { id: 'de', name: 'Deutsch' },
     { id: 'el', name: 'Ελληνικά (no UI translation yet)' },
     { id: 'en', name: 'English' },
@@ -782,6 +783,7 @@ export const languageToFont = {
   pl: "Cinzel Regular",
   ru: "Noto Sans",
   es: "Cinzel Regular",
+  ca: "Cinzel Regular",
   sv: "Cinzel Regular",
   vi: "Noto Sans SC",
 }
