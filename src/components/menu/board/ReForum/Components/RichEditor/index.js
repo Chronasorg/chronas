@@ -55,7 +55,7 @@ class RichEditor extends Component {
 
   componentWillReceiveProps (nextProps) {
     const { value } = this.props;
-    if (value !== nextProps.value &&  safelyParseJSON(nextProps.value)) {
+    if (value !== nextProps.value && safelyParseJSON(nextProps.value)) {
       let nextVal = JSON.parse(JSON.stringify(nextProps.value))
 
       if (typeof nextVal === "string") nextVal = JSON.parse(nextVal)
@@ -72,9 +72,7 @@ class RichEditor extends Component {
     this.setState({ editorState });
 
     // trigger on change converting the ContentState to raw object
-    setTimeout(()=> {
       onChange(JSON.stringify(convertToRaw(editorState.getCurrentContent())));
-    },100)
   }
 
   handleKeyCommand(command) {

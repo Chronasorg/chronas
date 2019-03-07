@@ -72,6 +72,7 @@ class Menu extends PureComponent {
 
   constructor (props) {
     super(props)
+    this.state = { diceRotation: 60 }
     const token = localStorage.getItem('chs_token')
     if (token !== null) {
       //  <span>{translate('resources.users.page.delete')} "{username}"</span>
@@ -81,7 +82,8 @@ class Menu extends PureComponent {
   }
 
   render () {
-    const { toggleMenuDrawer, toggleRightDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, hasDashboard, onMenuTap, resources, theme, translate } = this.props
+    const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, translate } = this.props
+    const { diceRotation } = this.state
     const isLoggedIn = userDetails.token !== ''
     const username = localStorage.getItem('chs_username')
     const customAvatar = userDetails.avatar || localStorage.getItem('chs_avatar')
@@ -135,8 +137,12 @@ class Menu extends PureComponent {
           tooltipPosition='bottom-right'
           tooltip={translate('pos.random')}
           tooltipStyles={tooltip}
-          onClick={() => selectAreaItem('random')}
-          iconStyle={{ color: themes[theme].foreColors[0] }}
+          onClick={() => { this.setState({ diceRotation: this.state.diceRotation + 360 }); selectAreaItem('random') }}
+          iconStyle={{
+            color: themes[theme].foreColors[0],
+            transition: '2s transform',
+            transform: 'rotate(' + diceRotation + 'deg)'
+          }}
           style={{ padding: 0 }}
         >
           <DiceIcon

@@ -113,10 +113,10 @@ export default {
     "switchChart": "ПОМЕНЯТЬ ТИП ДИАГРАММЫ"
   },
   "influence": {
-    "year": "Year",
-    "provinces": "Provinces",
-    "populationTotal": "Population Total",
-    "populationShare": "Population Share",
+    "year": "Год",
+    "provinces": "провинция",
+    "populationTotal": "Численность населения",
+    "populationShare": "доля населения",
   },
   "community": {
     "biographyShort": "О себе",

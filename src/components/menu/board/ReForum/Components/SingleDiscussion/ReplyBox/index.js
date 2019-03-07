@@ -25,7 +25,7 @@ class ReplyBox extends Component {
         type="newOpinion"
         onSave={onSubmit}
         onChange={onChange}
-        value={opinionContent}
+        value={''}
       />
     );
   }

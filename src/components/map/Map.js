@@ -950,14 +950,14 @@ class Map extends Component {
         activeArea.data[selectedItem.value][utils.activeAreaDataAccessor(nextProps.activeArea.color)] === (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)])
       if (nextProps.selectedItem.wiki === 'random') {
         const { markerData } = this.state
-        const markerDataLength = (markerData.find(el => el.subtype !== 'c' && el.subtype !== 'cp') || []).length
-        if (markerDataLength > 0) {
-          const toSelectMarker = markerData.filter(el => el.subtype !== 'c' && el.subtype !== 'cp')[getRandomInt(0, markerDataLength - 1)]
+        const markerDataArray = (markerData.filter(el => el.subtype !== 'c' && el.subtype !== 'cp') || [])
+        if (markerDataArray.length > 0) {
+          const toSelectMarker = markerDataArray[getRandomInt(0, markerDataArray.length - 1)]
           selectMarkerItem(toSelectMarker._id, toSelectMarker)
           history.push('/article')
         } else {
           let dataPool = this.state.mapStyle
-            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.n !== 'undefined')
+            .getIn(['sources', 'provinces', 'data']).toJS().features.filter((el) => el.properties.r !== 'undefined' && el.properties.r !== '' && el.properties.r !== 'na')
 
           const randomItem = dataPool[getRandomInt(0, dataPool.length - 1)]
           const provinceId = randomItem.properties.name

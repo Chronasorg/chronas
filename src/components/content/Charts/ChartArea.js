@@ -123,10 +123,10 @@ export default class InfluenceChart extends React.Component {
    * @returns {Object} The caption and the value of the title.
    * @private
    */
-  _formatCrosshairTitle (values, translate) {
+  _formatCrosshairTitle (values) {
     return {
-      title:  values[0], // translate('Year'),
-      value: ((values[1] || {})[0] || {}).left
+      title: this.props.translate('influence.year'), // translate('Year'),
+      value: values[0].left
     }
   }
 
@@ -228,28 +228,28 @@ export default class InfluenceChart extends React.Component {
               className='startMarker'
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
-              values={[translate('influence.year'), crosshairStartValues]} />}
+              values={crosshairStartValues} />}
             {epicMeta && <Crosshair
               className='endMarker'
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
-              values={[translate('influence.year'), crosshairEndValues]} />}
+              values={crosshairEndValues} />}
             <Crosshair
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
-              values={[translate('influence.year'), crosshairValues]} />
+              values={crosshairValues} />
             <Crosshair
               className='currentYearMarker'
               itemsFormat={this._formatCrosshairItems}
               titleFormat={this._formatCrosshairTitle}
-              values={[translate('influence.year'), currentYearMarkerValues]} />
+              values={currentYearMarkerValues} />
             {chartIcons.map((el, index) => <Crosshair
                   className={((el.type === "si" || el.type === "b") && !epicMeta) ? 'timelineIconSmall' : 'timelineIconBig'}
                   itemsFormat={this._formatCrosshairItems}
                   titleFormat={this._formatCrosshairTitle}
-                  values={[translate('influence.year'), [{
+                  values={[{
                     left: +el.date,
-                  }]]}>
+                  }]}>
                   <div>
                     <ItemImage {...{ name: el.name, epicIndex: el.i, type: el.type, index: index, setEpicContentIndex: setEpicContentIndex }}  title={el.name} src={'/images/transparent.png'}
                          className={(index % 3) ? 'battleIcon1' : 'battleIcon2'} />

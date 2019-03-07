@@ -184,7 +184,7 @@ class NewDiscussion extends Component {
         newDiscussion
         key={'content'}
         type='newDiscussion'
-        value={content}
+        value={''}
         isQA={isQA}
         onChange={(value) => { this.updateDiscussionContent(value) }}
         onSave={() => { this._postDiscussion(userId, forumId, finalCurrentForm, currentDiscussion) }}
