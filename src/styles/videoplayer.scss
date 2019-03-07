@@ -1093,6 +1093,10 @@ body.video-react-full-window .video-react-fullscreen {
   text-align: center;
 }
 
+.gridTileContentContainer > div {
+  height: 100%;
+}
+
 .video-react.videoContent {
   height: 100% !important;
   width: 100% !important;

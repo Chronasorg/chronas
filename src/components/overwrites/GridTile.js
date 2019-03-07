@@ -175,6 +175,7 @@ class GridTile extends Component {
     }
 
     const containerProps = {
+      className: 'gridTileContentContainer',
       style: prepareStyles(mergedRootStyles),
       ...other,
     }
