@@ -283,7 +283,7 @@ export default {
       "hasNoArticle": "No Wiki article linked yet, please consider editing this item",
       "hasNoSource": "No source linked yet, please consider editing this item",
       "openArticle": "Open related Wikipedia article",
-      "openSource": "Open source in new tab",
+      "openSource": "Open media in new tab",
       "tabs": {
         "HIGHLIGHTS": "HIGHLIGHTS",
         "ARTEFACTS": "ARTEFACTS",

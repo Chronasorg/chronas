@@ -287,6 +287,10 @@ export default {
     "configuration": "Настройка",
     "discover": "Исследовать",
     "discover_component": {
+      "seeMore1": "See more media in the ",
+      "seeMore2": " section...",
+      "noFound": "No images found",
+      "noGeotaggedFound": "No geotagged images found in this location, see Discover section for all available images",
       "edit": "Редактировать этот объект",
       "hasNoArticle": "К объекту ещё не привязана вики-статья, пожалуйста отредактируйте этот объект",
       "hasNoSource": "К объекту ещё не привязаны источники информации, пожалуйста отредактируйте этот объект",
@@ -505,6 +509,8 @@ export default {
     "upvote": "Содержательно и корректно",
     "users": "Администрировать пользователей",
     "welcome": "Добро пожаловать"
+  },
+  "gallery": {
   },
   "resources": {
     "areas": {

@@ -279,11 +279,15 @@ export default {
     "configuration": "Configuration",
     "discover": "Discover",
     "discover_component": {
+      "seeMore1": "See more media in the ",
+      "seeMore2": " section...",
+      "noFound": "No images found",
+      "noGeotaggedFound": "No geotagged images found in this location, see Discover section for all available images",
       "edit": "Edit this item",
       "hasNoArticle": "No Wiki article linked yet, please consider editing this item",
       "hasNoSource": "No source linked yet, please consider editing this item",
       "openArticle": "Open related Wikipedia article",
-      "openSource": "Open source in new tab",
+      "openSource": "Open in new tab",
       "tabs": {
         "HIGHLIGHTS": "HIGHLIGHTS",
         "ARTEFACTS": "ARTEFACTS",
@@ -501,6 +505,8 @@ export default {
     "upvote": "Interesting and accurate",
     "users": "Manage Users",
     "welcome": "Welcome"
+  },
+  "gallery": {
   },
   "resources": {
     "areas": {

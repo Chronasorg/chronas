@@ -843,8 +843,6 @@ div.vis-tooltip {
   }
 }
 
-
-
 .discoveryIcon {
   pointer-events: all;
   margin-right: 0;
@@ -1115,15 +1113,121 @@ div.vis-tooltip {
   opacity: 0.8
 }
 
-pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
-.syntaxHighlight_string { color: green; }
-.syntaxHighlight_number { color: darkorange; }
-.syntaxHighlight_boolean { color: blue; }
-.syntaxHighlight_null { color: magenta; }
-.syntaxHighlight_key { color: red; }
+pre {
+  outline: 1px solid #ccc;
+  padding: 5px;
+  margin: 5px;
+}
+
+.syntaxHighlight_string {
+  color: green;
+}
+
+.syntaxHighlight_number {
+  color: darkorange;
+}
+
+.syntaxHighlight_boolean {
+  color: blue;
+}
+
+.syntaxHighlight_null {
+  color: magenta;
+}
+
+.syntaxHighlight_key {
+  color: red;
+}
 
 .articleContentContainer {
   width: 100%;
   height: 100%;
   display: block !important;
+}
+
+::-webkit-scrollbar {
+  height: 8px;
+  width: 10px;
+}
+
+::-webkit-scrollbar-track:horizontal {
+  background-color: transparent
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ccc
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #919191
+}
+
+.app-imagery-mode .widget-runway ::-webkit-scrollbar-thumb {
+  background-color: #4d4d4d
+}
+
+.app-imagery-mode .widget-runway ::-webkit-scrollbar-thumb:hover {
+  background-color: #9E9E9E
+}
+
+.mapGalleryRootSelectedImage {
+  text-align: center;
+
+  img {
+    width: auto !important;
+    position: absolute  !important;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.classReveal.dialogImageBackgroundHack {
+  > div {
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+.mapGalleryContainer {
+
+  .galleryLoader {
+    width: 100% !important;
+    .LoadingCircle_inner {
+      width: 212px !important;
+    }
+  }
+  .gridTileContentContainer {
+    img {
+      width: auto !important;
+      height: 100% !important;
+    }
+  }
+
+  > div {
+    div {
+      width: auto !important;
+    }
+  }
+}
+
+#galleryLine {
+  background-color: #555;
+  position: absolute;
+  height: 1px;
+  pointer-events: none;
+  z-index: 1;
+  width: 0;
+  transition-delay: 0.1s;
+  //transition: width 5s;
+}
+
+#customMarker {
+  transition: opacity 1s;
+}
+
+.mapboxgl-marker  {
+  z-index: 150;
 }

@@ -94,9 +94,6 @@ class Menu extends PureComponent {
           key={'info'}
           style={styles.mainLogo}
           containerElement={<Link to='/info' />}
-          tooltipPosition='bottom-right'
-          tooltip={translate('pos.about')}
-          tooltipStyles={tooltip}
           onClick={() => localStorage.setItem('chs_info_section', 'welcome')}
           iconStyle={styles.mainLogo}
         >

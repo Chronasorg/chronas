@@ -662,7 +662,18 @@ class Discover extends PureComponent {
                       this.setState({
                         selectedImage: {
                           ...this.state.selectedImage,
-                          wiki: res.filter(el => el.properties.ct === 'marker' || el.properties.ct === 'area')
+                          wiki: res.filter(el => {
+                            const { aeId, ct } = el.properties
+
+                            if (ct === 'marker' || (ct === 'area' && !aeId)) return true
+                            else if (aeId) {
+                              const [ae, colorToSelect, rulerToHold] = aeId.split('|')
+                              const nextData = this.props.activeArea.data
+                              const provinceWithOldRuler = Object.keys(nextData).find(key => nextData[key][utils.activeAreaDataAccessor(colorToSelect)] === rulerToHold)
+                              return (typeof provinceWithOldRuler !== "undefined")
+                            }
+                            return false
+                          })
                         }
                       })
                     }
@@ -830,7 +841,7 @@ class Discover extends PureComponent {
                           }
                         </GridTile>
                   )) : (isFetchingImages ? <LoadingCircle theme={theme} title={translate('pos.loading')} />
-                    : <span>No items found</span>)}
+                    : <div style={{ padding: '4em' }}>{translate('pos.discover_component.noFound')}</div>)}
                 </GridList>
               </div> : <div />
             ))}

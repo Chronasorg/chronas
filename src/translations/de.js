@@ -270,6 +270,10 @@ export default {
     "configuration": "Konfiguration",
     "discover": "Media",
     "discover_component": {
+      "seeMore1": "See more media in the ",
+      "seeMore2": " section...",
+      "noFound": "No images found",
+      "noGeotaggedFound": "No geotagged images found in this location, see Discover section for all available images",
       "edit": "Bearbeiten",
       "hasNoArticle": "Noch kein Wiki-Artikel verlinkt",
       "hasNoSource": "Noch keine Quelle verlinkt",
@@ -485,6 +489,9 @@ export default {
     "upvote": "Interessant und zutreffend",
     "users": "Nutzer Verwalten",
     "welcome": "Willkommen"
+  },
+  "gallery": {
+    "toggle": "Gallerie minimieren/ maximieren"
   },
   "resources": {
     "areas": {

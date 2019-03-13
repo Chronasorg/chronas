@@ -49,7 +49,6 @@ export default class DeckGLOverlay extends Component {
       marker: [],
       texts: [],
       layers: [],
-      // geo: props.geoData || [],
       x: 0,
       y: 0,
       hoveredItems: null
@@ -79,7 +78,6 @@ export default class DeckGLOverlay extends Component {
   componentWillReceiveProps (nextProps) {
     const { activeColor, clusterRawData, contentIndex, markerData, arcData, markerTheme, migrationData, selectedYear, selectedItem, geoData, updateLine, goToViewport } = this.props
     const { strokeWidth, onHover, showCluster, theme, metadata, onMarkerClick, sizeScale } = nextProps
-    // const { layers } = this.state
 
     let layers = false
     const { viewport } = nextProps
@@ -181,7 +179,6 @@ export default class DeckGLOverlay extends Component {
           id: 'icon',
           autoHighlight: true,
           highlightColor: showCluster ? [0, 50, 0, 1] : RGBAtoArray(theme.highlightColors[0]), // showCluster
-          // ? [0,0,0,0] : RGBAtoArray(theme.highlightColors[0]),
           data: this._getMarker({
             ...{
               markerData: (showCluster && nextProps.geoData.length > 0) ? [] : (nextProps.activeColor === 'ruler') ? nextIconMarker.filter(el => el.subtype !== 'c').concat(capitalMarkers0).concat(capitalMarkers) : nextIconMarker.filter(el => el.subtype[0] !== 'c')
@@ -194,7 +191,7 @@ export default class DeckGLOverlay extends Component {
           opacity: 1,
           pickable: true,
           iconAtlas: showCluster
-            ? ('/images/themed-cluster-atlas.png')// ('/images/' + markerTheme + '-cluster-atlas.png')
+            ? ('/images/themed-cluster-atlas.png')
             : ('/images/' + markerTheme + '-atlas.png'),
           iconMapping: iconMapping[showCluster ? 'cluster' : markerTheme.substr(0, 4)],
           sizeScale: properties.markerSize * size * window.devicePixelRatio,
@@ -570,63 +567,11 @@ export default class DeckGLOverlay extends Component {
       }
     })
 
-    // const scale = scaleQuantile()
-    //   .domain(arcs.map(a => Math.abs(a.value)))
-    //   .range(inFlowColors.map((c, i) => i))
-    //
-    // arcs.forEach(a => {
-    //   a.gain = Math.sign(a.value)
-    //   a.quantile = [255, 0, 204]
-    // })
-
     return arcs
   }
 
-  // _onClick (event, s) {
-  //   console.debug('onclick marker', event, s)
-  //   return true
-  // }
-
-  /*
-
-    typeToDescriptedType: {
-    'ae|r': '[Area Entity] Ruler',
-    // 'ae|capital': '[Area Entity] Capital',
-    'ae|c': '[Area Entity] Culture',
-    'ae|re': '[Area Entity] Religion',
-    'ae|reg': '[Area Entity] General Religion',
-    'a': '[Podcast & Audio]',
-    'e': '[Epic]',
-    't': '[External Article or Primary Source]',
-    'h': '[HTML or Text]',
-    'i|a': '[Image] Artefact',
-    'i|b': '[Image] Battle',
-    'i|c': '[Image] City & Building',
-    'i|p': '[Image] Person',
-    'i|m': '[Image] Other',
-    'ps': '[Primary Source]',
-    'v': '[Video]',
-    'w|ar': '[Wiki Article] Artifacts',
-    'w|b': '[Wiki Article] Battles -> Battles',
-    'w|si': '[Wiki Article] Battles -> Sieges',
-    'w|c': '[Wiki Article] Cities -> Cities',
-    'w|ca': '[Wiki Article] Cities -> Castles',
-    'w|m': '[Wiki Article] People -> Military',
-    'w|p': '[Wiki Article] People -> Politicians',
-    'w|e': '[Wiki Article] People -> Explorers',
-    'w|s': '[Wiki Article] People -> Scientists',
-    'w|a': '[Wiki Article] People -> Artists',
-    'w|r': '[Wiki Article] People -> Religious',
-    'w|at': '[Wiki Article] People -> Athletes',
-    'w|op': '[Wiki Article] People -> Unclassified',
-    'w|l': '[Wiki Article] Other -> Landmark',
-    'w|o': '[Wiki Article] Other -> Unknown',
-    'o': 'Other'
-
-   */
-
   render () {
-    const { viewport, markerData, selectedYear, theme } = this.props
+    const { viewport } = this.props
     const { layers } = this.state
 
     return <DeckGL {...viewport}

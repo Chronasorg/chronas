@@ -64,6 +64,7 @@ import {
 import utilsMapping from './utils/mapping'
 import utilsQuery from './utils/query'
 import MapTimeline from './timeline/MapTimeline'
+import MapGallery from './gallery/MapGallery'
 import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
 import {updateSingleMetadata} from "./data/actionReducers";
@@ -144,8 +145,8 @@ const messageYearNotification = (year, isBC, foreColor) => <div><span style={{
 
 class Map extends Component {
   componentDidMount = () => {
-    const { selectedYear, history } = this.props
-    const fromPerformance = (((history || {}).location || {}).pathname || "").indexOf('performance') > -1
+    const { selectedYear, location } = this.props
+    const fromPerformance = ((location || {}).pathname || "").indexOf('performance') > -1
       this._addGeoJson(TYPE_MARKER, fromPerformance ? [] : this.props.activeMarkers.list, false, +(utilsQuery.getURLParameter('year') || selectedYear))
       this._addEpic(fromPerformance ? [] : this.props.activeEpics)
     window.addEventListener('resize', this._resize, {passive: true})
@@ -826,6 +827,7 @@ class Map extends Component {
       filtered: defaultFilters,
       mapStyle: defaultMapStyle,
       mapTimelineContainerClass: 'mapTimeline',
+      mapGalleryContainerClass: 'mapGallery',
       year: 'Tue May 10 1086 16:17:44 GMT+1000 (AEST)',
       searchMarkerText: '',
       data: null,
@@ -835,6 +837,7 @@ class Map extends Component {
       geoData: [],
       migrationData: [],
       clusterRawData: [],
+      galleryMarker: [],
       epics: [],
       arcData: [],
       viewport: {
@@ -859,20 +862,18 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { activeEpics, activeMarkers, activeArea, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, setYear, selectAreaItem, selectMarkerItem, updateSingleMetadata, locale } = this.props
+    const { activeEpics, activeMarkers, activeArea, location, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, setYear, selectAreaItem, selectMarkerItem, updateSingleMetadata, locale } = this.props
 
     const contentIndex = ((selectedItem || {}).data || {}).contentIndex
     const nextContentIndex = ((nextProps.selectedItem || {}).data || {}).contentIndex
-    // console.debug("componentWillReceiveProps()   map")
-
     const rightDrawerOpen = nextProps.rightDrawerOpen
 
     let mapStyleDirty = false
 
     /** Acting on store changes **/
-    if (nextProps.history.location.pathname === '/discover') {
+    if ((nextProps.location || {}).pathname === '/discover') {
       this.setState({ mapTimelineContainerClass: 'mapTimeline discoverActive' })
-    } else if (nextProps.history.location.pathname !== '/discover' && this.state.mapTimelineContainerClass !== '' && this.state.mapTimelineContainerClass !== 'mapTimeline') {
+    } else if ((nextProps.location || {}).pathname !== '/discover' && this.state.mapTimelineContainerClass !== '' && this.state.mapTimelineContainerClass !== 'mapTimeline') {
       this.setState({ mapTimelineContainerClass: 'mapTimeline' })
     }
 
@@ -961,7 +962,7 @@ class Map extends Component {
 
           const randomItem = dataPool[getRandomInt(0, dataPool.length - 1)]
           const provinceId = randomItem.properties.name
-          if (history.location.pathname.indexOf('article') === -1) history.push('/article')
+          if ((location || {}).pathname.indexOf('article') === -1) history.push('/article')
 
           selectAreaItem(provinceId, provinceId) // set query url
         }
@@ -1960,8 +1961,44 @@ class Map extends Component {
     return null
   }
 
+  __createLine = (x1, y1, x2, y2, lineId) => {
+    let distance = Math.sqrt( ((x1-x2) * (x1-x2)) + ((y1-y2) * (y1-y2)))
+    let xMid = (x1+x2)/2
+    let yMid = (y1+y2)/2
+    let slopeInRadian = Math.atan2(y1 - y2, x1 - x2)
+    let slopeInDegrees = (slopeInRadian * 180) / Math.PI
+
+    let line = document.getElementById(lineId)
+    const customMarker = document.getElementById('customMarker')
+    if (!line || !customMarker) return
+    line.style.width = distance + "px"
+    line.style.top = yMid + "px"
+    line.style.left = (xMid - (distance / 2)) + "px"
+    line.style.transform =  "rotate(" + slopeInDegrees + "deg)"
+    customMarker.style.opacity = "1"
+  }
+
+  _setGalleryMarker = coo => {
+    this.setState({ galleryMarker: coo.length === 3 ? [coo[0], coo[1]] : [] })
+    if (coo.length === 3) {
+      setTimeout(() => {
+        try {
+          const source = document.getElementById(coo[2])
+          const customMarker = document.getElementById("customMarker")
+          if (!source || !customMarker) return
+          const sourceRect = source.getBoundingClientRect()
+          const customMarkerRect = customMarker.getBoundingClientRect()
+          this.__createLine(sourceRect.left + Math.round(sourceRect.width / 2) - 56, sourceRect.top + 123, customMarkerRect.left - 36, customMarkerRect.top + 39, 'galleryLine')
+        }
+        catch (e) {
+          console.debug(e)
+        }
+      }, 100)
+    }
+  }
+
   render () {
-    const { arcData, clusterRawData, epics, markerData, geoData, hoverInfo, mapStyle, mapTimelineContainerClass, migrationData, viewport } = this.state
+    const { arcData, clusterRawData, epics, galleryMarker, markerData, geoData, hoverInfo, mapStyle, mapTimelineContainerClass, mapGalleryContainerClass, migrationData, viewport } = this.state
     const { activeArea, modActive, menuDrawerOpen, metadata, rightDrawerOpen, history, location, theme, mapStyles, markerTheme, selectedItem, selectedYear } = this.props
 
     let leftOffset = isStatic ? 0 : (menuDrawerOpen) ? 156 : 56
@@ -1980,18 +2017,19 @@ class Map extends Component {
     let modMarker = (
       ((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') ||
       ((selectedItem || {}).type === TYPE_LINKED && ((selectedItem.value || {}).coo || []).length > 0) ||
-      ((selectedItem || {}).type === TYPE_EPIC && (selectedItem.coo || []).length > 0)) ? <Marker
+      ((selectedItem || {}).type === TYPE_EPIC && (selectedItem.coo || []).length > 0) ||
+      (galleryMarker.length > 1)) ? <Marker
         captureClick={false}
         captureDrag={false}
-        latitude={((modActive || {}).data || {})[1] ||
+        latitude={(galleryMarker || {})[1] || ((modActive || {}).data || {})[1] ||
       (selectedItem.coo || {})[1] ||
       ((selectedItem.value || {}).coo || {})[1]}
-        longitude={((modActive || {}).data || {})[0] ||
+        longitude={(galleryMarker || {})[0] || ((modActive || {}).data || {})[0] ||
       (selectedItem.coo || {})[0] ||
       ((selectedItem.value || {}).coo || {})[0]}
         offsetLeft={0}
         offsetTop={0}>
-        <BasicPin size={40} />
+        <BasicPin hideInit={(galleryMarker.length > 1)} size={40} />
       </Marker> : null
 
     const activeCluster = mapStyles.clusterMarkers
@@ -2008,6 +2046,7 @@ class Map extends Component {
         overflow: 'hidden',
         transition: 'left 300ms cubic-bezier(0.4, 0, 0.2, 1), right 300ms cubic-bezier(0.4, 0, 0.2, 1)'
       }}>
+        {(galleryMarker.length > 1) && <div id={'galleryLine'}></div>}
         <Snackbar
           selectedYear={+selectedYear}
           open={!infoOpen && !performanceOpen}// this.state.showYear}
@@ -2027,12 +2066,12 @@ class Map extends Component {
         <MapGL
           style={{
             transition: 'filter 300ms cubic-bezier(0.4, 0, 0.2, 1)',
-            filter: (history.location.pathname === '/' || (mapTimelineContainerClass === 'mapTimeline' &&
-              history.location.pathname !== '/info' &&
-              history.location.pathname !== '/login' &&
-              history.location.pathname !== '/configuration' &&
-              history.location.pathname !== '/account' &&
-              history.location.pathname.indexOf('/community/') === -1)) ? 'inherit' : 'blur(10px)'
+            filter: ((location || {}).pathname === '/' || (mapTimelineContainerClass === 'mapTimeline' &&
+              (location || {}).pathname !== '/info' &&
+              (location || {}).pathname !== '/login' &&
+              (location || {}).pathname !== '/configuration' &&
+              (location || {}).pathname !== '/account' &&
+              ((location || {}).pathname || '').indexOf('/community/') === -1)) ? 'inherit' : 'blur(10px)'
           }}
           ref={(map) => {
             this.map = map
@@ -2076,8 +2115,10 @@ class Map extends Component {
           {this._renderPopup()}
         </MapGL>
         {!isStatic && <div className={mapTimelineContainerClass}>
-          <MapTimeline history={history}
-            groupItems={(mapTimelineContainerClass !== 'mapTimeline discoverActive' && selectedItem.type !== TYPE_AUTOPLAY) ? epics : []} />
+          <MapTimeline history={history} groupItems={(mapTimelineContainerClass !== 'mapTimeline discoverActive' && selectedItem.type !== TYPE_AUTOPLAY) ? epics : []} />
+        </div>}
+        {!isStatic && <div className={'mapGallery'}>
+          <MapGallery setGalleryMarker={this._setGalleryMarker} viewport={viewport} history={history} refMap={this.map} />
         </div>}
       </div>
     )
