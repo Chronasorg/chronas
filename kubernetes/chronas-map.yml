@@ -50,6 +50,7 @@ spec:
     - ja.chronas.org
     - nl.chronas.org
     - pl.chronas.org
+    - pt.chronas.org
     - ru.chronas.org
     - sv.chronas.org
     - vi.chronas.org
@@ -148,6 +149,13 @@ spec:
           serviceName: chronas-map
           servicePort: 80
   - host: pl.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: pt.chronas.org
     http:
       paths:
       - path: /

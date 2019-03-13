@@ -23,6 +23,7 @@ import customGreekMessages from './el'
 import customItalianMessages from './it'
 import customJapaneseMessages from './ja'
 import customPolishMessages from './pl'
+import customPortugeseMessages from './pt'
 import customRussianMessages from './ru'
 import customSpanishMessages from './es'
 import customHindiMessages from './hi'
@@ -42,25 +43,9 @@ export default {
   it: { ...italianMessages, ...customEnglishMessages },
   ja: { ...japaneseMessages, ...customEnglishMessages },
   pl: { ...polishMessages, ...customEnglishMessages },
+  pt: { ...englishMessages, ...customPortugeseMessages },
   ru: { ...russianMessages, ...customRussianMessages },
   es: { ...spanishMessages, ...customEnglishMessages },
   sv: { ...swedishMessages, ...customEnglishMessages },
   vi: { ...vietnameseMessages, ...customEnglishMessages },
 }
-
-/*
-
-translate:
-
-function iterativeLeafUpdate (o) {
-	Object.keys(o).forEach( k => {
-		if (typeof (o[k]) === "string") {
-			console.debug(k)
-            o[k] = translate(o[k]) + " TRANSLATED"
-        } else {
-			iterativeLeafUpdate(o[k])
-        }
-    })
-}
-
- */
