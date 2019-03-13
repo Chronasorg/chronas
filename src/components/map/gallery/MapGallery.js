@@ -459,10 +459,7 @@ class MapGallery extends PureComponent {
               }} />
             </div>}
         </IconButton>
-        <div className={'mapGalleryContainer'} style={{
-          height: 137,
-          top: isOpen ? 6 : -130,
-        }}>
+        <div className={'mapGalleryContainer'}>
           { isOpen && <GridList
             cellHeight={124}
             padding={4}
@@ -475,6 +472,8 @@ class MapGallery extends PureComponent {
             backgroundImage: themes[theme].gradientColors[0],
             boxShadow: 'rgba(0, 0, 0, 0.4) -6px 6px 6px -3px',
             left: 64,
+            height: 137,
+            top: isOpen ? 6 : -130,
             position: 'fixed'
           }}>
             {filteredData.length > 0 ? filteredData.map((tile, j) => (
