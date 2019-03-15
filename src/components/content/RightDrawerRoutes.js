@@ -520,7 +520,7 @@ class RightDrawerRoutes extends PureComponent {
     // TODO: this gets called too much!
     const { activeArea, location, metadata, selectedItem } = this.props
 
-    console.debug('componentWillReceiveProps   RightDrawerRoutes')
+    // console.debug('componentWillReceiveProps   RightDrawerRoutes')
     if (
       (!(nextProps.selectedItem.type === TYPE_EPIC &&
         selectedItem.type === TYPE_EPIC) &&
@@ -553,10 +553,10 @@ class RightDrawerRoutes extends PureComponent {
     /** Acting on store changes **/
     if (rightDrawerOpen !== nextProps.rightDrawerOpen) {
       if (rightDrawerOpen) {
-        console.debug('rightDrawer Closed')
+        // console.debug('rightDrawer Closed')
         this.setState({ hiddenElement: true })
       } else {
-        console.debug('rightDrawer Opened')
+        // console.debug('rightDrawer Opened')
         this.setState({ hiddenElement: false })
       }
     }
@@ -653,7 +653,7 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   render () {
-    console.debug('render()   RightDrawerRoutes')
+    // console.debug('render()   RightDrawerRoutes')
     const {
       options, setWikiId, setRightDrawerVisibility, theme,
       selectedYear, selectedItem, activeArea, setAreaColorLabel, location,

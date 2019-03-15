@@ -267,7 +267,7 @@ class MapGallery extends PureComponent {
     try {
       bounds = ((refMap || {}).getMap() || {}).getBounds()
     } catch (e) {
-      console.log(e)
+      console.error(e)
       bounds = false
     }
     if (!bounds) return
