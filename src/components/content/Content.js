@@ -490,7 +490,6 @@ const enhance = compose(
     locale: state.locale,
     selectedItem: state.selectedItem,
     activeArea: state.activeArea,
-    rightDrawerOpen: state.rightDrawerOpen,
   }), {
     toggleRightDrawer: toggleRightDrawerAction,
     deselectItem: deselectItemAction,

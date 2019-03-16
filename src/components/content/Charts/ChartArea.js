@@ -150,7 +150,7 @@ export default class InfluenceChart extends React.Component {
     } else {
       return values.map((v, i) => {
         return {
-          title: series[0][i].title,
+          title: (((series || [])[0] || [])[i] || {}).title,
           value: (v || {}).top
         }
       })

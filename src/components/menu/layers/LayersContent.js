@@ -135,7 +135,7 @@ class LayerContent extends Component {
 
   render () {
     const { basemapId, locked, isAllMarker } = this.state
-    const { activeArea, setPopOpacity, migrationActive, setProvinceBorders, selectedText, activeMarkers, activeEpics, selectedYear, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme } = this.props
+    const { activeArea, setPopOpacity, migrationActive, setProvinceBorders, selectedText, activeMarkers, activeEpics, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme } = this.props
 
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
@@ -527,7 +527,6 @@ const enhance = compose(
     activeMarkers: state.activeMarkers,
     activeEpics: state.activeEpics,
     migrationActive: state.migrationActive,
-    selectedYear: state.selectedYear,
     markerTheme: state.markerTheme,
     mapStyles: state.mapStyles,
     theme: state.theme,

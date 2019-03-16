@@ -656,7 +656,7 @@ class MapTimeline extends Component {
                   type='number'
                   defaultValue={animation[0]}
                   onChange={(e, val) => {
-                    console.debug(val)
+                    // console.debug(val)
                     const { animation } = this.state
                     animation[0] = +val
                     this.setState({ animation })

@@ -350,7 +350,7 @@ class ArticleIframe extends React.Component {
     const potentialSource = ((selectedItem.value || {}).data || {}).source || (selectedItem.value || {}).source
     const isPsWithSource = selectedItem.value.subtype === 'ps' && (potentialSource || '').indexOf('wikisource') > -1
     const isProvince = selectedItem.wiki === WIKI_PROVINCE_TIMELINE
-    const noWiki = (!selectedItem || !fullfinalWiki || fullfinalWiki === -1)
+    const noWiki = (!selectedItem || !fullfinalWiki || fullfinalWiki === null || fullfinalWiki === -1 || fullfinalWiki === "https://en.wikipedia.org/wiki/-1")
     const modUrl = isEpic || isArea
       ? (((epicContentItem || {}).properties || {}).ct === 'marker' ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
       : (isMarker ? '/mod/markers' : '/mod/metadata')
@@ -449,7 +449,7 @@ class ArticleIframe extends React.Component {
       </div>
     </div>
 
-    const shouldLoad = !htmlContent && (noWiki || iframeLoading || fullfinalWiki === null || +fullfinalWiki === -1)
+    const shouldLoad = !htmlContent && (noWiki || iframeLoading)
 
     return (
       <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>

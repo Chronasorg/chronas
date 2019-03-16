@@ -28,10 +28,11 @@ import GridTile from '../../overwrites/GridTile'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
 import { setAreaColorLabel } from '../../menu/layers/actionReducers'
 import { selectAreaItem, selectEpicItem, selectLinkedItem, selectMarkerItem } from '../../map/actionReducers'
-import { getYoutubeId, properties, themes } from '../../../properties'
+import { properties, themes } from '../../../properties'
 import utils from '../../map/utils/general'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 
+const GALLERYBATCHSIZE = 15
 const imgButton = { width: 20, height: 20 }
 const styles = {
   buttonContainer: {
@@ -207,8 +208,10 @@ const styles = {
 class MapGallery extends PureComponent {
   constructor (props) {
     super(props)
+    this.locked = false
     this._openPartOf = this._openPartOf.bind(this)
     this.state = {
+      showMax: GALLERYBATCHSIZE,
       selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} },
       currentYearLoaded: 3000,
       isFetchingImages: true,
@@ -264,7 +267,7 @@ class MapGallery extends PureComponent {
     try {
       bounds = ((refMap || {}).getMap() || {}).getBounds()
     } catch (e) {
-      console.log(e)
+      console.error(e)
       bounds = false
     }
     if (!bounds) return
@@ -351,6 +354,7 @@ class MapGallery extends PureComponent {
           isFetchingImages: false,
           currentYearLoaded: selectedYear,
           tileData, // .sort((a, b) => (+b.score || 0) - (+a.score || 0))
+          showMax: GALLERYBATCHSIZE,
           filteredData
         })
       })
@@ -376,6 +380,25 @@ class MapGallery extends PureComponent {
   _handleOpenSource = (source) => {
     window.open(decodeURIComponent(source), '_blank').focus()
   }
+
+  _handleScroll = (e) => {
+    if (!this.locked) {
+      const target = e ? e.target : document.getElementById('mapGalleryList')
+
+      // console.debug(e.target, this.state, this.locked, target.clientWidth - (target.scrollWidth - target.scrollLeft), ((target.scrollWidth - target.scrollLeft) - target.clientWidth)/target.clientWidth)
+      const rightCorner = ((target.scrollWidth - target.scrollLeft) - target.clientWidth)/target.clientWidth
+      if (rightCorner < 1) {
+        this.locked = true
+        const { showMax, filteredData } = this.state
+        const tileLength = filteredData.length
+        if (showMax < tileLength) {
+          this.setState({ showMax: (showMax + GALLERYBATCHSIZE) })
+        }
+        setTimeout(() => this.locked = false, 100)
+      }
+    }
+  }
+
   _removeTile = (tileSrc) => {
     const originalTileData = this.state.tileData
     const originalFilteredData = this.state.filteredData
@@ -390,7 +413,7 @@ class MapGallery extends PureComponent {
 
   render () {
     const { selectedYear, translate, rightDrawerOpen, theme, setGalleryMarker, setRightDrawerVisibility } = this.props
-    const { selectedImage, isOpen, filteredData, isFetchingImages } = this.state
+    const { selectedImage, showMax, isOpen, filteredData, isFetchingImages } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
 
     const hasNoSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
@@ -399,7 +422,281 @@ class MapGallery extends PureComponent {
 
     return (
       <div style={styles.root}>
-      -
+        { isOpen && (selectedImage.src !== '') && <FloatingActionButton
+          backgroundColor={'transparent'}
+          style={styles.closeButton}
+          key={'close'}
+          onClick={this.handleImageClose}
+        >
+          <CloseIcon color={styles.toolbarTitleStyle.color} />
+        </FloatingActionButton> }
+        <IconButton
+          key={'expandGallery'}
+          style={{
+            zIndex: 1,
+            width: 48,
+            height: 48,
+            top: isOpen ? 137 : 0,
+            left: 64,
+            position: 'fixed'
+          }}
+          onClick={() => {
+            const { isOpen } = this.state
+            if (!isOpen) {
+              this._updateImages(selectedYear)
+              this.setState({ isOpen: true })
+            } else {
+              this.setState({ isOpen: false, tileData: [],
+                showMax: GALLERYBATCHSIZE })
+            }
+          }}
+          iconStyle={{
+            color: themes[theme].foreColors[0],
+            background: themes[theme].backColors[0],
+            borderRadius: '50%'
+          }}
+        >
+          {isOpen ? <div>
+            <IconArrowUp hoverColor={themes[theme].highlightColors[0]} />
+            <span style={{
+                left: 90,
+                height: 24,
+                zIndex: -1,
+                position: 'fixed',
+                color: themes[theme].foreColors[0],
+                backgroundColor: themes[theme].backColors[0],
+                fontSize: 12,
+                whiteSpace: 'nowrap',
+                paddingLeft: 12,
+                paddingRight: 6,
+                paddingTop: 1
+              }}>{translate('pos.discover_component.seeMore1')}<a className='customLink' style={{ color: themes[theme].highlightColors[0] }} onClick={() => this.props.history.push('/discover')}>{translate('pos.discover')}</a>{translate('pos.discover_component.seeMore2')}</span>
+          </div>
+            : <div>
+              <IconArrowDown hoverColor={themes[theme].highlightColors[0]} />
+              <IconGallery color={themes[theme].highlightColors[0]} style={{
+                left: 90,
+                width: 50,
+                zIndex: -1,
+                position: 'fixed',
+                backgroundColor: themes[theme].backColors[0]
+              }} />
+            </div>}
+        </IconButton>
+        <div className={'mapGalleryContainer'}>
+          { isOpen && <GridList
+            id={'mapGalleryList'}
+            onScroll={this._handleScroll}
+            cellHeight={124}
+            padding={4}
+            style={{
+            display: 'flex',
+            flexWrap: 'nowrap',
+            overflowX: 'auto',
+            transition: 'all 1s ease',
+            width: 'calc(100% - 62px)',
+            backgroundImage: themes[theme].gradientColors[0],
+            boxShadow: 'rgba(0, 0, 0, 0.4) -6px 6px 6px -3px',
+            left: 64,
+            height: 137,
+            top: isOpen ? 6 : -130,
+            position: 'fixed'
+          }}>
+            {filteredData.length > 0 ? filteredData.slice(0, showMax).map((tile, j) => (
+                    <GridTile
+                      id={'galleryId'+j}
+                        key={tile.src}
+                        style={{ border: '0px solid black', cursor: 'pointer' }}
+                        titleStyle={styles.title}
+                        subtitleStyle={styles.subtitle}
+                        title={tile.title}
+                        subtitle={tile.subtitle}
+                        actionPosition='right'
+                        titlePosition='bottom'
+                        titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+                        // cols={((j + 3) % 4 < 2) ? 1 : 2}
+                        titleHeight={36}
+                      >
+                        <img src={tile.thumbnail || tile.src}
+                          onError={() => this._removeTile(tile.src)}
+                          onMouseEnter={(s, event) => {
+                            const gId = 'galleryId' + j
+                            setGalleryMarker(tile.coo.concat([gId]))
+                          }}
+                           onMouseLeave={() => {
+                             setGalleryMarker([])
+                           }}
+                          onClick={() => {
+                               this.setState({
+                                 selectedImage: {
+                                   src: tile.thumbnail || tile.src || tile.original || tile.poster,
+                                   year: tile.subtitle || tile.originalTitle,
+                                   title: tile.title || tile.description,
+                                   wiki: tile.subtype === 'ps' && [tile.wiki],
+                                   source: tile.source,
+                                   fullData: tile.fullData
+                                 }
+                               })
+
+                               if (tile.subtype !== 'ps') {
+                                 axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + window.encodeURIComponent(tile.src))
+                                   .then((linkedItemResult) => {
+                                     if (linkedItemResult.status === 200) {
+                                       const res = (linkedItemResult.data.map || []).concat(linkedItemResult.data.media || [])
+                                       this.setState({
+                                         selectedImage: {
+                                           ...this.state.selectedImage,
+                                           wiki: res.filter(el => {
+                                             const { aeId, ct } = el.properties
+
+                                             if (ct === 'marker' || (ct === 'area' && !aeId)) return true
+                                             else if (aeId) {
+                                               const [ae, colorToSelect, rulerToHold] = aeId.split('|')
+                                               const nextData = this.props.activeArea.data
+                                               const provinceWithOldRuler = Object.keys(nextData).find(key => nextData[key][utils.activeAreaDataAccessor(colorToSelect)] === rulerToHold)
+                                               return (typeof provinceWithOldRuler !== "undefined")
+                                             }
+                                             return false
+                                           })
+                                         }
+                                       })
+                                     }
+                                   })
+                               }
+                             }}
+                        />
+                      </GridTile>
+                  )) : (isFetchingImages ? <div className={'galleryLoader'} style={{ marginTop: -15, height: 130 }}><LoadingCircle theme={theme} title={translate('pos.loading')} /></div>
+                    : <div style={{ padding: '4em' }}>{translate('pos.discover_component.noGeotaggedFound')}</div>)}
+          </GridList> }
+        </div>
+        { isOpen && <Dialog
+          autoDetectWindowHeight={false}
+          modal={false}
+          bodyClassName={'mapGalleryRootSelectedImage'}
+          contentClassName={(this.state.hiddenElement) ? '' : 'classReveal dialogImageBackgroundHack'}
+          contentStyle={{ ...styles.discoverDialogStyle, overflow: 'auto', left: '0px' }}
+          overlayStyle={styles.overlayStyle}
+          bodyStyle={{ backgroundColor: 'transparent', border: 'none' }}
+          actionsContainerStyle={{ backgroundColor: red400 }}
+          style={{ backgroundColor: 'transparent', overflow: 'hidden', zIndex: 1500 }}
+          titleStyle={{ backgroundColor: 'transparent', borderRadius: 0 }}
+          autoScrollBodyContent={false}
+          open={(selectedImage.src !== '')}
+          onRequestClose={this.handleImageClose}
+        >
+          <img src={selectedImage.poster || selectedImage.src} style={styles.selectedIMG} />
+          <div style={styles.selectedImageContent}>
+            <h1 style={styles.selectedImageTitle}>{selectedImage.year}</h1>
+            <p style={styles.selectedImageDescription}>{selectedImage.title}</p>
+            <div style={styles.selectedImageButtonContainer}>
+
+              {hasNoWiki || ((selectedImage || {}).wiki || []).length === 1
+                ? <IconButton
+                  style={{ ...styles.buttonOpenArticle, paddingRight: '1em' }}
+                  tooltipPosition='bottom-center'
+                  tooltip={hasNoWiki ? translate('pos.discover_component.hasNoArticle') : (translate('pos.discover_component.openArticle') + '  ' + (((selectedImage.wiki[0].properties || {}).n || '').toString() || '').toUpperCase())}>
+                  <RaisedButton
+                    hoverColor={themes[theme].highlightColors[0]}
+                    disabled={hasNoWiki}
+                    label={translate('pos.discover_component.openArticle')}
+                    onClick={() => this._openPartOf(selectedImage.wiki[0], selectedImage.fullData)}
+                    primary
+                  />
+                </IconButton>
+                : <SelectField
+                  style={{
+                    width: 200,
+                    color: 'rgb(255, 255, 255)',
+                    backgroundColor: 'transparent',
+                    maxHeight: 36,
+                    textAlign: 'center'
+                  }}
+                  menuStyle={{
+                    width: 200,
+                    color: 'rgb(255, 255, 255)',
+                    top: 14,
+                    maxHeight: 36,
+                    backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  menuItemStyle={{
+                    width: 200,
+                    maxHeight: 36,
+                    color: 'rgb(255, 255, 255)',
+                    backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  labelStyle={{
+                    maxHeight: 36,
+                    width: 200,
+                    left: 0,
+                    color: 'rgb(255, 255, 255)',
+                    backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  listStyle={{ width: 200 }}
+                  underlineStyle={{ width: 200 }}
+                  floatingLabelStyle={{
+                    maxHeight: 36,
+                    width: 200,
+                    left: 0,
+                    color: 'rgb(255, 255, 255)',
+                    backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  hintStyle={{ width: 200, left: 22, color: 'rgb(255, 255, 255)' }}
+                  // maxHeight={36}
+                  floatingLabelText={translate('pos.related_item')}
+                  hintText={translate('pos.related_item')}
+                  value={null}
+                  onChange={(event, index, value) => {
+                    this._openPartOf(value)
+                  }}
+                >
+                  {(selectedImage.wiki || []).map((el) => {
+                    return <MenuItem value={el}
+                      primaryText={((el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                  })}
+                </SelectField>
+              }
+              {selectedImage.src && <IconButton
+                style={styles.buttonOpenArticle}
+                tooltipPosition='bottom-center'
+                tooltip={hasNoWiki ? translate('pos.discover_component.hasNoImage') : translate('pos.discover_component.openSource')}>
+                <RaisedButton
+                  hoverColor={themes[theme].highlightColors[0]}
+                  disabled={hasNoImage}
+                  label={translate('pos.discover_component.openSource')}
+                  primary
+                  onClick={() => this._handleOpenSource(selectedImage.src)}>
+                  <IconOutbound color='white'
+                    style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
+                </RaisedButton>
+              </IconButton>}
+              <IconButton
+                style={styles.buttonOpenArticle}
+                tooltipPosition='bottom-center'
+                tooltip={hasNoWiki ? translate('pos.discover_component.hasNoSource') : translate('pos.discover_component.openSource')}>
+                <RaisedButton
+                  hoverColor={themes[theme].highlightColors[0]}
+                  disabled={hasNoSource}
+                  label={translate('pos.openSource')}
+                  primary
+                  onClick={() => this._handleOpenSource(selectedImage.source)}>
+                  <IconOutbound color='white'
+                    style={{ float: 'right', padding: '4px', paddingLeft: 0, marginLeft: -10 }} />
+                </RaisedButton>
+              </IconButton>
+              <IconButton
+                style={styles.buttonOpenArticle}
+                tooltipPosition='bottom-center'
+                tooltip={translate('pos.discover_component.edit')}>
+                <RaisedButton
+                  hoverColor={themes[theme].highlightColors[0]}
+                  label={translate('pos.edit')}
+                  primary
+                  onClick={() => this._handleEdit(selectedImage.source)} />
+              </IconButton>
+            </div>
+          </div>
+        </Dialog> }
       </div>
     )
   }
@@ -412,7 +709,6 @@ const mapStateToProps = state => ({
   theme: state.theme,
   locale: state.locale,
   location: state.location,
-  menuItemActive: state.menuItemActive,
 })
 
 export default connect(mapStateToProps, {
