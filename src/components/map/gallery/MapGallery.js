@@ -28,11 +28,10 @@ import GridTile from '../../overwrites/GridTile'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
 import { setAreaColorLabel } from '../../menu/layers/actionReducers'
 import { selectAreaItem, selectEpicItem, selectLinkedItem, selectMarkerItem } from '../../map/actionReducers'
-import { properties, themes } from '../../../properties'
+import { getYoutubeId, properties, themes } from '../../../properties'
 import utils from '../../map/utils/general'
 import { tooltip } from '../../../styles/chronasStyleComponents'
 
-const GALLERYBATCHSIZE = 15
 const imgButton = { width: 20, height: 20 }
 const styles = {
   buttonContainer: {
@@ -208,10 +207,8 @@ const styles = {
 class MapGallery extends PureComponent {
   constructor (props) {
     super(props)
-    this.locked = false
     this._openPartOf = this._openPartOf.bind(this)
     this.state = {
-      showMax: GALLERYBATCHSIZE,
       selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} },
       currentYearLoaded: 3000,
       isFetchingImages: true,
@@ -354,7 +351,6 @@ class MapGallery extends PureComponent {
           isFetchingImages: false,
           currentYearLoaded: selectedYear,
           tileData, // .sort((a, b) => (+b.score || 0) - (+a.score || 0))
-          showMax: GALLERYBATCHSIZE,
           filteredData
         })
       })
@@ -380,25 +376,6 @@ class MapGallery extends PureComponent {
   _handleOpenSource = (source) => {
     window.open(decodeURIComponent(source), '_blank').focus()
   }
-
-  _handleScroll = (e) => {
-    if (!this.locked) {
-      const target = e ? e.target : document.getElementById('mapGalleryList')
-
-      // console.debug(e.target, this.state, this.locked, target.clientWidth - (target.scrollWidth - target.scrollLeft), ((target.scrollWidth - target.scrollLeft) - target.clientWidth)/target.clientWidth)
-      const rightCorner = ((target.scrollWidth - target.scrollLeft) - target.clientWidth)/target.clientWidth
-      if (rightCorner < 1) {
-        this.locked = true
-        const { showMax, filteredData } = this.state
-        const tileLength = filteredData.length
-        if (showMax < tileLength) {
-          this.setState({ showMax: (showMax + GALLERYBATCHSIZE) })
-        }
-        setTimeout(() => this.locked = false, 100)
-      }
-    }
-  }
-
   _removeTile = (tileSrc) => {
     const originalTileData = this.state.tileData
     const originalFilteredData = this.state.filteredData
@@ -413,7 +390,7 @@ class MapGallery extends PureComponent {
 
   render () {
     const { selectedYear, translate, rightDrawerOpen, theme, setGalleryMarker, setRightDrawerVisibility } = this.props
-    const { selectedImage, showMax, isOpen, filteredData, isFetchingImages } = this.state
+    const { selectedImage, isOpen, filteredData, isFetchingImages } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
 
     const hasNoSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
@@ -446,8 +423,7 @@ class MapGallery extends PureComponent {
               this._updateImages(selectedYear)
               this.setState({ isOpen: true })
             } else {
-              this.setState({ isOpen: false, tileData: [],
-                showMax: GALLERYBATCHSIZE })
+              this.setState({ isOpen: false, tileData: [] })
             }
           }}
           iconStyle={{
@@ -485,8 +461,6 @@ class MapGallery extends PureComponent {
         </IconButton>
         <div className={'mapGalleryContainer'}>
           { isOpen && <GridList
-            id={'mapGalleryList'}
-            onScroll={this._handleScroll}
             cellHeight={124}
             padding={4}
             style={{
@@ -502,7 +476,7 @@ class MapGallery extends PureComponent {
             top: isOpen ? 6 : -130,
             position: 'fixed'
           }}>
-            {filteredData.length > 0 ? filteredData.slice(0, showMax).map((tile, j) => (
+            {filteredData.length > 0 ? filteredData.map((tile, j) => (
                     <GridTile
                       id={'galleryId'+j}
                         key={tile.src}
@@ -709,6 +683,7 @@ const mapStateToProps = state => ({
   theme: state.theme,
   locale: state.locale,
   location: state.location,
+  menuItemActive: state.menuItemActive,
 })
 
 export default connect(mapStateToProps, {

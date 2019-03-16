@@ -516,7 +516,7 @@ class LinkedGallery extends React.Component {
   }
 
   render () {
-    const { isMinimized, linkedItems, selectedYear, translate, setRightDrawerVisibility, qName, theme } = this.props
+    const { isMinimized, linkedItems, selectedYear, translate, rightDrawerOpen, setRightDrawerVisibility, qName, theme } = this.props
     const { showMax, selectedImage, filtered, slideIndex, tileData, categories } = this.state
 
     const noTiles = (typeof linkedItems === 'undefined' || (tileData && tileData.length === 0))
@@ -747,6 +747,8 @@ const enhance = compose(
   connect(state => ({
     theme: state.theme,
     locale: state.locale,
+    activeArea: state.activeArea,
+    rightDrawerOpen: state.rightDrawerOpen,
   }), {
     toggleRightDrawer: toggleRightDrawerAction,
     setFullModActive,

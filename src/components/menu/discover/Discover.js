@@ -983,6 +983,7 @@ const mapStateToProps = state => ({
   rightDrawerOpen: state.rightDrawerOpen,
   theme: state.theme,
   locale: state.locale,
+  menuItemActive: state.menuItemActive,
 })
 
 export default connect(mapStateToProps, {

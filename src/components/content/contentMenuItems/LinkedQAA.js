@@ -325,6 +325,8 @@ const enhance = compose(
     theme: state.theme,
     locale: state.locale,
     selectedItem: state.selectedItem,
+    activeArea: state.activeArea,
+    rightDrawerOpen: state.rightDrawerOpen,
   }), {
     toggleRightDrawer: toggleRightDrawerAction,
     setFullModActive,
