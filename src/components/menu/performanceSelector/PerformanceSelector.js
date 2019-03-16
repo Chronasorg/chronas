@@ -77,6 +77,7 @@ class PerformanceSelector extends PureComponent {
     super(props)
     this.state = {
       isMobileOrTablet: 0,
+      isMobile: false,
       hiddenElement: true,
       selectedIndex: -1,
       suggestedIndex: 4,
@@ -102,6 +103,7 @@ class PerformanceSelector extends PureComponent {
 
       if (isMobile || isTablet) {
         // warning here
+        stateToUpdate.isMobile = isMobile
         stateToUpdate.isMobileOrTablet = (isMobile) ? 1 : 2
       } else if (isDesktop && maxRenderBufferSize) {
         if (finalScreenSize > 1043624 && maxRenderBufferSize > 5000 && workerPoolSize >= 4) {
@@ -131,15 +133,13 @@ class PerformanceSelector extends PureComponent {
 
   render () {
     const { theme, locale, changeLocale, setFullscreen, translate, history } = this.props
-    const { isMobileOrTablet, selectedIndex, suggestedIndex, specs, openSpecs } = this.state
-    const isMobile = typeof (specs || {}).browserFeatures !== "undefined" && ((((specs || {}).browserFeatures || {}).browserType || {}).isMobile === true)
-
+    const { isMobileOrTablet, isMobile, selectedIndex, suggestedIndex, specs, openSpecs } = this.state
     const selectedTitle = translate('benchmarkPage.tier' + (suggestedIndex + 1) + 'Header')
 
     return (
       <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open
         contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
-        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, marginLeft: isMobile ? 82 : ''
+        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, margin: isMobile ? '0 0 0 82px' : '0 auto'
         }} onRequestClose={this.handleClose}>
         <Dialog
           title={translate('benchmarkPage.specsTitle')}
