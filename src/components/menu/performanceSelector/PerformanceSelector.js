@@ -132,13 +132,15 @@ class PerformanceSelector extends PureComponent {
   render () {
     const { theme, locale, changeLocale, setFullscreen, translate, history } = this.props
     const { isMobileOrTablet, selectedIndex, suggestedIndex, specs, openSpecs } = this.state
+    const isMobile = typeof (specs || {}).browserFeatures !== "undefined" && ((((specs || {}).browserFeatures || {}).browserType || {}).isMobile === true)
 
     const selectedTitle = translate('benchmarkPage.tier' + (suggestedIndex + 1) + 'Header')
 
     return (
       <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open
         contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
-        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0 }} onRequestClose={this.handleClose}>
+        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, marginLeft: isMobile ? 82 : ''
+        }} onRequestClose={this.handleClose}>
         <Dialog
           title={translate('benchmarkPage.specsTitle')}
           actions={[
@@ -154,7 +156,7 @@ class PerformanceSelector extends PureComponent {
         >
           { <div style={{ whiteSpace: 'pre-wrap', overflow: 'auto' }} dangerouslySetInnerHTML={{ __html: syntaxHighlight(specs) }} /> }
         </Dialog>
-        <Card style={styles.card}>
+        {isMobile ? <Card style={{ ...styles.card, minWidth: ''}}><p style={{ color: 'red' }}>Sorry, no mobile version yet.</p> <p>Check back on your desktop!</p></Card> : <Card style={styles.card}>
           <div>
             <Toolbar style={styles.toolbar}>
               <ToolbarGroup>
@@ -285,8 +287,7 @@ class PerformanceSelector extends PureComponent {
 
             }} /></div>
           </CardActions>
-        </Card>
-
+        </Card>}
       </Dialog>
     )
   }
