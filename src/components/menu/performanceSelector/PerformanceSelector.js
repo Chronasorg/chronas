@@ -272,7 +272,7 @@ class PerformanceSelector extends PureComponent {
               const { setEpic, setMarker, setMarkerLimit } = this.props
               let selectedMarker = selectedIndex === 0 ? [] : markerIdNameArray.map(el => el[0])
               let selectedEpics = selectedIndex === 2 ? ['ei', 'es', 'ew'] : []
-              let selectedLimit = selectedIndex === 2 ? 5000 : 2000
+              let selectedLimit = selectedIndex === 2 ? 5500 : 2000
               setMarker(selectedMarker)
               setEpic(selectedEpics)
               if (selectedLimit !== 2000) setMarkerLimit(selectedLimit)
