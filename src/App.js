@@ -215,7 +215,7 @@ class App extends Component {
           } else if (!localStorage.getItem('chs_dyk_distribution')) {
             selectedItem = didYouKnows[6]
             localStorage.setItem('chs_dyk_distribution', true)
-          } else if (!localStorage.getItem('chs_dyk_link')) {https://github.com/Chronasorg/chronas
+          } else if (!localStorage.getItem('chs_dyk_link')) {
             selectedItem = didYouKnows[7]
             localStorage.setItem('chs_dyk_link', true)
           } else if (!localStorage.getItem('chs_dyk_escape')) {
@@ -240,7 +240,7 @@ class App extends Component {
         setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
 
         setLoadStatus(false)
-        //this.forceUpdate()
+        this.forceUpdate()
       }))
       .catch(() => {
         this.setState({ failAndNotify: true })
