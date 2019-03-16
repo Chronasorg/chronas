@@ -153,7 +153,7 @@ class Map extends Component {
     this._resize()
   }
   _initializeMap = () => {
-    // console.log('### initializing map')
+    console.log('### initializing map')
     const { metadata, activeArea, changeAreaData, selectedYear, selectedItem, locale } = this.props
 
     this._loadGeoJson('provinces', metadata.provinces)
@@ -167,7 +167,7 @@ class Map extends Component {
     }
   }
   _updateMetaMapStyle = (shouldReset = false, fromInit = false) => {
-    // console.log('### updating metadata mapstyles')
+    console.log('### updating metadata mapstyles')
     const { metadata, setModToUpdate, locale } = this.props
 
     const metadataRuler = metadata['ruler']
@@ -946,7 +946,7 @@ class Map extends Component {
 
     // slected item changed?
     if (selectedItem.value !== nextProps.selectedItem.value) {
-      // console.debug('###### Item changed')
+      console.debug('###### Item changed')
       const isRulerHold = (activeArea.data[selectedItem.value] &&
         activeArea.data[selectedItem.value][utils.activeAreaDataAccessor(nextProps.activeArea.color)] === (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)])
       if (nextProps.selectedItem.wiki === 'random') {
@@ -1369,19 +1369,19 @@ class Map extends Component {
 
     // Year changed?
     if (selectedYear !== nextProps.selectedYear) {
-      // console.debug('###### Year changed from ' + selectedYear + ' to ' + nextProps.selectedYear)
+      console.debug('###### Year changed from ' + selectedYear + ' to ' + nextProps.selectedYear)
       this._changeYear(nextProps.selectedYear, nextProps.migrationActive)
     }
 
     // Basemap changed?
     if (mapStyles.basemap !== nextProps.mapStyles.basemap) {
-      // console.debug('###### Basemap changed')
+      console.debug('###### Basemap changed')
       mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty).setIn(['layers', basemapLayerIndex, 'source'], nextProps.mapStyles.basemap)
     }
 
     // Province Borders Display changed?
     if (mapStyles.showProvinceBorders !== nextProps.mapStyles.showProvinceBorders) {
-      // console.debug('###### Show Province Borders changed')
+      console.debug('###### Show Province Borders changed')
       if (nextProps.mapStyles.showProvinceBorders) {
         // display province borders!
         mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
@@ -1401,7 +1401,7 @@ class Map extends Component {
 
     // Area Label and Color changed?
     if (activeArea.label !== nextProps.activeArea.label && activeArea.color !== nextProps.activeArea.color) {
-      // console.debug('###### Area Color and Label changed' + nextProps.activeArea.label)
+      console.debug('###### Area Color and Label changed' + nextProps.activeArea.label)
       this._changeArea(nextProps.activeArea.data, nextProps.activeArea.label, nextProps.activeArea.color, nextProps.selectedItem.value, activeArea.color)
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
       utilsQuery.updateQueryStringParameter('label', nextProps.activeArea.label)
@@ -1409,14 +1409,14 @@ class Map extends Component {
 
     // Area Label changed?
     else if (activeArea.label !== nextProps.activeArea.label) {
-      // console.debug('###### Area Label changed' + nextProps.activeArea.label)
+      console.debug('###### Area Label changed' + nextProps.activeArea.label)
       this._changeArea(nextProps.activeArea.data, nextProps.activeArea.label, undefined, undefined, activeArea.color)
       utilsQuery.updateQueryStringParameter('label', nextProps.activeArea.label)
     }
 
     // Area Color changed?
     else if (activeArea.color !== nextProps.activeArea.color) {
-      // console.debug('###### Area Color changed' + nextProps.activeArea.color)
+      console.debug('###### Area Color changed' + nextProps.activeArea.color)
       this._changeArea(nextProps.activeArea.data, undefined, nextProps.activeArea.color, nextProps.selectedItem.value, activeArea.color)
       utilsQuery.updateQueryStringParameter('fill', nextProps.activeArea.color)
     }
@@ -1457,7 +1457,7 @@ class Map extends Component {
     }
     // Markers changed?
     if (!_.isEqual(activeMarkers.list.sort(), nextProps.activeMarkers.list.sort())) {
-      // console.debug('###### Markers changed')
+      console.debug('###### Markers changed')
       utilsQuery.updateQueryStringParameter('markers', nextProps.activeMarkers.list)
       const removedMarkers = _.difference(activeMarkers.list, nextProps.activeMarkers.list)
       const addedMarkers = _.difference(nextProps.activeMarkers.list, activeMarkers.list)
@@ -1465,12 +1465,12 @@ class Map extends Component {
       // iterate to remove
       // for (const removedMarker of removedMarkers) {
       if (removedMarkers && (typeof removedMarkers === "string" || (removedMarkers || []).length !== 0)) {
-        // console.log('removing Marker', removedMarkers)
+        console.log('removing Marker', removedMarkers)
         mapStyleDirty = this._removeGeoJson(this._getDirtyOrOriginalMapStyle(mapStyleDirty), TYPE_MARKER, removedMarkers)
       }
 
       if (addedMarkers && (typeof addedMarkers === "string" || (addedMarkers || []).length !== 0)) {
-        // console.log('adding Marker', addedMarkers)
+        console.log('adding Marker', addedMarkers)
         this._addGeoJson(TYPE_MARKER, addedMarkers, false, false, nextProps.activeMarkers.limit)
       }
       // iterate to add
@@ -1487,20 +1487,20 @@ class Map extends Component {
 
     // Epics changed?
     if (!_.isEqual(activeEpics.sort(), nextProps.activeEpics.sort())) {
-      // console.debug('###### Epics changed')
+      console.debug('###### Epics changed')
       utilsQuery.updateQueryStringParameter('epics', nextProps.activeEpics)
       const removedEpics = _.difference(activeEpics, nextProps.activeEpics)
       const addedEpics = _.difference(nextProps.activeEpics, activeEpics)
 
       // iterate to remove
       for (const removedEpic of removedEpics) {
-        // console.log('removing Epic', removedEpic)
+        console.log('removing Epic', removedEpic)
         mapStyleDirty = this._removeEpic(removedEpic)
       }
 
       // iterate to add
       for (const addedEpic of addedEpics) {
-        // console.log('addedEpic', addedEpic)
+        console.log('addedEpic', addedEpic)
         this._addEpic(addedEpic)
       }
     }
