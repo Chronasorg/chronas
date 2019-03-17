@@ -7,7 +7,7 @@ import jsonServerRestClient from '../restInterface/jsonServer'
 import createHistory from 'history/createHashHistory'
 import authClient from '../components/menu/authentication/authClient'
 import { crudSaga, declareResources, fetchUtils } from 'admin-on-rest'
-import { routerMiddleware } from 'react-router-redux'
+import { routerMiddleware } from 'connected-react-router'
 import { fork } from 'redux-saga/effects'
 import { properties } from '../properties'
 

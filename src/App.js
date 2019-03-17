@@ -5,7 +5,7 @@ import {defaultTheme, Delete, Restricted, showNotification, TranslationProvider}
 import decodeJwt from 'jwt-decode'
 import 'font-awesome/css/font-awesome.css'
 import { Route, Switch } from 'react-router-dom'
-import { ConnectedRouter } from 'react-router-redux'
+import { ConnectedRouter } from 'connected-react-router'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
@@ -23,7 +23,6 @@ import LoadingBar from './components/global/LoadingBar'
 import PledgeDialog from './components/pledgeDialog/PledgeDialog'
 import LoadingPage from './components/loadingPage/LoadingPage'
 import messages from './translations'
-import { history } from './store/createStore'
 import Account from './components/menu/account/Account'
 import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
@@ -249,7 +248,7 @@ class App extends Component {
   }
 
   componentDidMount () {
-    const { setUser, showNotification } = this.props
+    const { setUser, showNotification, history } = this.props
     const { failAndNotify } = this.state
 
     setTimeout(() => {
@@ -325,7 +324,8 @@ class App extends Component {
       showNotification,
       isLoading,
       store,
-      theme
+      theme,
+      history
     } = this.props
 
     const {

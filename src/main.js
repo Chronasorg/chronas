@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import createStore from './store/createStore'
+import { Provider } from 'react-redux'
+import createStore,  { history } from './store/createStore'
 import 'react-image-gallery/styles/scss/image-gallery.scss'
 import './styles/main.scss'
 import './styles/videoplayer.scss'
@@ -18,7 +19,9 @@ let render = () => {
   // const routes = require('./routes/index').default(store)
 
   ReactDOM.render(
-    <App store={store} />,
+    <Provider store={store}>
+      <App store={store} history={history} />
+    </Provider>,
     MOUNT_NODE
   )
 }
