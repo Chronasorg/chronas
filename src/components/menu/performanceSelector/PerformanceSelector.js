@@ -77,6 +77,7 @@ class PerformanceSelector extends PureComponent {
     super(props)
     this.state = {
       isMobileOrTablet: 0,
+      isMobile: false,
       hiddenElement: true,
       selectedIndex: -1,
       suggestedIndex: 4,
@@ -103,6 +104,7 @@ class PerformanceSelector extends PureComponent {
       if (isMobile || isTablet) {
         // warning here
         stateToUpdate.isMobileOrTablet = (isMobile) ? 1 : 2
+        stateToUpdate.isMobile = isMobile === true
       } else if (isDesktop && maxRenderBufferSize) {
         if (finalScreenSize > 1043624 && maxRenderBufferSize > 5000 && workerPoolSize >= 4) {
           if (finalScreenSize > 1296000 && maxRenderBufferSize > 10000) {
@@ -131,7 +133,7 @@ class PerformanceSelector extends PureComponent {
 
   render () {
     const { theme, locale, changeLocale, setFullscreen, translate, history } = this.props
-    const { isMobileOrTablet, selectedIndex, suggestedIndex, specs, openSpecs } = this.state
+    const { isMobileOrTablet, isMobile, selectedIndex, suggestedIndex, specs, openSpecs } = this.state
 
     const selectedTitle = translate('benchmarkPage.tier' + (suggestedIndex + 1) + 'Header')
 
