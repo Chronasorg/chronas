@@ -5,7 +5,6 @@ import {defaultTheme, Delete, Restricted, showNotification, TranslationProvider}
 import decodeJwt from 'jwt-decode'
 import 'font-awesome/css/font-awesome.css'
 import { Route, Switch } from 'react-router-dom'
-import { ConnectedRouter } from 'react-router-redux'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
@@ -36,6 +35,7 @@ import Login from './components/menu/authentication/Login'
 import customTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
 import utilsQuery from './components/map/utils/query'
+import { ConnectedRouter } from 'connected-react-router'
 import { didYouKnows, properties, themes } from './properties'
 
 const styles = {

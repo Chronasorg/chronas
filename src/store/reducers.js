@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import { routerReducer } from 'react-router-redux'
+import { connectRouter } from 'connected-react-router'
 import locationReducer from './location'
 import { adminReducer } from 'admin-on-rest'
 import { modActiveReducer } from '../components/restricted/shared/buttons/actionReducers'
@@ -18,6 +18,7 @@ import { newDiscussionReducer } from '../components/menu/board/ReForum/Views/New
 import { adminInfoReducer } from '../components/menu/board/ReForum/Views/AdminDashboard/reducers'
 import { userProfileReducer } from '../components/menu/board/ReForum/Views/UserProfile/reducers'
 import { reducer as formReducer } from 'redux-form'
+import { history } from './createStore'
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
@@ -38,7 +39,7 @@ export const makeRootReducer = (asyncReducers) => {
     modActive: modActiveReducer(),
     userDetails: userReducer(),
     rightDrawerOpen: rightDrawerReducer(),
-    routing: routerReducer,
+    router: connectRouter(history),
     selectedItem: selectedItemReducer(),
     selectedYear: yearReducer(),
     suggestedYear: suggestedYearReducer(),
