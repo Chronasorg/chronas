@@ -8,7 +8,6 @@ import './styles/videoplayer.scss'
 import './styles/login.scss'
 // Store Initialization
 // ------------------------------------
-const store = createStore(window.__INITIAL_STATE__)
 
 // Render Setup
 // ------------------------------------
@@ -19,9 +18,7 @@ let render = () => {
   // const routes = require('./routes/index').default(store)
 
   ReactDOM.render(
-    <Provider store={store}>
-      <App store={store} history={history} />
-    </Provider>,
+      <App />,
     MOUNT_NODE
   )
 }

@@ -36,6 +36,9 @@ import customTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
 import utilsQuery from './components/map/utils/query'
 import { didYouKnows, properties, themes } from './properties'
+import createStore,  { history } from './store/createStore'
+
+const store = createStore(window.__INITIAL_STATE__)
 
 const styles = {
   wrapper: {
@@ -248,7 +251,7 @@ class App extends Component {
   }
 
   componentDidMount () {
-    const { setUser, showNotification, history } = this.props
+    const { setUser, showNotification } = this.props
     const { failAndNotify } = this.state
 
     setTimeout(() => {
@@ -323,9 +326,7 @@ class App extends Component {
       width,
       showNotification,
       isLoading,
-      store,
       theme,
-      history
     } = this.props
 
     const {
