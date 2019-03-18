@@ -77,6 +77,7 @@ class PerformanceSelector extends PureComponent {
     super(props)
     this.state = {
       isMobileOrTablet: 0,
+      isMobile: false,
       hiddenElement: true,
       selectedIndex: -1,
       suggestedIndex: 4,
@@ -102,6 +103,7 @@ class PerformanceSelector extends PureComponent {
 
       if (isMobile || isTablet) {
         // warning here
+        stateToUpdate.isMobile = isMobile
         stateToUpdate.isMobileOrTablet = (isMobile) ? 1 : 2
       } else if (isDesktop && maxRenderBufferSize) {
         if (finalScreenSize > 1043624 && maxRenderBufferSize > 5000 && workerPoolSize >= 4) {
@@ -131,14 +133,15 @@ class PerformanceSelector extends PureComponent {
 
   render () {
     const { theme, locale, changeLocale, setFullscreen, translate, history } = this.props
-    const { isMobileOrTablet, selectedIndex, suggestedIndex, specs, openSpecs } = this.state
+    const { isMobile, isMobileOrTablet, selectedIndex, suggestedIndex, specs, openSpecs } = this.state
 
     const selectedTitle = translate('benchmarkPage.tier' + (suggestedIndex + 1) + 'Header')
 
     return (
       <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open
         contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
-        contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0 }} onRequestClose={this.handleClose}>
+              contentStyle={{ transform: '', transition: 'opacity 1s', opacity: 0, margin: isMobile ? '0 0 0 82px' : '0 auto' }}
+              onRequestClose={this.handleClose}>
         <Dialog
           title={translate('benchmarkPage.specsTitle')}
           actions={[
@@ -154,7 +157,7 @@ class PerformanceSelector extends PureComponent {
         >
           { <div style={{ whiteSpace: 'pre-wrap', overflow: 'auto' }} dangerouslySetInnerHTML={{ __html: syntaxHighlight(specs) }} /> }
         </Dialog>
-        <Card style={styles.card}>
+        {isMobile ? <Card style={{ ...styles.card, minWidth: ''}}><p style={{ color: 'red' }}>Sorry, no mobile version yet.</p> <p>Check back on your desktop!</p></Card> : <Card style={styles.card}>
           <div>
             <Toolbar style={styles.toolbar}>
               <ToolbarGroup>
@@ -285,8 +288,7 @@ class PerformanceSelector extends PureComponent {
 
             }} /></div>
           </CardActions>
-        </Card>
-
+        </Card>}
       </Dialog>
     )
   }
