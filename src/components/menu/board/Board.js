@@ -1,5 +1,5 @@
 import React, { createElement, PureComponent } from 'react'
-import { BrowserRouter as Router,  Route, Switch, NavLink } from 'react-router-dom'
+import { Route, Switch, NavLink } from 'react-router-dom'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import pure from 'recompose/pure'
