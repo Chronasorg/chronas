@@ -135,7 +135,7 @@ class PerformanceSelector extends PureComponent {
     const { theme, locale, changeLocale, setFullscreen, translate, history } = this.props
     const { isMobile, isMobileOrTablet, selectedIndex, suggestedIndex, specs, openSpecs } = this.state
 
-    const selectedTitle = translate('benchmarkPage.tier' + (suggestedIndex + 1) + 'Header')
+    const selectedTitle = translate(isNaN(suggestedIndex) ? 'benchmarkPage.tier5Header' : 'benchmarkPage.tier' + (suggestedIndex + 1) + 'Header')
 
     return (
       <Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open

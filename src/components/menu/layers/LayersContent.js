@@ -368,7 +368,7 @@ class LayerContent extends Component {
               // ((iconMapping['abst'][id[0]] || {}).width) + 'px ' + ((iconMapping['abst'][id[0]] || {}).height) + 'px'
               return <ListItem value={id[0]}
                 // style={{ display: (id[0] === 'c' ? 'none' : 'inherit') }}
-                key={id[0]}
+                key={"markerIdNameArray-" + id[0]}
                 onClick={() => {
                   toggleMarker(id[0])
                 }}
@@ -434,7 +434,7 @@ class LayerContent extends Component {
             primaryTogglesNestedList
             nestedItems={epicIdNameArray.map(id => {
               return <ListItem value={id[0]}
-                key={id[0]}
+                key={"epics" + id[0]}
                 onClick={() => {
                   toggleEpic(id[0])
                 }}
