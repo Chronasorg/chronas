@@ -24,6 +24,7 @@ import {
   selectValue,
   setData,
   TYPE_AREA,
+  TYPE_COLLECTION,
   TYPE_EPIC,
   TYPE_LINKED,
   TYPE_MARKER,
@@ -176,6 +177,7 @@ class Content extends Component {
     const { setData, showNotification, setFullModActive, resetModActive } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
+    const isCollection = selectedItem.type === TYPE_COLLECTION
     const isMedia = selectedItem.type === TYPE_LINKED
     const isArea = selectedItem.type === TYPE_AREA
 
@@ -197,7 +199,6 @@ class Content extends Component {
           const currProvData = activeData[provKey]
           if (currProvData[utils.activeAreaDataAccessor(activeAreaDim)] === activeprovinceValue) {
             const ruler = metadata['ruler'][currProvData[utils.activeAreaDataAccessor('ruler')]] || {}
-            // const province = metadata['province'][currProvData[utils.activeAreaDataAccessor('ruler')]] || {}
             const culture = metadata['culture'][currProvData[utils.activeAreaDataAccessor('culture')]] || {}
             const religion = metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {}
             const religionGeneral = metadata['religionGeneral'][(metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {})[3]] || {}
@@ -247,9 +248,10 @@ class Content extends Component {
         : (activeAreaDim === 'province' || activeAreaDim === 'capital')
           ? (metadata[activeAreaDim][activeprovinceValue] || {})
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
-    } else if (selectedItem.type === TYPE_MARKER) {
+    }
+    else if (isMarker || isCollection) {
       selectedWiki = selectedItem.wiki
-    } else if (selectedItem.type === TYPE_LINKED) {
+    } else if (isMedia) {
       selectedWiki = selectedItem.wiki
       axios.get(properties.chronasApiHost + '/markers/' + selectedWiki)
         .then((linkedMarkerResult) => {
@@ -333,12 +335,12 @@ class Content extends Component {
       content: [],
       id: ''
     }
-    const shouldLoad = (iframeLoading || selectedWiki === null)
 
     const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
     const entityTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
     const epicTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_EPIC)
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
+    const isCollection = selectedItem.type === TYPE_COLLECTION
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED
     const linkedCount = (finalLinkedItems.media || []).length
@@ -361,8 +363,8 @@ class Content extends Component {
       }
     }
 
-    return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
-      {(entityTimelineOpen || epicTimelineOpen || isMarker || isMedia) && <div>
+    return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : (isCollection) ? { ...styles.main, boxShadow: 'inherit', background: 'transparent' } : styles.main}>
+      {(entityTimelineOpen || epicTimelineOpen || isMarker || isCollection || isMedia) && <div>
         <Paper style={{
           ...styles.contentLeftMenu,
           backgroundColor: themes[theme].backColors[0],

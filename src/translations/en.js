@@ -162,6 +162,12 @@ export default {
     specsTitle: "Your Machine's Specs",
     hint: "You can customize all settings through the layers menu later."
   },
+  collections: {
+    "new": "Add Collection",
+    "my": "My Collections",
+    "public": "Public Collections",
+    "title": "Collections",
+  },
   "loadingPage": {
     "errorMessage": "Chronas seems to be under too much load right now. Please try again in a couple of minutes.",
     "loadingScreenDescription": {

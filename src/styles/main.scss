@@ -460,6 +460,11 @@ button:focus {
   top: calc(100% - 20px) !important;
   margin-left: -50px !important;
 
+  &.collection {
+    left: 50px!important;
+    top: calc(100% - 30px)!important;
+  }
+
   div {
     box-shadow: none !important;
   }
@@ -1230,4 +1235,20 @@ pre {
 
 .mapboxgl-marker  {
   z-index: 150;
+}
+
+.openBookmarkIcon {
+  opacity: 0.5;
+  &:hover {
+    opacity: 0.8
+  }
+}
+
+#animationCard {
+  transition: height .8s;
+}
+#articleIframe {
+  position: relative;
+  right: 0;
+  transition: .4s;
 }

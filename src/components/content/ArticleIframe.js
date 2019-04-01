@@ -27,7 +27,7 @@ import {
   selectLinkedItem,
   selectMarkerItem,
   setData,
-  TYPE_AREA,
+  TYPE_AREA, TYPE_COLLECTION,
   TYPE_EPIC,
   TYPE_LINKED,
   TYPE_MARKER,
@@ -74,7 +74,7 @@ const styles = {
   iframe: {
     width: '100%',
     height: '100%',
-    right: '8px',
+    // right: '8px',
     padding: '38px 8px 0px'
   },
   epicInfoContainer: {
@@ -90,6 +90,7 @@ const styles = {
     right: '4px',
     top: '6px',
     height: '42px',
+    zIndex: 10,
   },
   fullscreenButton: {
     whiteSpace: 'nowrap',
@@ -216,6 +217,7 @@ class ArticleIframe extends React.Component {
 
     history.push('/mod/revisions?filter=%7B%22' + (entityId ? 'entity' : 'subentity') + '%22%3A%22' + (entityId || subentity) + '%22%2C%22last_seen_gte%22%3A%222018-11-08T06%3A00%3A00.000Z%22%7D')// fModUrl)
   }
+
   _goToMod = (modUrl, isProvince) => {
     const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
 
@@ -341,6 +343,7 @@ class ArticleIframe extends React.Component {
     const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
+    const isCollection = selectedItem.type === TYPE_COLLECTION
     const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== 'undefined'
     const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
     const isMedia = selectedItem.type === TYPE_LINKED
@@ -354,10 +357,6 @@ class ArticleIframe extends React.Component {
     const modUrl = isEpic || isArea
       ? (((epicContentItem || {}).properties || {}).ct === 'marker' ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
       : (isMarker ? '/mod/markers' : '/mod/metadata')
-
-    // epicContentItem
-    // ? (epicContentItem.ct === "marker" ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
-    // : (isMarker ?  '/mod/markers' : '/mod/metadata')
 
     const modMenu = <div>{isEpicInfo
       ? <div style={styles.epicInfoContainer}><img className='tsTicks discoveryIcon articleEpic'
@@ -376,7 +375,7 @@ class ArticleIframe extends React.Component {
             onClick={() => window.open(decodeURIComponent(potentialSource), '_blank').focus()}
             icon={<IconOpenInNew color={themes[theme].backColors[0]} />}
           /></div> : null}
-      <div style={!(isMarker || isMedia || !hasChart) ? {
+      <div style={!(isMarker || isCollection || isMedia || !hasChart) ? {
       ...styles.actionButtonContainer,
       top: 254
     } : (!hasChart && isEntity) ? {

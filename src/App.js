@@ -15,7 +15,6 @@ import { setYear } from './components/map/timeline/actionReducers'
 import Notification from './components/overwrites/Notification'
 import Menu from './components/menu/Menu'
 import Map from './components/map/Map'
-import LayerContent from './components/menu/layers/LayersContent'
 import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import LoadingBar from './components/global/LoadingBar'
@@ -460,9 +459,7 @@ class App extends Component {
                         <RightDrawerRoutes history={history} />
                       </Switch>
                     </div>}
-                    {!isLoading && !failAndNotify && !isStatic && <MenuDrawer muiTheme={customTheme}>
-                      {createElement(LayerContent)}
-                    </MenuDrawer>}
+                    {!isLoading && !failAndNotify && !isStatic && <MenuDrawer muiTheme={customTheme} history={history} />}
                     {!isLoading && !failAndNotify && !isStatic && <Sidebar open muiTheme={customTheme}>
                       {createElement(Menu)}
                     </Sidebar>}

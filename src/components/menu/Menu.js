@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 
 import BoardIcon from 'material-ui/svg-icons/communication/forum'
+import CollectionIcon from 'material-ui/svg-icons/action/book'
 import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
 import HelpIcon from 'material-ui/svg-icons/action/help'
@@ -110,7 +111,7 @@ class Menu extends PureComponent {
           tooltipPosition='bottom-right'
           tooltip={translate('pos.layers')}
           tooltipStyles={tooltip}
-          onClick={() => toggleMenuDrawer()}
+          onClick={() => toggleMenuDrawer('layers')}
           iconStyle={{ color: themes[theme].foreColors[0] }}
         >
           <LayersIcon
@@ -161,6 +162,17 @@ class Menu extends PureComponent {
         <div>
           {isLoggedIn ? (
             <div>
+              <IconButton
+                key={'collections'}
+                tooltipPosition='bottom-right'
+                tooltip={translate('collections.title')}
+                tooltipStyles={tooltip}
+                onClick={() => toggleMenuDrawer('collections')}
+                iconStyle={{ color: themes[theme].foreColors[0] }}
+              >
+                <CollectionIcon
+                  hoverColor={themes[theme].highlightColors[0]} />
+              </IconButton>
               <IconButton
                 key={'community'}
                 containerElement={<Link to='/community/general' />}

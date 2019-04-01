@@ -15,8 +15,9 @@ export const setActiveMenu = id => ({
   payload: id,
 })
 
-export const toggleMenuDrawer = () => ({
+export const toggleMenuDrawer = (menuDrawerId) => ({
   type: TOGGLE_MENUDRAWER,
+  payload: menuDrawerId,
 })
 
 export const setMenuDrawerVisibility = isOpen => ({
@@ -47,11 +48,11 @@ export const menuIdReducer = (defaultState = '') =>
     }
   }
 
-export const menuDrawerReducer = (defaultState = false) =>
+export const menuDrawerReducer = (defaultState = '') =>
   (previousState = defaultState, { type, payload }) => {
     switch (type) {
       case TOGGLE_MENUDRAWER:
-        return !previousState
+        return (payload === previousState ? '' : payload)
       case SET_MENUDRAWER_VISIBILITY:
         return payload
       default:

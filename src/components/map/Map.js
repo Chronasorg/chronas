@@ -37,6 +37,7 @@ import {
   selectAreaItem as selectAreaItemAction,
   selectEpicItem,
   selectMarkerItem as selectMarkerItemAction,
+  selectCollectionItem,
   selectValue,
   setData,
   setEpicContentIndex,
@@ -1631,11 +1632,11 @@ class Map extends Component {
         })
         return
       } else {
-        // TODO: check a good marker against a bad one go on
-        selectMarkerItem(wikiId, {
+        // TODO: check a good marker against a bad one go on          selectMarkerItem
+        this.props.selectCollectionItem(wikiId, {
           ...(layerClicked.object || layerClicked.properties),
           'coo': (layerClicked.object || {}).coo || layerClicked.geometry.coordinates
-        })
+        });
       }
     }
 
@@ -2154,6 +2155,7 @@ const enhance = compose(
     setModToUpdate,
     selectEpicItem,
     selectMarkerItem: selectMarkerItemAction,
+    selectCollectionItem,
     setYear,
     setEpicContentIndex,
     setModData: setModDataAction,
