@@ -1,5 +1,4 @@
 import React, { createElement, PureComponent } from 'react'
-
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import AppBar from 'material-ui/AppBar'
@@ -186,7 +185,6 @@ const resources = {
   areasReplace: { edit: ModAreasReplace, permission: 1 },
   linked: { create: LinkedCreate, edit: LinkedEdit, remove: LinkedDelete, permission: 1 },
   markers: { create: MarkerCreate, edit: MarkerEdit, remove: MarkerDelete, permission: 1 },
-  collections: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
   metadata: { create: ModMetaAdd, edit: ModMetaEdit, remove: MetadataDelete, permission: 1 },
   revisions: { list: RevisionList },
   flags: { list: FlagList },
@@ -197,8 +195,6 @@ const resources = {
 const menuIndexByLocation = {
   '/mod/markers/create': 0,
   '/mod/markers': 0,
-  '/mod/collections/create': 0,
-  '/mod/collections': 0,
   '/mod/linked/create': 0,
   '/mod/linked': 0,
   '/mod/links': 0,
@@ -220,8 +216,8 @@ class RightDrawerRoutes extends PureComponent {
 
     this.setState({ linkedItemData: prevLinkedItemData })
   }
-  setMetadataType = (metadataType, metadataEntity=false) => {
-    if (metadataEntity !== "province") { this.setState({ metadataType, metadataEntity: '' }) }
+  setMetadataType = (metadataType, metadataEntity = false) => {
+    if (metadataEntity !== 'province') { this.setState({ metadataType, metadataEntity: '' }) }
     else { this.setState({ metadataType }) }
   }
   actOnRootTypeChange = (contentTypeRaw) => {
@@ -260,7 +256,7 @@ class RightDrawerRoutes extends PureComponent {
       this.setState({ searchText })
     }
   }
-  setSearchSnippet = (searchText, contentTypeRaw = false, stateItem = false, includeMarkers = true) => {
+  setSearchSnippet = (searchText, contentTypeRaw = false, stateItem = false, includeMarkers = true, forCollections = false) => {
     // contentChoice
     if (searchText.length > 2) {
       if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
@@ -270,7 +266,7 @@ class RightDrawerRoutes extends PureComponent {
             if (stateItem) {
               const newlinkedItemData = this.state.linkedItemData
               newlinkedItemData[stateItem] = response.data.map((el) => {
-                return { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
+                return forCollections ? { id: el[0] + '||' + el[2], name: el[1], suggest: properties.typeToDescriptedType[el[2]] + ": " + el[1], category: properties.typeToDescriptedType[el[2]] } : { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
               })
 
               this.setState({
@@ -281,7 +277,7 @@ class RightDrawerRoutes extends PureComponent {
               this.setState({
                 isFetchingSearch: false,
                 contentChoice: response.data.map((el) => {
-                  return { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
+                  return forCollections ? { id: el[0] + '||' + el[2], name: el[1], suggest: properties.typeToDescriptedType[el[2]] + ": " + el[1], category: properties.typeToDescriptedType[el[2]] } : { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
                 })
               })
             }
@@ -407,13 +403,13 @@ class RightDrawerRoutes extends PureComponent {
   }
   handleMousedown = e => {
     this.setState({ isResizing: true, lastDownX: e.clientX })
-    document.addEventListener('mousemove', e => this.handleMousemove(e), {passive: true})
-    document.addEventListener('mouseup', e => this.handleMouseup(e), {passive: true})
+    document.addEventListener('mousemove', e => this.handleMousemove(e), { passive: true })
+    document.addEventListener('mouseup', e => this.handleMouseup(e), { passive: true })
   }
   handleMouseup = e => {
     this.setState({ isResizing: false })
-    window.removeEventListener('mousemove', e => this.handleMousemove(e), {passive: true})
-    window.removeEventListener('mouseup', e => this.handleMouseup(e), {passive: true})
+    window.removeEventListener('mousemove', e => this.handleMousemove(e), { passive: true })
+    window.removeEventListener('mouseup', e => this.handleMouseup(e), { passive: true })
   }
   handleMousemove = e => {
     const { selectedItem } = this.props
@@ -592,7 +588,7 @@ class RightDrawerRoutes extends PureComponent {
     window.removeEventListener('mouseup', e => this.handleMouseup(e), false)
   }
 
-  componentDidCatch(error, info) {
+  componentDidCatch (error, info) {
     this.props.showNotification('somethingWentWrong', 'confirm')
   }
 
@@ -667,14 +663,14 @@ class RightDrawerRoutes extends PureComponent {
     animationCard.style.height = '8px'
     iframeContainer.style.right = -1 * (iframeContainer.offsetWidth + 100) + 'px'
     setTimeout(() => {
-      animationCard.style.height = '16px';
-      iframeContainer.style.display = 'none';
-      iframeContainer.style.opacity = 0;
-      iframeContainer.style.right = '0px';
+      animationCard.style.height = '16px'
+      iframeContainer.style.display = 'none'
+      iframeContainer.style.opacity = 0
+      iframeContainer.style.right = '0px'
       setTimeout(() => {
-        iframeContainer.style.display = '';
+        iframeContainer.style.display = ''
         setTimeout(() => {
-          iframeContainer.style.opacity = 1;
+          iframeContainer.style.opacity = 1
         }, 100)
       }, 500)
     }, 1000)
@@ -696,7 +692,6 @@ class RightDrawerRoutes extends PureComponent {
       setModData, setModDataLng, setModDataLat, history, metadata, changeColor, translate
     } = this.props
     const { newWidth, newMarkerWidth, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, contentTypeRaw, stepIndex, provinceEntity } = this.state
-
 
     if ((typeof selectedItem.wiki === 'undefined')) return null
 
@@ -808,7 +803,7 @@ class RightDrawerRoutes extends PureComponent {
       province: (metadata['province'][selectedProvince] || {}),
     }
 
-    const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
+    const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== 'undefined'
 
     const entityMeta = {
       ruler: {
@@ -1012,15 +1007,15 @@ class RightDrawerRoutes extends PureComponent {
                 {(partOfEntities.length === 1) ? <FlatButton
                     // style={{ color: '#fff' }}
                     // backgroundColor='rgb(255, 64, 129)'
-                    hoverColor={themes[theme].highlightColors[0]}// '#8AA62F'
-                    onClick={() => this._openPartOf(partOfEntities[0])}
-                    labelStyle={{ paddingLeft: 0, paddingRight: 0 }}
-                    label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>{translate('pos.partOf')} <span style={{
+                  hoverColor={themes[theme].highlightColors[0]}// '#8AA62F'
+                  onClick={() => this._openPartOf(partOfEntities[0])}
+                  labelStyle={{ paddingLeft: 0, paddingRight: 0 }}
+                  label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>{translate('pos.partOf')} <span style={{
                       paddingLeft: 0,
                       paddingRight: 0,
                       fontWeight: 'bolder'
                     }}>{(((partOfEntities[0].properties || {}).y ? ((partOfEntities[0].properties || {}).y + ': ') : '') + (partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()}</span>
-                    </div>} />
+                  </div>} />
                   : <SelectField
                     style={{
                       width: 200,
@@ -1079,7 +1074,7 @@ class RightDrawerRoutes extends PureComponent {
                   >
                     {partOfEntities.map((el, index) => {
                       return <MenuItem key={'partOf_' + index} value={el}
-                                       primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ': ') : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                        primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ': ') : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
                     })}
                   </SelectField>
                 }
@@ -1100,7 +1095,7 @@ class RightDrawerRoutes extends PureComponent {
                   padding: 0,
                   margin: 0
                 }}>
-                {(partOfEntities.length === 1) ? <FlatButton
+                  {(partOfEntities.length === 1) ? <FlatButton
                     // style={{ color: '#fff' }}
                     // backgroundColor='rgb(255, 64, 129)'
                     hoverColor={themes[theme].highlightColors[0]}// '#8AA62F'
@@ -1170,7 +1165,7 @@ class RightDrawerRoutes extends PureComponent {
                   >
                     {partOfEntities.map((el, index) => {
                       return <MenuItem key={'partOf_' + index} value={el}
-                                       primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ': ') : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                        primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ': ') : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
                     })}
                   </SelectField>
                 }</div>
@@ -1178,12 +1173,12 @@ class RightDrawerRoutes extends PureComponent {
                   <IconButton
                     iconStyle={styles.chevIcon}
                     style={styles.chevContainer} tooltip={translate('aor.navigation.prev')}>
-                    <ChevronLeft onClick={this.handleCollectionPrev}/>
+                    <ChevronLeft onClick={this.handleCollectionPrev} />
                   </IconButton>
                   <IconButton
                     iconStyle={styles.chevIcon}
-                    style={styles.chevContainer}  tooltip={translate('aor.navigation.next')}>
-                    <ChevronRight onClick={this.handleCollectionNext}/>
+                    style={styles.chevContainer} tooltip={translate('aor.navigation.next')}>
+                    <ChevronRight onClick={this.handleCollectionNext} />
                   </IconButton>
                 </div>
               </CardActions>
@@ -1195,7 +1190,7 @@ class RightDrawerRoutes extends PureComponent {
               borderRadius: 0,
               right: '40px',
               top: newMarkerPartOfHeight
-            }}></div> }
+            }} /> }
             { isCollection && <div style={{
               ...styles.partOfDiv,
               tranisition: '.5s',
@@ -1205,39 +1200,39 @@ class RightDrawerRoutes extends PureComponent {
               height: '8px',
               right: '30px',
               top: newMarkerPartOfHeight
-            }}></div> }
+            }} /> }
             <Card
               style={{ ...styles.cardArticle, background: themes[theme].backColors[0], width: this.state.newMarkerWidth, height: this.state.newMarkerHeight, boxShadow: 'none' }}
               containerStyle={{ height: '100%' }}
             >  <LoadingCircle theme={theme} title={translate('pos.loading')} /> </Card>
             <Card
-            style={{ ...styles.cardArticle, backgroundColor: 'transparent', width: this.state.newMarkerWidth, height: this.state.newMarkerHeight }}
-            containerStyle={{ height: '100%', position: 'relative', transition: '0.5s', right: '0px', transitionTimingFunction: 'ease-in-out' }}
+              style={{ ...styles.cardArticle, backgroundColor: 'transparent', width: this.state.newMarkerWidth, height: this.state.newMarkerHeight }}
+              containerStyle={{ height: '100%', position: 'relative', transition: '0.5s', right: '0px', transitionTimingFunction: 'ease-in-out' }}
           >
-            <RaisedButton
-              className={(isCollection) ? 'dragHandle markerHandle collection' : (isMarker) ? 'dragHandle markerHandle' : 'dragHandle'}
-              icon={(isMarker || isCollection) ? <IconArrowLeft /> : <IconDrag />}
-              style={(isMarker || isCollection) ? {
+              <RaisedButton
+                className={(isCollection) ? 'dragHandle markerHandle collection' : (isMarker) ? 'dragHandle markerHandle' : 'dragHandle'}
+                icon={(isMarker || isCollection) ? <IconArrowLeft /> : <IconDrag />}
+                style={(isMarker || isCollection) ? {
                 ...styles.draggableButtonDiv,
                 top: 'calc(100% - 20px)',
                 left: '20px',
                 minWidth: 'inherit',
                 transform: 'inherit'
               } : styles.draggableButtonDiv}
-              labelStyle={{ width: '640px' }}
-              rippleStyle={{ width: '440px' }}
-              buttonStyle={styles.draggableButton}
-              onMouseDown={event => {
+                labelStyle={{ width: '640px' }}
+                rippleStyle={{ width: '440px' }}
+                buttonStyle={styles.draggableButton}
+                onMouseDown={event => {
                 this.handleMousedown(event)
               }}
             />
-            <div className="articleContentContainer" style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
-              {component && createElement(component, {
+              <div className='articleContentContainer' style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
+                {component && createElement(component, {
                 ...commonProps,
                 ...routeProps
               })}
-            </div>
-          </Card>
+              </div>
+            </Card>
           </div> : <Drawer
             openSecondary
             open
@@ -1261,7 +1256,7 @@ class RightDrawerRoutes extends PureComponent {
               // onMouseUp={this.handleMouseUp.bind(this)}
               // onClick={(event) => console.debug('onClick', event)}
             />
-            <div className="articleContentContainer" style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
+            <div className='articleContentContainer' style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
               {!isEpic && headerComponent}
               {component && createElement(component, {
                 ...commonProps,
@@ -1361,7 +1356,7 @@ class RightDrawerRoutes extends PureComponent {
                   onClick={() => {
                     localStorage.setItem('chs_newToMod', 'true')
                     localStorage.setItem('chs_info_section', 'tutorial')
-                  }} label={translate('pos.goTutorial')}/>
+                  }} label={translate('pos.goTutorial')} />
                 <FlatButton
                   onClick={() => {
                     localStorage.setItem('chs_newToMod', 'true')
@@ -1436,15 +1431,19 @@ class RightDrawerRoutes extends PureComponent {
           ...commonProps,
           actOnRootTypeChange: this.actOnRootTypeChange,
           contentTypeRaw,
+          linkedItemData: this.state.linkedItemData,
           epicsChoice: this.state.epicsChoice,
           setSearchEpic: this.setSearchEpic,
+          setSearchSnippet: this.setSearchSnippet,
+          setLinkedItemData: this.setLinkedItemData,
           selectedItem,
           selectedYear,
           setModDataLng,
           setModDataLat,
           metadata,
           resource: 'metadata',
-          history
+          history,
+          translate
         }
       } else {
         finalProps = commonProps
@@ -1476,7 +1475,7 @@ class RightDrawerRoutes extends PureComponent {
         })
       }
 
-      if (resources[resourceKey].edit && resourceKey === "revisions") {
+      if (resources[resourceKey].edit && resourceKey === 'revisions') {
         resItems.push({
           d_path: '/mod/' + resourceKey + ':id',
           d_el: resources[resourceKey].edit,

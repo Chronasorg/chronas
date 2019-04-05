@@ -598,6 +598,7 @@ export const properties = {
   // metadataTypes: ['ae|ruler', /*'ae|ca',*/ 'ae|culture', 'ae|religion', 'ae|religionGeneral', 'a', 'e', 't', 'h', 'i|a', 'i|b', 'i|c', 'i|p', 'i|m', 'i|siege', 'i|war', 'ps', 'v'],
 
   linkedTypes: [
+    { name: '[Collection]', id: 'cc', color: '#a63932' },
     { name: '[Epic] Biography', id: 'eb', color: '#a63932' },
     { name: '[Epic] Explorations', id: 'ee', color: '#a63932' },
     { name: '[Epic] Wars', id: 'ew', color: '#a63932' },

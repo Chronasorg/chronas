@@ -3,30 +3,12 @@ import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import Avatar from 'material-ui/Avatar'
-import RaisedButton from 'material-ui/RaisedButton'
-import DropDownMenu from 'material-ui/DropDownMenu'
-import MenuItem from 'material-ui/MenuItem'
 import { defaultTheme, translate } from 'admin-on-rest'
 import { List, ListItem } from 'material-ui/List'
 import Subheader from 'material-ui/Subheader'
-import Checkbox from 'material-ui/Checkbox'
-import RadioButton from 'material-ui/RadioButton'
-import Toggle from 'material-ui/Toggle'
-import Slider from 'material-ui/Slider'
-import IconButton from 'material-ui/IconButton'
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
 import OpenIcon from 'material-ui/svg-icons/action/visibility'
 import AddIcon from 'material-ui/svg-icons/content/add-circle-outline'
-import CheckAllIcon from 'material-ui/svg-icons/action/check-circle'
-import UncheckAllIcon from 'material-ui/svg-icons/toggle/radio-button-unchecked'
-import MarkerIcon from 'material-ui/svg-icons/maps/place'
-import InfoIcon from 'material-ui/svg-icons/action/help-outline'
-import InformationIcon from 'material-ui/svg-icons/action/info'
-import EpicIcon from 'material-ui/svg-icons/image/burst-mode'
-import LockOpenIcon from 'material-ui/svg-icons/action/lock-open'
-import LockClosedIcon from 'material-ui/svg-icons/action/lock'
-import LinkIcon from 'material-ui/svg-icons/content/link'
-import MigrationIcon from 'material-ui/svg-icons/action/compare-arrows'
 import { transparent } from 'material-ui/styles/colors'
 import {
   changeBasemap as changeBasemapAction,
@@ -115,9 +97,9 @@ class CollectionsContent extends Component {
 
     if (selectedCollection) {
       // setCollectionItem
-      fModUrl = '/mod/collection'
+      fModUrl = '/mod/linked'
     } else {
-      fModUrl = '/mod/collectio/create'
+      fModUrl = '/mod/linked/create'
     }
     history.push(fModUrl)
   }
@@ -132,7 +114,7 @@ class CollectionsContent extends Component {
           <ListItem
             key={'addCollection'}
             leftAvatar={<div><AddIcon style={{ paddingRight: '8px'}}/><span style={{fontSize: '14px'}}>{translate('collections.new')}</span></div>}
-            onClick={this._goToMod}
+            onClick={() => this._goToMod()}
           />
           <ListItem
             primaryText={<div style={styles.listItemText}>{"Bookmarks"}</div>}

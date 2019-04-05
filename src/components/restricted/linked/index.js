@@ -40,7 +40,9 @@ import Delete from '../shared/crudComponents/Delete'
 import ModButton from '../shared/buttons/ModButton'
 import ArrayField from './ArrayField'
 import LinkedForm from '../shared/forms/LinkedForm'
+import LinkedTabForm from '../shared/forms/LinkedTabForm'
 import { epicIdNameArray, properties } from '../../../properties'
+import {SortableSelectArrayInput} from "../shared/inputs/SortableSelectArrayInput";
 
 export const LinkedIcon = Icon
 
@@ -119,6 +121,7 @@ export const LinkedEdit = (props) => {
 
   const postType = props.contentTypeRaw || ((props.selectedItem || {}).data || {}).subtype
   const isEpic = /* props.contentTypeRaw === */epicIdNameArray.map(el => el[0]).includes(postType)
+  const isCollection = /* props.contentTypeRaw === */postType === 'cc'
 
   // if (!isEpic && ((props.selectedItem.data || {})._id || "").substr(0, 2) === "e_") {
   //   props.actOnRootTypeChange("e")
@@ -153,8 +156,51 @@ export const LinkedEdit = (props) => {
   return <div>
     <AddEditLinkNavigation pathname={props.location.pathname} />
     <Divider />
-    <Create title={'Edit Article'} {...props}>
-      <LinkedForm validate={validateWikiProps} defaultValue={epicDefaults || props.selectedItem.value}
+    <Create title={'Edit'} {...props}>
+      { isCollection ? <LinkedTabForm validate={validateWikiProps} defaultValue={epicDefaults || props.selectedItem.value} history={props.history} redirect='edit'>
+        <FormTab label="Collection Information">
+          <SelectInput onChange={(val, v) => {
+            props.actOnRootTypeChange(v)
+          }} source='subtype' choices={properties.linkedTypes} label='resources.linked.fields.type' defaultValue={props.contentTypeRaw || props.selectedItem.value.subtype} />
+
+          <LongTextInput source='title' label='resources.linked.fields.description' defaultValue={(!props.selectedItem.value.className && props.selectedItem.value.title) || (props.selectedItem.value.data || {}).title || ''} />
+          <LongTextInput source='description' label='resources.linked.fields.collectionDescription' defaultValue={(!props.selectedItem.value.className && props.selectedItem.value.title) || (props.selectedItem.value.data || {}).title || ''} />
+          <NumberInput style={isEpic ? { width: '50%', float: 'left' } : {}} validate={required} defaultValue={(typeof props.selectedItem.value.year !== "undefined" && !isNaN(props.selectedItem.value.year)) ? props.selectedItem.value.year : (potentialYear && !isNaN(potentialYear)) ? potentialYear : props.selectedItem.value.subtitle } source='year' label='resources.linked.fields.year' type='number' />
+          {isEpic && <NumberInput style={{ width: '50%', float: 'right' }} source='end' defaultValue={!isNaN((props.selectedItem.value.data || {}).end) ? (props.selectedItem.value.data || {}).end : !isNaN(props.selectedItem.value.year) ? props.selectedItem.value.year : props.selectedItem.value.subtitle} label='resources.areas.fields.endYear' />}
+          <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
+          <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => {
+            props.setModDataLng(+v)
+          }} defaultValue={(props.selectedItem.value.coo || {})[1] || ''} source='coo[1]' label='resources.markers.fields.lat' />
+          <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => {
+            props.setModDataLat(+v)
+          }} defaultValue={(props.selectedItem.value.coo || {})[0] || ''} source='coo[0]' label='resources.markers.fields.lng' />
+          <BooleanInput label='resources.linked.fields.allowOtherArticles' source='allowOtherArticles'
+                        defaultValue={(((props.selectedItem || {}).value || {}).data || {}).allowOtherArticles === true} />
+          <BooleanInput label='resources.linked.fields.makePublic' source='isPublic'
+                                    defaultValue={(((props.selectedItem || {}).value || {}).data || {}).isPublic === true} />
+          <DeleteButton
+            id={encodeURIComponent((epicDefaults || {}).src || props.selectedItem.value.src || props.selectedItem.value._id || props.selectedItem.value.id)} {...props} />
+        </FormTab>
+        <FormTab label="Collection Slides">
+          <SortableSelectArrayInput
+            setLinkedItemData={props.setLinkedItemData}
+            linkedItemData={props.linkedItemData}
+            choices={props.linkedItemData.linkedItemKey2choice}
+            onSearchChange={(val) => {
+              return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, 'linkedItemKey2choice', false, true)
+            }}
+            onChange={(val) => {
+              return props.setSearchSnippet(val, props.linkedItemData.linkedItemType2, false, false, true)
+            }} validation={required} elStyle={{ width: '60%', minWidth: '300px' }}
+            translate={props.translate}
+          />
+            {/*options={{ fullWidth: true }} onChange={(val, v) => {*/}
+            {/*props.setModData(v)*/}
+          {/*}} validation={required} elStyle={{ width: '60%', minWidth: '300px' }} defaultValue={defaultValues.provinces}*/}
+                                    {/*source='slides' label='resources.collections.fields.slides' />*/}
+          {/*options={{ fullWidth: true }} source='select' choices={props.epicsChoice} onSearchChange={(val) => { return props.setSearchEpic(val) }} onChange={(val, v) => { props.setMetadataEntity(v) }} label='resources.areas.fields.search_name' />*/}
+        </FormTab>
+      </LinkedTabForm> : <LinkedForm validate={validateWikiProps} defaultValue={epicDefaults || props.selectedItem.value}
         history={props.history} redirect='edit'>
         <SelectInput onChange={(val, v) => {
           props.actOnRootTypeChange(v)
@@ -209,7 +255,7 @@ export const LinkedEdit = (props) => {
           defaultValue={props.selectedItem.value.type === '0'} />}
         <DeleteButton
           id={encodeURIComponent((epicDefaults || {}).src || props.selectedItem.value.src || props.selectedItem.value._id || props.selectedItem.value.id)} {...props} />
-      </LinkedForm>
+      </LinkedForm>}
     </Create>
   </div>
 }
