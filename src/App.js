@@ -9,13 +9,12 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
 import { setLoadStatus, setMetadata } from './components/map/data/actionReducers'
-import { selectAreaItem, selectMarkerItem, TYPE_AREA, TYPE_MARKER } from './components/map/actionReducers'
+import { selectAreaItem, selectCollectionItem, selectMarkerItem, TYPE_AREA, TYPE_COLLECTION, TYPE_MARKER } from './components/map/actionReducers'
 import { setArea, setAreaColorLabel, setEpic, setMarker } from './components/menu/layers/actionReducers'
 import { setYear } from './components/map/timeline/actionReducers'
 import Notification from './components/overwrites/Notification'
 import Menu from './components/menu/Menu'
 import Map from './components/map/Map'
-import LayerContent from './components/menu/layers/LayersContent'
 import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import LoadingBar from './components/global/LoadingBar'
@@ -139,7 +138,7 @@ class App extends Component {
   }
 
   componentWillMount () {
-    const { setArea, setYear, setMarker, setMetadata, setLoadStatus, setEpic, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
+    const { setArea, setYear, setMarker, setMetadata, setLoadStatus, setEpic, selectCollectionItem, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
 
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
@@ -236,7 +235,11 @@ class App extends Component {
           selectAreaItem('-1', selectedItem.value)
         } else if (selectedItem.type === TYPE_MARKER) {
           selectMarkerItem(selectedItem.value, selectedItem.value)
+        } else if (selectedItem.type === TYPE_COLLECTION) {
+          selectCollectionItem(selectedItem.value, false)
+          if (window.location.pathname.indexOf('article') === -1) history.push('/article')
         }
+
         setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
 
         setLoadStatus(false)
@@ -277,14 +280,11 @@ class App extends Component {
     let token = (localStorage.getItem('chs_temptoken') !== null) ? localStorage.getItem('chs_temptoken') : undefined
 
     if (typeof token !== 'undefined') {
-      // delete parsedQuery.token
-      // let target = parsedQuery.target
-      // delete parsedQuery.target
-
       const decodedToken = decodeJwt(token)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
+      if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
       localStorage.setItem('chs_token', token)
       // window.history.pushState(null, null, (target ? (target + '/') : '') + queryString.stringify(parsedQuery) || '/')
     } else {
@@ -296,8 +296,10 @@ class App extends Component {
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
+      if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
       localStorage.setItem('chs_token', token)
-      setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar)
+      const userScore = decodedToken.score || localStorage.getItem('chs_score') || 1
+      setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar, userScore)
     } else if (!localStorage.getItem('chs_performance') && (!window.location.hash || window.location.hash === '#/')) {
       // show welcome page if user is not logged in and no specific article or other page is specified
 
@@ -460,9 +462,7 @@ class App extends Component {
                         <RightDrawerRoutes history={history} />
                       </Switch>
                     </div>}
-                    {!isLoading && !failAndNotify && !isStatic && <MenuDrawer muiTheme={customTheme}>
-                      {createElement(LayerContent)}
-                    </MenuDrawer>}
+                    {!isLoading && !failAndNotify && !isStatic && <MenuDrawer muiTheme={customTheme} history={history} />}
                     {!isLoading && !failAndNotify && !isStatic && <Sidebar open muiTheme={customTheme}>
                       {createElement(Menu)}
                     </Sidebar>}
@@ -495,6 +495,7 @@ const mapDispatchToProps = {
   setEpic,
   setAreaColorLabel,
   selectAreaItem,
+  selectCollectionItem,
   selectMarkerItem,
   setYear
 }

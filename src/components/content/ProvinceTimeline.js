@@ -53,7 +53,6 @@ class ProvinceTimeline extends React.Component {
   state = {
     selectedWiki: null,
     selectedTypeId: undefined,
-    stepIndex: 0,
     timelineOptions: {
       width: '100%',
       height: '326px',

@@ -11,10 +11,20 @@ import Opinion from '../../Components/SingleDiscussion/Opinion'
 
 // actions
 import {
+  setUserScore
+} from '../../../../../menu/authentication/actionReducers'
+
+import {
   fetchUserProfile,
 } from './actions';
 import {getDiscussion} from "../SingleDiscussion/actions";
 import {themes} from "../../../../../../properties";
+import {
+  collectionUpdated, selectCollectionItem, selectEpicItem, selectLinkedItem, selectMarkerItem,
+  setData
+} from "../../../../../map/actionReducers";
+import {setRightDrawerVisibility} from "../../../../../content/actionReducers";
+import {showNotification} from "admin-on-rest";
 
 const opinionBoxTitle = 'Comments'
 
@@ -31,6 +41,7 @@ class UserProfile extends Component {
   componentDidMount() {
     const {
       forums,
+      setUserScore,
       setForums
     } = this.props;
     const { username } = this.props.match.params;
@@ -38,7 +49,12 @@ class UserProfile extends Component {
     if (!forums || forums.length < 1) {
       setForums()
     }
-    fetchUserProfile(username).then( (data) => this.setState({ fetchingProfile: false, profile: data }) )
+    fetchUserProfile(username).then( (data) => {
+      const userScore = data.karma || localStorage.getItem('chs_score') ||  1
+      setUserScore(userScore)
+      this.setState({ fetchingProfile: false, profile: data })
+    } )
+
   }
 
   componentWillReceiveProps(newProps) {
@@ -169,10 +185,7 @@ class UserProfile extends Component {
   }
 }
 
-export default connect(
-  (state) => { return {
-  }; },
-  (dispatch) => { return {
-    // fetchUserProfile: (userSlug) => { dispatch(fetchUserProfile(userSlug)); },
-  }; }
-)(UserProfile);
+export default connect(state => ({
+}), {
+  setUserScore,
+})(UserProfile)

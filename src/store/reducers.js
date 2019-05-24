@@ -8,7 +8,7 @@ import { localeReducer, markerThemeReducer, themeReducer } from '../components/m
 import { areaReducer, epicReducer, migrationReducer, mapStylesReducer, markerReducer } from '../components/menu/layers/actionReducers'
 import { userReducer } from '../components/menu/authentication/actionReducers'
 import { rightDrawerReducer } from '../components/content/actionReducers'
-import { selectedItemReducer } from '../components/map/actionReducers'
+import { collectionUpdatedIndexReducer, selectedItemReducer } from '../components/map/actionReducers'
 import { yearReducer, suggestedYearReducer } from '../components/map/timeline/actionReducers'
 import { menuDrawerReducer, menuIdReducer } from '../components/menu/actionReducers'
 import { appReducer, boardUserReducer } from '../components/menu/board/ReForum/App/reducers'
@@ -41,6 +41,7 @@ export const makeRootReducer = (asyncReducers) => {
     rightDrawerOpen: rightDrawerReducer(),
     router: connectRouter(history),
     selectedItem: selectedItemReducer(),
+    collectionUpdatedIndex: collectionUpdatedIndexReducer(),
     selectedYear: yearReducer(),
     suggestedYear: suggestedYearReducer(),
     theme: themeReducer(),
