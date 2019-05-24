@@ -593,18 +593,19 @@ export const properties = {
   areaColorLayers: ['ruler', 'religion', 'religionGeneral', 'culture', 'population'],
   areaLabelLayers: ['ruler', 'religion', 'religionGeneral', 'culture'],
   provinceThreshold: 4,
-  chronasApiHost: 'https://api.chronas.org/v1', // https://api.chronas.org/v1    -  http://localhost:4040/v1
+  chronasApiHost: 'http://localhost:4040/v1', // https://api.chronas.org/v1    -  http://localhost:4040/v1
   markersTypes: ['w', 'w|b', 'w|si', 'w|c', 'w|ca', 'w|m', 'w|p', 'w|e', 'w|s', 'w|a', 'w|r', 'w|at', 'w|op', 'w|l', 'w|o'],
   // metadataTypes: ['ae|ruler', /*'ae|ca',*/ 'ae|culture', 'ae|religion', 'ae|religionGeneral', 'a', 'e', 't', 'h', 'i|a', 'i|b', 'i|c', 'i|p', 'i|m', 'i|siege', 'i|war', 'ps', 'v'],
 
   linkedTypes: [
-    { name: '[Collection]', id: 'cc', color: '#a63932' },
+    { name: '[Collection]', id: 'cc', color: '#99a600' },
+    { name: '[EduCollection]', id: 'ce', color: '#99a600' },
     { name: '[Epic] Biography', id: 'eb', color: '#a63932' },
     { name: '[Epic] Explorations', id: 'ee', color: '#a63932' },
     { name: '[Epic] Wars', id: 'ew', color: '#a63932' },
     { name: '[Epic] Discoveries', id: 'ei', color: 'rgb(175, 124, 90)' },
     { name: '[Epic] Other', id: 'eo', color: '#a63932' },
-    { name: '[HTML or Text]', id: 'h', color: '#005386' },
+    { name: '[HTML or Text]', id: 'w|h', color: '#005386' },
     { name: '[Link] Primary Source', id: 'ps', color: '#005386' },
     { name: '[Image] Artefact', id: 'artefacts', color: '#ae7000' },
     { name: '[Image] Battle', id: 'battles', color: '#ae7000' },
@@ -647,7 +648,6 @@ export const properties = {
     'e|ei': '[Discovery]',
     'e|ew': '[War Epic]',
     't': '[External Article or Primary Source]',
-    'h': '[HTML or Text]',
     'i|a': '[Image] Artefact',
     'i|artefacts': '[Image] Artefact',
     'i|b': '[Image] Battle',
@@ -678,6 +678,7 @@ export const properties = {
     'w|op': '[Wiki Article] People -> Unclassified',
     'w|l': '[Wiki Article] Other -> Landmark',
     'w|o': '[Wiki Article] Other -> Unknown',
+    'w|h': '[HTML or Text]',
     'o': 'Other'
   },
   languageOptions: [

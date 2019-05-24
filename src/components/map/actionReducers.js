@@ -1,4 +1,5 @@
 import utilsQuery from './utils/query'
+import {SET_LOAD_STATUS} from "./data/actionReducers";
 
 export const SET_WIKI_ID = 'SET_WIKI_ID'
 export const SET_DATA = 'SET_DATA'
@@ -23,6 +24,8 @@ export const TYPE_EPIC = 'epic'
 
 export const WIKI_RULER_TIMELINE = 'WIKI_RULER_TIMELINE'
 export const WIKI_PROVINCE_TIMELINE = 'WIKI_PROVINCE_TIMELINE'
+
+const UPDATED_COLLECTION = 'UPDATED_COLLECTION'
 
 /** Actions **/
 
@@ -49,9 +52,9 @@ export const setFullItem = (wiki, province, type, data) => {
   }
 }
 
-export const setData = data => ({
+export const setData = (data, optionalWiki = false) => ({
   type: SET_DATA,
-  payload: data,
+  payload: [data, optionalWiki],
 })
 
 export const setAutoplay = data => ({
@@ -114,7 +117,21 @@ export const deselectItem = () => ({
   type: DESELECT_ITEM
 })
 
+export const collectionUpdated = () => ({
+  type: UPDATED_COLLECTION
+})
+
 /** Reducers **/
+
+export const collectionUpdatedIndexReducer = (defaultState = 1) =>
+  (previousState = defaultState, { type, payload }) => {
+    switch (type) {
+      case UPDATED_COLLECTION:
+        return ++previousState
+      default:
+        return previousState
+    }
+  }
 
 export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'value': '', 'data': false }) =>
   (previousState = defaultState, { type, payload }) => {
@@ -130,10 +147,12 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
           wiki: payload,
         }
       case SET_DATA:
-        return {
+        const newItem = {
           ...previousState,
-          data: payload,
+          data: payload[0],
         }
+        if (payload[1]) newItem.wiki = payload[1]
+        return newItem
       case SET_EPIC_INDEX: {
         const prevData = previousState.data
         if (prevData) prevData.contentIndex = payload

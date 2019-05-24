@@ -167,6 +167,14 @@ export default {
     "my": "My Collections",
     "public": "Public Collections",
     "title": "Collections",
+    "quiz": {
+      title: "Quiz",
+      addQuestion: "Add Question",
+      addAnswer: "Add Answer",
+      answer: "Answer",
+      isCorrect: "Correct Answer?",
+      question: "Question"
+    }
   },
   "loadingPage": {
     "errorMessage": "Chronas seems to be under too much load right now. Please try again in a couple of minutes.",
@@ -208,6 +216,7 @@ export default {
       "topographic": "Topographic",
       "watercolor": "Watercolor"
     },
+    "bookmark": "bookmark",
     "block": {
       "about1": "<h4>What is Chronas?</h4> <br /> <h5>In Brief</h5>",
       "about2": "Chronas may be described as a mix of <a target='_blank' href='https://www.openstreetmap.org'>Open  Street Map</a>, <a target='_blank' href='https://www.wikipedia.org/'>Wikipedia</a> and <a     target='_blank' href='https://earth.google.com/web/'>Google Earth</a>. It maps 4000 years of historic   rulers (polictical entities), cultures, and religions on a map linking to related Wikipedia articles   as well as various kinds of different markers such as people, battles, cities, castles etc. All of those can be linked to express a relation of each other (for example linking the siege of a city to   the specific city marker). On top of that, other kinds of media such as videos, images or podcasts can   be linked to create an even bigger knowledge web. Users can rate, edit and add new markers, area   entities or media items and create links all tracked by a revision history system. They can also ask   questions on specific articles and create article collections (called Epics) on major topics such as   wars or explorations (all area entities are on default Epics). A video showcasing those features can   be found ",
@@ -463,13 +472,14 @@ export default {
     "random": "Random Article",
     "readDocument": "Read Document",
     "related_item": "RELATED ITEMS...",
+    "browse_item": "BROWSE ITEMS...",
     "resources": "Resources",
     "revisionHistory": "Revision history",
     "revisions": "Revisions",
     "allRevisions": "All Revisions",
     "search": "Search",
     "searchMarkers": "Search Markers",
-    "setYearByArticle": "Set year by article",
+    "setYearByArticle": "Change year by article",
     "share": "Share as link or export image",
     "showProvinces": "Show Provinces",
     "signupToGatherPoints": "Sign up to get points for your curations",
@@ -547,14 +557,20 @@ export default {
     },
     "linked": {
       "fields": {
+        "allowClickAway": "Allow Clickaway",
+        "drawRoute": "Draw Route",
+        "changeYearByArticle": "Change Year By Article",
+        "type": "Type",
         "content": "Description",
         "description": "Title",
         "geojson": "Geojson (for epics)",
         "onlyEpicContent": "Only used as linked part of another article (you will be forwarded to the link form upon saving)",
+        "collectionDescription": "Description",
         "poster": "Link to poster image",
         "source": "Link to source",
         "src": "Link to source/ ID",
         "subtype": "Type",
+        "makePublic": "Make Public",
         "wiki": "Associated Wikipedia Article",
         "year": "Year"
       }

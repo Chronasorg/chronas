@@ -393,8 +393,8 @@ export default class DeckGLOverlay extends Component {
       this.props.updateLine([])
     }
     if (nextProps.contentIndex !== contentIndex) {
-      if (interval !== -1) {
-        clearInterval(interval)
+      if (interval !== -1 || typeof nextProps.contentIndex === 'undefined') {
+        if (interval !== -1) clearInterval(interval)
         interval = -1
         // this.setState({ animatedFeature: [] })
         this.props.updateLine([])
@@ -405,8 +405,9 @@ export default class DeckGLOverlay extends Component {
       if (selectedFeature) {
         let step = 0
         let lineToAnimate
+        let preLineCoords = []
 
-        if (selectedFeature.connect !== true && (selectedFeature.coo || []).length === 2 && (selectedFeature.subtype === "b" || selectedFeature.subtype === "si")) {
+        if (((nextProps.selectedItem || {}).data || {}).drawRoute === true || (selectedFeature.connect !== true && (selectedFeature.coo || []).length === 2 && (selectedFeature.subtype === "b" || selectedFeature.subtype === "si"))) {
           let prevCoords
           for (let i = +nextProps.contentIndex - 1; i > -1; i--) {
             const currCoords = (geoData.find(f => f.index === i && (f.subtype === "b" || f.subtype === "si")) || {}).coo || []
@@ -415,11 +416,27 @@ export default class DeckGLOverlay extends Component {
               break
             }
           }
+
           if (!prevCoords) return
+
           const end = { x: selectedFeature.coo[0], y: selectedFeature.coo[1] }
           const start = { x: prevCoords[0], y: prevCoords[1] }
           const generator = new Arc.GreatCircle(start, end, {})
           lineToAnimate = generator.Arc(100, { offset: 10 }).geometries[0].coords
+
+          if (((nextProps.selectedItem || {}).data || {}).drawRoute === true) {
+            prevCoords = false
+            for (let i = 0; i < nextProps.contentIndex; i++) {
+              const currCoords = (geoData.find(f => f.index === i && (f.subtype === "b" || f.subtype === "si" || f.subtype === "h")) || {}).coo || []
+              if (currCoords.length === 2) {
+                if (prevCoords && i > 0) {
+                  preLineCoords = preLineCoords.concat(new Arc.GreatCircle({ x: prevCoords[0], y: prevCoords[1] }, { x: currCoords[0], y: currCoords[1] }, {}).Arc(100, { offset: 10 }).geometries[0].coords)
+                }
+                prevCoords = currCoords
+              }
+            }
+          }
+
         } else {
           lineToAnimate = selectedFeature.coo
           if (!lineToAnimate) return
@@ -447,7 +464,7 @@ export default class DeckGLOverlay extends Component {
               return
             }
             if (nextIndex !== prevIndex) {
-              updateLine(lineToAnimate.slice(0, nextIndex))
+              updateLine(preLineCoords.concat(lineToAnimate.slice(0, nextIndex)))
             }
             prevIndex = nextIndex
           }

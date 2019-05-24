@@ -24,8 +24,10 @@ import {
   toggleMarker as toggleMarkerAction,
   setMigration as setMigrationAction,
 } from './actionReducers'
-import { epicIdNameArray, iconMapping, markerIdNameArray, themes } from '../../../properties'
-import utilsQuery from "../../map/utils/query";
+import { epicIdNameArray, iconMapping, markerIdNameArray, properties, themes } from '../../../properties'
+import utilsQuery from '../../map/utils/query'
+import axios from 'axios/index'
+import {selectCollectionItem} from "../../map/actionReducers";
 
 const styles = {
   innerListItem: { padding: '16px 46px 20px 58px' },
@@ -85,20 +87,56 @@ class CollectionsContent extends Component {
     super(props)
     this.state = {
       locked: true,
+      publicCollections: [],
+      privateCollections: [],
     }
   }
 
-  componentWillReceiveProps = (nextProps) => {
+  componentDidMount = () => {
+    this._reloadCollections()
   }
 
-  _goToMod = (selectedCollection = false) => {
-    const { selectedItem, selectedYear, selectAreaItemWrapper, selectEpicItem, selectMarkerItem, history } = this.props
+  _reloadCollections = () => {
+    const username = localStorage.getItem('chs_username')
+    axios.get(properties.chronasApiHost + '/collections?username=' + username, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('chs_token')}})
+      .then((collections) => {
+        const collectionsData = collections.data
+
+        this.setState({
+          publicCollections: collectionsData[1],
+          privateCollections: collectionsData[0]
+        })
+      })
+  }
+
+  componentWillReceiveProps = (nextProps) => {
+    const { collectionUpdatedIndex } = this.props
+    if (nextProps.collectionUpdatedIndex !== collectionUpdatedIndex) {
+      this._reloadCollections()
+    }
+  }
+
+  _openCollection = (collectionObject, event = false) => {
+    if (event && event.stopPropagation) event.stopPropagation()
+    const { selectCollectionItem, history } = this.props
+    // const potentialFirstWiki = (((collectionObject.map || [])[0] || {}).properties || {}).w
+    // if (potentialFirstWiki) {
+      selectCollectionItem(collectionObject._id, false)
+    if ((history.location || {}).pathname !== '/article') history.push('/article')
+    // }
+  }
+
+  _goToMod = (selectedCollection = false, event = false) => {
+    if (event && event.stopPropagation) event.stopPropagation()
+    const { selectCollectionItem, history } = this.props
     let fModUrl
 
     if (selectedCollection) {
+      if (selectedCollection !== 'Bookmarks') selectCollectionItem(selectedCollection._id, false)
       // setCollectionItem
       fModUrl = '/mod/linked'
     } else {
+      selectCollectionItem(false, false)
       fModUrl = '/mod/linked/create'
     }
     history.push(fModUrl)
@@ -106,76 +144,57 @@ class CollectionsContent extends Component {
 
   render () {
     const { translate, theme } = this.props
+    const { publicCollections, privateCollections } = this.state
+    const username = localStorage.getItem('chs_username')
 
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
         <List style={{ ...styles.listStyle, background: themes[theme].backColors[0] }}>
-          <Subheader>{translate("collections.my")}</Subheader>
+          <Subheader>{translate('collections.my')}</Subheader>
           <ListItem
             key={'addCollection'}
-            leftAvatar={<div><AddIcon style={{ paddingRight: '8px'}}/><span style={{fontSize: '14px'}}>{translate('collections.new')}</span></div>}
-            onClick={() => this._goToMod()}
+            leftAvatar={<div><AddIcon style={{ paddingRight: '8px' }} /><span style={{ fontSize: '14px' }}>{translate('collections.new')}</span></div>}
+            onClick={(event) => this._goToMod(false, event)}
           />
-          <ListItem
-            primaryText={<div style={styles.listItemText}>{"Bookmarks"}</div>}
-            secondaryText="2 Articles"
-            // innerDivStyle={styles.innerListItem}
-            rightAvatar={<div ><EditIcon onClick={() => this._goToMod("Bookmarks")} style={{ width: '18px', height: '18px' }} className={'openBookmarkIcon'} /><OpenIcon style={{ width: '18px', height: '18px' }} className={'openBookmarkIcon'} /></div>}
-          />
+          { privateCollections.map((el) => {
+            return <ListItem
+              onClick={(event) => this._openCollection(el, event)}
+              primaryText={<div style={styles.listItemText}>{el.title}</div>}
+              secondaryText={(el.slides || []).length + ' Articles'}
+              rightAvatar={<div>
+                <EditIcon onClick={(event) => this._goToMod(el, event)} style={{ width: '18px', height: '18px' }} className={'openBookmarkIcon'} />
+                <OpenIcon onClick={(event) => this._openCollection(el, event)} style={{ width: '18px', height: '18px' }} className={'openBookmarkIcon'} /></div>}
+            />
+          })}
         </List>
         <List style={{
           ...styles.listStyle,
           background: themes[theme].backColors[0],
           borderBottom: '1px solid rgb(217, 217, 217)'
         }}>
-          <Subheader>{translate("collections.public")}</Subheader>
-          <ListItem
-            primaryText={<div style={styles.listItemText}>Adelle Charles</div>}
-            leftAvatar={
-              <Avatar
+          <Subheader>{translate('collections.public')}</Subheader>
+          { publicCollections.map((el, i) => {
+            const prevLetter = ((publicCollections[i-1] || {}).title || [])[0]
+            const newLetter = ((el.title || [])[0] !== prevLetter && (el.title || [])[0]) ? (el.title || [])[0] : false
+            return <ListItem
+              onClick={(event) => this._openCollection(el, event)}
+              primaryText={<div style={styles.listItemText}>{el.title}</div>}
+              leftAvatar={newLetter ? <Avatar
                 color={themes[theme].highlightColors[0]} backgroundColor={transparent}
-                style={{left: 8}}
-              >
-                A
-              </Avatar>
-            }
-            secondaryText="2 Articles"
-            innerDivStyle={styles.innerListItem}
-            rightAvatar={<div className={'openBookmarkIcon'}><OpenIcon /></div>}
-          />
-          <ListItem
-            innerDivStyle={styles.innerListItem}
-            primaryText={<div style={styles.listItemText}>Adham Dannaway</div>}
-            secondaryText="4 Articles"
-            insetChildren={true}
-            rightAvatar={<div className={'openBookmarkIcon'}><OpenIcon /></div>}
-          />
-          <ListItem
-            innerDivStyle={styles.innerListItem}
-            primaryText={<div style={styles.listItemText}>Allison Grayce</div>}
-            insetChildren={true}
-            rightAvatar={<div className={'openBookmarkIcon'}><OpenIcon /></div>}
-            secondaryText="14 Articles"
-          />
-          <ListItem
-            innerDivStyle={styles.innerListItem}
-            primaryText={<div style={styles.listItemText}>Angel Ceballos</div>}
-            insetChildren={true}
-            rightAvatar={<div className={'openBookmarkIcon'}><OpenIcon /></div>}
-          />
-          <ListItem
-            innerDivStyle={styles.innerListItem}
-            primaryText={<div style={styles.listItemText}>Bob Charles</div>}
-            leftAvatar={
-              <Avatar
-                color={themes[theme].highlightColors[0]} backgroundColor={transparent}
-                style={{left: 8}}
-              >
-                B
-              </Avatar>
-            }
-            rightAvatar={<div className={'openBookmarkIcon'}><OpenIcon /></div>}
-          />
+                style={{ left: 8 }}
+                >
+                {newLetter}
+              </Avatar> : null
+              }
+              insetChildren={!newLetter}
+              secondaryText={(el.slides || []).length + ' Articles'}
+              innerDivStyle={styles.innerListItem}
+              rightAvatar={<div>
+                { (el.owner === username) && <EditIcon onClick={(event) => this._goToMod(el, event)} style={{ width: '18px', height: '18px' }} className={'openBookmarkIcon'} />}
+                <OpenIcon onClick={(event) => this._openCollection(el, event)} style={{ width: '18px', height: '18px' }} className={'openBookmarkIcon'} /></div>}
+
+            />
+          })}
         </List>
       </div>
     )
@@ -186,12 +205,14 @@ const enhance = compose(
   connect(state => ({
     theme: state.theme,
     locale: state.locale,
+    collectionUpdatedIndex: state.collectionUpdatedIndex
   }), {
     changeBasemap: changeBasemapAction,
     setAreaColorLabel: setAreaColorLabelAction,
     setPopOpacity: setPopOpacityAction,
     setProvinceBorders: setProvinceBordersAction,
     setClusterMarkers: setClusterMarkersAction,
+    selectCollectionItem,
     changeLabel: changeLabelAction,
     changeColor: changeColorAction,
     setMarkerLimit,

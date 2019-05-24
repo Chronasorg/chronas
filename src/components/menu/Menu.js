@@ -10,6 +10,7 @@ import DiceIcon from 'material-ui/svg-icons/places/casino'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
 import Avatar from 'material-ui/Avatar'
+import Badge from 'material-ui/Badge'
 import SVG from 'react-inlinesvg'
 import { Link } from 'react-router-dom'
 import pure from 'recompose/pure'
@@ -20,8 +21,9 @@ import { selectAreaItem as selectAreaItemAction } from '../map/actionReducers'
 import { setActiveMenu as setActiveMenuAction, toggleMenuDrawer as toggleMenuDrawerAction } from './actionReducers'
 import { toggleRightDrawer as toggleRightDrawerAction } from '../content/actionReducers'
 import { tooltip } from '../../styles/chronasStyleComponents'
-import { logout, setToken } from './authentication/actionReducers'
+import {logout, setToken, setUserScore } from './authentication/actionReducers'
 import { themes } from '../../properties'
+import decodeJwt from "jwt-decode";
 
 const styles = {
   mainLogo: {
@@ -63,6 +65,7 @@ class Menu extends PureComponent {
   handleLogout = () => {
     const { logout, showNotification } = this.props
     localStorage.removeItem('chs_token')
+    localStorage.removeItem('chs_score')
     localStorage.removeItem('chs_username')
     localStorage.removeItem('chs_avatar')
     localStorage.removeItem('chs_privilege')
@@ -82,13 +85,26 @@ class Menu extends PureComponent {
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    const { setUserScore } = this.props
+    const { token, username } = this.props.userDetails
+    if (token !== nextProps.userDetails.token && nextProps.userDetails.token && username === nextProps.userDetails.username) {
+      const decodedToken = decodeJwt(nextProps.userDetails.token)
+      if (decodedToken.score) {
+        localStorage.setItem('chs_score', decodedToken.score)
+        setUserScore(+decodedToken.score)
+      }
+    }
+  }
+
   render () {
     const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, translate } = this.props
     const { diceRotation } = this.state
-    const isLoggedIn = userDetails.token !== ''
+    const isLoggedIn = (userDetails || {}).token !== ''
     const username = localStorage.getItem('chs_username')
-    const customAvatar = userDetails.avatar || localStorage.getItem('chs_avatar')
-
+    const customAvatar = (userDetails || {}).avatar || localStorage.getItem('chs_avatar')
+    const preUserScore = (userDetails || {}).score || 1
+    const userScore = preUserScore > 100000 ? (Math.floor(preUserScore/ 1000000) + 'm') : preUserScore > 1000 ? (Math.floor(preUserScore/ 1000) + 'k') : preUserScore
     return <div style={styles.main}>
       <div style={styles.topMenu} className='topMenuItems'>
         <IconButton
@@ -167,6 +183,7 @@ class Menu extends PureComponent {
                 tooltipPosition='bottom-right'
                 tooltip={translate('collections.title')}
                 tooltipStyles={tooltip}
+                className={'collectionMenuIcon'}
                 onClick={() => toggleMenuDrawer('collections')}
                 iconStyle={{ color: themes[theme].foreColors[0] }}
               >
@@ -185,7 +202,12 @@ class Menu extends PureComponent {
                 <BoardIcon
                   hoverColor={themes[theme].highlightColors[0]} />
               </IconButton>
-              <IconButton
+              <Badge
+                style={{ padding: 0 }}
+                badgeContent={userScore}
+                className={'accountPointsBadge'}
+                badgeStyle={{ top: -6, right: 0, border: '1px solid rgba(106, 106, 106, 0.4)' }}
+              ><IconButton
                 key={'account'}
                 containerElement={<Link to={(username) ? ('/community/user/' + username) : '/account'} />}
                 tooltipPosition='bottom-right'
@@ -198,18 +220,19 @@ class Menu extends PureComponent {
                 {customAvatar ? <Avatar
                   size={24}
                   src={customAvatar} /> : <Avatar
-                    style={{ fontSize: 16 }}
-                    size={24}
-                    color={{
+                  style={{ fontSize: 16 }}
+                  size={24}
+                  color={{
                     // color: themes[theme].foreColors[0],
                     // backgroundColor: themes[theme].backColors[0]
                   }}
-                    src={customAvatar}><span style={{
-                    fontWeight: 'bolder',
-                    color: themes[theme].backColors[0]
-                  }}>{(username || ' ').substr(0, 1).toUpperCase()}</span></Avatar>
+                  src={customAvatar}><span style={{
+                  fontWeight: 'bolder',
+                  color: themes[theme].backColors[0]
+                }}>{(username || ' ').substr(0, 1).toUpperCase()}</span></Avatar>
                 }
               </IconButton>
+            </Badge>
             </div>
           ) : null }
           <IconButton
@@ -249,6 +272,7 @@ const enhance = compose(
     setActiveMenu: setActiveMenuAction,
     selectAreaItem: selectAreaItemAction,
     userLogout,
+    setUserScore,
     setToken,
     showNotification,
     logout

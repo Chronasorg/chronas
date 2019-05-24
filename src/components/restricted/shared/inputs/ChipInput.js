@@ -126,7 +126,7 @@ export const defaultChipRenderer = ({ value, text, name, category, isFocused, is
     key={key}
     labelStyle={{ width: '100%' }}
     style={{ ...defaultStyle, pointerEvents: isDisabled ? 'none' : undefined, width: '100%' }}
-    backgroundColor={'transparent'}
+    backgroundColor={'rgba(0,0,0,0)'}
     // onClick={handleClick}
   >
     <Card style={{ width: '100%' }} containerStyle={{ width: '100%' }}>
@@ -644,7 +644,6 @@ class ChipInput extends React.Component {
           <div style={Object.assign(styles.chipContainer, chipContainerStyle)}>
             {chips.map((tag, i) => {
               const value = dataSourceConfig ? tag[dataSourceConfig.value] : tag
-              console.debug('dataSourceConfig', dataSourceConfig, tag)
               return chipRenderer({
                 value,
                 name: dataSourceConfig ? tag["name"] : value,

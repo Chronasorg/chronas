@@ -444,7 +444,7 @@ button:focus {
   box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset;
 }
 
-.simple-form {
+.simple-form, .tabbed-form {
   background: #e8e8e8;
   height: 100%;
   width: 100%;
@@ -713,12 +713,12 @@ div.vis-tooltip {
 }
 
 .EmbeddedArrayInputItemContainer {
-  div:first-child {
-    width: 70% !important;
-  }
-  div:last-child {
-    float: right;
-  }
+  //div:first-child {
+  //  width: 70% !important;
+  //}
+  //div:last-child {
+  //  float: right;
+  //}
 }
 
 .discoveryIcon:hover {
@@ -1269,4 +1269,12 @@ pre {
     opacity: .4;
   }
 
+}
+
+.collectionMenuIcon svg {
+  transition: color 1s !important;
+}
+
+.accountPointsBadge span {
+  pointer-events: none
 }
