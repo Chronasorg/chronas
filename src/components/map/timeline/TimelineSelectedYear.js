@@ -24,7 +24,7 @@ class TimelineSelectedYear extends React.Component {
       if (timelineElement && yearElement) {
         const availableWidth = timelineElement.offsetWidth
         const { left, width } = yearElement.getBoundingClientRect()
-        const emergencyLeft = (availableWidth - left - width) < 70
+        const emergencyLeft = (availableWidth - left - width) < 140
     // eslint-disable-next-line react/no-did-update-set-state
         if (this.state.emergencyLeft !== emergencyLeft) {
           this.setState({ emergencyLeft })
