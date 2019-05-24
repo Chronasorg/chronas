@@ -11,7 +11,6 @@ import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import { showNotification } from 'admin-on-rest'
 import { setModData, setModType } from '../buttons/actionReducers'
 import { properties } from '../../../../properties'
-import { updateUserScore } from '../../../menu/authentication/actionReducers'
 
 const formStyle = {
   boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
@@ -54,7 +53,6 @@ export class AreaForm extends Component {
             const { start, end = start } = values
             const waitForCompletion = (+end - +start) < 11
             if (waitForCompletion) {
-              this.props.updateUserScore(1)
               this.props.showNotification('Area Updated')
             } else {
               this.props.showNotification('Updating ' + (+end - +start) + ' years in the background... this may take a while')
@@ -140,7 +138,6 @@ const enhance = compose(
     // crudUpdate: crudUpdateAction,
     setModType,
     setModData,
-    updateUserScore,
     showNotification
   }),
   reduxForm({

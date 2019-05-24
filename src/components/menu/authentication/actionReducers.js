@@ -10,8 +10,6 @@ export const USER_SIGNIN = 'AOR/USER_SIGNIN'
 export const USER_SIGNUP = 'USER_SIGNUP'
 export const USER_LOGOUT = 'AUTH_LOGOUT'
 export const CUSTOM_NOTIFICATION = 'AOR/SHOW_NOTIFICATION'
-const UPDATE_USER_SCORE = 'UPDATE_USER_SCORE'
-const SET_USER_SCORE = 'SET_USER_SCORE'
 
 /** Actions **/
 
@@ -21,9 +19,9 @@ export const userSignup = (payload, pathName) => ({
   meta: { auth: true, pathName },
 })
 
-export const setUser = (token, user, privilege, avatar, score) => ({
+export const setUser = (token, user, privilege, avatar) => ({
   type: SET_USER,
-  payload: [token, user, privilege, avatar, score],
+  payload: [token, user, privilege, avatar],
 })
 
 export const customNotification = message => ({
@@ -41,16 +39,6 @@ export const setUsername = username => ({
   payload: username,
 })
 
-export const setUserScore = score => ({
-  type: SET_USER_SCORE,
-  payload: score,
-})
-
-export const updateUserScore = delta => ({
-  type: UPDATE_USER_SCORE,
-  payload: delta,
-})
-
 export const setPrivilege = privilege => ({
   type: SET_PRIVILEGE,
   payload: privilege,
@@ -62,38 +50,26 @@ export const logout = () => ({
 
 /** Reducers **/
 
-export const userReducer = (initial = { 'token': '', 'username': '', 'privilege': '', 'score':  +localStorage.getItem('chs_score') || 1 }) =>
+export const userReducer = (initial = { 'token': '', 'username': '', 'privilege': '' }) =>
   (prevUser = initial, { type, payload }) => {
     switch (type) {
       case FLUSH_USER:
       case USER_LOGOUT:
       case USER_LOGIN_FAILURE:
         localStorage.removeItem('chs_token')
-        localStorage.removeItem('chs_score')
         return initial
       case SET_USER:
         return {
           token: payload[0],
           username: payload[1],
           privilege: payload[2],
-          avatar: payload[3],
-          score: payload[4]
+          avatar: payload[3]
         }
       case USER_LOGIN_SUCCESS:
       case SET_TOKEN:
         return {
           ...prevUser,
           token: payload
-        }
-      case SET_USER_SCORE:
-        return {
-          ...prevUser,
-          score: payload
-        }
-      case UPDATE_USER_SCORE:
-        return {
-          ...prevUser,
-          score: (prevUser.score + payload)
         }
       case SET_USERNAME:
         return {

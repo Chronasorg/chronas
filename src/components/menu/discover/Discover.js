@@ -24,7 +24,6 @@ import { showNotification, translate, ViewTitle } from 'admin-on-rest'
 import axios from 'axios'
 import { red400 } from 'material-ui/styles/colors'
 import GridTile from '../../overwrites/GridTile'
-import { updateUserScore } from '../../menu/authentication/actionReducers'
 import { setRightDrawerVisibility } from '../../content/actionReducers'
 import { setAreaColorLabel } from '../../menu/layers/actionReducers'
 import { selectAreaItem, selectEpicItem, selectLinkedItem, selectMarkerItem } from '../../map/actionReducers'
@@ -61,8 +60,8 @@ const styles = {
   iconButton: { filter: 'drop-shadow(2px 6px 4px rgba(0,0,0,0.8))' },
   upArrow: { ...imgButton, padding: 0, right: 11, top: -4, position: 'absolute' },
   downArrow: { ...imgButton, padding: 0, right: 11, top: 24, position: 'absolute' },
-  editButton: { ...imgButton, right: 60, top: 1, width: 40, height: 40, position: 'absolute' },
-  sourceButton: { ...imgButton, right: 110, top: 1, width: 40, height: 40, position: 'absolute', padding: 0 },
+  editButton: { ...imgButton, right: 60, top: 1, position: 'absolute' },
+  sourceButton: { ...imgButton, right: 110, top: 1, position: 'absolute', padding: 0 },
   scoreLabel: {
     width: 38,
     height: 20,
@@ -393,7 +392,6 @@ class Discover extends PureComponent {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
           this.props.showNotification((typeof token !== 'undefined') ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          if (typeof token !== 'undefined') this.props.updateUserScore(1)
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
             if (encodeURIComponent(el.src) === id) el.score += 1
             return el
@@ -447,7 +445,6 @@ class Discover extends PureComponent {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
           this.props.showNotification((typeof token !== 'undefined') ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          if (typeof token !== 'undefined') this.props.updateUserScore(1)
           tileData[stateDataId] = tileData[stateDataId].map((el) => {
             if (encodeURIComponent(el.src) === id) el.score -= 1
             return el
@@ -995,6 +992,5 @@ export default connect(mapStateToProps, {
   selectEpicItem,
   selectLinkedItem,
   selectMarkerItem,
-  updateUserScore,
   showNotification
 })(translate(Discover))

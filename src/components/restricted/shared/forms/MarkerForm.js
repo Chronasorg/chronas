@@ -7,7 +7,6 @@ import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import { setModType } from '../buttons/actionReducers'
-import { updateUserScore } from '../../../menu/authentication/actionReducers'
 import { TYPE_MARKER } from '../../../map/actionReducers'
 import { properties } from '../../../../properties'
 
@@ -33,7 +32,7 @@ export class MarkerForm extends Component {
           return [el.capitalStart, el.capitalEnd, el.capitalOwner]
         })
       }
-      const wikiURL = values.wiki || ''
+      const wikiURL = values.wiki
       const wikiIndex = wikiURL.indexOf('.wikipedia.org/wiki/')
       if (wikiIndex > -1) values.wiki = wikiURL.substring(wikiIndex + 20, wikiURL.length)
       if (values.type.substr(0, 2) === 'w|') values.type = values.type.substr(2)
@@ -52,7 +51,6 @@ export class MarkerForm extends Component {
         .then((res) => {
           if (res.status === 200) {
             setModType('', [], values.type)
-            this.props.updateUserScore(1)
             showNotification((redirect === 'edit') ? 'Marker successfully updated' : 'Marker successfully added')
             history.goBack()
           } else {
@@ -126,7 +124,6 @@ const enhance = compose(
   }),
   {
     setModType,
-    updateUserScore,
     showNotification
   }),
   reduxForm({

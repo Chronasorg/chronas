@@ -1,10 +1,9 @@
 import React, { createElement, PureComponent } from 'react'
+
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import AppBar from 'material-ui/AppBar'
 import Avatar from 'material-ui/Avatar'
-import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left'
-import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right'
 import Drawer from 'material-ui/Drawer'
 import Divider from 'material-ui/Divider'
 import IconButton from 'material-ui/IconButton'
@@ -16,7 +15,6 @@ import { Link, Route, Switch } from 'react-router-dom'
 import pure from 'recompose/pure'
 import axios from 'axios'
 import { Restricted, showNotification, translate } from 'admin-on-rest'
-import { LoadingCircle } from '../global/LoadingCircle'
 import { setRightDrawerVisibility, toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { grey600 } from '../../styles/chronasColors'
 import Responsive from '../menu/Responsive'
@@ -51,10 +49,8 @@ import {
   selectMarkerItem,
   selectValue,
   setFullItem,
-  setData,
   setWikiId,
   TYPE_AREA,
-  TYPE_COLLECTION,
   TYPE_EPIC,
   TYPE_LINKED,
   TYPE_MARKER,
@@ -75,33 +71,31 @@ import { epicIdNameArray, properties, themes } from '../../properties'
 
 const nearbyIcon = <EditIcon />
 
+const defaultIcons = {
+  ruler: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png',
+  religion: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png',
+  religionGeneral: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of _Austria.svg.png',
+  culture: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png',
+  capital: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png',
+  province: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/125px-Flag_of_Austria.svg.png',
+}
+
 const styles = {
   articleHeader: {
     width: 'calc(100$ - 140px)',
     height: '56px',
     overflow: 'hidden'
   },
-  chevIcon: {
-    width: 24,
-    height: 24
-  },
-  chevContainer: {
-    position: 'relative',
-    top: '-5px',
-    width: 24,
-    height: 24,
-    padding: 0
-  },
   cardArticle: {
     paddingBottom: '0px',
     color: 'rgba(0, 0, 0, 0.87)',
+    backgroundColor: 'rgb(255, 255, 255)',
     transition: 'transform 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
     boxSizing: 'border-box',
     fontFamily: 'Cinzel, serif',
     boxShadow: '0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12), 0 2px 4px -1px rgba(0, 0, 0, 0.4)',
     height: 'calc(40% - 40px)',
     width: '2254px',
-    minWidth: '238px',
     position: 'fixed',
     zIndex: '1300',
     left: 'auto',
@@ -218,17 +212,12 @@ class RightDrawerRoutes extends PureComponent {
 
     this.setState({ linkedItemData: prevLinkedItemData })
   }
-  setMetadataType = (metadataType, metadataEntity = false) => {
-    if (metadataEntity !== 'province') { this.setState({ metadataType, metadataEntity: '' }) }
+  setMetadataType = (metadataType, metadataEntity=false) => {
+    if (metadataEntity !== "province") { this.setState({ metadataType, metadataEntity: '' }) }
     else { this.setState({ metadataType }) }
   }
   actOnRootTypeChange = (contentTypeRaw) => {
     const { location, history } = this.props
-
-    if (contentTypeRaw === 'ce' && window.location.host.substr(0, 4) !== "edu.") {
-      window.location.href="https://edu.chronas.org" +  window.location.search +  window.location.hash
-    }
-
     this.setState({ contentTypeRaw })
     const contentType = (contentTypeRaw.substr(0, 2) === 'w|') ? 'markers' : 'metadata'
     if (contentType === 'markers' && location.pathname.indexOf(contentType) === -1 && location.pathname.indexOf('/mod') !== -1) {
@@ -237,8 +226,8 @@ class RightDrawerRoutes extends PureComponent {
       history.push(location.pathname.replace('markers', 'linked'))
     }
   }
-  setContentType = (contentTypeFull) => {
-    const contentType = (contentTypeFull.substr(0, 2) === 'w|') ? 'markers' : 'metadata'
+  setContentType = (contentTypeRaw) => {
+    const contentType = (contentTypeRaw.substr(0, 2) === 'w|') ? 'markers' : 'metadata'
     this.setState({ contentType, contentChoice: [] })
   }
   setSearchEpic = (searchText) => {
@@ -263,7 +252,7 @@ class RightDrawerRoutes extends PureComponent {
       this.setState({ searchText })
     }
   }
-  setSearchSnippet = (searchText, contentTypeRaw = false, stateItem = false, includeMarkers = true, forCollections = false) => {
+  setSearchSnippet = (searchText, contentTypeRaw = false, stateItem = false, includeMarkers = true) => {
     // contentChoice
     if (searchText.length > 2) {
       if (!this.state.isFetchingSearch || new Date().getTime() - this.state.isFetchingSearch > 3000) {
@@ -273,7 +262,7 @@ class RightDrawerRoutes extends PureComponent {
             if (stateItem) {
               const newlinkedItemData = this.state.linkedItemData
               newlinkedItemData[stateItem] = response.data.map((el) => {
-                return forCollections ? { id: el[0] + '||' + el[2], name: el[1], suggest: properties.typeToDescriptedType[el[2]] + ": " + el[1], category: properties.typeToDescriptedType[el[2]] } : { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
+                return { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
               })
 
               this.setState({
@@ -284,7 +273,7 @@ class RightDrawerRoutes extends PureComponent {
               this.setState({
                 isFetchingSearch: false,
                 contentChoice: response.data.map((el) => {
-                  return forCollections ? { id: el[0] + '||' + el[2], name: el[1], suggest: properties.typeToDescriptedType[el[2]] + ": " + el[1], category: properties.typeToDescriptedType[el[2]] } : { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
+                  return { id: el[0] + '||' + el[2], name: properties.typeToDescriptedType[el[2]] + ': ' + el[1] }
                 })
               })
             }
@@ -321,6 +310,7 @@ class RightDrawerRoutes extends PureComponent {
 
       if (newLinkKey) {
         const newArr1 = newLinkKey.split('||')
+
         axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + window.encodeURIComponent(((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0]))
           .then((res) => {
             if (res.status === 200) {
@@ -410,13 +400,13 @@ class RightDrawerRoutes extends PureComponent {
   }
   handleMousedown = e => {
     this.setState({ isResizing: true, lastDownX: e.clientX })
-    document.addEventListener('mousemove', e => this.handleMousemove(e), { passive: true })
-    document.addEventListener('mouseup', e => this.handleMouseup(e), { passive: true })
+    document.addEventListener('mousemove', e => this.handleMousemove(e), {passive: true})
+    document.addEventListener('mouseup', e => this.handleMouseup(e), {passive: true})
   }
   handleMouseup = e => {
     this.setState({ isResizing: false })
-    window.removeEventListener('mousemove', e => this.handleMousemove(e), { passive: true })
-    window.removeEventListener('mouseup', e => this.handleMouseup(e), { passive: true })
+    window.removeEventListener('mousemove', e => this.handleMousemove(e), {passive: true})
+    window.removeEventListener('mouseup', e => this.handleMouseup(e), {passive: true})
   }
   handleMousemove = e => {
     const { selectedItem } = this.props
@@ -428,13 +418,12 @@ class RightDrawerRoutes extends PureComponent {
     const minWidth = +document.body.offsetWidth * 0.24
     const maxWidth = +document.body.offsetWidth - 160
 
-    if (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_COLLECTION || selectedItem.type === TYPE_LINKED) {
+    if (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_LINKED) {
       if (offsetRight > minWidth && offsetRight < maxWidth) {
         const offsetTop = e.clientY
         const minHeight = +document.body.offsetHeight * 0.24
         const maxHeight = +document.body.offsetHeight - 160
-        const stateToUpdate = { newMarkerWidth: offsetRight,
-          newMarkerPartOfWidth: ((offsetRight - 80) > 160) ? (offsetRight - 80) : 160 }
+        const stateToUpdate = { newMarkerWidth: offsetRight, newMarkerPartOfWidth: offsetRight - 80 }
 
         if (offsetTop > minHeight && offsetTop < maxHeight) {
           stateToUpdate.newMarkerHeight = offsetTop
@@ -496,7 +485,6 @@ class RightDrawerRoutes extends PureComponent {
     this.state = {
       contentType: '',
       searchText: '',
-      stepIndex: -1,
       updateID: 0,
       linkedItemData: {},
       isFetchingSearch: false,
@@ -540,7 +528,6 @@ class RightDrawerRoutes extends PureComponent {
     ) {
       this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
     }
-    if (selectedItem.type === TYPE_COLLECTION && !nextProps.selectedItem.data) { this.setState({ stepIndex: -1 }) }
     if (location.pathname !== nextProps.location.pathname) {
       if (nextProps.location.pathname === '/mod/links' && nextProps.selectedItem) {
         let prefilledId = ''
@@ -563,11 +550,11 @@ class RightDrawerRoutes extends PureComponent {
 
     const { rightDrawerOpen, setRightDrawerVisibility } = this.props
 
+    /** Acting on store changes **/
     if (rightDrawerOpen !== nextProps.rightDrawerOpen) {
       if (rightDrawerOpen) {
-        console.debug('rightDrawer Closed')
-        if (nextProps.location.pathname.indexOf('/mod') === -1) this.setState({ hiddenElement: true, contentTypeRaw: false })
-        else this.setState({ hiddenElement: true })
+        // console.debug('rightDrawer Closed')
+        this.setState({ hiddenElement: true })
       } else {
         // console.debug('rightDrawer Opened')
         this.setState({ hiddenElement: false })
@@ -576,7 +563,7 @@ class RightDrawerRoutes extends PureComponent {
 
     if (nextProps.location.pathname.indexOf('/mod') > -1 ||
       nextProps.location.pathname.indexOf('/article') > -1) {
-      if (!nextProps.rightDrawerOpen && ((nextProps.selectedItem.type !== TYPE_MARKER && nextProps.selectedItem.type !== TYPE_COLLECTION && nextProps.selectedItem.type !== TYPE_LINKED) || nextProps.location.pathname.indexOf('/article') === -1)) {
+      if (!nextProps.rightDrawerOpen && ((nextProps.selectedItem.type !== TYPE_MARKER && nextProps.selectedItem.type !== TYPE_LINKED) || nextProps.location.pathname.indexOf('/article') === -1)) {
         setRightDrawerVisibility(true)
       }
     } else if (nextProps.rightDrawerOpen) {
@@ -597,7 +584,7 @@ class RightDrawerRoutes extends PureComponent {
     window.removeEventListener('mouseup', e => this.handleMouseup(e), false)
   }
 
-  componentDidCatch (error, info) {
+  componentDidCatch(error, info) {
     this.props.showNotification('somethingWentWrong', 'confirm')
   }
 
@@ -665,64 +652,6 @@ class RightDrawerRoutes extends PureComponent {
     history.push('/article')
   }
 
-  hideRevealAnimationCard = () => {
-    const animationCard = document.getElementById('animationCard')
-    const contentCard = document.querySelector('.markerContainer>div:last-child>div')
-    const iframeContainer = document.getElementById('articleIframe')
-    animationCard.style.height = '8px'
-    iframeContainer.style.right = -1 * (iframeContainer.offsetWidth + 100) + 'px'
-    setTimeout(() => {
-      animationCard.style.height = '16px'
-      // iframeContainer.style.display = 'none'
-      iframeContainer.style.opacity = 0
-      iframeContainer.style.right = '0px'
-      setTimeout(() => {
-        // iframeContainer.style.display = ''
-        setTimeout(() => {
-          iframeContainer.style.opacity = 1
-        }, 100)
-      }, 500)
-    }, 1000)
-  }
-
-  setCollectionIndex = (sI) => {
-    const { selectedItem, setData } = this.props
-    if (sI >= 0 && sI < (((this.props.selectedItem || {}).data || {}).content || []).length) setData({ ...selectedItem.data, stepIndex: sI })
-    this.setState({ stepIndex: sI })
-    if (selectedItem.data.changeYearByArticle) {
-      const newYear = (((((this.props.selectedItem || {}).data || {}).content || [])[sI] || {}).properties || {}).y
-      if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && +newYear >= -2000 && +newYear <= 2000) this.props.setYear(+newYear)
-    }
-  }
-  handleCollectionPrev = () => {
-    const { selectedItem, setData, showNotification } = this.props
-    const { stepIndex } = this.state
-    if ((+stepIndex - 1) >= 0 && (+stepIndex - 1) < (((this.props.selectedItem || {}).data || {}).content || []).length) setData({ ...selectedItem.data, stepIndex: (+stepIndex - 1) })
-    if (selectedItem.data.changeYearByArticle) {
-      const newYear = (((((this.props.selectedItem || {}).data || {}).content || [])[stepIndex - 1] || {}).properties || {}).y
-      if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && +newYear >= -2000 && +newYear <= 2000) this.props.setYear(+newYear)
-    }
-    this.hideRevealAnimationCard()
-    setTimeout(() => {
-      this.setState({ stepIndex: stepIndex - 1 })
-    }, 500)
-  }
-
-  handleCollectionNext = () => {
-    const { selectedItem, setData, showNotification } = this.props
-    const { stepIndex } = this.state
-    if ((+stepIndex + 1) >= 0 && (+stepIndex + 1) < (((this.props.selectedItem || {}).data || {}).content || []).length) setData({ ...selectedItem.data, stepIndex: (+stepIndex + 1) })
-    this.hideRevealAnimationCard()
-    if (selectedItem.data.changeYearByArticle) {
-      const newYear = (((((this.props.selectedItem || {}).data || {}).content || [])[stepIndex + 1] || {}).properties || {}).y
-      if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && +newYear >= -2000 && +newYear <= 2000) this.props.setYear(+newYear)
-    }
-    if (((selectedItem.data || {}).quiz || []).length > 0) showNotification('Good Job! Marked As Read')
-    setTimeout(() => {
-      this.setState({ stepIndex: stepIndex + 1 })
-    }, 500)
-  }
-
   render () {
     // console.debug('render()   RightDrawerRoutes')
     const {
@@ -730,12 +659,11 @@ class RightDrawerRoutes extends PureComponent {
       selectedYear, selectedItem, activeArea, setAreaColorLabel, location,
       setModData, setModDataLng, setModDataLat, history, metadata, changeColor, translate
     } = this.props
-    const { newWidth, newMarkerWidth, newMarkerHeight, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, contentTypeRaw, stepIndex, provinceEntity } = this.state
+    const { newWidth, newMarkerWidth, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, contentTypeRaw, provinceEntity } = this.state
 
     if ((typeof selectedItem.wiki === 'undefined')) return null
 
     const isMarker = (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_LINKED) && location.pathname.indexOf('/article') > -1
-    const isCollection = selectedItem.type === TYPE_COLLECTION && location.pathname.indexOf('/article') > -1
     const isEpic = (selectedItem.type === TYPE_EPIC) && location.pathname.indexOf('/article') > -1
     const currPrivilege = +localStorage.getItem('chs_privilege')
     const resourceList = Object.keys(resources)// .filter(resCheck => +resources[resCheck].permission <= currPrivilege)
@@ -812,22 +740,19 @@ class RightDrawerRoutes extends PureComponent {
         totalPop += +currPop
         if ((activeArea.data[key] || {})[0] === rulerId) entityPop += currPop
       })
-    }
-    else if (activeArea.color === 'culture') {
+    } else if (activeArea.color === 'culture') {
       Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
         totalPop += +currPop
         if ((activeArea.data[key] || {})[1] === cultureId) entityPop += currPop
       })
-    }
-    else if (activeArea.color === 'religion') {
+    } else if (activeArea.color === 'religion') {
       Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
         totalPop += +currPop
         if ((activeArea.data[key] || {})[2] === religionId) entityPop += currPop
       })
-    }
-    else if (activeArea.color === 'religionGeneral') {
+    } else if (activeArea.color === 'religionGeneral') {
       const religionGeneralId = (metadata['religion'][religionId] || {})[3]
       Object.keys(activeArea.data).forEach((key) => {
         const currPop = (activeArea.data[key] || {})[4] || 0
@@ -845,7 +770,7 @@ class RightDrawerRoutes extends PureComponent {
       province: (metadata['province'][selectedProvince] || {}),
     }
 
-    const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== 'undefined'
+    const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
 
     const entityMeta = {
       ruler: {
@@ -1013,18 +938,13 @@ class RightDrawerRoutes extends PureComponent {
         </div>
       }
     />
+    /* <Restricted authParams={{ foo: 'bar' }} location={{ pathname: 'article' }}>  TODO: do pathname dynamicaly*!/ */
 
     const CoreContent = (headerComponent, component, route, commonProps, routeProps) => {
       const { selectedItem } = this.props
       const items = ((this.props.selectedItem || {}).data || {}).content || []
       const potentialPartOfItem = (selectedItem.value || {}).partOf
       const partOfEntity = potentialPartOfItem && items.find(el => (el.properties || {}).id === potentialPartOfItem)
-      let minimumColWidth = false // true
-      let hasQuiz = (((this.props.selectedItem || {}).data || {}).quiz || []).length > 0
-      if (isCollection) {
-        const offsetRight = (typeof newMarkerWidth === "number") ? (newMarkerWidth + 80) : (document.body.offsetWidth * 0.3 + 80) // (+document.body.offsetWidth - (e.clientX - document.body.offsetLeft))
-        minimumColWidth = ((offsetRight - 80) > 450)
-      }
 
       const partOfEntities = partOfEntity ? [partOfEntity] : items
       return <Responsive
@@ -1042,254 +962,117 @@ class RightDrawerRoutes extends PureComponent {
           </Drawer>
         }
         medium={
-          (isMarker || isCollection) ? <div className={'markerContainer'}>
-
-            {!isCollection && partOfEntities && partOfEntities.length !== 0 && <div style={{
-              ...styles.partOfDiv,
-              background: themes[theme].backColors[0],
-              width: newMarkerPartOfWidth,
-              top: newMarkerPartOfHeight
-            }}>
-              <CardActions style={{ textAlign: 'center', maxHeight: 48 }}>
-                {(partOfEntities.length === 1) ? <FlatButton
-                    // style={{ color: '#fff' }}
-                    // backgroundColor='rgb(255, 64, 129)'
-                  hoverColor={themes[theme].highlightColors[0]}// '#8AA62F'
-                  onClick={() => this._openPartOf(partOfEntities[0])}
-                  labelStyle={{ paddingLeft: 0, paddingRight: 0 }}
-                  label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>{translate('pos.partOf')} <span style={{
-                      paddingLeft: 0,
-                      paddingRight: 0,
-                      fontWeight: 'bolder'
-                    }}>{(((partOfEntities[0].properties || {}).y ? ((partOfEntities[0].properties || {}).y + ': ') : '') + (partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()}</span>
-                  </div>} />
-                  : <SelectField
-                    style={{
-                      width: 200,
-                      //   color: 'rgb(255, 255, 255)',
-                      backgroundColor: 'transparent',
-                      // maxHeight: 40,
-                      // marginTop: -40,
-                      textAlign: 'center',
-                      marginRight: 8,
-                      maxHeight: 9,
-                      marginTop: 1,
-                      top: -32,
-                      // transition: '1s all'
-                    }}
-                    menuStyle={{
-                      width: 200,
-                      //   color: 'rgb(255, 255, 255)',
-                      top: 14,
-                      maxHeight: 36,
-                      //    backgroundColor: 'rgb(106, 106, 106)'
-                    }}
-                    menuItemStyle={{
-                      width: 200,
-                      maxHeight: 36,
-                      //      color: 'rgb(255, 255, 255)',
-                      //       backgroundColor: 'rgb(106, 106, 106)'
-                    }}
-                    labelStyle={{
-                      maxHeight: 36,
-                      width: 200,
-                      left: 0,
-                      //        color: 'rgb(255, 255, 255)',
-                      //       backgroundColor: 'rgb(106, 106, 106)'
-                    }}
-                    listStyle={{ width: 200 }}
-                    underlineStyle={{ width: 200 }}
-                    floatingLabelStyle={{
-                      maxHeight: 36,
-                      width: 200,
-                      left: 0,
-                      //       color: 'rgb(255, 255, 255)',
-                      //       backgroundColor: 'rgb(106, 106, 106)'
-                    }}
-                    iconStyle={{
-                      top: -4
-                    }}
-                    hintStyle={{ width: 200, left: 22, /* color: 'rgb(255, 255, 255)' */}}
-                    // maxHeight={36}
-
-                    floatingLabelText={translate('pos.related_item')}
-                    hintText={translate('pos.related_item')}
-                    value={null}
-                    onChange={(event, index, value) => {
-                      this._openPartOf(value)
-                    }}
-                  >
-                    {partOfEntities.map((el, index) => {
-                      return <MenuItem key={'partOf_' + index} value={el}
-                        primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ': ') : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
-                    })}
-                  </SelectField>
-                }
-              </CardActions>
-            </div>}
-            {isCollection && partOfEntities && partOfEntities.length !== 0 && <div style={{
-              ...styles.partOfDiv,
-              width: newMarkerPartOfWidth,
-              paddingTop: 10,
-              transition: 'margin 1s',
-              marginTop: stepIndex !== -1 ? '-10px' : '-60px',
-              top: !isCollection ? newMarkerPartOfHeight : (typeof newMarkerPartOfHeight === 'string') ? 'calc(80% - 6px)' : (newMarkerPartOfHeight + 14)
-            }}>
-              <CardActions style={{ textAlign: 'center', maxHeight: 48 }}>
-                <span style={{ paddingRight: '2em', width: minimumColWidth ? '20%' : '40%', float: 'left', lineHeight: '36px', display: 'inline-table', padding: 0, margin: 0 }}> ({stepIndex + 1} / {partOfEntities.length + (hasQuiz ? 1 : 0)})</span>
-                <div style={{
-                  display: minimumColWidth ? 'inline-table' : 'none',
-                  width: '60%',
-                  maxWidth: '210px',
-                  padding: 0,
-                  margin: 0
-                }}>
-                  {(partOfEntities.length === 1) ? <FlatButton
-                    // style={{ color: '#fff' }}
-                    // backgroundColor='rgb(255, 64, 129)'
-                    hoverColor={themes[theme].highlightColors[0]}// '#8AA62F'
-                    onClick={() => this._openPartOf(partOfEntities[0])}
-                    labelStyle={{ paddingLeft: 0, paddingRight: 0 }}
-                    label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>{translate('pos.partOf')} <span style={{
-                      paddingLeft: 0,
-                      paddingRight: 0,
-                      fontWeight: 'bolder'
-                    }}>{(((partOfEntities[0].properties || {}).y ? ((partOfEntities[0].properties || {}).y + ': ') : '') + (partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()}</span>
-                    </div>} />
-                  : <SelectField
-                    style={{
-                      width: 200,
-                      // display: newMarkerWidth > 380 ? '' : 'none',
-                      //   color: 'rgb(255, 255, 255)',
-                      backgroundColor: 'transparent',
-                      // maxHeight: 40,
-                      // marginTop: -40,
-                      textAlign: 'center',
-                      marginRight: 8,
-                      maxHeight: 9,
-                      marginTop: 1,
-                      top: -32,
-                      // transition: '1s all'
-                    }}
-                    menuStyle={{
-                      width: 200,
-                      //   color: 'rgb(255, 255, 255)',
-                      top: 14,
-                      maxHeight: 36,
-                      //    backgroundColor: 'rgb(106, 106, 106)'
-                    }}
-                    menuItemStyle={{
-                      width: 200,
-                      maxHeight: 36,
-                      //      color: 'rgb(255, 255, 255)',
-                      //       backgroundColor: 'rgb(106, 106, 106)'
-                    }}
-                    labelStyle={{
-                      maxHeight: 36,
-                      width: 200,
-                      left: 0,
-                      //        color: 'rgb(255, 255, 255)',
-                      //       backgroundColor: 'rgb(106, 106, 106)'
-                    }}
-                    listStyle={{ width: 200 }}
-                    underlineStyle={{ width: 200 }}
-                    floatingLabelStyle={{
-                      maxHeight: 36,
-                      width: 200,
-                      left: 0,
-                      //       color: 'rgb(255, 255, 255)',
-                      //       backgroundColor: 'rgb(106, 106, 106)'
-                    }}
-                    iconStyle={{
-                      top: -4
-                    }}
-                    hintStyle={{ width: 200, left: 22, /* color: 'rgb(255, 255, 255)' */}}
-                    // maxHeight={36}
-
-                    floatingLabelText={translate('pos.browse_item')}
-                    hintText={translate('pos.browse_item')}
-                    value={null}
-                    onChange={(event, index, value) => {
-                      if (isCollection) {
-                        return this.setCollectionIndex(index)
-                      }
-                      this._openPartOf(value)
-                    }}
-                  >
-                    {partOfEntities.map((el, index) => {
-                      return <MenuItem key={'partOf_' + index} value={el}
-                                       style={{ color: index === stepIndex ? themes[theme].highlightColors[0] : 'inherit' }}
-                        primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ': ') : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
-                    })}
-                  </SelectField>
-                }</div>
-                <div style={{ width: minimumColWidth ? '20%' : '40%', display: 'inline-table', float: 'right', lineHeight: '36px', padding: 0, margin: 0 }}>
-                  <IconButton
-                    disabled={stepIndex < 1}
-                    iconStyle={styles.chevIcon}
-                    style={{ ...styles.chevContainer, pointerEvents: (stepIndex < 1) ? 'none' : 'all' }}>
-                    <ChevronLeft onClick={this.handleCollectionPrev} />
-                  </IconButton>
-                  <IconButton
-                    disabled={stepIndex > (partOfEntities.length - 2 + (hasQuiz ? 1 : 0))}
-                    iconStyle={styles.chevIcon}
-                    style={{ ...styles.chevContainer, pointerEvents: (stepIndex > (partOfEntities.length - 2 + (hasQuiz ? 1 : 0))) ? 'none' : 'all' }}>
-                    <ChevronRight onClick={this.handleCollectionNext} />
-                  </IconButton>
-                </div>
-              </CardActions>
-            </div>}
-            { isCollection && <div id={'animationCard'} style={{
-              ...styles.partOfDiv,
-              width: (typeof newMarkerPartOfWidth === 'string') ? 'calc(30% - 40px)' : (newMarkerPartOfWidth + 40),
-              height: '16px',
-              borderRadius: 0,
-              right: '40px',
-              top: newMarkerPartOfHeight
-            }} /> }
-            { isCollection && <div style={{
-              ...styles.partOfDiv,
-              tranisition: '.5s',
-              borderRadius: 0,
-              // background: themes[theme].backColors[1],
-              width: (typeof newMarkerPartOfWidth === 'string') ? 'calc(30% - 20px)' : (newMarkerPartOfWidth + 60),
-              height: '8px',
-              right: '30px',
-              top: newMarkerPartOfHeight
-            }} /> }
-            <Card
-              style={{ ...styles.cardArticle, background: themes[theme].backColors[0], width: newMarkerWidth, height: newMarkerHeight, boxShadow: 'none' }}
-              containerStyle={{ height: '100%' }}
-            >
-            </Card>
-            <Card
-              style={{ ...styles.cardArticle, backgroundColor: 'transparent', width: newMarkerWidth, height: newMarkerHeight }}
-              containerStyle={{ height: '100%', position: 'relative', transition: '0.5s', right: '0px', transitionTimingFunction: 'ease-in-out' }}
+          isMarker ? <div><Card
+            style={{ ...styles.cardArticle, width: this.state.newMarkerWidth, height: this.state.newMarkerHeight }}
+            containerStyle={{ height: '100%' }}
           >
-              <RaisedButton
-                className={(isCollection) ? 'dragHandle markerHandle collection' : (isMarker) ? 'dragHandle markerHandle' : 'dragHandle'}
-                icon={(isMarker || isCollection) ? <IconArrowLeft /> : <IconDrag />}
-                style={(isMarker || isCollection) ? {
+            <RaisedButton
+              className={(isMarker) ? 'dragHandle markerHandle' : 'dragHandle'}
+              icon={(isMarker) ? <IconArrowLeft /> : <IconDrag />}
+              style={(isMarker) ? {
                 ...styles.draggableButtonDiv,
                 top: 'calc(100% - 20px)',
                 left: '20px',
                 minWidth: 'inherit',
                 transform: 'inherit'
               } : styles.draggableButtonDiv}
-                labelStyle={{ width: '640px' }}
-                rippleStyle={{ width: '440px' }}
-                buttonStyle={styles.draggableButton}
-                onMouseDown={event => {
+              labelStyle={{ width: '640px' }}
+              rippleStyle={{ width: '440px' }}
+              buttonStyle={styles.draggableButton}
+              onMouseDown={event => {
                 this.handleMousedown(event)
               }}
             />
-              <div className='articleContentContainer' style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
-                {component && createElement(component, {
+            <div className="articleContentContainer" style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
+              {component && createElement(component, {
                 ...commonProps,
                 ...routeProps
               })}
-              </div>
-            </Card>
+            </div>
+          </Card>
+            {partOfEntities && partOfEntities.length !== 0 && <div style={{
+            ...styles.partOfDiv,
+            background: themes[theme].backColors[0],
+            width: this.state.newMarkerPartOfWidth,
+            top: this.state.newMarkerPartOfHeight
+          }}>
+              <CardActions style={{ textAlign: 'center', maxHeight: 48 }}>
+                {(partOfEntities.length === 1) ? <FlatButton
+                // style={{ color: '#fff' }}
+                // backgroundColor='rgb(255, 64, 129)'
+                  hoverColor={themes[theme].highlightColors[0]}// '#8AA62F'
+                  onClick={() => this._openPartOf(partOfEntities[0])}
+                  labelStyle={{ paddingLeft: 0, paddingRight: 0 }}
+                  label={<div style={{ paddingLeft: 14, paddingRight: 14 }}>{translate('pos.partOf')} <span style={{
+                  paddingLeft: 0,
+                  paddingRight: 0,
+                  fontWeight: 'bolder'
+                }}>{(((partOfEntities[0].properties || {}).y ? ((partOfEntities[0].properties || {}).y + ': ') : '') + (partOfEntities[0].properties || {}).n || (partOfEntities[0].properties || {}).w || '').toString().toUpperCase()}</span>
+                  </div>} />
+                : <SelectField
+                  style={{
+                    width: 200,
+                    //   color: 'rgb(255, 255, 255)',
+                    backgroundColor: 'transparent',
+                    // maxHeight: 40,
+                    // marginTop: -40,
+                    textAlign: 'center',
+                    marginRight: 8,
+                    maxHeight: 9,
+                    marginTop: 1,
+                    top: -32,
+                    // transition: '1s all'
+                  }}
+                  menuStyle={{
+                    width: 200,
+                    //   color: 'rgb(255, 255, 255)',
+                    top: 14,
+                    maxHeight: 36,
+                    //    backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  menuItemStyle={{
+                    width: 200,
+                    maxHeight: 36,
+                    //      color: 'rgb(255, 255, 255)',
+                    //       backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  labelStyle={{
+                    maxHeight: 36,
+                    width: 200,
+                    left: 0,
+                    //        color: 'rgb(255, 255, 255)',
+                    //       backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  listStyle={{ width: 200 }}
+                  underlineStyle={{ width: 200 }}
+                  floatingLabelStyle={{
+                    maxHeight: 36,
+                    width: 200,
+                    left: 0,
+                    //       color: 'rgb(255, 255, 255)',
+                    //       backgroundColor: 'rgb(106, 106, 106)'
+                  }}
+                  iconStyle={{
+                    top: -4
+                  }}
+                  hintStyle={{ width: 200, left: 22, /* color: 'rgb(255, 255, 255)' */}}
+                  // maxHeight={36}
+
+                  floatingLabelText={translate('pos.related_item')}
+                  hintText={translate('pos.related_item')}
+                  value={null}
+                  onChange={(event, index, value) => {
+                    this._openPartOf(value)
+                  }}
+                >
+                  {partOfEntities.map((el, index) => {
+                    return <MenuItem key={'partOf_' + index} value={el}
+                      primaryText={(((el.properties || {}).y ? ((el.properties || {}).y + ': ') : '') + (el.properties || {}).n || (el.properties || {}).w || '').toString().toUpperCase()} />
+                  })}
+                </SelectField>
+              }
+              </CardActions>
+            </div>}
           </div> : <Drawer
             openSecondary
             open
@@ -1313,7 +1096,7 @@ class RightDrawerRoutes extends PureComponent {
               // onMouseUp={this.handleMouseUp.bind(this)}
               // onClick={(event) => console.debug('onClick', event)}
             />
-            <div className='articleContentContainer' style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
+            <div className="articleContentContainer" style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
               {!isEpic && headerComponent}
               {component && createElement(component, {
                 ...commonProps,
@@ -1413,7 +1196,7 @@ class RightDrawerRoutes extends PureComponent {
                   onClick={() => {
                     localStorage.setItem('chs_newToMod', 'true')
                     localStorage.setItem('chs_info_section', 'tutorial')
-                  }} label={translate('pos.goTutorial')} />
+                  }} label={translate('pos.goTutorial')}/>
                 <FlatButton
                   onClick={() => {
                     localStorage.setItem('chs_newToMod', 'true')
@@ -1488,21 +1271,15 @@ class RightDrawerRoutes extends PureComponent {
           ...commonProps,
           actOnRootTypeChange: this.actOnRootTypeChange,
           contentTypeRaw,
-          linkedItemData: this.state.linkedItemData,
           epicsChoice: this.state.epicsChoice,
           setSearchEpic: this.setSearchEpic,
-          setSearchSnippet: this.setSearchSnippet,
-          setLinkedItemData: this.setLinkedItemData,
-          setRightDrawerVisibility: this.props.setRightDrawerVisibility,
-          setData: this.props.setData,
           selectedItem,
           selectedYear,
           setModDataLng,
           setModDataLat,
           metadata,
           resource: 'metadata',
-          history,
-          translate
+          history
         }
       } else {
         finalProps = commonProps
@@ -1534,7 +1311,7 @@ class RightDrawerRoutes extends PureComponent {
         })
       }
 
-      if (resources[resourceKey].edit && resourceKey === 'revisions') {
+      if (resources[resourceKey].edit && resourceKey === "revisions") {
         resItems.push({
           d_path: '/mod/' + resourceKey + ':id',
           d_el: resources[resourceKey].edit,
@@ -1589,10 +1366,11 @@ class RightDrawerRoutes extends PureComponent {
         metadata,
         influenceRawData: rulerEntity,
         provinceEntity,
-        stepIndex: stepIndex,
         setMetadataEntity: this.setMetadataEntity,
         setMetadataType: this.setMetadataType,
-        setCollectionIndex: this.setCollectionIndex,
+        selectedYear,
+        newWidth,
+        history
       }
     }, {
       d_path: '/mod',
@@ -1612,7 +1390,6 @@ class RightDrawerRoutes extends PureComponent {
         metadata,
         selectedItem,
         setModData,
-        setRightDrawerVisibility: this.props.setRightDrawerVisibility,
         newWidth,
         // linkSetup: '',
         // prefilledLinked: false,
@@ -1674,7 +1451,6 @@ const enhance = compose(
   connect(mapStateToProps,
     {
       setAreaColorLabel,
-      setData,
       changeColor,
       setWikiId,
       selectEpicItem,

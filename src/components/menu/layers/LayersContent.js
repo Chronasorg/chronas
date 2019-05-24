@@ -24,6 +24,7 @@ import LockClosedIcon from 'material-ui/svg-icons/action/lock'
 import LinkIcon from 'material-ui/svg-icons/content/link'
 import MigrationIcon from 'material-ui/svg-icons/action/compare-arrows'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn, } from 'material-ui/Table'
+import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actionReducers'
 import {
   changeBasemap as changeBasemapAction,
   changeColor as changeColorAction,
@@ -134,7 +135,7 @@ class LayerContent extends Component {
 
   render () {
     const { basemapId, locked, isAllMarker } = this.state
-    const { activeArea, setPopOpacity, migrationActive, setProvinceBorders, selectedText, activeMarkers, activeEpics, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme } = this.props
+    const { activeArea, setPopOpacity, migrationActive, setProvinceBorders, selectedText, activeMarkers, activeEpics, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme } = this.props
 
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
@@ -543,6 +544,7 @@ const enhance = compose(
     toggleMarker: toggleMarkerAction,
     toggleEpic: toggleEpicAction,
     setMigration: setMigrationAction,
+    toggleMenuDrawer: toggleMenuDrawerAction,
   }),
   pure,
   translate,

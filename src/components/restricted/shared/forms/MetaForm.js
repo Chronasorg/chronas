@@ -8,7 +8,6 @@ import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import axios from 'axios'
 import { setModData, setModType } from '../buttons/actionReducers'
-import { updateUserScore } from '../../../menu/authentication/actionReducers'
 import { updateSingleMetadata } from './../../../map/data/actionReducers'
 import { properties } from '../../../../properties'
 import { showNotification } from 'admin-on-rest'
@@ -111,7 +110,6 @@ export class MetaForm extends Component {
                 metaToUpdate: metadataItem,
                 successFullyUpdated: true
               })
-              this.props.updateUserScore(1)
               this.props.showNotification((redirect !== 'create') ? 'Epic successfully updated' : 'Epic successfully added')
               history.goBack()
             } else {
@@ -317,7 +315,6 @@ const enhance = compose(
     setModType,
     setModData,
     updateSingleMetadata,
-    updateUserScore,
     showNotification
   }),
   reduxForm({

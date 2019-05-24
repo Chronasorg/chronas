@@ -81,8 +81,8 @@ const styles = {
   iconButton: { filter: 'drop-shadow(2px 6px 4px rgba(0,0,0,0.8))' },
   upArrow: { ...imgButton, padding: 0, right: 11, top: -4, position: 'absolute' },
   downArrow: { ...imgButton, padding: 0, right: 11, top: 24, position: 'absolute' },
-  editButton: { ...imgButton, right: 60, width: 40, height: 40, top: 1, position: 'absolute' },
-  sourceButton: { ...imgButton, right: 110, width: 40, height: 40, top: 1, position: 'absolute', padding: 0 },
+  editButton: { ...imgButton, right: 60, top: 1, position: 'absolute' },
+  sourceButton: { ...imgButton, right: 110, top: 1, position: 'absolute', padding: 0 },
   scoreLabel: {
     width: 38,
     height: 20,

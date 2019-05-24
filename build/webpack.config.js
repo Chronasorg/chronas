@@ -43,10 +43,6 @@ const config = {
   },
   plugins: [
     // new BundleAnalyzerPlugin(),
-    new webpack.ProvidePlugin({
-      'window.Quill': 'quill/dist/quill.js',
-      'Quill': 'quill/dist/quill.js',
-    }),
     new webpack.DefinePlugin(Object.assign({
       'process.env': { NODE_ENV: JSON.stringify(project.env) },
       __DEV__,
