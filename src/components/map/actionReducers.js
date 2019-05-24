@@ -1,11 +1,9 @@
 import utilsQuery from './utils/query'
-import {SET_LOAD_STATUS} from "./data/actionReducers";
 
 export const SET_WIKI_ID = 'SET_WIKI_ID'
 export const SET_DATA = 'SET_DATA'
 export const SET_AREA_ITEM = 'SET_AREA_ITEM'
 export const SET_EPIC_INDEX = 'SET_EPIC_INDEX'
-export const SET_COLLECTION_ITEM = 'SET_COLLECTION_ITEM'
 export const SET_MARKER_ITEM = 'SET_MARKER_ITEM'
 export const SET_LINKED_ITEM = 'SET_LINKED_ITEM'
 export const SET_VALUE = 'SET_VALUE'
@@ -15,7 +13,6 @@ export const DESELECT_ITEM = 'DESELECT_ITEM'
 export const SET_AUTOPLAY = 'SET_AUTOPLAY'
 
 export const TYPE_AUTOPLAY = 'autoplay'
-export const TYPE_COLLECTION = 'collection'
 export const TYPE_AREA = 'areas'
 export const TYPE_MARKER = 'markers'
 export const TYPE_METADATA = 'metadata'
@@ -24,8 +21,6 @@ export const TYPE_EPIC = 'epic'
 
 export const WIKI_RULER_TIMELINE = 'WIKI_RULER_TIMELINE'
 export const WIKI_PROVINCE_TIMELINE = 'WIKI_PROVINCE_TIMELINE'
-
-const UPDATED_COLLECTION = 'UPDATED_COLLECTION'
 
 /** Actions **/
 
@@ -52,9 +47,9 @@ export const setFullItem = (wiki, province, type, data) => {
   }
 }
 
-export const setData = (data, optionalWiki = false) => ({
+export const setData = data => ({
   type: SET_DATA,
-  payload: [data, optionalWiki],
+  payload: data,
 })
 
 export const setAutoplay = data => ({
@@ -95,15 +90,6 @@ export const selectLinkedItem = (wiki, value = wiki) => {
   }
 }
 
-export const selectCollectionItem = (wiki, value = wiki) => {
-  utilsQuery.updateQueryStringParameter('type', TYPE_COLLECTION)
-  utilsQuery.updateQueryStringParameter('value', wiki)
-  return {
-    type: SET_COLLECTION_ITEM,
-    payload: [wiki, value],
-  }
-}
-
 export const selectMarkerItem = (wiki, value = wiki) => {
   utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
   utilsQuery.updateQueryStringParameter('value', wiki)
@@ -117,21 +103,7 @@ export const deselectItem = () => ({
   type: DESELECT_ITEM
 })
 
-export const collectionUpdated = () => ({
-  type: UPDATED_COLLECTION
-})
-
 /** Reducers **/
-
-export const collectionUpdatedIndexReducer = (defaultState = 1) =>
-  (previousState = defaultState, { type, payload }) => {
-    switch (type) {
-      case UPDATED_COLLECTION:
-        return ++previousState
-      default:
-        return previousState
-    }
-  }
 
 export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'value': '', 'data': false }) =>
   (previousState = defaultState, { type, payload }) => {
@@ -147,12 +119,10 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
           wiki: payload,
         }
       case SET_DATA:
-        const newItem = {
+        return {
           ...previousState,
-          data: payload[0],
+          data: payload,
         }
-        if (payload[1]) newItem.wiki = payload[1]
-        return newItem
       case SET_EPIC_INDEX: {
         const prevData = previousState.data
         if (prevData) prevData.contentIndex = payload
@@ -195,13 +165,6 @@ export const selectedItemReducer = (defaultState = { 'wiki': '', 'type': '', 'va
           wiki: payload[0],
           value: payload[1],
           type: TYPE_LINKED,
-          data: false
-        }
-      case SET_COLLECTION_ITEM:
-        return {
-          wiki: payload[0],
-          value: payload[1],
-          type: TYPE_COLLECTION,
           data: false
         }
       case SET_MARKER_ITEM:

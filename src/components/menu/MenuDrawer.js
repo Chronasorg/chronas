@@ -1,4 +1,4 @@
-import React, {createElement, PureComponent} from 'react'
+import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import AppBar from 'material-ui/AppBar'
@@ -10,15 +10,12 @@ import { themes } from '../../properties'
 
 import Responsive from './Responsive'
 import {translate} from "admin-on-rest";
-import LayersContent from "./layers/LayersContent";
-import CollectionsContent from "./collections/CollectionsContent";
-import {history} from "../../store/createStore";
 
 // We shouldn't need PureComponent here as it's connected
 // but for some reason it keeps rendering even though mapStateToProps returns the same object
 class MenuDrawer extends PureComponent {
   handleClose = () => {
-    this.props.toggleMenuDrawer('')
+    this.props.toggleMenuDrawer()
   }
 
   componentWillUnmount = () => {
@@ -26,9 +23,16 @@ class MenuDrawer extends PureComponent {
   }
 
   render () {
-    const { menuDrawerOpen,  history, setMenuDrawerVisibility, translate, theme } = this.props
+    const { children, menuDrawerOpen, setMenuDrawerVisibility, translate, theme } = this.props
 
     return (
+      <Responsive
+        small={
+          <Drawer docked={false} open={menuDrawerOpen} onRequestChange={setMenuDrawerVisibility}>
+            {React.cloneElement(children, { onMenuTap: this.handleClose })}
+          </Drawer>
+        }
+        medium={
           <Drawer
             containerStyle={{
               overflow: 'none',
@@ -42,7 +46,7 @@ class MenuDrawer extends PureComponent {
                   color: themes[theme].foreColors[0],
                   fontSize: 20
                 }}
-                >{translate((menuDrawerOpen === "layers") ? ("pos.layers") : ("collections.title"))}</span>
+                >{translate("pos.layers")}</span>
               }
               showMenuIconButton={false}
               style={{ backgroundColor: themes[theme].backColors[0], boxShadow: 'rgba(0, 0, 0, 0.4) 3px 6px 6px -3px' }}
@@ -57,9 +61,10 @@ class MenuDrawer extends PureComponent {
                 </IconButton>
               }
             />
-            {(menuDrawerOpen === 'layers') && createElement(LayersContent)}
-            {(menuDrawerOpen === 'collections') && createElement(CollectionsContent, { history })}
+            {children}
           </Drawer>
+        }
+      />
     )
   }
 }

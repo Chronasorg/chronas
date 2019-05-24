@@ -30,10 +30,10 @@ import { showNotification, translate, ViewTitle } from 'admin-on-rest'
 import { red400 } from 'material-ui/styles/colors'
 import { getYoutubeId, properties, themes } from '../../../properties'
 import { resetModActive, setFullModActive } from '../../restricted/shared/buttons/actionReducers'
-import { updateUserScore } from '../../menu/authentication/actionReducers'
 import { toggleRightDrawer as toggleRightDrawerAction } from '../actionReducers'
 
 const fullRadian = Math.PI * 2
+
 const MODE = [
   'circlePack',
   'partition'
@@ -73,9 +73,9 @@ const styles = {
   iconButton: { filter: 'drop-shadow(2px 6px 4px rgba(0,0,0,0.8))' },
   upArrow: { ...imgButton, padding: 0, right: 11, top: -4, position: 'absolute' },
   downArrow: { ...imgButton, padding: 0, right: 11, top: 24, position: 'absolute' },
-  editButton: { ...imgButton, right: 60, width: 40, height: 40, top: 1, position: 'absolute' },
-  sourceButton: { ...imgButton, right: 110, top: 1, width: 40, height: 40, position: 'absolute', padding: 0 },
-  fullButton: { ...imgButton, right: 170, top: 1, width: 40, height: 40, position: 'absolute', padding: 0 },
+  editButton: { ...imgButton, right: 60, top: 1, position: 'absolute' },
+  sourceButton: { ...imgButton, right: 110, top: 1, position: 'absolute', padding: 0 },
+  fullButton: { ...imgButton, right: 170, top: 1, position: 'absolute', padding: 0 },
   scoreLabel: {
     width: 38,
     height: 20,
@@ -319,7 +319,6 @@ class LinkedGallery extends React.Component {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/upvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
           this.props.showNotification((typeof token !== 'undefined') ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          if (typeof token !== 'undefined') this.props.updateUserScore(1)
           this.setState({
             tileData: tileData.map((el) => {
               if (encodeURIComponent(el.src) === id) el.score += 1
@@ -376,7 +375,6 @@ class LinkedGallery extends React.Component {
       axios.put(properties.chronasApiHost + '/metadata/' + id + '/downvote', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
         .then(() => {
           this.props.showNotification((typeof token !== 'undefined') ? 'pos.pointsAdded' : 'pos.signupToGatherPoints')
-          if (typeof token !== 'undefined') this.props.updateUserScore(1)
           this.setState({
             tileData: tileData.map((el) => {
               if (encodeURIComponent(el.src) === id) el.score -= 1
@@ -753,7 +751,6 @@ const enhance = compose(
     toggleRightDrawer: toggleRightDrawerAction,
     setFullModActive,
     selectLinkedItem,
-    updateUserScore,
     resetModActive,
     showNotification,
   }),
