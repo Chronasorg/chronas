@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
+import compose from 'recompose/compose'
 import axios from 'axios'
 
+import Avatar from 'material-ui/Avatar'
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import Badge from 'material-ui/Badge'
 import Paper from 'material-ui/Paper'
 import Menu from 'material-ui/Menu'
@@ -9,7 +12,17 @@ import Divider from 'material-ui/Divider'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
 import IconButton from 'material-ui/IconButton'
-import compose from 'recompose/compose'
+import FlatButton from 'material-ui/FlatButton'
+import RaisedButton from 'material-ui/RaisedButton'
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table';
+import { Step, Stepper, StepLabel } from 'material-ui/Stepper'
 import { defaultTheme, showNotification, translate } from 'admin-on-rest'
 import CompositionChartIcon from 'material-ui/svg-icons/image/view-compact'
 import ContentMovie from 'material-ui/svg-icons/maps/local-movies'
@@ -20,10 +33,11 @@ import QAAIcon from 'material-ui/svg-icons/action/question-answer'
 import { setRightDrawerVisibility, toggleRightDrawer as toggleRightDrawerAction } from './actionReducers'
 import { resetModActive, setFullModActive } from '../restricted/shared/buttons/actionReducers'
 import {
-  deselectItem as deselectItemAction,
+  deselectItem as deselectItemAction, selectCollectionItem,
   selectValue,
   setData,
   TYPE_AREA,
+  TYPE_COLLECTION,
   TYPE_EPIC,
   TYPE_LINKED,
   TYPE_MARKER,
@@ -36,6 +50,29 @@ import ArticleIframe from './ArticleIframe'
 import EpicTimeline from './EpicTimeline'
 import ProvinceTimeline from './ProvinceTimeline'
 import { properties, themes } from '../../properties'
+
+const sanitizeHtml = require('sanitize-html')
+const sanitizeOptions = {
+  allowedTags: [ 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol', 'img',
+    'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
+    'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe' ],
+  allowedAttributes: {
+    a: [ 'href', 'name', 'target' ],
+    // We don't currently allow img itself by default, but this
+    // would make sense if we did. You could add srcset here,
+    // and if you do the URL is checked for safety
+    img: [ 'src', 'width', 'height' ],
+    iframe: [ 'src' ]
+  },
+// Lots of these won't come up by default because we don't allow them
+  selfClosing: [ 'img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta' ],
+// URL schemes we permit
+  allowedSchemes: [ 'http', 'https', 'ftp', 'mailto' ],
+  allowedSchemesByTag: {},
+  allowedSchemesAppliedToAttributes: [ 'href', 'src', 'cite' ],
+  allowProtocolRelative: true,
+  allowedIframeHostnames: ['www.youtube.com', 'https://www.youtube.com', 'youtube.com', 'player.vimeo.com']
+}
 
 const MOVIETYPES = ['v']
 const IMAGETYPES = ['people', 'battle', 'artefacts', 'cities', 'misc']
@@ -112,7 +149,8 @@ const styles = {
   iframe: {
     display: 'block',
     padding: '2px 8px',
-    border: 'none'
+    border: 'none',
+    overflow: 'auto'
   }
 }
 
@@ -123,7 +161,21 @@ class Content extends Component {
     selectedWiki: null,
     hasQuestions: false,
     sunburstData: [],
+    quizFinished: false,
+    quizStepIndex: 0,
+    quizSelected: [],
     activeContentMenuItem: (localStorage.getItem('chs_activeContentMenuItem') !== null) ? localStorage.getItem('chs_activeContentMenuItem') : 'linked'
+  }
+
+  quizIsSelected = (index) => {
+    return (this.state.quizSelected[this.state.quizStepIndex] || []).indexOf(index) !== -1
+  }
+
+  quizHandleRowSelection = (selectedRows) => {
+    const { quizSelected } = this.state
+    if (JSON.stringify(selectedRows) === "[]") return
+    quizSelected[this.state.quizStepIndex] = selectedRows
+    this.setState({ quizSelected })
   }
 
   componentDidMount = () => {
@@ -176,6 +228,7 @@ class Content extends Component {
     const { setData, showNotification, setFullModActive, resetModActive } = this.props
 
     const isMarker = selectedItem.type === TYPE_MARKER
+    const isCollection = selectedItem.type === TYPE_COLLECTION
     const isMedia = selectedItem.type === TYPE_LINKED
     const isArea = selectedItem.type === TYPE_AREA
 
@@ -197,7 +250,6 @@ class Content extends Component {
           const currProvData = activeData[provKey]
           if (currProvData[utils.activeAreaDataAccessor(activeAreaDim)] === activeprovinceValue) {
             const ruler = metadata['ruler'][currProvData[utils.activeAreaDataAccessor('ruler')]] || {}
-            // const province = metadata['province'][currProvData[utils.activeAreaDataAccessor('ruler')]] || {}
             const culture = metadata['culture'][currProvData[utils.activeAreaDataAccessor('culture')]] || {}
             const religion = metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {}
             const religionGeneral = metadata['religionGeneral'][(metadata['religion'][currProvData[utils.activeAreaDataAccessor('religion')]] || {})[3]] || {}
@@ -247,9 +299,10 @@ class Content extends Component {
         : (activeAreaDim === 'province' || activeAreaDim === 'capital')
           ? (metadata[activeAreaDim][activeprovinceValue] || {})
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
-    } else if (selectedItem.type === TYPE_MARKER) {
+    }
+    else if (isMarker || isCollection) {
       selectedWiki = selectedItem.wiki
-    } else if (selectedItem.type === TYPE_LINKED) {
+    } else if (isMedia) {
       selectedWiki = selectedItem.wiki
       axios.get(properties.chronasApiHost + '/markers/' + selectedWiki)
         .then((linkedMarkerResult) => {
@@ -269,23 +322,32 @@ class Content extends Component {
         selectedWiki: selectedWiki
       })
 
+      if (isCollection && selectedItem.data) return
       // const selectedProvince = selectedItem.value
       const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
       let activeprovinceValue = utils.getAreaDimKey(metadata, activeArea, selectedItem)
       const linkId = ((((selectedItem || {}).value || {}).subtype === 'ei') ? '1:e_' : (isMarker && (((selectedItem || {}).value || {}).subtype !== 'ps')) ? '0:' : '1:') + (isArea ? ('ae|' + activeAreaDim + '|' + activeprovinceValue) : selectedWiki)
 
-      // look for linked linked items based on wiki
-      // ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0])
-      axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + window.encodeURIComponent(linkId))
+      const urlMetadataLinks = isCollection ? properties.chronasApiHost + '/collections/' + (selectedItem || {}).wiki : properties.chronasApiHost + '/metadata/links/getLinked?source=' + window.encodeURIComponent(linkId)
+      axios.get(urlMetadataLinks, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('chs_token')}})
         .then((linkedItemResult) => {
           if (linkedItemResult.status === 200) {
+            const res = linkedItemResult.data
+            let potentialStartingWiki
+            if (isCollection) {
+              potentialStartingWiki = (((res.map || [])[0] || {}).properties || {}).w
+            //   if (!potentialStartingWiki) {
+            //     return showNotification('No linked slides for this collection found')
+            //   }
+            //   return this.props.selectCollectionItem(potentialStartingWiki, res)
+            }
+
             const linkedItems = {
               media: [],
               content: [],
               id: linkId
             }
 
-            const res = linkedItemResult.data
             res.media.forEach((imageItem) => {
               linkedItems.media.push({
                 src: ((imageItem || {}).properties || {}).id || imageItem._id || imageItem.properties.w,
@@ -299,12 +361,15 @@ class Content extends Component {
               })
             })
             linkedItems.content = res.map.sort((a, b) => {
+              if (isCollection) {
+                return (+a.order || 0) - (+b.order || 0)
+              }
               return +(a.properties.y || -5000) - +(b.properties.y || -5000)
             })
-            linkedItems.media = linkedItems.media.sort((a, b) => (+b.score || 0) - (+a.score || 0))
+            linkedItems.media = linkedItems.media.sort((a, b) => (+a.order || +b.score || 0) - (+b.order || +a.score || 0))
 
             showNotification(linkedItems.media.length + ' linked media item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
-            setData(linkedItems)
+            setData(isCollection ? { ...res, ...linkedItems } : linkedItems, isCollection ? potentialStartingWiki : false)
           } else {
             showNotification('No linked items found, consider adding one') // TODO: notifications don't seem to work on this page
           }
@@ -324,21 +389,50 @@ class Content extends Component {
     }
   }
 
+  handleNext = () => {
+    const {quizStepIndex} = this.state
+    const questionCount = (((this.props.selectedItem || {}).data || {}).quiz || []).length
+    this.setState({
+      quizStepIndex: quizStepIndex + 1,
+      quizFinished: quizStepIndex >= questionCount-1,
+    })
+  }
+
+  handlePrev = () => {
+    const {quizStepIndex} = this.state
+    if (quizStepIndex > 0) {
+      this.setState({quizStepIndex: quizStepIndex - 1})
+    }
+  }
+
+  // getStepContent(stepIndex) {
+  //   switch (stepIndex) {
+  //     case 0:
+  //       return 'Select campaign settings...';
+  //     case 1:
+  //       return 'What is an ad group anyways?';
+  //     case 2:
+  //       return 'This is the bit I really care about!';
+  //     default:
+  //       return 'You\'re a long way from home sonny jim!';
+  //   }
+  // }
+
   render () {
     const { activeContentMenuItem, hasQuestions, sunburstData, iframeLoading, selectedWiki } = this.state
-    const { activeArea, deselectItem, selectedItem, influenceRawData, provinceEntity, selectedYear, setMetadataType, theme, metadata, newWidth, history, setMetadataEntity } = this.props
+    const { activeArea, deselectItem, selectedItem, influenceRawData, provinceEntity, selectedYear, setMetadataType, showNotification, theme, metadata, newWidth, history, stepIndex, setMetadataEntity } = this.props
 
     const finalLinkedItems = /* (linkedItems || {}).id ? linkedItems : */selectedItem.data || {
       media: [],
       content: [],
       id: ''
     }
-    const shouldLoad = (iframeLoading || selectedWiki === null)
 
     const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
     const entityTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
     const epicTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_EPIC)
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
+    const isCollection = selectedItem.type === TYPE_COLLECTION
     const isMarker = selectedItem.type === TYPE_MARKER
     const isMedia = selectedItem.type === TYPE_LINKED
     const linkedCount = (finalLinkedItems.media || []).length
@@ -361,8 +455,140 @@ class Content extends Component {
       }
     }
 
-    return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : styles.main}>
-      {(entityTimelineOpen || epicTimelineOpen || isMarker || isMedia) && <div>
+    const safeSelectedWiki = (isCollection && (!selectedItem.data || stepIndex === -1)) ? null : isCollection ? (((selectedItem.data.content[stepIndex] || {}).properties || {}).w) : selectedWiki
+
+    let ownerAvatar, ownerUsername, htmlContent
+    if (isCollection) {
+      const collectionData = ((selectedItem || {}).data || {})
+      const hasQuiz = (collectionData.quiz || []).length > 0
+      const sanitizedHtmlDescription = sanitizeHtml(collectionData.description || '', sanitizeOptions)
+      if (selectedItem.data && stepIndex === -1) {
+        ownerAvatar = collectionData.avatar
+        ownerUsername = collectionData.owner
+        htmlContent = <div id="articleIframe"><Card style={{
+          marginTop: '3em',
+          backgroundColor: 'rgba(0,0,0,0)',
+          boxShadow: 'none'
+        }}>
+          <CardText>
+            <p>
+              <h1>{collectionData.title}</h1>
+              <span style={{ opacity: 0.6 }}>{(collectionData.slides || []).length} Articles</span>
+              <span style={{ paddingLeft: '8px' }}>by {ownerAvatar ? <Avatar
+                size={24}
+                style={{ top: -5, position: 'relative' }}
+                src={ownerAvatar} /> : <Avatar
+                style={{ top: -5, position: 'relative', fontSize: 16 }}
+                size={24}
+                color={{
+                  // color: themes[theme].foreColors[0],
+                  // backgroundColor: themes[theme].backColors[0]
+                }}
+                src={ownerAvatar}><span style={{
+                fontWeight: 'bolder',
+                color: themes[theme].backColors[0]
+              }}>{(ownerUsername || ' ').substr(0, 1).toUpperCase()}</span></Avatar>
+              } {ownerUsername}</span>
+            </p>
+            { sanitizedHtmlDescription && <p>
+              <span dangerouslySetInnerHTML={{ __html: sanitizedHtmlDescription }} />
+            </p> }
+            <br />
+            <div>
+              <RaisedButton label="Start" onClick={() => {
+                this.props.setCollectionIndex(0)
+              }} />
+            </div>
+
+            {hasQuiz && <div>
+              <br />
+              <Divider />
+              <p>
+                Includes a quiz at the end with <span style={{ fontWeight: 600 }}>{(collectionData.quiz || []).length}</span> question(s).
+              </p>
+            </div>}
+          </CardText>
+        </Card></div>
+      }
+      else if (hasQuiz && stepIndex === (selectedItem.data.slides || []).length) {
+        const { quizFinished, quizSelected, quizStepIndex } = this.state
+        const quizData = collectionData.quiz
+        const contentStyle = { margin: '0 16px' }
+        const currQuestion = quizData[quizStepIndex] && quizData[quizStepIndex].question
+        const currAnswers = quizData[quizStepIndex] && <TableBody style={{ backgroundColor: themes[theme].backColors[0], cursor: 'pointer' }} showRowHover={true} stripedRows={false}>
+          {quizData[quizStepIndex].answers.map((el, i) => { return <TableRow selected={this.quizIsSelected(i)}>
+          <TableRowColumn>{el.answer}</TableRowColumn>
+        </TableRow>})}
+        </TableBody>
+        htmlContent = <div id="articleIframe" style={{ width: '100%', maxWidth: 700, paddingTop: '2em', margin: 'auto' }}>
+          <Stepper activeStep={quizStepIndex}>
+            {quizData.map(() => <Step>
+              <StepLabel/>
+            </Step>)}
+          </Stepper>
+          <div style={contentStyle}>
+            {quizFinished ? (<div>
+                <p>
+                    Congratulations! You completed all slides and finished the quiz.
+                </p>
+                <p>
+                You can now submit to send your lecturer the test report and your quiz performance.
+                </p>
+                <p>
+                  <RaisedButton
+                    label={'Submit'}
+                    onClick={(event) => {
+                      showNotification("Successfully submitted, redirecting now...")
+                      setTimeout(() => window.location.href="https://chronas.org", 2000)
+                      console.debug(JSON.stringify(this.state.quizSelected), JSON.stringify(this.props.selectedItem))
+                      console.debug(this.state)
+                      event.preventDefault();
+                      // this.setState({quizStepIndex: 0, quizFinished: false});
+                    }}
+                  />
+                </p>
+                <Divider />
+                <p>
+                  On Submit you will be redirected to Chronas Home. Thank you for participating!
+                </p>
+              </div>
+            ) : (
+              <div>
+                <div style={{ marginTop: 12, backgroundColor: themes[theme].backColors[0] }}>
+                  <Table headerStyle={{ backgroundColor: themes[theme].backColors[0] }} bodyStyle={{ backgroundColor: themes[theme].backColors[0], cursor: 'pointer' }} multiSelectable={false} onRowSelection={this.quizHandleRowSelection}>
+                    <TableHeader style={{ backgroundColor: themes[theme].backColors[0] }} displaySelectAll={false} adjustForCheckbox={false}>
+                      <TableRow>
+                        <TableHeaderColumn colSpan="2" tooltip={currQuestion} style={{textAlign: 'center', whiteSpace: 'inherit' }}>
+                          {currQuestion}
+                        </TableHeaderColumn>
+                      </TableRow>
+                    </TableHeader>
+                    { currAnswers }
+                  </Table>
+                </div>
+                <div style={{marginTop: 12}}>
+                  <FlatButton
+                    label="Back"
+                    disabled={quizStepIndex === 0}
+                    onClick={this.handlePrev}
+                    style={{marginRight: 12}}
+                  />
+                  <RaisedButton
+                    backgroundColor={(quizSelected.length === 0) ? 'rgb(255, 255, 255)' : 'rgb(106, 106, 106)'}
+                    labelColor={(quizSelected.length === 0) ? 'rgba(106, 106, 106, 0.3)' : 'rgb(255, 255, 255)'}
+                    label={quizStepIndex === 2 ? 'Finish' : 'Next'}
+                    onClick={this.handleNext}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      }
+    }
+
+    return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : (isCollection) ? { ...styles.main, boxShadow: 'inherit', background: 'transparent' } : styles.main}>
+      {(entityTimelineOpen || epicTimelineOpen || isMarker || isCollection || isMedia) && <div>
         <Paper style={{
           ...styles.contentLeftMenu,
           backgroundColor: themes[theme].backColors[0],
@@ -465,15 +691,14 @@ class Content extends Component {
           : <div style={{ height: '100%' }}>
             <LinkedQAA setHasQuestions={this._setHasQuestions} history={history} activeAreaDim={activeAreaDim}
               setContentMenuItem={this._setContentMenuItem} isMinimized={activeContentMenuItem !== 'qaa'}
-              qId={((selectedItem || {}).data || {}).id || ''} qName={selectedWiki || ''} />
+              qId={((selectedItem || {}).data || {}).id || ''} qName={safeSelectedWiki || ''} />
             <LinkedGallery history={history} activeAreaDim={activeAreaDim} setContentMenuItem={this._setContentMenuItem}
               isMinimized={!linkedActive} setWikiId={this.setWikiIdWrapper}
               selectValue={this.selectValueWrapper}
               linkedItems={((selectedItem || {}).data || {}).media || []} selectedYear={selectedYear}
-              qName={selectedWiki || ''} />
-            <ArticleIframe history={history} deselectItem={deselectItem}
-              customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki}
-              selectedItem={selectedItem} />
+              qName={safeSelectedWiki || ''} />
+            <ArticleIframe history={history} deselectItem={deselectItem} htmlContent={htmlContent}
+              customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={safeSelectedWiki} selectedItem={selectedItem} />
           </div>
       }
     </div>
@@ -497,6 +722,7 @@ const enhance = compose(
     setData,
     resetModActive,
     showNotification,
+    selectCollectionItem,
     setRightDrawerVisibility,
     selectValue
   }),

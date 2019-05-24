@@ -42,6 +42,7 @@ import {
   setEpicContentIndex,
   setWikiId,
   TYPE_AREA,
+  TYPE_COLLECTION,
   TYPE_EPIC,
   TYPE_AUTOPLAY,
   TYPE_LINKED,
@@ -865,7 +866,9 @@ class Map extends Component {
     const { activeEpics, activeMarkers, activeArea, location, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, setYear, selectAreaItem, selectMarkerItem, updateSingleMetadata, locale } = this.props
 
     const contentIndex = ((selectedItem || {}).data || {}).contentIndex
+    const stepIndex = ((selectedItem || {}).data || {}).stepIndex
     const nextContentIndex = ((nextProps.selectedItem || {}).data || {}).contentIndex
+    const nextStepIndex = ((nextProps.selectedItem || {}).data || {}).stepIndex
     const rightDrawerOpen = nextProps.rightDrawerOpen
 
     let mapStyleDirty = false
@@ -981,7 +984,7 @@ class Map extends Component {
           prevActiveprovinceValue = (metadata['religion'][prevActiveprovinceValue] || {})[3]
         }
 
-        const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, nextActiveprovinceValue, activeArea.color, prevActiveprovinceValue, false)
+        const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, false, activeArea.color, prevActiveprovinceValue, false)
 
         if (typeof multiPolygonToOutline !== 'undefined' && metadata[nextProps.activeArea.color][nextActiveprovinceValue]) {
           mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
@@ -1033,6 +1036,93 @@ class Map extends Component {
         })
       }
     }
+    // selected item is COLLECTION and stepIndex changed?
+    if (nextProps.selectedItem.type === TYPE_COLLECTION) {
+      if (selectedItem.type === TYPE_COLLECTION && ((nextProps.selectedItem || {}).data || {}).content && ((((nextProps.selectedItem || {}).data || {})._id !== ((selectedItem || {}).data || {})._id) || (((nextProps.selectedItem || {}).data || {}).content || []).length !== (((selectedItem || {}).data || {}).content || []).length)) {
+        if (((nextProps.selectedItem || {}).data || {}).year && +nextProps.selectedYear !== +((nextProps.selectedItem || {}).data || {}).year) this.props.setYear(((nextProps.selectedItem || {}).data || {}).year)
+        const allEpicFeatures = ((nextProps.selectedItem || {}).data || {}).content.filter(el => ((el.geometry || {}).coordinates || []).length === 2)
+          .map((el, index) => {
+            return {
+              'index': index,
+              'hidden': false,
+              'subtype': el.properties.t,
+              '_id': el.properties.w,
+              'name': el.properties.n,
+              'coo': el.geometry.coordinates,
+              'type': 'w',
+              'year': el.properties.y,
+            }
+          })
+
+        if (allEpicFeatures && allEpicFeatures.length > 0) {
+          if (allEpicFeatures.length > 1) {
+            const bbox = turf.bbox({
+              'type': 'FeatureCollection',
+              'features': allEpicFeatures.map((el => turf.point(el.coo)))
+            })
+
+            const webMercatorViewport = new WebMercatorViewport({
+              width: this.props.width || (window.innerWidth - 56),
+              height: this.props.height || window.innerHeight
+            })
+
+            const bounds = webMercatorViewport.fitBounds(
+              [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
+              {padding: 20, offset: [0, -40]}
+            )
+
+            const viewport = {
+              ...this.state.viewport,
+              ...bounds,
+              zoom: Math.min(+bounds.zoom, Math.max(4.5, +this.state.viewport.zoom)),
+              transitionDuration: FLYTOANIMATIONDURATION,
+              transitionInterpolator: new FlyToInterpolator(),
+              transitionEasing: easeCubic
+            }
+            this.setState({ geoData: allEpicFeatures, viewport })
+          }
+          else {
+            this.setState({ geoData: allEpicFeatures })
+          }
+        }
+      }
+      if (nextStepIndex !== stepIndex && ((nextProps.selectedItem || {}).data || {}).content) {
+        const selectedFeature = nextProps.selectedItem.data.content[nextStepIndex] || {}
+        if (selectedFeature && (selectedFeature.coo || selectedFeature.geometry.coordinates)) {
+          this._goToViewport({
+            longitude: (selectedFeature.coo || {})[0] || selectedFeature.geometry.coordinates[0],
+            latitude: (selectedFeature.coo || {})[1] || selectedFeature.geometry.coordinates[1]
+          })
+        }
+        else if (selectedFeature && (((selectedFeature || {}).properties || {}).ct === 'area')) {
+          const {aeId} = selectedFeature.properties
+          const aeIDArr = aeId.split('|')
+          const {viewport, multiPolygonToOutline} = this._getAreaViewportAndOutlines(aeIDArr[1], aeIDArr[2])
+
+          if (typeof multiPolygonToOutline !== 'undefined') {
+            this.setState({
+              viewport,
+              mapStyle: this.state.mapStyle
+                .setIn(['sources', 'entity-outlines', 'data'],
+                  fromJS({
+                    ...multiPolygonToOutline,
+                    properties: {
+                      color: (aeIDArr[1] === 'population')
+                        ? 'red'
+                        : (metadata[aeIDArr[1]][aeIDArr[2]] || [])[1]
+                    }
+                  }))
+            })
+          }
+        }
+      }
+    }
+
+    // leaving COLLECTION? Cleanup
+    if (selectedItem.type === TYPE_COLLECTION && nextProps.selectedItem.type !== TYPE_COLLECTION) {
+      this.setState({ geoData: [] })
+    }
+
     // selected item is EPIC?
     if (nextProps.selectedItem.type === TYPE_EPIC ||
       (nextProps.selectedItem.type === TYPE_AREA && (nextProps.selectedItem || {}).data)) {
@@ -1106,8 +1196,6 @@ class Map extends Component {
       }
 
       if (nextProps.selectedItem.type !== TYPE_AREA && nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {})._id !== (selectedItem.data || {})._id)) {
-        // TODO: only go ahead if selectedYear is starting year
-
         // setup new epic!
         if (selectedItem.type === TYPE_EPIC && !nextProps.selectedItem.data) {
           // remove old geoJson // TODO: this could complicate with sequential wars
@@ -2091,7 +2179,11 @@ class Map extends Component {
             goToViewport={this._goToViewport}
             theme={themes[theme]}
             viewport={viewport}
-            selectedItem={selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_EPIC ? selectedItem : (selectedItem.type === TYPE_AREA && possibleHiglightedAREAitem) ? possibleHiglightedAREAitem : {}}
+            selectedItem={selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_EPIC || selectedItem.type === TYPE_COLLECTION
+              ? selectedItem
+              : (selectedItem.type === TYPE_AREA && possibleHiglightedAREAitem)
+                ? possibleHiglightedAREAitem
+                : {}}
             updateLine={this._updateLine}
             geoData={geoData}
             migrationData={migrationData}
@@ -2109,7 +2201,7 @@ class Map extends Component {
             // onClick={this._onClick.bind(this)}
             strokeWidth={15}
             animationInterval={animationInterval}
-            contentIndex={(selectedItem.data || {}).contentIndex}
+            contentIndex={(selectedItem.data || {}).contentIndex || (selectedItem.data || {}).stepIndex}
           />
           {modMarker}
           {this._renderPopup()}

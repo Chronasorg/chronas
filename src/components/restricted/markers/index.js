@@ -43,6 +43,7 @@ import ModButton from '../shared/buttons/ModButton'
 import AddEditLinkNavigation from '../../restricted/shared/AddEditLinkNavigation'
 import ArrayField from './ArrayField'
 import MarkerForm from '../shared/forms/MarkerForm'
+import RichTextImageVideoInput from '../../overwrites/RichTextImageVideoInput'
 import { TYPE_MARKER } from '../../map/actionReducers'
 import { properties } from '../../../properties'
 
@@ -85,10 +86,6 @@ export const MarkerList = (props) => {
 }
 
 export const MarkerEdit = (props) => {
-  const choicesRuler = Object.keys(props.metadata['ruler']).map((rulerId) => {
-    return { id: rulerId, name: props.metadata['ruler'][rulerId][0] }
-  }) || {}
-
   let defaultObj = {}
   const cIndex = ((props.selectedItem || {}).data || {}).contentIndex
   const contentArr = ((props.selectedItem || {}).data || {}).content
@@ -129,7 +126,32 @@ export const MarkerEdit = (props) => {
     <Divider />
     <Create title={'Edit Article'} {...props}>
       {((props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) || isContent)
-        ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
+        ? ((props.contentTypeRaw === 'w|h') ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
+          <SelectInput options={{ fullWidth: true }} onChange={(val, v) => {
+            props.actOnRootTypeChange(v)
+          }} source='type' validate={required}
+                       defaultValue={props.contentTypeRaw || (props.selectedItem.value.type ? (props.selectedItem.value.type + '|' + props.selectedItem.value.subtype) : (defaultObj.type) ? (defaultObj.type + '|' + defaultObj.subtype) : '')}
+                       choices={properties.linkedTypes} label='resources.markers.fields.type' />
+          <TextInput options={{ fullWidth: true }} source='name' defaultValue={props.selectedItem.value.name}
+                     label='resources.markers.fields.name' />
+          <TextInput options={{ fullWidth: true }} source='wiki'
+                     defaultValue={'https://en.wikipedia.org/wiki/' + (props.selectedItem.value._id || defaultObj.wiki)}
+                     label='resources.markers.fields.url' type='url' />
+          <ModButton style={{ width: '30%', float: 'left' }} modType='marker' />
+          <TextInput style={{ width: '30%', float: 'left' }} source='coo[1]' onChange={(val, v) => {
+            props.setModDataLng(+v)
+          }} defaultValue={(props.selectedItem.value.coo || {})[1]} label='resources.markers.fields.lat' />
+          <TextInput style={{ width: '30%', float: 'right' }} source='coo[0]' onChange={(val, v) => {
+            props.setModDataLat(+v)
+          }} defaultValue={(props.selectedItem.value.coo || {})[0]} label='resources.markers.fields.lng' />
+          <NumberInput options={{ fullWidth: true }} validate={required} defaultValue={props.selectedItem.value.year}
+                       source='year' label='resources.markers.fields.year' type='number' />
+          <LongTextInput options={{ fullWidth: true }} source='geojson' label='resources.linked.fields.geojson'
+                         defaultValue={props.selectedItem.value.geojson || ''} />
+          <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent'
+                        defaultValue={props.selectedItem.value.type === '0'} />
+          <DeleteButton resource='markers' id={props.selectedItem.value._id || defaultObj.wiki} {...props} />
+        </MarkerForm> : <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
           <SelectInput options={{ fullWidth: true }} onChange={(val, v) => {
             props.actOnRootTypeChange(v)
           }} source='type' validate={required}
@@ -137,9 +159,7 @@ export const MarkerEdit = (props) => {
             choices={properties.linkedTypes} label='resources.markers.fields.type' />
           <TextInput options={{ fullWidth: true }} source='name' defaultValue={props.selectedItem.value.name}
             label='resources.markers.fields.name' />
-          <TextInput options={{ fullWidth: true }} source='wiki'
-            defaultValue={'https://en.wikipedia.org/wiki/' + (props.selectedItem.value._id || defaultObj.wiki)}
-            label='resources.markers.fields.url' type='url' />
+          <RichTextImageVideoInput source='html' label='resources.linked.fields.html' toolbar={[ ['bold', 'italic', 'underline', 'link', 'image'] ]} />
           <ModButton style={{ width: '30%', float: 'left' }} modType='marker' />
           <TextInput style={{ width: '30%', float: 'left' }} source='coo[1]' onChange={(val, v) => {
             props.setModDataLng(+v)
@@ -151,18 +171,8 @@ export const MarkerEdit = (props) => {
             source='year' label='resources.markers.fields.year' type='number' />
           <LongTextInput options={{ fullWidth: true }} source='geojson' label='resources.linked.fields.geojson'
             defaultValue={props.selectedItem.value.geojson || ''} />
-          <EmbeddedArrayInput options={{ fullWidth: true }} source='capital'>
-            <NumberInput options={{ width: '30%', float: 'right' }} label='resources.markers.fields.capitalStart'
-              type='number' source='capitalStart' />
-            <NumberInput options={{ fwidth: '30%', float: 'right' }} label='resources.markers.fields.capitalEnd'
-              type='number' source='capitalEnd' />
-            <AutocompleteInput options={{ fwidth: '30%', float: 'right' }} choices={choicesRuler}
-              label='resources.markers.fields.capitalOwner' source='capitalOwner' />
-          </EmbeddedArrayInput>
-          <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent'
-            defaultValue={props.selectedItem.value.type === '0'} />
           <DeleteButton resource='markers' id={props.selectedItem.value._id || defaultObj.wiki} {...props} />
-        </MarkerForm> : <MarkerForm hidesavebutton>
+        </MarkerForm>) : <MarkerForm hidesavebutton>
           <SelectInput onChange={(val, v) => {
             props.actOnRootTypeChange(v)
           }} source='type' validate={required} defaultValue={props.selectedItem.value.type}
@@ -179,7 +189,27 @@ export const MarkerCreate = (props) => {
     <AddEditLinkNavigation pathname={props.location.pathname} />
     <Divider />
     <Create title={'Create Article'} {...props}>
-      <MarkerForm validate={validateWiki} redirect='' history={props.history}>
+      {(props.contentTypeRaw)
+        ? ((props.contentTypeRaw === 'w|h')
+          ? <MarkerForm validate={validateWiki} redirect='' history={props.history}>
+            <SelectInput
+              defaultValue={props.contentTypeRaw}
+              options={{ fullWidth: true }} onChange={(val, v) => {
+              props.actOnRootTypeChange(v)
+            }} source='type' validate={required} choices={properties.linkedTypes} label='resources.markers.fields.type' />
+            <TextInput options={{ fullWidth: true }} validate={required} source='name' label='resources.markers.fields.name' />
+            <RichTextImageVideoInput source='description' label='resources.linked.fields.collectionDescription' toolbar={[ ['bold', 'italic', 'image', 'underline', 'link'] ]} />
+            <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
+            <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => {
+              props.setModDataLng(+v)
+            }} source='coo[1]' label='resources.markers.fields.lat' />
+            <NumberInput style={{ width: '30%', float: 'right' }} onChange={(val, v) => {
+              props.setModDataLat(+v)
+            }} source='coo[0]' label='resources.markers.fields.lng' />
+            <NumberInput source='year' label='resources.markers.fields.year' />
+            <LongTextInput options={{ fullWidth: true }} source='geojson' label='resources.linked.fields.geojson' />
+          </MarkerForm>
+          : <MarkerForm validate={validateWiki} redirect='' history={props.history}>
         <SelectInput
           defaultValue={props.contentTypeRaw}
           options={{ fullWidth: true }} onChange={(val, v) => {
@@ -206,7 +236,16 @@ export const MarkerCreate = (props) => {
             label='resources.markers.fields.capitalOwner' source='capitalOwner' />
         </EmbeddedArrayInput>
         <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={false} />
-      </MarkerForm>
+      </MarkerForm>)
+        : <MarkerForm hidesavebutton>
+          <SelectInput onChange={(val, v) => {
+            props.actOnRootTypeChange(v)
+          }} source='type'
+                       validate={required}
+                       defaultValue={props.selectedItem.value.type}
+                       choices={properties.linkedTypes}
+                       label='resources.markers.fields.type' />
+          </MarkerForm>}
     </Create></div>
 }
 
