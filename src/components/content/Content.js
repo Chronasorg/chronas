@@ -61,8 +61,8 @@ const sanitizeOptions = {
     // We don't currently allow img itself by default, but this
     // would make sense if we did. You could add srcset here,
     // and if you do the URL is checked for safety
-    img: [ 'src', 'width', 'height' ],
-    iframe: [ 'src' ]
+    img: [ 'src', 'style', 'width', 'height' ],
+    iframe: [ 'src', 'style', 'width', 'height', 'marginwidth', 'marginheight', 'scrolling', 'frameborder' ]
   },
 // Lots of these won't come up by default because we don't allow them
   selfClosing: [ 'img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta' ],
@@ -71,7 +71,11 @@ const sanitizeOptions = {
   allowedSchemesByTag: {},
   allowedSchemesAppliedToAttributes: [ 'href', 'src', 'cite' ],
   allowProtocolRelative: true,
-  allowedIframeHostnames: ['www.youtube.com', 'https://www.youtube.com', 'youtube.com', 'player.vimeo.com']
+  allowedIframeHostnames: [
+    'www.youtube.com', 'https://www.youtube.com', 'youtube.com',
+    'player.vimeo.com',
+    'https://www.amazon.com', 'www.amazon.com', 'amazon.com',
+    'https://www.ws-na.amazon-adsystem.com', 'www.ws-na.amazon-adsystem.com', 'ws-na.amazon-adsystem.com']
 }
 
 const MOVIETYPES = ['v']
@@ -360,7 +364,7 @@ class Content extends Component {
                 score: imageItem.score || imageItem.properties.s,
               })
             })
-            linkedItems.content = res.map.sort((a, b) => {
+            linkedItems.content = res.map.filter(el => el.properties.gt !== 'i').sort((a, b) => {
               if (isCollection) {
                 return (+a.order || 0) - (+b.order || 0)
               }

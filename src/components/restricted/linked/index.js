@@ -172,10 +172,8 @@ export const LinkedEdit = (props) => {
           <NumberInput defaultValue={(typeof props.selectedItem.value.year !== "undefined" && !isNaN(props.selectedItem.value.year)) ? props.selectedItem.value.year : (potentialYear && !isNaN(potentialYear)) ? potentialYear : props.selectedItem.value.subtitle } source='year' label='resources.linked.fields.year' type='number' />
           { isEduCollection && <BooleanInput label='resources.linked.fields.allowClickAway' source='allowClickAway' defaultValue={(((props.selectedItem || {}).value || {}).data || {}).allowOtherArticles === true} /> }
           <BooleanInput label='resources.linked.fields.drawRoute' source='drawRoute' defaultValue={(((props.selectedItem || {}).value || {}).data || {}).drawRoute === true} />
-          <BooleanInput label='resources.linked.fields.changeYearByArticle' source='changeYearByArticle'
-                                             defaultValue={(((props.selectedItem || {}).value || {}).data || {}).changeYearByArticle === true} />
-          <BooleanInput label='resources.linked.fields.makePublic' source='isPublic'
-                                    defaultValue={(((props.selectedItem || {}).value || {}).data || {}).isPublic === true} />
+          <BooleanInput label='resources.linked.fields.changeYearByArticle' source='changeYearByArticle' defaultValue={(((props.selectedItem || {}).value || {}).data || {}).changeYearByArticle === true} />
+          <BooleanInput label='resources.linked.fields.makePublic' source='isPublic' defaultValue={(((props.selectedItem || {}).value || {}).data || {}).isPublic === true} />
           <DeleteButton
             id={encodeURIComponent((epicDefaults || {}).src || props.selectedItem.value.src || props.selectedItem.value._id || props.selectedItem.value.id)} {...props} />
         </FormTab>
@@ -205,7 +203,7 @@ export const LinkedEdit = (props) => {
                                 }}
                                 actionsContainerStyle={{
                                   width: '120px',
-                                  float: 'right',                                  /* position: absolute; */
+                                  float: 'right',
                                   marginTop: '36px'
                                 }}
             >

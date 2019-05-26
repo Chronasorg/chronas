@@ -177,6 +177,7 @@ export class AutocompleteInput extends Component {
     return (
       <AutoComplete
         searchText={this.state.searchText || ((this.props || {}).input || {}).value || ''}
+        listStyle={{ maxHeight: 200, overflow: 'auto' }}
         dataSource={dataSource}
         floatingLabelText={
           <FieldTitle

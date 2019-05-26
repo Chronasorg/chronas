@@ -695,7 +695,7 @@ class RightDrawerRoutes extends PureComponent {
     }
   }
   handleCollectionPrev = () => {
-    const { selectedItem, setData, showNotification } = this.props
+    const { selectedItem, setData } = this.props
     const { stepIndex } = this.state
     if ((+stepIndex - 1) >= 0 && (+stepIndex - 1) < (((this.props.selectedItem || {}).data || {}).content || []).length) setData({ ...selectedItem.data, stepIndex: (+stepIndex - 1) })
     if (selectedItem.data.changeYearByArticle) {
@@ -1307,11 +1307,6 @@ class RightDrawerRoutes extends PureComponent {
               onMouseDown={event => {
                 this.handleMousedown(event)
               }}
-              // onTouchTap={(event) => console.debug('touchtap', event)}
-              // onMouseDown={this.handleMouseDown.bind(this)}
-              // onMouseOver={this.handleMouseOver.bind(this)}
-              // onMouseUp={this.handleMouseUp.bind(this)}
-              // onClick={(event) => console.debug('onClick', event)}
             />
             <div className='articleContentContainer' style={{ display: 'inline', pointerEvents: (this.state.isResizing) ? 'none' : 'inherit' }}>
               {!isEpic && headerComponent}

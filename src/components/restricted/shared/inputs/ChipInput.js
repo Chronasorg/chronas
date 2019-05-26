@@ -9,6 +9,7 @@ import TextFieldHint from 'material-ui/TextField/TextFieldHint'
 import TextFieldLabel from 'material-ui/TextField/TextFieldLabel'
 import AutoComplete from 'material-ui/AutoComplete/AutoComplete'
 import Avatar from 'material-ui/Avatar'
+import ContentImage from 'material-ui/svg-icons/image/image'
 import FlatButton from 'material-ui/FlatButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import UpIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
@@ -121,27 +122,24 @@ const getStyles = (props, context, state) => {
   return styles
 }
 
-export const defaultChipRenderer = ({ value, text, name, category, isFocused, isDisabled, handleClick, handleRequestDelete, handleOrderChange, defaultStyle }, key, len) => (
+export const defaultChipRenderer = ({ delta, value, isMedia, text, name, category, isFocused, isDisabled, handleClick, handleRequestDelete, handleOrderChange, defaultStyle }, key, len) => (
   <Chip
     key={key}
     labelStyle={{ width: '100%' }}
     style={{ ...defaultStyle, pointerEvents: isDisabled ? 'none' : undefined, width: '100%' }}
     backgroundColor={'rgba(0,0,0,0)'}
-    // onClick={handleClick}
   >
     <Card style={{ width: '100%' }} containerStyle={{ width: '100%' }}>
       <CardHeader
         titleStyle={{ width: '100%' }}
         textStyle={{ width: '100%' }}
         style={{ width: '100%' }}
-        title={<div><Avatar style={{ marginRight: '8px' }} size={32}>{+key+1}</Avatar>{name}</div>}
+        title={<div><Avatar style={{ marginRight: '8px' }} icon={isMedia ? <ContentImage /> : null} size={32}>{isMedia ? '' : +key-delta+1}</Avatar>{name}</div>}
         subtitle={category}
-        // actAsExpander={true}
-        // showExpandableButton={true}
       />
       <div className={'cardIconsCollections'}>
         { (key !== 0) && <UpIcon onClick={() => handleOrderChange(key, 'up')} />}
-        { (key + 1 !== len) && <DownIcon onClick={() => handleOrderChange(key, 'down')} />}
+        { (key-delta + 1 !== len) && <DownIcon onClick={() => handleOrderChange(key, 'down')} />}
         <CloseIcon onClick={handleRequestDelete} />
       </div>
     </Card>
@@ -369,60 +367,10 @@ class ChipInput extends React.Component {
 
   handleOrderChange = (chipIndex, direction) => {
     this.autoComplete.setState({ searchText: '' })
-    // const newChips = array_move(this.props.value || this.state.chips, chipIndex, direction === 'up' ? (chipIndex - 1) : (chipIndex + 1))
 
-    // this.setState({ chips: newChips })
     if (this.props.handleOrderChange) {
       this.props.handleOrderChange(chipIndex, direction)
     }
-
-    // if (this.props.dataSourceConfig) {
-    //   if (typeof chip === 'string') {
-    //     if (chip.length === 0) {
-    //       return
-    //     }
-    //     chip = {
-    //       [this.props.dataSourceConfig.text]: chip,
-    //       [this.props.dataSourceConfig.value]: chip
-    //     }
-    //   } else if (typeof chip === 'object') {
-    //     if (chip[this.props.dataSourceConfig.text].length === 0 || chip[this.props.dataSourceConfig.value].length === 0) {
-    //       return
-    //     }
-    //     chip = {
-    //       [this.props.dataSourceConfig.text]: chip[this.props.dataSourceConfig.text],
-    //       [this.props.dataSourceConfig.value]: chip[this.props.dataSourceConfig.value]
-    //     }
-    //   }
-    //
-    //   if (this.props.allowDuplicates || !chips.some((c) => c[this.props.dataSourceConfig.value] === chip[this.props.dataSourceConfig.value])) {
-    //     if (this.props.value) {
-    //       if (this.props.onRequestAdd) {
-    //         this.props.onRequestAdd(chip)
-    //       }
-    //     } else {
-    //       this.setState({ chips: [ ...this.state.chips, chip ] })
-    //       if (this.props.onChange) {
-    //         this.props.onChange([ ...this.state.chips, chip ])
-    //       }
-    //     }
-    //   }
-    // } else {
-    //   if (chip.trim().length > 0) {
-    //     if (this.props.allowDuplicates || chips.indexOf(chip) === -1) {
-    //       if (this.props.value) {
-    //         if (this.props.onRequestAdd) {
-    //           this.props.onRequestAdd(chip)
-    //         }
-    //       } else {
-    //         this.setState({ chips: [ ...this.state.chips, chip ] })
-    //         if (this.props.onChange) {
-    //           this.props.onChange([ ...this.state.chips, chip ])
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
   }
 
   handleAddChip (chip) {
@@ -633,6 +581,8 @@ class ChipInput extends React.Component {
 
     const actualFilter = other.openOnFocus ? (search, key) => (search === '' || filter(search, key)) : filter
 
+    let delta = 0
+
     return (
       <div
         className={className}
@@ -644,19 +594,23 @@ class ChipInput extends React.Component {
           <div style={Object.assign(styles.chipContainer, chipContainerStyle)}>
             {chips.map((tag, i) => {
               const value = dataSourceConfig ? tag[dataSourceConfig.value] : tag
+              const isMedia = ((((value || '').split('||') || [])[1] || '').split('|') || [])[0] === 'i'
+              if (isMedia) delta = delta + 1
               return chipRenderer({
                 value,
                 name: dataSourceConfig ? tag["name"] : value,
                 category: dataSourceConfig ? tag["category"] : value,
                 text: dataSourceConfig ? tag[dataSourceConfig.text] : tag,
                 chip: tag,
+                delta: delta,
+                isMedia,
                 isDisabled: disabled,
                 isFocused: dataSourceConfig ? (this.state.focusedChip && this.state.focusedChip[dataSourceConfig.value] === value) : (this.state.focusedChip === value),
                 handleClick: () => this.setState({ focusedChip: tag }),
                 handleRequestDelete: () => this.handleDeleteChip(value, i),
                 handleOrderChange: (arr, dir) => this.handleOrderChange(arr, dir),
                 defaultStyle: styles.defaultChip
-              }, i, chips.length)
+              }, i, chips.length-delta)
             })}
           </div>
         </div>
@@ -673,7 +627,8 @@ class ChipInput extends React.Component {
           {...other}
           {...inputProps}
           filter={actualFilter}
-          style={inputStyleMerged}
+          style={{ ...inputStyleMerged }}
+          listStyle={{ maxHeight: 200, overflow: 'auto' }}
           dataSource={autoCompleteData}
           dataSourceConfig={dataSourceConfig}
           searchText={this.state.inputValue}

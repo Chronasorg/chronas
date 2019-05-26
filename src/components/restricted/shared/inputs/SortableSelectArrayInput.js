@@ -58,78 +58,19 @@ export class SortableSelectArrayInput extends Component {
     const values = [...this.state.values, newValue]
     // setLinkedItemData({ [source]: linkedItemData[source].filter(el => el !== toAddString).concat([toAddString]) })
     this.setState({ values }, () => this.handleChange(this.state.values))
-
-  //   const newArr1 = linkedItemData.linkedItemKey1.split('||')
-  //   const toAddString = newValue.value || newValue
-  //   const newArr2 = toAddString.split('||')
-  //
-  //   const type = (source === 'linkedMedia') ? 'e' : 'a'
-  //
-  //   const linkedBody = {
-  //     linkedItemType1: (properties.markersTypes.includes(newArr1[1])) ? 'markers' : 'metadata',
-  //     linkedItemType2: (properties.markersTypes.includes(newArr2[1])) ? 'markers' : 'metadata',
-  //     linkedItemKey1: ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0],
-  //     linkedItemKey2: ((newArr2[1].indexOf('ae|') > -1) ? (newArr2[1] + '|') : '') + newArr2[0],
-  //     type1: type,
-  //     type2: type,
-  //   }
-  //
-  //   axios.put(properties.chronasApiHost + '/metadata/links/addLink', JSON.stringify(linkedBody), {
-  //     'headers': {
-  //       'Authorization': 'Bearer ' + localStorage.getItem('chs_token'),
-  //       'Accept': 'application/json',
-  //       'Content-Type': 'application/json'
-  //     }
-  //   })
-  //     .then(() => {
-  //       // console.debug('linked added')
-  //       const values = [...this.state.values, newValue]
-  //       setLinkedItemData({ [source]: linkedItemData[source].filter(el => el !== toAddString).concat([toAddString]) })
-  //       this.setState({ values }, () => this.handleChange(this.state.values))
-  //     })
   }
 
   handleOrderChange = (chipIndex, direction) => {
     const newChips = arraymove(this.state.values, chipIndex, direction === 'up' ? (chipIndex - 1) : (chipIndex + 1))
-
     const values = this.state.values.filter(v => v.value !== newChips)
     this.setState({ values }, () => this.handleChange(this.state.values))
   }
 
   handleDelete = newValue => {
     // console.debug('remove chip', newValue)
-    const { linkedItemData, setLinkedItemData, source } = this.props
-
-    const toDeleteString = newValue.value || newValue
-
     const values = this.state.values.filter(v => v.value !== newValue)
-    // setLinkedItemData({ [source]: linkedItemData[source].filter(el => el !== toDeleteString) })
     this.setState({ values }, () => this.handleChange(this.state.values))
 
-    // const newArr1 = linkedItemData.linkedItemKey1.split('||')
-    // const toDeleteString = newValue.value || newValue
-    // const newArr2 = toDeleteString.split('||')
-    //
-    // const linkedBody = {
-    //   linkedItemType1: (properties.markersTypes.includes(newArr1[1])) ? 'markers' : 'metadata',
-    //   linkedItemType2: (properties.markersTypes.includes(newArr2[1])) ? 'markers' : 'metadata',
-    //   linkedItemKey1: ((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0],
-    //   linkedItemKey2: ((newArr2[1].indexOf('ae|') > -1) ? (newArr2[1] + '|') : '') + newArr2[0],
-    // }
-    //
-    // axios.put(properties.chronasApiHost + '/metadata/links/removeLink', JSON.stringify(linkedBody), {
-    //   'headers': {
-    //     'Authorization': 'Bearer ' + localStorage.getItem('chs_token'),
-    //     'Accept': 'application/json',
-    //     'Content-Type': 'application/json'
-    //   }
-    // })
-    //   .then(() => {
-    //     const values = this.state.values.filter(v => v.value !== newValue)
-    //     setLinkedItemData({ [source]: linkedItemData[source].filter(el => el !== toDeleteString) })
-    //     this.setState({ values }, () => this.handleChange(this.state.values))
-    //     // console.debug('linked deleted')
-    //   })
   };
 
   handleChange = eventOrValue => {
