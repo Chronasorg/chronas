@@ -89,6 +89,9 @@ export const MarkerEdit = (props) => {
   let defaultObj = {}
   const cIndex = ((props.selectedItem || {}).data || {}).contentIndex
   const contentArr = ((props.selectedItem || {}).data || {}).content
+  const choicesRuler = Object.keys(props.metadata['ruler']).map((rulerId) => {
+    return { id: rulerId, name: props.metadata['ruler'][rulerId][0] }
+  }) || {}
   const isContent = contentArr &&
     typeof cIndex !== 'undefined' &&
     ((contentArr[cIndex] || {}).properties || {}).ct === 'marker'
@@ -126,7 +129,7 @@ export const MarkerEdit = (props) => {
     <Divider />
     <Create title={'Edit Article'} {...props}>
       {((props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) || isContent)
-        ? ((props.contentTypeRaw === 'w|h') ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
+        ? ((props.contentTypeRaw !== 'w|h') ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
           <SelectInput options={{ fullWidth: true }} onChange={(val, v) => {
             props.actOnRootTypeChange(v)
           }} source='type' validate={required}
@@ -148,8 +151,15 @@ export const MarkerEdit = (props) => {
                        source='year' label='resources.markers.fields.year' type='number' />
           <LongTextInput options={{ fullWidth: true }} source='geojson' label='resources.linked.fields.geojson'
                          defaultValue={props.selectedItem.value.geojson || ''} />
-          <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent'
-                        defaultValue={props.selectedItem.value.type === '0'} />
+          <EmbeddedArrayInput options={{ fullWidth: true }} defaultValue={props.selectedItem.value.capital} source='capital'>
+            <NumberInput options={{ width: '30%', float: 'right' }} label='resources.markers.fields.capitalStart'
+                         type='number' source='capitalStart' />
+            <NumberInput options={{ fwidth: '30%', float: 'right' }} label='resources.markers.fields.capitalEnd'
+                         type='number' source='capitalEnd' />
+            <AutocompleteInput options={{ fwidth: '30%', float: 'right' }} choices={choicesRuler}
+                               label='resources.markers.fields.capitalOwner' source='capitalOwner' />
+          </EmbeddedArrayInput>
+          <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
           <DeleteButton resource='markers' id={props.selectedItem.value._id || defaultObj.wiki} {...props} />
         </MarkerForm> : <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
           <SelectInput options={{ fullWidth: true }} onChange={(val, v) => {
@@ -198,7 +208,7 @@ export const MarkerCreate = (props) => {
               props.actOnRootTypeChange(v)
             }} source='type' validate={required} choices={properties.linkedTypes} label='resources.markers.fields.type' />
             <TextInput options={{ fullWidth: true }} validate={required} source='name' label='resources.markers.fields.name' />
-            <RichTextImageVideoInput source='description' label='resources.linked.fields.collectionDescription' toolbar={[ ['bold', 'italic', 'image', 'underline', 'link'] ]} />
+            <RichTextImageVideoInput source='html' label='resources.linked.fields.html' toolbar={[ ['bold', 'italic', 'image', 'underline', 'link'] ]} />
             <ModButton style={{ width: '30%', float: 'left', marginTop: '28px' }} modType='marker' />
             <NumberInput style={{ width: '30%', float: 'left' }} onChange={(val, v) => {
               props.setModDataLng(+v)

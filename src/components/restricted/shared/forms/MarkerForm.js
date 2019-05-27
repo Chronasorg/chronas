@@ -40,6 +40,8 @@ export class MarkerForm extends Component {
       if (values.type === 'cp' || values.type === 'c0') values.type = 'c'
       const markerItem = decodeURIComponent(values._id || values.wiki)
 
+      if (values.type === 'h' && !values._id && redirect !== 'edit') values._id = values.name + '__' + Math.random()
+
       fetch(properties.chronasApiHost + '/markers/' + ((redirect === 'edit') ? markerItem : ''), {
         method: (redirect === 'edit') ? 'PUT' : 'POST',
         headers: {

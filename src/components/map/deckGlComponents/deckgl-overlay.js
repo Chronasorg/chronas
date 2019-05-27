@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { rgb } from 'd3-color'
 import { easeCubic } from 'd3-ease'
 import rbush from 'rbush'
+import { TYPE_COLLECTION } from '../../map/actionReducers'
 import DeckGL, { ArcLayer, IconLayer, ScatterplotLayer, WebMercatorViewport } from 'deck.gl'
 import TagmapLayer from './tagmap-layer'
 import { iconMapping, iconSize, properties, RGBAtoArray } from '../../../properties'
@@ -407,7 +408,7 @@ export default class DeckGLOverlay extends Component {
         let lineToAnimate
         let preLineCoords = []
 
-        if (((nextProps.selectedItem || {}).data || {}).drawRoute === true || (selectedFeature.connect !== true && (selectedFeature.coo || []).length === 2 && (selectedFeature.subtype === "b" || selectedFeature.subtype === "si"))) {
+        if (((nextProps.selectedItem || {}).data || {}).drawRoute === true || ((nextProps.selectedItem || {}).type !== TYPE_COLLECTION && (selectedFeature.connect !== true && (selectedFeature.coo || []).length === 2 && (selectedFeature.subtype === "b" || selectedFeature.subtype === "si")))) {
           let prevCoords
           for (let i = +nextProps.contentIndex - 1; i > -1; i--) {
             const currCoords = (geoData.find(f => f.index === i && (f.subtype === "b" || f.subtype === "si")) || {}).coo || []
