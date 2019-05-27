@@ -6,6 +6,7 @@ import Avatar from 'material-ui/Avatar'
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import Badge from 'material-ui/Badge'
 import Paper from 'material-ui/Paper'
+import TextField from 'material-ui/TextField'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
 import Divider from 'material-ui/Divider'
@@ -503,6 +504,9 @@ class Content extends Component {
                 this.props.setCollectionIndex(0)
               }} />
             </div>
+            <br />
+            <Divider />
+            <TextField disabled floatingLabelText="Shareable Link:" defaultValue={window.location.origin + '/?type=collection&value=' + ((selectedItem || {}).data || {})._id + '#/article'} style={{ width: 600, fontSize: 13, cursor: 'text' }} floatingLabelStyle={{ fontSize: 20 }} floatingLabelShrinkStyle={{ fontSize: 20 }} underlineShow={false} />
 
             {hasQuiz && <div>
               <br />
