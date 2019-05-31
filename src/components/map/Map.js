@@ -742,11 +742,11 @@ class Map extends Component {
 
     if (!areaActive) return
 
-    const { modActive, selectedItem } = this.props
+    const { activeArea, modActive, selectedItem } = this.props
     const { expanded, hoveredItems } = this.state
 
     // we want to click on marker and ignore mapgl layer
-    if (/* expanded || */hoveredItems.length > 0) return
+    if (/* expanded || */hoveredItems.length > 0 || activeArea.color === 'population') return
 
     let itemName = ''
     let wikiId = ''
@@ -983,8 +983,8 @@ class Map extends Component {
           nextActiveprovinceValue = (metadata['religion'][nextActiveprovinceValue] || {})[3]
           prevActiveprovinceValue = (metadata['religion'][prevActiveprovinceValue] || {})[3]
         }
-
-        const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, false, activeArea.color, prevActiveprovinceValue, false)
+        const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, nextActiveprovinceValue, activeArea.color, prevActiveprovinceValue, false)
+        // const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(nextProps.activeArea.color, false, activeArea.color, prevActiveprovinceValue, false)
 
         if (typeof multiPolygonToOutline !== 'undefined' && metadata[nextProps.activeArea.color][nextActiveprovinceValue]) {
           mapStyleDirty = this._getDirtyOrOriginalMapStyle(mapStyleDirty)
@@ -1658,7 +1658,7 @@ class Map extends Component {
   }
 
   _onMarkerClick (layerClicked) {
-    const { selectedItem, setWikiId, selectMarkerItem, modActive, history, setEpicContentIndex } = this.props
+    const { selectedItem, setWikiId, setData, selectMarkerItem, modActive, history, setEpicContentIndex } = this.props
     const { markerData, clusterRawData, viewport } = this.state
 
     areaActive = false
@@ -1692,6 +1692,12 @@ class Map extends Component {
         utilsQuery.updateQueryStringParameter('wiki', wikiId)
         setEpicContentIndex(foundIndex)
         // setWikiId(wikiId)
+      }
+    } else if (selectedItem.type === TYPE_COLLECTION) {
+      const foundIndex = ((((selectedItem || {}).data || {}).content || []).findIndex(el => (el.properties || {}).w === wikiId))
+      if (foundIndex !== -1) {
+        utilsQuery.updateQueryStringParameter('wiki', wikiId)
+        setData({ ...selectedItem.data, stepIndex: foundIndex })
       }
     } else {
       // utilsQuery.updateQueryStringParameter('type', TYPE_MARKER)
@@ -2117,7 +2123,7 @@ class Map extends Component {
       ((selectedItem.value || {}).coo || {})[0]}
         offsetLeft={0}
         offsetTop={0}>
-        <BasicPin hideInit={(galleryMarker.length > 1)} size={40} />
+        <BasicPin hideInit={(galleryMarker.length > 1)} size={60} />
       </Marker> : null
 
     const activeCluster = mapStyles.clusterMarkers

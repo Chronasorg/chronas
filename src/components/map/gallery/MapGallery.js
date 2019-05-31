@@ -215,7 +215,7 @@ class MapGallery extends PureComponent {
       selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} },
       currentYearLoaded: 3000,
       isFetchingImages: true,
-      isOpen: false,
+      isOpen: localStorage.getItem('chs_mediaGallery') !== 'opened',
       tileData: [],
       filteredData: []
     }
@@ -229,7 +229,7 @@ class MapGallery extends PureComponent {
     this.setState({ selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} } })
   }
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     const { currentYearLoaded, isOpen } = this.state
     if (this.props.selectedYear !== currentYearLoaded && isOpen) {
       this._updateImages(this.props.selectedYear)
@@ -315,12 +315,14 @@ class MapGallery extends PureComponent {
     this.handleImageClose()
     history.push('/article')
   }
-  _updateImages = (selectedYear) => {
-    const { refMap } = this.props
+  _updateImages = (a_selectedYear) => {
+    const { refMap, selectedYear } = this.props
+    const f_selectedYear = a_selectedYear || selectedYear
 
+    if (typeof refMap === "undefined") return setTimeout(this._updateImages, 1000)
     this.setState({ isFetchingImages: true })
     // Load slides data
-    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&end=300&subtype=artefacts,people,cities,battles,misc,ps,v,e&geo=true')
+    axios.get(properties.chronasApiHost + '/metadata?year=' + f_selectedYear + '&end=300&subtype=artefacts,people,cities,battles,misc,ps,v,e&geo=true')
       .then((allData) => {
         const allImages = allData.data
 
@@ -352,7 +354,7 @@ class MapGallery extends PureComponent {
         })
         this.setState({
           isFetchingImages: false,
-          currentYearLoaded: selectedYear,
+          currentYearLoaded: f_selectedYear,
           tileData, // .sort((a, b) => (+b.score || 0) - (+a.score || 0))
           showMax: GALLERYBATCHSIZE,
           filteredData
@@ -448,6 +450,7 @@ class MapGallery extends PureComponent {
             } else {
               this.setState({ isOpen: false, tileData: [],
                 showMax: GALLERYBATCHSIZE })
+              localStorage.setItem('chs_mediaGallery', 'opened')
             }
           }}
           iconStyle={{

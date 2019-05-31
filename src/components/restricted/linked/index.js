@@ -173,6 +173,7 @@ export const LinkedEdit = (props) => {
           { isEduCollection && <BooleanInput label='resources.linked.fields.allowClickAway' source='allowClickAway' defaultValue={(((props.selectedItem || {}).value || {}).data || {}).allowOtherArticles === true} /> }
           <BooleanInput label='resources.linked.fields.drawRoute' source='drawRoute' defaultValue={(((props.selectedItem || {}).value || {}).data || {}).drawRoute === true} />
           <BooleanInput label='resources.linked.fields.changeYearByArticle' source='changeYearByArticle' defaultValue={(((props.selectedItem || {}).value || {}).data || {}).changeYearByArticle === true} />
+          <BooleanInput label='resources.linked.fields.isStory' source='isStory' defaultValue={(((props.selectedItem || {}).value || {}).data || {}).isStory === true} />
           <BooleanInput label='resources.linked.fields.makePublic' source='isPublic' defaultValue={(((props.selectedItem || {}).value || {}).data || {}).isPublic === true} />
           <DeleteButton
             id={encodeURIComponent((epicDefaults || {}).src || props.selectedItem.value.src || props.selectedItem.value._id || props.selectedItem.value.id)} {...props} />
@@ -325,6 +326,7 @@ export const LinkedCreate = (props) => {
           { isEduCollection && <BooleanInput label='resources.linked.fields.allowClickAway' source='allowClickAway' /> }
           <BooleanInput label='resources.linked.fields.drawRoute' source='drawRoute' />
           <BooleanInput label='resources.linked.fields.changeYearByArticle' source='changeYearByArticle' />
+          <BooleanInput label='resources.linked.fields.isStory' source='isStory' />
           <BooleanInput label='resources.linked.fields.makePublic' source='isPublic' />
         </FormTab>
         <FormTab label={ isEduCollection ? "Lesson Slides" : "Article Slides" }>

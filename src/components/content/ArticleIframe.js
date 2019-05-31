@@ -359,14 +359,15 @@ class ArticleIframe extends React.Component {
   _goToMod = (modUrl, isProvince) => {
     const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
 
-    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== 'undefined'
-    const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
+    const contentIndex = (selectedItem.data || {}).contentIndex || (selectedItem.data || {}).stepIndex || -1
+    const contentIndexExists = contentIndex !== -1
+    const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? contentIndex : -1)]
     let fModUrl = modUrl
 
     if (isProvince && selectedItem.value) {
       setMetadataEntity(selectedItem.value)
     }
-    else if (selectedItem.type === TYPE_COLLECTION) {
+    else if (selectedItem.type === TYPE_COLLECTION && contentIndex === -1) {
       fModUrl = '/mod/linked'
     }
     else if (epicContentItem) {
@@ -375,6 +376,7 @@ class ArticleIframe extends React.Component {
         selectMarkerItem(((epicContentItem || {}).properties || {}).w, {
           '_id': ((epicContentItem || {}).properties || {}).w,
           'name': ((epicContentItem || {}).properties || {}).n,
+          'html': ((epicContentItem || {}).properties || {}).h,
           'type': ((epicContentItem || {}).properties || {}).t,
           'year': ((epicContentItem || {}).properties || {}).y,
           'coo': (epicContentItem.geometry || {}).coordinates
@@ -512,16 +514,13 @@ class ArticleIframe extends React.Component {
     if (isCollection) {
       stepIndex = (selectedItem.data || {}).stepIndex
       stepItem = (((selectedItem.data || {}).content || [])[stepIndex] || {}).properties
-
-      if ((stepItem && epicIdNameArray.concat(aeIdNameArray).map(el => el[0]).includes(stepItem.t) && stepItem.t !== 'ei')) console.debug('truuuuuuuuu')
-      else console.debug('false')
     }
 
     const modMenu = <div>{isEpicInfo
       ? <div style={styles.epicInfoContainer}><img className='tsTicks discoveryIcon articleEpic'
         src='/images/transparent.png' /><h6
           style={{ paddingLeft: 40, paddingTop: 22 }}>{translate('pos.markerMetadataTypes.ei')}</h6></div> : isPsWithSource
-        ? <div style={styles.epicInfoContainer}>
+        ? <div style={{ ...styles.epicInfoContainer, left: 28, zIndex:11 }}>
           <FlatButton
             backgroundColor={themes[theme].highlightColors[0]}
             hoverColor={themes[theme].foreColors[0]}

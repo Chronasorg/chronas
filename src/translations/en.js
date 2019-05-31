@@ -559,6 +559,7 @@ export default {
       "fields": {
         "allowClickAway": "Allow Clickaway",
         "drawRoute": "Draw Route",
+        "isStory": "Is Storyline (using HTML slides)?",
         "changeYearByArticle": "Change Year By Article",
         "type": "Type",
         "content": "Description",

@@ -80,7 +80,6 @@ export class LinkedTabForm extends Component {
             linkedItems.media = linkedItems.media.sort((a, b) => (+a.order || +b.score || 0) - (+b.order || +a.score || 0))
 
             showNotification(linkedItems.media.length + ' linked media item' + ((linkedItems.media.length === 1) ? '' : 's') + ' found')
-            console.debug('setData', { ...res, ...linkedItems }, potentialStartingWiki)
             this.props.setData({ ...res, ...linkedItems }, potentialStartingWiki)
           } else {
           }

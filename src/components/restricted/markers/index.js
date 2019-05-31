@@ -129,7 +129,7 @@ export const MarkerEdit = (props) => {
     <Divider />
     <Create title={'Edit Article'} {...props}>
       {((props.selectedItem.value !== '' && props.selectedItem.type === TYPE_MARKER) || isContent)
-        ? ((props.contentTypeRaw !== 'w|h') ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
+        ? ((props.contentTypeRaw !== 'w|h' && props.selectedItem.value.type !== 'h') ? <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
           <SelectInput options={{ fullWidth: true }} onChange={(val, v) => {
             props.actOnRootTypeChange(v)
           }} source='type' validate={required}
@@ -162,11 +162,12 @@ export const MarkerEdit = (props) => {
           <BooleanInput label='resources.linked.fields.onlyEpicContent' source='onlyEpicContent' defaultValue={props.selectedItem.value.type === '0'} />
           <DeleteButton resource='markers' id={props.selectedItem.value._id || defaultObj.wiki} {...props} />
         </MarkerForm> : <MarkerForm validate={validateWikiProps} history={props.history} redirect='edit' defaultValue={defaultObj}>
-          <SelectInput options={{ fullWidth: true }} onChange={(val, v) => {
-            props.actOnRootTypeChange(v)
-          }} source='type' validate={required}
-            defaultValue={props.contentTypeRaw || (props.selectedItem.value.type ? (props.selectedItem.value.type + '|' + props.selectedItem.value.subtype) : (defaultObj.type) ? (defaultObj.type + '|' + defaultObj.subtype) : '')}
-            choices={properties.linkedTypes} label='resources.markers.fields.type' />
+          <SelectInput options={{ fullWidth: true }}
+                       onChange={(val, v) => { props.actOnRootTypeChange(v) }}
+                       source='type'
+                       validate={required}
+                       defaultValue={props.contentTypeRaw || (props.selectedItem.value.type ? (props.selectedItem.value.type === 'h' ? 'w|h' : (props.selectedItem.value.type + '|' + props.selectedItem.value.subtype)) : (defaultObj.type) ? (defaultObj.type + '|' + defaultObj.subtype) : '')}
+                       choices={properties.linkedTypes} label='resources.markers.fields.type' />
           <TextInput options={{ fullWidth: true }} source='name' defaultValue={props.selectedItem.value.name}
             label='resources.markers.fields.name' />
           <RichTextImageVideoInput source='html' label='resources.linked.fields.html' toolbar={[ ['bold', 'italic', 'underline', 'link', 'image'] ]} />

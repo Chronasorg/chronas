@@ -453,7 +453,7 @@ class RightDrawerRoutes extends PureComponent {
     if (selectedItem.type === TYPE_AREA) {
       const selectedProvince = selectedItem.value
       // is rulerEntity loaded?
-      const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
+      const activeAreaDim = (activeArea.color === 'population') ? 'ruler' : activeArea.color
       const activeRulDim = utils.getAreaDimKey(this.props.metadata, activeArea, selectedItem)
 
       if (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && this.state.rulerEntity.id !== activeRulDim) {
@@ -541,11 +541,23 @@ class RightDrawerRoutes extends PureComponent {
       this._handleNewData(nextProps.selectedItem, nextProps.activeArea)
     }
     if (selectedItem.type === TYPE_COLLECTION && !nextProps.selectedItem.data) { this.setState({ stepIndex: -1 }) }
+    else if (selectedItem.type === TYPE_COLLECTION && ((nextProps.selectedItem || {}).data || {}).stepIndex !== ((selectedItem || {}).data || {}).stepIndex) {
+      const sI = ((nextProps.selectedItem || {}).data || {}).stepIndex
+      setTimeout(() => {
+        if (!(sI > -1) || this.state.stepIndex === sI) return
+        console.debug('should only happen on manual click!')
+        this.setState({ stepIndex: sI })
+        if (selectedItem.data.changeYearByArticle) {
+          const newYear = (((((nextProps.selectedItem || {}).data || {}).content || [])[sI] || {}).properties || {}).y
+          if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && +newYear >= -2000 && +newYear <= 2000) this.props.setYear(+newYear)
+        }
+      }, 600)
+    }
     if (location.pathname !== nextProps.location.pathname) {
       if (nextProps.location.pathname === '/mod/links' && nextProps.selectedItem) {
         let prefilledId = ''
-        if (nextProps.selectedItem.type === TYPE_AREA) {
-          const activeAreaDim = (nextProps.activeArea.color === 'population') ? 'capital' : nextProps.activeArea.color
+        if (nextProps.selectedItem.type === TYPE_AREA && (nextProps.activeArea.color !== 'population')) {
+          const activeAreaDim = (nextProps.activeArea.color === 'population') ? 'ruler' : nextProps.activeArea.color
           const activeprovinceValue = utils.getAreaDimKey(metadata, nextProps.activeArea, nextProps.selectedItem)
           prefilledId = activeprovinceValue + '||ae|' + activeAreaDim
         } else {
@@ -565,7 +577,6 @@ class RightDrawerRoutes extends PureComponent {
 
     if (rightDrawerOpen !== nextProps.rightDrawerOpen) {
       if (rightDrawerOpen) {
-        console.debug('rightDrawer Closed')
         if (nextProps.location.pathname.indexOf('/mod') === -1) this.setState({ hiddenElement: true, contentTypeRaw: false })
         else this.setState({ hiddenElement: true })
       } else {
@@ -673,11 +684,9 @@ class RightDrawerRoutes extends PureComponent {
     iframeContainer.style.right = -1 * (iframeContainer.offsetWidth + 100) + 'px'
     setTimeout(() => {
       animationCard.style.height = '16px'
-      // iframeContainer.style.display = 'none'
       iframeContainer.style.opacity = 0
       iframeContainer.style.right = '0px'
       setTimeout(() => {
-        // iframeContainer.style.display = ''
         setTimeout(() => {
           iframeContainer.style.opacity = 1
         }, 100)

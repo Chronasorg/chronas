@@ -18,19 +18,26 @@ class TimelineSelectedYear extends React.Component {
     }
   }
   componentDidUpdate () {
-    setTimeout(() => {
+    // setTimeout(() => {
+    if (this.isLocked === true) return
       const timelineElement = document.getElementsByClassName('body')[0]
       const yearElement = document.getElementsByClassName('currentYearLabel')[0]
       if (timelineElement && yearElement) {
         const availableWidth = timelineElement.offsetWidth
         const { left, width } = yearElement.getBoundingClientRect()
-        const emergencyLeft = (availableWidth - left - width) < 140
+        let leftWidth = availableWidth - left - width
+        if (this.state.emergencyLeft) leftWidth = leftWidth - 80
+        const emergencyLeft = leftWidth < 140
     // eslint-disable-next-line react/no-did-update-set-state
         if (this.state.emergencyLeft !== emergencyLeft) {
+          this.isLocked = true
           this.setState({ emergencyLeft })
+          setTimeout(() => {
+            this.isLocked = false
+          }, 400)
         }
       }
-    }, 400)
+    // }, 400)
   }
 
   componentWillReceiveProps(nextProps) {

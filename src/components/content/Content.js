@@ -243,7 +243,7 @@ class Content extends Component {
 
     if (isArea) {
       const selectedProvince = selectedItem.value
-      const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
+      const activeAreaDim = (activeArea.color === 'population') ? 'ruler' : activeArea.color
       const activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
       const sunburstData = []
       const sunburstDataMeta = {}
@@ -301,7 +301,7 @@ class Content extends Component {
 
       selectedWiki = (activeAreaDim === 'religionGeneral')
         ? (metadata[activeAreaDim][(metadata.religion[activeprovinceValue] || [])[3]] || {})[2]
-        : (activeAreaDim === 'province' || activeAreaDim === 'capital')
+        : (activeAreaDim === 'province')
           ? (metadata[activeAreaDim][activeprovinceValue] || {})
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
     }
@@ -329,7 +329,7 @@ class Content extends Component {
 
       if (isCollection && selectedItem.data) return
       // const selectedProvince = selectedItem.value
-      const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
+      const activeAreaDim = (activeArea.color === 'population') ? 'ruler' : activeArea.color
       let activeprovinceValue = utils.getAreaDimKey(metadata, activeArea, selectedItem)
       const linkId = ((((selectedItem || {}).value || {}).subtype === 'ei') ? '1:e_' : (isMarker && (((selectedItem || {}).value || {}).subtype !== 'ps')) ? '0:' : '1:') + (isArea ? ('ae|' + activeAreaDim + '|' + activeprovinceValue) : selectedWiki)
 
@@ -433,7 +433,7 @@ class Content extends Component {
       id: ''
     }
 
-    const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
+    const activeAreaDim = (activeArea.color === 'population') ? 'ruler' : activeArea.color
     const entityTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
     const epicTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_EPIC)
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
@@ -449,13 +449,13 @@ class Content extends Component {
     const haslocale = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
     let rulerProps
     if ((entityTimelineOpen || epicTimelineOpen)) {
-      if (entityTimelineOpen) {
+      if (entityTimelineOpen && typeof metadata[activeAreaDim] !== "undefined") {
         rulerProps = metadata[activeAreaDim][influenceRawData.id]
         if (haslocale) {
           const newName = metadata.locale[activeAreaDim][influenceRawData.id]
           if (newName) rulerProps[0] = newName
         }
-      } else {
+      } else if (selectedItem.data) {
         rulerProps = (selectedItem.data.rulerEntities || []).map(el => metadata['ruler'][el.id])
       }
     }
@@ -466,8 +466,10 @@ class Content extends Component {
     if (isCollection) {
       const collectionData = ((selectedItem || {}).data || {})
       const hasQuiz = (collectionData.quiz || []).length > 0
-      const sanitizedHtmlDescription = sanitizeHtml(collectionData.description || '', sanitizeOptions)
+      const htmlDataContent = (((selectedItem || {}).data || {}).content || [])[stepIndex]
+
       if (selectedItem.data && stepIndex === -1) {
+        const sanitizedHtmlDescription = sanitizeHtml(collectionData.description || '', sanitizeOptions)
         ownerAvatar = collectionData.avatar
         ownerUsername = collectionData.owner
         htmlContent = <div id="articleIframe"><Card style={{
@@ -506,7 +508,7 @@ class Content extends Component {
             </div>
             <br />
             <Divider />
-            <TextField disabled floatingLabelText="Shareable Link:" defaultValue={window.location.origin + '/?type=collection&value=' + ((selectedItem || {}).data || {})._id + '#/article'} style={{ width: 600, fontSize: 13, cursor: 'text' }} floatingLabelStyle={{ fontSize: 20 }} floatingLabelShrinkStyle={{ fontSize: 20 }} underlineShow={false} />
+            <TextField disabled floatingLabelText="Shareable Link:" defaultValue={window.location.origin + '/?type=collection&value=' + ((selectedItem || {}).data || {})._id + '#/article'} style={{ width: 600, fontSize: 13, cursor: 'text' }} floatingLabelStyle={{ fontSize: 20 }} floatingLabelShrinkStyle={{ fontSize: 20 }} textareaStyle={{ fontSize: 12, color: themes[theme].foreColors[0] }} underlineShow={false} />
 
             {hasQuiz && <div>
               <br />
@@ -517,6 +519,21 @@ class Content extends Component {
             </div>}
           </CardText>
         </Card></div>
+      }
+      else if (((htmlDataContent || {}).properties || {}).t === 'h') {
+        const sanitizedHtmlDescription = sanitizeHtml(htmlDataContent.properties.h || '', sanitizeOptions)
+        htmlContent = <div id="articleIframe"><Card style={{
+          marginTop: '3em',
+          backgroundColor: 'rgba(0,0,0,0)',
+          boxShadow: 'none'
+        }}>
+          <CardText>
+            { sanitizedHtmlDescription && <p>
+              <span dangerouslySetInnerHTML={{ __html: sanitizedHtmlDescription }} />
+            </p> }
+          </CardText>
+        </Card></div>
+
       }
       else if (hasQuiz && stepIndex === (selectedItem.data.slides || []).length) {
         const { quizFinished, quizSelected, quizStepIndex } = this.state
@@ -548,8 +565,6 @@ class Content extends Component {
                     onClick={(event) => {
                       showNotification("Successfully submitted, redirecting now...")
                       setTimeout(() => window.location.href="https://chronas.org", 2000)
-                      console.debug(JSON.stringify(this.state.quizSelected), JSON.stringify(this.props.selectedItem))
-                      console.debug(this.state)
                       event.preventDefault();
                       // this.setState({quizStepIndex: 0, quizFinished: false});
                     }}

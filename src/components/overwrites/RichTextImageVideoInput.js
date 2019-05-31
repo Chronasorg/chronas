@@ -16,10 +16,18 @@ class RichTextImageVideoInput extends Component {
     } = this.props
 
     const imageHandler = function imageHandler() {
-      var range = this.quill.getSelection()
-      var value = prompt('What is the image URL')
-      if(value){
+      const range = this.quill.getSelection()
+      const value = prompt('What is the image URL')
+      if (value) {
         this.quill.insertEmbed(range.index, 'image', value, Quill.sources.USER)
+      }
+    }
+
+    const htmlHandler = function htmlHandler() {
+      const range = this.quill.getSelection()
+      const value = prompt('Paste HTML here')
+      if (value) {
+        this.quill.clipboard.dangerouslyPasteHTML(range.index, value)
       }
     }
 
@@ -29,12 +37,13 @@ class RichTextImageVideoInput extends Component {
         imageResize: {
           displaySize: true
         },
-        toolbar: [ ['bold', 'italic', 'underline', 'link', 'image', 'video'] ]
+        toolbar: [ ['bold', 'italic', 'underline', 'clean', 'link', 'image', 'code-block', 'video'] ]
       },
       theme: 'snow',
     })
 
     this.quill.getModule('toolbar').addHandler('image', imageHandler);
+    this.quill.getModule('toolbar').addHandler('code-block', htmlHandler);
 
     this.quill.pasteHTML(value)
 

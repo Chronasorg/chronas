@@ -254,6 +254,13 @@ export const iconMapping = {
       'height': iconHeight,
       'anchorY': iconHeight
     },
+    'h': {
+      'x': 2 * iconWidth,
+      'y': 4 * iconHeight,
+      'width': iconWidth,
+      'height': iconHeight,
+      'anchorY': iconHeight
+    },
     'o': {
       'x': 3 * iconWidth,
       'y': 4 * iconHeight,
@@ -426,6 +433,13 @@ export const iconMapping = {
       'anchorY': iconHeightModern
     },
     'l': {
+      'x': 2 * iconWidthModern,
+      'y': 4 * iconHeightModern,
+      'width': iconWidthModern,
+      'height': iconHeightModern,
+      'anchorY': iconHeightModern
+    },
+    'h': {
       'x': 2 * iconWidthModern,
       'y': 4 * iconHeightModern,
       'width': iconWidthModern,

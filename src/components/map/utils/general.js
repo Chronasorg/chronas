@@ -20,7 +20,8 @@ export default {
 
   getAreaDimKey: function (metadata, activeArea, selectedItem) {
     const selectedProvince = selectedItem.value
-    const activeAreaDim = (activeArea.color === 'population') ? 'capital' : activeArea.color
+    const activeAreaDim = activeArea.color
+    if (activeAreaDim === 'population') return
     let activeprovinceValue = (activeArea.data[selectedProvince] || {})[this.activeAreaDataAccessor(activeAreaDim)]
     if (activeAreaDim === 'religionGeneral') {
       activeprovinceValue = [(metadata['religion'][activeprovinceValue] || {})[3]]

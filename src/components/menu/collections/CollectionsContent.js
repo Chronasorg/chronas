@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import Avatar from 'material-ui/Avatar'
 import { defaultTheme, translate } from 'admin-on-rest'
+import Chip from 'material-ui/Chip'
 import { List, ListItem } from 'material-ui/List'
 import Subheader from 'material-ui/Subheader'
 import EditIcon from 'material-ui/svg-icons/editor/mode-edit'
@@ -30,6 +31,17 @@ import axios from 'axios/index'
 import {selectCollectionItem} from "../../map/actionReducers";
 
 const styles = {
+  collectionChip: {
+    right: '16px',
+    position: 'absolute'
+  },
+  collectionLabel: {
+    fontSize: '12px',
+    lineHeight: '16px',
+    paddingLeft: '12px',
+    paddingRight: '12px',
+    fontWeight: 800
+  },
   innerListItem: { padding: '16px 46px 20px 58px' },
   link: {
     opacity: 0.3,
@@ -160,7 +172,12 @@ class CollectionsContent extends Component {
             return <ListItem
               onClick={(event) => this._openCollection(el, event)}
               primaryText={<div style={styles.listItemText}>{el.title}</div>}
-              secondaryText={(el.slides || []).length + ' Articles'}
+              secondaryText={<div>
+                {(el.isStory === true
+                  ? <Chip backgroundColor={themes[theme].highlightColors[0]} labelColor={themes[theme].backColors[0]} style={styles.collectionChip} labelStyle={styles.collectionLabel} >Story</Chip>
+                  : null)}
+                <span>{(el.slides || []).length + ' Articles'}</span>
+                </div>}
               rightAvatar={<div>
                 <EditIcon onClick={(event) => this._goToMod(el, event)} style={{ width: '18px', height: '18px' }} className={'openBookmarkIcon'} />
                 <OpenIcon onClick={(event) => this._openCollection(el, event)} style={{ width: '18px', height: '18px' }} className={'openBookmarkIcon'} /></div>}
@@ -187,7 +204,12 @@ class CollectionsContent extends Component {
               </Avatar> : null
               }
               insetChildren={!newLetter}
-              secondaryText={(el.slides || []).length + ' Articles'}
+              secondaryText={<div>
+                {(el.isStory === true
+                  ? <Chip backgroundColor={themes[theme].highlightColors[0]} labelColor={themes[theme].backColors[0]} style={styles.collectionChip} labelStyle={styles.collectionLabel} >Story</Chip>
+                  : null)}
+                <span>{(el.slides || []).length + ' Articles'}</span>
+              </div>}
               innerDivStyle={styles.innerListItem}
               rightAvatar={<div>
                 { (el.owner === username) && <EditIcon onClick={(event) => this._goToMod(el, event)} style={{ width: '18px', height: '18px' }} className={'openBookmarkIcon'} />}
