@@ -456,7 +456,6 @@ class EpicTimeline extends React.Component {
     // TODO: fly to if coo, add geojson up to that index and animate current - if main, add all geojson
     if (isMarker) {
       const wikiUrl = selectedIndexItem.wiki || ((selectedItem || {}).data || {}).wiki || (rulerProps || {})[2] || -1
-      console.debug("XX",selectedWiki,wikiUrl,selectedWiki || wikiUrl)
       return <ArticleIframe history={history} selectAreaItemWrapper={this._selectAreaItem}
         toggleYearByArticleDisabled={!contentDetected} yearByArticleValue={setYearByArticle}
         toggleYearByArticle={this.toggleYearByArticleWrapper} hasChart={hasChart}
