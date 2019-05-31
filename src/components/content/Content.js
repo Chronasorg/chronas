@@ -508,7 +508,7 @@ class Content extends Component {
             </div>
             <br />
             <Divider />
-            <TextField disabled floatingLabelText="Shareable Link:" defaultValue={window.location.origin + '/?type=collection&value=' + ((selectedItem || {}).data || {})._id + '#/article'} style={{ width: 600, fontSize: 12, cursor: 'text' }} floatingLabelStyle={{ fontSize: 20 }} floatingLabelShrinkStyle={{ fontSize: 20 }} textareaStyle={{ fontSize: 12, color: themes[theme].foreColors[0] }} underlineShow={false} />
+            <TextField disabled floatingLabelText="Shareable Link:" defaultValue={window.location.origin + '/?type=collection&value=' + ((selectedItem || {}).data || {})._id + '#/article'} style={{ width: '100%', fontSize: 12, cursor: 'text' }} floatingLabelStyle={{ fontSize: 20 }} floatingLabelShrinkStyle={{ fontSize: 20 }} textareaStyle={{ fontSize: 12, color: themes[theme].foreColors[0] }} underlineShow={false} />
 
             {hasQuiz && <div>
               <br />
