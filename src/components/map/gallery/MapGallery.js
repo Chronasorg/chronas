@@ -215,10 +215,11 @@ class MapGallery extends PureComponent {
       selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} },
       currentYearLoaded: 3000,
       isFetchingImages: true,
-      isOpen: localStorage.getItem('chs_mediaGallery') !== 'opened',
+      isOpen: localStorage.getItem('chs_mediaGallery') !== 'opened' && (((window || {}).location || {}).hash !== '#/article'),
       tileData: [],
       filteredData: []
     }
+
   }
 
   handleChange = (value) => {

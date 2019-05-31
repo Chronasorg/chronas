@@ -226,10 +226,10 @@ class App extends Component {
         }, 30000)
 
         setYear(selectedYear)
-        if (!selectedToken && (!window.location.hash || window.location.hash === '#/')) {
+        // if (/*!selectedToken && (!window.location.hash || window.location.hash === '#/')*/) {
           if (selectedMarker !== '') setMarker(selectedMarker.split(','))
           if (selectedEpics !== '') setEpic(selectedEpics.split(','))
-        }
+        // }
         // if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
         if (selectedItem.type === TYPE_AREA) {
           selectAreaItem('-1', selectedItem.value)
