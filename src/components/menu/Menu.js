@@ -179,18 +179,6 @@ class Menu extends PureComponent {
           {isLoggedIn ? (
             <div>
               <IconButton
-                key={'collections'}
-                tooltipPosition='bottom-right'
-                tooltip={translate('collections.title')}
-                tooltipStyles={tooltip}
-                className={'collectionMenuIcon'}
-                onClick={() => toggleMenuDrawer('collections')}
-                iconStyle={{ color: themes[theme].foreColors[0] }}
-              >
-                <CollectionIcon
-                  hoverColor={themes[theme].highlightColors[0]} />
-              </IconButton>
-              <IconButton
                 key={'community'}
                 containerElement={<Link to='/community/general' />}
                 tooltipPosition='bottom-right'
@@ -235,6 +223,18 @@ class Menu extends PureComponent {
             </Badge>
             </div>
           ) : null }
+          <IconButton
+            key={'collections'}
+            tooltipPosition='bottom-right'
+            tooltip={translate('collections.title')}
+            tooltipStyles={tooltip}
+            className={'collectionMenuIcon'}
+            onClick={() => toggleMenuDrawer('collections')}
+            iconStyle={{ color: themes[theme].foreColors[0] }}
+          >
+            <CollectionIcon
+              hoverColor={themes[theme].highlightColors[0]} />
+          </IconButton>
           <IconButton
             key={'help'}
             containerElement={<Link to='/info' />}
