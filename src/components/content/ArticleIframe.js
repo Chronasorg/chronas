@@ -359,7 +359,8 @@ class ArticleIframe extends React.Component {
   _goToMod = (modUrl, isProvince) => {
     const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
 
-    const contentIndex = (selectedItem.data || {}).contentIndex || (selectedItem.data || {}).stepIndex || -1
+    let contentIndex = (selectedItem.data || {}).contentIndex || (selectedItem.data || {}).stepIndex
+    if (typeof contentIndex === 'undefined') contentIndex = -1
     const contentIndexExists = contentIndex !== -1
     const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? contentIndex : -1)]
     let fModUrl = modUrl

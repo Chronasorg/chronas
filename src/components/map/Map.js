@@ -412,7 +412,8 @@ class Map extends Component {
         }
 
         const content = ((selectedItem || {}).data || {}).content || []
-        const selectedIndex = ((selectedItem || {}).data || {}).contentIndex || -1
+        let selectedIndex = ((selectedItem || {}).data || {}).contentIndex
+        if (typeof selectedIndex === 'undefined') selectedIndex = -1
         const selectedFeature = content.find(f => f.index === selectedIndex)
 
         if ((((selectedFeature || {}).geometry || {}).coordinates || []).length > 0) {
