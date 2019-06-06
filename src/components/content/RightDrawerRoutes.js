@@ -225,7 +225,7 @@ class RightDrawerRoutes extends PureComponent {
   actOnRootTypeChange = (contentTypeRaw) => {
     const { location, history } = this.props
 
-    if (contentTypeRaw === 'ce' && window.location.host.substr(0, 4) !== "edu.") {
+    if (contentTypeRaw === 'ce' && ((window.location || {}).host || '').substr(0, 4) !== "edu.") {
       window.location.href="https://edu.chronas.org" +  window.location.search +  window.location.hash
     }
 

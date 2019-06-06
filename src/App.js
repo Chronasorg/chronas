@@ -25,6 +25,7 @@ import { history } from './store/createStore'
 import Account from './components/menu/account/Account'
 import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
+import Play from './components/menu/play/Play'
 import Performance from './components/menu/performanceSelector/PerformanceSelector'
 import TOS from './components/menu/tos/TOS'
 import Information from './components/menu/information/Information'
@@ -161,7 +162,7 @@ class App extends Component {
     if (selectedToken) localStorage.setItem('chs_temptoken', selectedToken)
     else localStorage.removeItem('chs_temptoken')
 
-    const fullHost = (window.location.host || "").split('.') || []
+    const fullHost = (((window.location || {}).host || '') || "").split('.') || []
     const potentialLocale = utilsQuery.getURLParameter('locale') || fullHost[0]
     const newLocale = properties.languageOptions.map(el => el.id).includes(potentialLocale) ? potentialLocale : (localStorage.getItem('chs_locale') || 'en')
     // initialize queryparameters
@@ -237,7 +238,13 @@ class App extends Component {
           selectMarkerItem(selectedItem.value, selectedItem.value)
         } else if (selectedItem.type === TYPE_COLLECTION) {
           selectCollectionItem(selectedItem.value, false)
-          if (window.location.pathname.indexOf('article') === -1) history.push('/article')
+          if (window.location.pathname.indexOf('article') === -1) {
+            if (((window.location || {}).host || '').substr(0, 4) === "edu.") {
+              history.push('/login')
+            } else {
+              history.push('/article')
+            }
+          }
         }
 
         setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
@@ -411,6 +418,15 @@ class App extends Component {
                         <Route exact path='/configuration' render={(props) => {
                           return (
                             <Configuration
+                              setFullscreen={this._setFullscreen}
+                              setBodyFont={this._setBodyFont}
+                              {...props}
+                            />
+                          )
+                        }} />
+                        <Route exact path='/play' render={(props) => {
+                          return (
+                            <Play
                               setFullscreen={this._setFullscreen}
                               setBodyFont={this._setBodyFont}
                               {...props}

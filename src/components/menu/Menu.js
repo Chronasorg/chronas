@@ -1,12 +1,13 @@
 import React, { PureComponent } from 'react'
 
 import BoardIcon from 'material-ui/svg-icons/communication/forum'
-import CollectionIcon from 'material-ui/svg-icons/action/book'
+import CollectionIcon from 'material-ui/svg-icons/image/collections-bookmark'
 import IconButton from 'material-ui/IconButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
 import HelpIcon from 'material-ui/svg-icons/action/help'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
+import GameIcon from 'material-ui/svg-icons/hardware/videogame-asset'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
 import Avatar from 'material-ui/Avatar'
@@ -235,6 +236,17 @@ class Menu extends PureComponent {
             <CollectionIcon
               hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
+          {/*<IconButton*/}
+            {/*key={'help'}*/}
+            {/*containerElement={<Link to='/play' />}*/}
+            {/*// tooltipPosition="bottom-right"*/}
+            {/*// tooltip={translate('pos.help')}*/}
+            {/*// tooltipStyles={tooltip}*/}
+            {/*onClick={() => setActiveMenu('play')}*/}
+            {/*iconStyle={{ color: themes[theme].foreColors[0] }}*/}
+          {/*>*/}
+            {/*<GameIcon hoverColor={themes[theme].highlightColors[0]} />*/}
+          {/*</IconButton>*/}
           <IconButton
             key={'help'}
             containerElement={<Link to='/info' />}

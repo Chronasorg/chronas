@@ -317,6 +317,13 @@ export default {
     },
     "discover_label": "Discover the year ",
     "downvote": "Inappropriate, broken or inaccurate",
+    "play": {
+      "start": "Start"
+    },
+    "edu": {
+      "studentSign": "Go to lesson",
+      "studentName": "Your Name"
+    },
     "edit": "Edit",
     "epicIdNameArray": {
       "ee": "Exploration",

@@ -16,9 +16,9 @@ import CloseIcon from 'material-ui/svg-icons/content/clear'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
 import { Treemap } from 'react-vis'
-import ChronasLogo from './LogoChronas'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import { Tab, Tabs } from 'material-ui/Tabs'
+import { LogoChronas } from '../customAssets'
 import { LoadingCircle } from '../../global/LoadingCircle'
 import { Card, CardHeader } from 'material-ui/Card'
 import {
@@ -306,7 +306,7 @@ class Information extends PureComponent {
             <Tab label={translate('pos.info.tabs.welcome')} value='welcome'>
               <br />
               <div className='modal-header'>
-                <h4 className='modal-title' style={{ fontSize: 33, margin: '0 auto' }}>{translate('pos.info.welcomeTo')} <ChronasLogo height={50}
+                <h4 className='modal-title' style={{ fontSize: 33, margin: '0 auto' }}>{translate('pos.info.welcomeTo')} <LogoChronas height={50}
                   vheight={360}
                   width={160}
                   vwidth={1000}
@@ -453,6 +453,9 @@ class Information extends PureComponent {
                 { ReactHtmlParser(translate('pos.block.about5')) }
                 <Divider />
                 <br />
+                <p>
+                  <a href="https://icons8.com/icon/81053/gold-bars">Gold Bars icon by Icons8</a>
+                </p>
                 <p>
                   <b>World Physical map tiles</b> by <a
                     href='https://www.arcgis.com/home/item.html?id=6cec161c9acc4b9abf97f6b7d65801b3'>ArcGIS Online /

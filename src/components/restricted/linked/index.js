@@ -121,7 +121,7 @@ export const LinkedEdit = (props) => {
     return errors
   }
 
-  const isEdu = (window.location.host.substr(0, 4) === "edu.")
+  const isEdu = (((window.location || {}).host || '').substr(0, 4) === "edu.")
   const postType = ((props.contentTypeRaw || (props.selectedItem || {}).type) === TYPE_COLLECTION) ? (isEdu ? 'ce' : 'cc') : (props.contentTypeRaw || ((props.selectedItem || {}).data || {}).subtype)
   const isEpic = /* props.contentTypeRaw === */epicIdNameArray.map(el => el[0]).includes(postType)
   const isCollection = postType === 'cc' || postType === 'ce'
@@ -303,7 +303,7 @@ export const LinkedCreate = (props) => {
     return errors
   }
 
-  const isEdu = (window.location.host.substr(0, 4) === "edu.")
+  const isEdu = (((window.location || {}).host || '').substr(0, 4) === "edu.")
   const postType = ((props.contentTypeRaw || (props.selectedItem || {}).type) === TYPE_COLLECTION) ? (isEdu ? 'ce' : 'cc') : (props.contentTypeRaw || ((props.selectedItem || {}).data || {}).subtype)
   const isCollection = postType === 'cc' || postType === 'ce'
   const isEduCollection = postType === 'ce'
