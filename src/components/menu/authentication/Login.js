@@ -95,17 +95,19 @@ class Login extends Component {
   }
 
   login = (auth) => {
+    const isEdu = (((window.location || {}).host || '').substr(0, 4) === "edu.")
     const { userLogin, showNotification } = this.props
-    userLogin({ ...auth, authType: AUTH_LOGIN }, this.props.location.state ? this.props.location.state.nextPathname : '/')
+    userLogin({ ...auth, authType: AUTH_LOGIN }, isEdu ? '/mod/linked/create' : (this.props.location.state ? this.props.location.state.nextPathname : '/'))
     showNotification('aor.auth.logging_in')
   }
 
   signup = (auth) => {
+    const isEdu = (((window.location || {}).host || '').substr(0, 4) === "edu.")
     const { userSignup, showNotification } = this.props
     userSignup({
       ...auth,
       authType: USER_SIGNUP
-    }, this.props.location.state ? this.props.location.state.nextPathname : '/')
+    }, isEdu ? '/mod/linked/create' : (this.props.location.state ? this.props.location.state.nextPathname : '/'))
     showNotification('aor.auth.signing_up')
   }
 
