@@ -708,6 +708,7 @@ class Play extends PureComponent {
             <AutoComplete
               style={{paddingLeft: '1em', paddingRight: '1em', width: 'calc(100% - 212px)'}}
               hintText="Click and start typing..."
+              filter={AutoComplete.caseInsensitiveFilter}
               searchText={this.state.searchText}
               onUpdateInput={(searchText) => {
                 this.setState({
