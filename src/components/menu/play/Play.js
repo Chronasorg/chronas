@@ -107,6 +107,7 @@ class Play extends PureComponent {
       log: '',
       logStatus: 'info',
       highscoreData: false,
+      highscoreAmount: 0,
       hiddenElement: true,
       timeStart: 0,
       loading: false,
@@ -268,6 +269,7 @@ class Play extends PureComponent {
                 isF: false,
                 isHighscore,
                 highscoreData: rawDefault,
+                highscoreAmount: parseInt(response.headers['x-total-count'])
               })
             })
         })
@@ -283,6 +285,7 @@ class Play extends PureComponent {
           this.setState({
             isFetchingHighscore: false,
             highscoreData: rawDefault,
+            highscoreAmount: parseInt(response.headers['x-total-count'])
           })
         })
     }
@@ -290,7 +293,7 @@ class Play extends PureComponent {
 
   render () {
     const { theme, metadata, translate } = this.props
-    const { currentGold, customName, lifelineMediaOpen, highscoreData, lifelineContentPerson, lifelineContentBattle, loading, log, logStatus, identified, timeStart, isFetchingHighscore, toFind, lifelines, gameType, isRanking, isHighscore } = this.state
+    const { currentGold, customName, lifelineMediaOpen, highscoreData, highscoreAmount, lifelineContentPerson, lifelineContentBattle, loading, log, logStatus, identified, timeStart, isFetchingHighscore, toFind, lifelines, gameType, isRanking, isHighscore } = this.state
 
     const customLogObj = {
       'LOG_WRONG_GUESS': <div><span style={styles.minusGold}>{-(2 + (identified * 2))} </span> <GoldCoins style={styles.goldIcon} /> Wrong Guess</div>,
@@ -398,7 +401,7 @@ class Play extends PureComponent {
             <div className={'appLayout_primaryContent'}>
               <div className='FeedBox_container'>
                 <div className='FeedBox_header' style={{ marginBottom: '12px', background: themes[theme].highlightColors[0]}}>
-                  <span className='FeedBox_title'>Highscore</span>
+                  <span className='FeedBox_title'>Highscore</span><span className='FeedBox_subtitle'> of <b>{highscoreAmount}</b> games played</span>
                 </div>
                 <div className='FeedBox_discussions'>
                   <div className='Opinion_game_container'>
