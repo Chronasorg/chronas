@@ -176,24 +176,22 @@ export class LinkedTabForm extends Component {
 
     const styles = getStyles(muiTheme);
 
-    const actions = [
-      <FlatButton
-        label="Acknowledge"
-        primary={true}
-        keyboardFocused={true}
-        onClick={() => {
-          this.setState({eduDialogOpen: false})
-          this.props.setRightDrawerVisibility(false)
-          this.props.history.goBack()
-        }}
-      />
-    ];
-
     return (
       <form className="tabbed-form collections">
         <Dialog
           title="Educational slide deck successfully created!"
-          actions={actions}
+          actions={[
+            <FlatButton
+              label="Acknowledge"
+              primary={true}
+              keyboardFocused={true}
+              onClick={() => {
+                this.setState({eduDialogOpen: false})
+                this.props.setRightDrawerVisibility(false)
+                this.props.history.goBack()
+              }}
+            />
+          ]}
           modal={false}
           open={this.state.eduDialogOpen}
           onRequestClose={() => this.setState({eduDialogOpen: false})}

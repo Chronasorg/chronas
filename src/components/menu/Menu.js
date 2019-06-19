@@ -236,17 +236,17 @@ class Menu extends PureComponent {
             <CollectionIcon
               hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
-          {/*<IconButton*/}
-            {/*key={'help'}*/}
-            {/*containerElement={<Link to='/play' />}*/}
-            {/*// tooltipPosition="bottom-right"*/}
-            {/*// tooltip={translate('pos.help')}*/}
-            {/*// tooltipStyles={tooltip}*/}
-            {/*onClick={() => setActiveMenu('play')}*/}
-            {/*iconStyle={{ color: themes[theme].foreColors[0] }}*/}
-          {/*>*/}
-            {/*<GameIcon hoverColor={themes[theme].highlightColors[0]} />*/}
-          {/*</IconButton>*/}
+          <IconButton
+            key={'play'}
+            containerElement={<Link to='/play' />}
+            // tooltipPosition="bottom-right"
+            // tooltip={translate('pos.help')}
+            // tooltipStyles={tooltip}
+            onClick={() => setActiveMenu('play')}
+            iconStyle={{ color: themes[theme].foreColors[0] }}
+          >
+            <GameIcon hoverColor={themes[theme].highlightColors[0]} />
+          </IconButton>
           <IconButton
             key={'help'}
             containerElement={<Link to='/info' />}

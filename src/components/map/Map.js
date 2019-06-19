@@ -2100,6 +2100,7 @@ class Map extends Component {
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.25
 
     const infoOpen = ((location || {}).pathname || '').indexOf('/info') > -1 || ((window.location || {}).href || '').indexOf('/info') > -1
+    const playOpen = ((location || {}).pathname || '').indexOf('/play') > -1 || ((window.location || {}).href || '').indexOf('/play') > -1
     const performanceOpen = ((location || {}).pathname || '').indexOf('/performance') > -1 || ((window.location || {}).href || '').indexOf('/performance') > -1
 
     let possibleHiglightedAREAitem = selectedItem.type === TYPE_AREA && ((selectedItem.data || {}).content || [])[(selectedItem.data || {}).contentIndex]
@@ -2144,7 +2145,7 @@ class Map extends Component {
         {(galleryMarker.length > 1) && <div id={'galleryLine'}></div>}
         <Snackbar
           selectedYear={+selectedYear}
-          open={!infoOpen && !performanceOpen}// this.state.showYear}
+          open={!infoOpen && !performanceOpen && !playOpen}// this.state.showYear}
           message={messageYearNotification(selectedYear, (selectedYear < 1), themes[theme].foreColors[2])}
           contentStyle={{ ...styles.yearNotificationContent, transition: (selectedItem.type === TYPE_AUTOPLAY) ? 'opacity 100ms' : 'opacity 500ms cubic-bezier(0.23, 1, 0.32, 1) 100ms' }}
           bodyStyle={styles.yearNotificationBody}
@@ -2152,7 +2153,7 @@ class Map extends Component {
             ...styles.yearNotification,
             left: rightDrawerOpen ? 'calc(25% - 20px)' : 'calc(50% - 20px)',
             background: theme === 'dark' ? 'url(/images/year-dark.png) no-repeat scroll center top transparent' : 'url(/images/year-light.png) no-repeat scroll center top transparent',
-            transform: (this.state.showYear && !infoOpen && !performanceOpen)
+            transform: (this.state.showYear && !infoOpen && !performanceOpen && !playOpen)
               ? 'translate3d(0, 0, 0)' : 'translate3d(0, -150px, 0)'
           }}
           autoHideDuration={6000}

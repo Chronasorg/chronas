@@ -535,7 +535,7 @@ class Content extends Component {
         </Card></div>
 
       }
-      else if (hasQuiz && stepIndex === (selectedItem.data.slides || []).length) {
+      else if (hasQuiz && stepIndex === (selectedItem.data.content || []).length) {
         const { quizFinished, quizSelected, quizStepIndex } = this.state
         const quizData = collectionData.quiz
         const contentStyle = { margin: '0 16px' }
