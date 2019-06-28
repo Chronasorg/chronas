@@ -36,7 +36,7 @@ import customTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
 import utilsQuery from './components/map/utils/query'
 import { ConnectedRouter } from 'connected-react-router'
-import { didYouKnows, properties, themes } from './properties'
+import { didYouKnows, markerIdNameArray, properties, themes } from './properties'
 
 const styles = {
   wrapper: {
@@ -143,10 +143,12 @@ class App extends Component {
 
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
+    const selectedPerformance = typeof localStorage.getItem('chs_performance_set') === 'undefined' ? false : +localStorage.getItem('chs_performance_set')
+
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 2000))
-    const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,l,m,op,p,r,s,si,o')
-    const markerLimit = (utilsQuery.getURLParameter('limit') || '2000')
-    const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ei,es,ew')
+    const selectedMarker = (utilsQuery.getURLParameter('markers') || (selectedPerformance === false ? 'a,ar,at,b,c,ca,cp,e,l,m,op,p,r,s,si,o' : (+selectedPerformance === 0 ? '' : markerIdNameArray.map(el => el[0]).join(','))))
+    const markerLimit = (utilsQuery.getURLParameter('limit') || (selectedPerformance === false ? '2000' : (+selectedPerformance === 2 ? 5500 : 2000)))
+    const selectedEpics = (utilsQuery.getURLParameter('epics') || (selectedPerformance === false || selectedPerformance !== 2 ? '' : ('ei,es,ew')))
     const activeArea = {
       data: {},
       color: (utilsQuery.getURLParameter('fill') || 'ruler'),
@@ -307,7 +309,9 @@ class App extends Component {
       localStorage.setItem('chs_token', token)
       const userScore = decodedToken.score || localStorage.getItem('chs_score') || 1
       setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar, userScore)
-    } else if (!localStorage.getItem('chs_performance') && (!window.location.hash || window.location.hash === '#/')) {
+    }
+
+    if (!localStorage.getItem('chs_performance') || localStorage.getItem('chs_performance_set') === null && (!window.location.hash || window.location.hash === '#/')) {
       // show welcome page if user is not logged in and no specific article or other page is specified
 
       utilsQuery.updateQueryStringParameter('markers', '')

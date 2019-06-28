@@ -281,6 +281,7 @@ class PerformanceSelector extends PureComponent {
               if (selectedLimit !== 2000) setMarkerLimit(selectedLimit)
 
               localStorage.setItem('chs_performance', true)
+              localStorage.setItem('chs_performance_set', selectedIndex)
               utilsQuery.updateQueryStringParameter('markers', selectedMarker)
               utilsQuery.updateQueryStringParameter('epics', selectedEpics)
               utilsQuery.updateQueryStringParameter('limit', selectedLimit)

@@ -57,7 +57,7 @@ class MenuDrawer extends PureComponent {
                 </IconButton>
               }
             />
-            {(menuDrawerOpen === 'layers') && createElement(LayersContent)}
+            {(menuDrawerOpen === 'layers') && createElement(LayersContent, { history })}
             {(menuDrawerOpen === 'collections') && createElement(CollectionsContent, { history })}
           </Drawer>
     )

@@ -515,6 +515,13 @@ class LayerContent extends Component {
             rightToggle={<Toggle onToggle={() => setPopOpacity(!mapStyles.popOpacity)} />}
             open={mapStyles.popOpacity} />
         </List>
+        <List>
+          <ListItem disabled>
+            <p><i><a
+              className='customLink' style={{ color: themes[theme].highlightColors[0] }}
+              onClick={() => this.props.history.push('/performance')}>Suggestions</a> based on your machine...</i></p>
+          </ListItem>
+        </List>
       </div>
     )
   }
