@@ -33,7 +33,7 @@ import customVietnameseMessages from './vi'
 export default {
   ar: { ...arabicMessages, ...customEnglishMessages },
   ca: { ...englishMessages, ...customEnglishMessages },
-  fr: { ...frenchMessages, ...customEnglishMessages },
+  fr: { ...frenchMessages, ...customFrenchMessages },
   en: { ...englishMessages, ...customEnglishMessages },
   zh: { ...chineseMessages, ...customEnglishMessages },
   nl: { ...dutchMessages, ...customEnglishMessages },
