@@ -5,10 +5,13 @@ import compose from 'recompose/compose'
 import { showNotification, translate } from 'admin-on-rest'
 import Dialog from 'material-ui/Dialog'
 import IconButton from 'material-ui/IconButton'
+import BookmarkOffIcon from 'material-ui/svg-icons/action/bookmark-border'
+import BookmarkOnIcon from 'material-ui/svg-icons/action/bookmark'
 import IconEdit from 'material-ui/svg-icons/editor/mode-edit'
 import IconHistory from 'material-ui/svg-icons/action/view-list'
 import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
+import IconOpenEpic from 'material-ui/svg-icons/action/open-in-browser'
 import IconOpenInNew from 'material-ui/svg-icons/action/open-in-new'
 import IconFlagged from 'material-ui/svg-icons/content/flag'
 import IconFlaggedAlert from 'material-ui/svg-icons/action/report-problem'
@@ -16,24 +19,32 @@ import FloatingActionButton from 'material-ui/FloatingActionButton'
 import FlatButton from 'material-ui/FlatButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import FullscreenEnterIcon from 'material-ui/svg-icons/navigation/fullscreen'
+import RaisedButton from 'material-ui/RaisedButton'
 import Toggle from 'material-ui/Toggle'
 import { red400 } from 'material-ui/styles/colors'
 import { LoadingCircle } from '../global/LoadingCircle'
 import { setRightDrawerVisibility } from '../content/actionReducers'
+import { updateUserScore } from '../menu/authentication/actionReducers'
 import utilsQuery from '../map/utils/query'
-import { epicIdNameArray, properties, themes } from '../../properties'
+import {aeIdNameArray, epicIdNameArray, properties, themes} from '../../properties'
+import { List, ListItem } from 'material-ui/List'
+import Divider from 'material-ui/Divider'
 import {
+  collectionUpdated, deselectItem, selectAreaItem,
+  selectCollectionItem,
   selectEpicItem,
   selectLinkedItem,
   selectMarkerItem,
   setData,
-  TYPE_AREA,
+  TYPE_AREA, TYPE_COLLECTION,
   TYPE_EPIC,
   TYPE_LINKED,
   TYPE_MARKER,
   WIKI_PROVINCE_TIMELINE
 } from '../map/actionReducers'
 import axios from "axios/index";
+import utils from "../map/utils/general";
+import {changeColor} from "../menu/layers/actionReducers";
 
 const jsonp = require('jsonp');
 
@@ -73,8 +84,8 @@ const styles = {
   },
   iframe: {
     width: '100%',
-    height: '100%',
-    right: '8px',
+    height: 'calc(100% - 8px)',
+    // right: '8px',
     padding: '38px 8px 0px'
   },
   epicInfoContainer: {
@@ -84,12 +95,21 @@ const styles = {
     top: '0px',
     height: '56px',
   },
+  actionButtonContainerLeft: {
+    position: 'fixed',
+    whiteSpace: 'nowrap',
+    left: '4px',
+    top: '6px',
+    height: '42px',
+    zIndex: 10,
+  },
   actionButtonContainer: {
     position: 'fixed',
     whiteSpace: 'nowrap',
     right: '4px',
     top: '6px',
     height: '42px',
+    zIndex: 10,
   },
   fullscreenButton: {
     whiteSpace: 'nowrap',
@@ -103,19 +123,137 @@ const styles = {
     color: 'rgb(107, 107, 107)'
   }
 }
+const bookmarkDialog = (isOpen, handleClose, addTo, privateCollections, addNewCollection) => {
+  const filteredPrivateCollections = privateCollections ? privateCollections.filter(el => el.title !== "Bookmarks") : []
+  return <Dialog
+    title="Add Article To Your Collection..."
+    modal={false}
+    open={isOpen}
+    onRequestClose={handleClose}
+    autoScrollBodyContent={true}
+  >
+    <List>
+      <ListItem onClick={() => { addTo("bookmark"); handleClose(); }} primaryText="Bookmark" />
+      <Divider />
+      { filteredPrivateCollections.map(el => <ListItem onClick={() => { addTo(el._id); handleClose(); }} primaryText={el.title} /> )}
+      <p style={{ marginTop: '1em' }}>- or - </p>
+      <RaisedButton label={"Create new collection"} onClick={addNewCollection} />
+    </List>
+  </Dialog>
+}
 
 class ArticleIframe extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      bookmarkDialogOpen: false,
       flagged: false,
       fullfinalWiki: (props.locale === "en" && props.selectedWiki && props.selectedWiki !== -1) ? ('https://en.wikipedia.org/wiki/' + props.selectedWiki) : -1,
       localizedArticle: false,
       isFullScreen: false,
       iframeLoading: true,
+      privateCollections: false,
       iframeLoadingFull: true,
     }
   }
+  _addNewCollection = () => {
+    const { selectCollectionItem, history } = this.props
+    selectCollectionItem(false, false)
+    history.push('/mod/linked/create')
+  }
+  _openBookmarkDialog = () => {
+    const username = localStorage.getItem('chs_username')
+    this.setState({ bookmarkDialogOpen: true })
+    axios.get(properties.chronasApiHost + '/collections?onlyPrivate&username=' + username, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('chs_token')}})
+      .then((collections) => {
+        const collectionsData = collections.data
+
+        this.setState({
+          privateCollections: collectionsData[0]
+        })
+      })
+  }
+  _toggleBookmark = (collId) => {
+    const username = localStorage.getItem('chs_username')
+    const { collectionUpdated, selectedItem, selectedWiki, showNotification, theme } = this.props
+    // const toBookmark = (selectedItem.type + ':' + selectedWiki)
+    const bookmarks = (localStorage.getItem('chs_bookmarks') || '').split(',')
+    const potentialAE = (((selectedItem.data || {}).id || '').split(':') || [])[1] || ''
+    const toBookmark = (selectedItem.type === TYPE_AREA
+      ? (potentialAE.split('|')[2] + '||' + (potentialAE.split('|')[0] + '|' + potentialAE.split('|')[1]))
+      : (selectedItem.type === TYPE_EPIC ? (((selectedItem || {}).data || {})._id + '||' + ((selectedItem || {}).data || {}).subtype) : (selectedWiki + '||' + (selectedItem.type === TYPE_MARKER ? 'w|' : '') + ((selectedItem || {}).value || {}).subtype)))
+    const bookmarked = bookmarks.indexOf(toBookmark) > -1
+    // const { bookmark } = this.state
+    if (!bookmarked) {
+      // do POST flag encodeURIComponent(window.location.href)
+      axios.put(properties.chronasApiHost + '/collections/slides/' + '?username=' + username + '&toUpdate=' + toBookmark + '&toAdd=true&collection=' + collId, {}, {
+        'headers': {
+          'Authorization': 'Bearer ' + localStorage.getItem('chs_token'),
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(() => {
+          localStorage.setItem('chs_bookmarks', [ ...bookmarks, toBookmark])
+          showNotification('Added to Bookmarks')
+          this.props.updateUserScore(1)
+          collectionUpdated()
+          document.querySelector(".collectionMenuIcon svg").style.color = themes[theme].highlightColors[0]
+          setTimeout(() => document.querySelector(".collectionMenuIcon svg").style.color = themes[theme].foreColors[0], 1000)
+          this.forceUpdate()
+        })
+        .catch((err) => {
+          console.error(err)
+          showNotification('somethingWentWrong')
+        })
+    } else {
+      // do DELETE flag
+      axios.put(properties.chronasApiHost + '/collections/slides/' + '?username=' + username + '&toUpdate=' + toBookmark + '&toAdd=false&collection=' + collId, {}, {
+        'headers': {
+          'Authorization': 'Bearer ' + localStorage.getItem('chs_token'),
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(() => {
+          localStorage.setItem('chs_bookmarks', bookmarks.filter(el => toBookmark !== el))
+          showNotification('Removed from Bookmarks')
+          collectionUpdated()
+          document.querySelector(".collectionMenuIcon svg").style.color = themes[theme].highlightColors[0]
+          setTimeout(() => document.querySelector(".collectionMenuIcon svg").style.color = themes[theme].foreColors[0], 1000)
+          this.forceUpdate()
+        })
+        .catch((err) => {
+          console.error(err)
+          showNotification('somethingWentWrong')
+        })
+    }
+  }
+
+  _selectStepButton = (stepItem) => {
+      const { selectEpicItem, selectedYear } = this.props
+      const aeId = stepItem.aeId
+      const newYear = stepItem.y && (stepItem.y !== selectedYear) && stepItem.y
+      if (epicIdNameArray.map(el => el[0]).includes(stepItem.t)) {
+        selectEpicItem(stepItem.w, (!newYear || isNaN(newYear)) ? +selectedYear : +newYear, stepItem.id)
+      } else if (aeId) {
+        const [ae, colorToSelect, rulerToHold] = aeId.split('|')
+        this._selectAreaItem(rulerToHold, colorToSelect, true)
+      }
+  }
+
+  _selectAreaItem = (rulerToHold, colorToSelect, doChangeColor = false) => {
+    const { activeArea, changeColor, selectAreaItem } = this.props
+    const nextData = activeArea.data
+    const provinceWithOldRuler = Object.keys(nextData).find(key => nextData[key][utils.activeAreaDataAccessor(colorToSelect)] === rulerToHold)
+    if (provinceWithOldRuler) {
+      selectAreaItem(provinceWithOldRuler, provinceWithOldRuler)
+      if (doChangeColor && colorToSelect !== activeArea.color) {
+        changeColor(colorToSelect)
+      }
+    }
+  }
+
   _toggleFlag = () => {
     const { selectedItem, selectedWiki } = this.props
     const { flagged } = this.state
@@ -130,6 +268,7 @@ class ArticleIframe extends React.Component {
       })
         .then(() => {
           this.props.showNotification('pos.feedbackSuccess')
+          this.props.updateUserScore(1)
         })
         .catch((err) => {
           console.error(err)
@@ -216,21 +355,29 @@ class ArticleIframe extends React.Component {
 
     history.push('/mod/revisions?filter=%7B%22' + (entityId ? 'entity' : 'subentity') + '%22%3A%22' + (entityId || subentity) + '%22%2C%22last_seen_gte%22%3A%222018-11-08T06%3A00%3A00.000Z%22%7D')// fModUrl)
   }
+
   _goToMod = (modUrl, isProvince) => {
     const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
 
-    const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== 'undefined'
-    const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
+    let contentIndex = (selectedItem.data || {}).contentIndex || (selectedItem.data || {}).stepIndex
+    if (typeof contentIndex === 'undefined') contentIndex = -1
+    const contentIndexExists = contentIndex !== -1
+    const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? contentIndex : -1)]
     let fModUrl = modUrl
 
     if (isProvince && selectedItem.value) {
       setMetadataEntity(selectedItem.value)
-    } else if (epicContentItem) {
+    }
+    else if (selectedItem.type === TYPE_COLLECTION && contentIndex === -1) {
+      fModUrl = '/mod/linked'
+    }
+    else if (epicContentItem) {
       if (((epicContentItem || {}).properties || {}).ct === 'marker') {
         fModUrl = '/mod/markers'
         selectMarkerItem(((epicContentItem || {}).properties || {}).w, {
           '_id': ((epicContentItem || {}).properties || {}).w,
           'name': ((epicContentItem || {}).properties || {}).n,
+          'html': ((epicContentItem || {}).properties || {}).h,
           'type': ((epicContentItem || {}).properties || {}).t,
           'year': ((epicContentItem || {}).properties || {}).y,
           'coo': (epicContentItem.geometry || {}).coordinates
@@ -247,9 +394,11 @@ class ArticleIframe extends React.Component {
         fModUrl = '/mod/metadata'
       }
       // setMetadataType(selectedTypeId.type)
-    } else if ((selectedItem.value || {}).type === 'i' || (selectedItem.value || {}).subtype === 'ps') {
+    }
+    else if ((selectedItem.value || {}).type === 'i' || (selectedItem.value || {}).subtype === 'ps') {
       fModUrl = '/mod/linked'
-    } else if ((selectedItem.value || {}).subtype === 'ei') {
+    }
+    else if ((selectedItem.value || {}).subtype === 'ei') {
       fModUrl = '/mod/linked'
     }
     history.push(fModUrl)
@@ -337,10 +486,17 @@ class ArticleIframe extends React.Component {
   }
 
   render () {
-    const { isFullScreen, fullfinalWiki, iframeLoading, flagged, iframeLoadingFull } = this.state
-    const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
+    const { bookmarkDialogOpen, isFullScreen, fullfinalWiki, iframeLoading, flagged, iframeLoadingFull, privateCollections } = this.state
+    const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, selectedWiki, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
+    const bookmarks = (localStorage.getItem('chs_bookmarks') || '').split(',')
+    const potentialAE = (((selectedItem.data || {}).id || '').split(':') || [])[1] || ''
+    const toBookmark = (selectedItem.type === TYPE_AREA
+      ? (potentialAE.split('|')[2] + '||' + (potentialAE.split('|')[0] + '|' + potentialAE.split('|')[1]))
+      : selectedWiki + '||' + (selectedItem.type === TYPE_MARKER ? 'w|' : '') + ((selectedItem || {}).value || {}).subtype)
+    const bookmarked = bookmarks.indexOf(toBookmark) > -1
     const isMarker = selectedItem.type === TYPE_MARKER
+    const isCollection = selectedItem.type === TYPE_COLLECTION
     const contentIndexExists = typeof (selectedItem.data || {}).contentIndex !== 'undefined'
     const epicContentItem = ((selectedItem.data || {}).content || [])[(contentIndexExists ? (selectedItem.data || {}).contentIndex : -1)]
     const isMedia = selectedItem.type === TYPE_LINKED
@@ -354,29 +510,66 @@ class ArticleIframe extends React.Component {
     const modUrl = isEpic || isArea
       ? (((epicContentItem || {}).properties || {}).ct === 'marker' ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
       : (isMarker ? '/mod/markers' : '/mod/metadata')
-
-    // epicContentItem
-    // ? (epicContentItem.ct === "marker" ? '/mod/markers' : (isArea ? '/mod/metadata' : (isEpic ? '/mod/linked' : '/mod/links')))
-    // : (isMarker ?  '/mod/markers' : '/mod/metadata')
+    const hasContentBar = (isArea || isEpic) && ((selectedItem.data || {}).content || []).length > 0
+    let stepIndex, stepItem
+    if (isCollection) {
+      stepIndex = (selectedItem.data || {}).stepIndex
+      stepItem = (((selectedItem.data || {}).content || [])[stepIndex] || {}).properties
+    }
 
     const modMenu = <div>{isEpicInfo
       ? <div style={styles.epicInfoContainer}><img className='tsTicks discoveryIcon articleEpic'
         src='/images/transparent.png' /><h6
           style={{ paddingLeft: 40, paddingTop: 22 }}>{translate('pos.markerMetadataTypes.ei')}</h6></div> : isPsWithSource
-        ? <div style={styles.epicInfoContainer}>
-
+        ? <div style={{ ...styles.epicInfoContainer, left: 28, zIndex:11 }}>
           <FlatButton
             backgroundColor={themes[theme].highlightColors[0]}
             hoverColor={themes[theme].foreColors[0]}
             color={themes[theme].backColors[0]}
-            style={{ margin: 12, marginLeft: -8, marginTop: 8, color: themes[theme].backColors[0] }}
+            style={{ margin: 12, left: 4, position: 'absolute', color: themes[theme].backColors[0] }}
             label={translate("pos.readDocument")}
             labelPosition='before'
             primary
             onClick={() => window.open(decodeURIComponent(potentialSource), '_blank').focus()}
             icon={<IconOpenInNew color={themes[theme].backColors[0]} />}
           /></div> : null}
-      <div style={!(isMarker || isMedia || !hasChart) ? {
+      { <div style={!(isMarker || isMedia || !hasChart) ? {
+        ...styles.actionButtonContainerLeft,
+        left: hasContentBar ? 'calc(19% + 8px)' : '4px',
+        top: 254
+      } : (!hasChart && isEntity) ? {
+        ...styles.actionButtonContainerLeft,
+        left: hasContentBar ? 'calc(19% + 8px)' : '4px',
+        top: 60
+      } : (isProvince) ? { ...styles.actionButtonContainerLeft, top: 332 }
+        : {
+        ...styles.actionButtonContainerLeft,
+          right: hasContentBar ? 'calc(19% + 8px)' : '4px',
+        backgroundColor: themes[theme].backColors[0]
+      }}>
+        { !isCollection ? <IconButton
+          tooltipPosition='bottom-center'
+          tooltip={translate(bookmarked ? 'pos.unbookmark' : 'pos.bookmark')}
+          style={{ width: 32 }} iconStyle={{ textAlign: 'right', fontSize: '12px' }}
+          onClick={this._openBookmarkDialog}>
+          {bookmarked ? <BookmarkOnIcon color={themes[theme].highlightColors[0]} /> : <BookmarkOffIcon color={themes[theme].highlightColors[0]} />}
+        </IconButton> : (stepItem && epicIdNameArray.concat(aeIdNameArray).map(el => el[0]).includes(stepItem.t) && stepItem.t !== 'ei') ? <FlatButton
+          onClick={() => this._selectStepButton(stepItem)}
+          style={{
+            height: 36,
+            minWidth: 36,
+            padding: 6,
+            left: 4,
+            zIndex: 100,
+            float: 'right',
+            position: 'absolute'
+          }}
+          // style={{...styles.buttonOpenArticle, zIndex: 1000, padding: 0, position: 'absolute', top: 15 }}
+          tooltipPosition='bottom-left'
+          tooltip={translate('pos.openEpic')}
+          icon={<IconOpenEpic color={themes[theme].highlightColors[0]} style={{ height: 30 }} />} /> : null }
+      </div> }
+      <div style={!(isMarker || isCollection || isMedia || !hasChart) ? {
       ...styles.actionButtonContainer,
       top: 254
     } : (!hasChart && isEntity) ? {
@@ -486,13 +679,15 @@ class ArticleIframe extends React.Component {
           </FloatingActionButton>
           }
         </Dialog>
+        {bookmarkDialog(bookmarkDialogOpen, () => this.setState({ bookmarkDialogOpen: false }), this._toggleBookmark, privateCollections, this._addNewCollection)}
         {modMenu}
         {shouldLoad && <LoadingCircle theme={theme} title={translate('pos.loading')} />}
-        {htmlContent && <div style={{ 'padding': '1em' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />}
+        {htmlContent && typeof htmlContent === "string" && <div style={{ 'padding': '1em', paddingTop: '2em' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />}
+        {htmlContent && htmlContent}
         {!htmlContent && (+fullfinalWiki !== -1) && (fullfinalWiki !== '') && (fullfinalWiki !== null) &&
         <iframe id='articleIframe' onLoad={this._handleUrlChange}
-          style={{ ...styles.iframe, display: (shouldLoad ? 'none' : ''), height: (!hasChart && isEntity ? 'calc(100% - 56px)' : '100%') }}
-          src={fullfinalWiki +  '?printable=yes'} height='100%'
+          style={{ ...styles.iframe, display: (shouldLoad ? 'none' : ''), height: (!hasChart && isEntity ? 'calc(100% - 56px)' : 'calc(100% - 8px)') }}
+          src={fullfinalWiki +  '?printable=yes'}
           frameBorder='0' />}
       </div>
     )
@@ -502,14 +697,20 @@ class ArticleIframe extends React.Component {
 //
 const enhance = compose(
   connect(state => ({
+    activeArea: state.activeArea,
     theme: state.theme,
     selectedYear: state.selectedYear,
   }), {
+    changeColor,
+    selectAreaItem,
+    collectionUpdated,
     setRightDrawerVisibility,
     setData,
+    selectCollectionItem,
     selectEpicItem,
     selectMarkerItem,
     selectLinkedItem,
+    updateUserScore,
     showNotification
   }),
   pure,

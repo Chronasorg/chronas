@@ -1,5 +1,4 @@
 import React, { Children, Component } from 'react'
-
 import { reduxForm } from 'redux-form'
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
@@ -8,9 +7,9 @@ import getDefaultValues from 'admin-on-rest/lib/mui/form/getDefaultValues'
 import FormInput from 'admin-on-rest/lib/mui/form/FormInput'
 import Toolbar from 'admin-on-rest/lib/mui/form/Toolbar'
 import { setModType } from '../buttons/actionReducers'
+import { updateUserScore } from '../../../menu/authentication/actionReducers'
 import { TYPE_MARKER } from '../../../map/actionReducers'
 import { epicIdNameArray, properties } from '../../../../properties'
-// import { Toolbar, FormInput, getDefaultValues } from 'admin-on-rest';
 
 const formStyle = {
   boxShadow: 'rgba(0, 0, 0, 0.4) 0px -4px 4px -3px inset',
@@ -150,6 +149,7 @@ export class LinkedForm extends Component {
         .then((res) => {
           if (res.status === 200) {
             setModType('', [], values.type)
+            this.props.updateUserScore(1)
             showNotification((redirect === 'edit') ? 'Item successfully updated' : 'Item successfully added')
             if (values.onlyEpicContent) {
               history.push('/mod/links')
@@ -160,7 +160,7 @@ export class LinkedForm extends Component {
             showNotification((redirect === 'edit') ? 'Item not updated' : 'Item not added', 'warning')
           }
         })
-    });
+    })
 
   componentWillUnmount () {
     this.props.setModType('')
@@ -227,6 +227,7 @@ const enhance = compose(
   }),
   {
     setModType,
+    updateUserScore,
     showNotification
   }),
   reduxForm({

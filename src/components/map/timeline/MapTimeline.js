@@ -81,8 +81,8 @@ const styles = {
   iconButton: { filter: 'drop-shadow(2px 6px 4px rgba(0,0,0,0.8))' },
   upArrow: { padding: 0, right: 11, top: -4, position: 'absolute' },
   downArrow: { padding: 0, right: 11, top: 24, position: 'absolute' },
-  editButton: { right: 60, top: 1, position: 'absolute' },
-  sourceButton: { right: 110, top: 1, position: 'absolute', padding: 0 },
+  editButton: { right: 60, top: 1, width: 40, height: 40, position: 'absolute' },
+  sourceButton: { right: 110, top: 1, width: 40, height: 40, position: 'absolute', padding: 0 },
   scoreLabel: {
     width: 38,
     height: 20,
@@ -622,29 +622,6 @@ class MapTimeline extends Component {
             // margin: '16px 32px 16px 0',
           }}>
             <List autoWidth>
-              {/* <ListItem */}
-              {/* primaryText="Take Screenshot" */}
-              {/* rightIcon={<IconCamera />} */}
-              {/* onClick={() => { */}
-              {/* // html2canvas(document.querySelector(".body > div")).then(canvas => { */}
-              {/* const canvas = document.querySelector(".mapboxgl-canvas") */}
-
-              {/* canvas.toBlob(function(blob) { */}
-              {/* saveAs(blob, "chronas-" + selectedYear + ".png"); */}
-              {/* }); */}
-              {/* // */}
-              {/* // const img = canvas.toDataURL('image/png').replace(/^data:image\/[^;]+/, 'data:application/octet-stream') */}
-              {/* // window.open(img) */}
-              {/* // window.location.href = img */}
-              {/* // const a = document.createElement('a'); */}
-              {/* // document.body.appendChild(a); */}
-              {/* // a.download = "chronas.png"; */}
-              {/* // a.href =  canvas.toDataURL(); */}
-              {/* // a.click(); */}
-              {/* // }); */}
-              {/* }} */}
-              {/* /> */}
-              {/* <Divider /> */}
               <ListItem
                 primaryText={translate('pos.timeline.autoplay')}
                 secondaryText={translate('pos.timeline.autoplaySubtitle')}

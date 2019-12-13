@@ -24,7 +24,6 @@ import LockClosedIcon from 'material-ui/svg-icons/action/lock'
 import LinkIcon from 'material-ui/svg-icons/content/link'
 import MigrationIcon from 'material-ui/svg-icons/action/compare-arrows'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn, } from 'material-ui/Table'
-import { toggleMenuDrawer as toggleMenuDrawerAction } from '../actionReducers'
 import {
   changeBasemap as changeBasemapAction,
   changeColor as changeColorAction,
@@ -135,7 +134,7 @@ class LayerContent extends Component {
 
   render () {
     const { basemapId, locked, isAllMarker } = this.state
-    const { activeArea, setPopOpacity, migrationActive, setProvinceBorders, selectedText, activeMarkers, activeEpics, toggleMenuDrawer, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme } = this.props
+    const { activeArea, setPopOpacity, migrationActive, setProvinceBorders, selectedText, activeMarkers, activeEpics, hasDashboard, onMenuTap, resources, translate, markerTheme, mapStyles, changeBasemap, setAreaColorLabel, setClusterMarkers, changeLabel, changeColor, setMarkerLimit, toggleMarker, toggleEpic, theme } = this.props
 
     return (
       <div style={{ ...styles.main, background: themes[theme].backColors[1], color: themes[theme].foreColors[1] }}>
@@ -516,6 +515,13 @@ class LayerContent extends Component {
             rightToggle={<Toggle onToggle={() => setPopOpacity(!mapStyles.popOpacity)} />}
             open={mapStyles.popOpacity} />
         </List>
+        <List>
+          <ListItem disabled>
+            <p><i><a
+              className='customLink' style={{ color: themes[theme].highlightColors[0] }}
+              onClick={() => this.props.history.push('/performance')}>Suggestions</a> based on your machine...</i></p>
+          </ListItem>
+        </List>
       </div>
     )
   }
@@ -544,7 +550,6 @@ const enhance = compose(
     toggleMarker: toggleMarkerAction,
     toggleEpic: toggleEpicAction,
     setMigration: setMigrationAction,
-    toggleMenuDrawer: toggleMenuDrawerAction,
   }),
   pure,
   translate,

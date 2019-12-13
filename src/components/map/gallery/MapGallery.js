@@ -61,8 +61,8 @@ const styles = {
   iconButton: { filter: 'drop-shadow(2px 6px 4px rgba(0,0,0,0.8))' },
   upArrow: { ...imgButton, padding: 0, right: 11, top: -4, position: 'absolute' },
   downArrow: { ...imgButton, padding: 0, right: 11, top: 24, position: 'absolute' },
-  editButton: { ...imgButton, right: 60, top: 1, position: 'absolute' },
-  sourceButton: { ...imgButton, right: 110, top: 1, position: 'absolute', padding: 0 },
+  editButton: { ...imgButton, right: 60, width: 40, height: 40, top: 1, position: 'absolute' },
+  sourceButton: { ...imgButton, right: 110, width: 40, height: 40, top: 1, position: 'absolute', padding: 0 },
   scoreLabel: {
     width: 38,
     height: 20,
@@ -215,10 +215,11 @@ class MapGallery extends PureComponent {
       selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} },
       currentYearLoaded: 3000,
       isFetchingImages: true,
-      isOpen: false,
+      isOpen: localStorage.getItem('chs_mediaGallery') !== 'opened' && (((window || {}).location || {}).hash !== '#/article'),
       tileData: [],
       filteredData: []
     }
+
   }
 
   handleChange = (value) => {
@@ -229,7 +230,7 @@ class MapGallery extends PureComponent {
     this.setState({ selectedImage: { src: '', year: '', title: '', wiki: [], source: '', fullData: {} } })
   }
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     const { currentYearLoaded, isOpen } = this.state
     if (this.props.selectedYear !== currentYearLoaded && isOpen) {
       this._updateImages(this.props.selectedYear)
@@ -315,12 +316,14 @@ class MapGallery extends PureComponent {
     this.handleImageClose()
     history.push('/article')
   }
-  _updateImages = (selectedYear) => {
-    const { refMap } = this.props
+  _updateImages = (a_selectedYear) => {
+    const { refMap, selectedYear } = this.props
+    const f_selectedYear = a_selectedYear || selectedYear
 
+    if (typeof refMap === "undefined") return setTimeout(this._updateImages, 1000)
     this.setState({ isFetchingImages: true })
     // Load slides data
-    axios.get(properties.chronasApiHost + '/metadata?year=' + selectedYear + '&end=300&subtype=artefacts,people,cities,battles,misc,ps,v,e&geo=true')
+    axios.get(properties.chronasApiHost + '/metadata?year=' + f_selectedYear + '&end=300&subtype=artefacts,people,cities,battles,misc,ps,v,e&geo=true')
       .then((allData) => {
         const allImages = allData.data
 
@@ -352,7 +355,7 @@ class MapGallery extends PureComponent {
         })
         this.setState({
           isFetchingImages: false,
-          currentYearLoaded: selectedYear,
+          currentYearLoaded: f_selectedYear,
           tileData, // .sort((a, b) => (+b.score || 0) - (+a.score || 0))
           showMax: GALLERYBATCHSIZE,
           filteredData
@@ -448,6 +451,7 @@ class MapGallery extends PureComponent {
             } else {
               this.setState({ isOpen: false, tileData: [],
                 showMax: GALLERYBATCHSIZE })
+              localStorage.setItem('chs_mediaGallery', 'opened')
             }
           }}
           iconStyle={{

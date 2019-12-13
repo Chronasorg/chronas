@@ -135,6 +135,7 @@ export class AutocompleteDisallowInput extends Component {
     return (
       <AutoComplete
         searchText={this.state.searchText}
+        listStyle={{ maxHeight: 200, overflow: 'auto' }}
         dataSource={dataSource}
         textFieldStyle={{ color: 'red' }}
         floatingLabelText={

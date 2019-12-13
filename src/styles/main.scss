@@ -444,7 +444,7 @@ button:focus {
   box-shadow: rgba(0, 0, 0, 0.4) 0px 5px 6px -3px inset;
 }
 
-.simple-form {
+.simple-form, .tabbed-form {
   background: #e8e8e8;
   height: 100%;
   width: 100%;
@@ -459,6 +459,11 @@ button:focus {
   height: 30px !important;
   top: calc(100% - 20px) !important;
   margin-left: -50px !important;
+
+  &.collection {
+    left: 50px!important;
+    top: calc(100% - 30px)!important;
+  }
 
   div {
     box-shadow: none !important;
@@ -708,12 +713,12 @@ div.vis-tooltip {
 }
 
 .EmbeddedArrayInputItemContainer {
-  div:first-child {
-    width: 70% !important;
-  }
-  div:last-child {
-    float: right;
-  }
+  //div:first-child {
+  //  width: 70% !important;
+  //}
+  //div:last-child {
+  //  float: right;
+  //}
 }
 
 .discoveryIcon:hover {
@@ -1230,4 +1235,50 @@ pre {
 
 .mapboxgl-marker  {
   z-index: 150;
+}
+
+.openBookmarkIcon {
+  opacity: 0.5;
+  &:hover {
+    opacity: 0.8
+  }
+}
+
+#animationCard {
+  transition: height .8s;
+}
+#articleIframe {
+  position: relative;
+  right: 0;
+  transition: .4s;
+}
+
+.cardIconsCollections {
+  position: absolute;
+  top: 2px;
+  right: 18px;
+  cursor: pointer;
+
+  svg:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  svg {
+    cursor: pointer;
+    opacity: .4;
+  }
+
+}
+
+.collectionMenuIcon svg {
+  transition: color 1s !important;
+}
+
+.accountPointsBadge span {
+  pointer-events: none
+}
+
+.lifelinePaper button {
+  pointer-events: all;
 }

@@ -9,13 +9,12 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import autoprefixer from 'material-ui/utils/autoprefixer'
 import { setLoadStatus, setMetadata } from './components/map/data/actionReducers'
-import { selectAreaItem, selectMarkerItem, TYPE_AREA, TYPE_MARKER } from './components/map/actionReducers'
+import { selectAreaItem, selectCollectionItem, selectMarkerItem, TYPE_AREA, TYPE_COLLECTION, TYPE_MARKER } from './components/map/actionReducers'
 import { setArea, setAreaColorLabel, setEpic, setMarker } from './components/menu/layers/actionReducers'
 import { setYear } from './components/map/timeline/actionReducers'
 import Notification from './components/overwrites/Notification'
 import Menu from './components/menu/Menu'
 import Map from './components/map/Map'
-import LayerContent from './components/menu/layers/LayersContent'
 import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import LoadingBar from './components/global/LoadingBar'
@@ -26,6 +25,7 @@ import { history } from './store/createStore'
 import Account from './components/menu/account/Account'
 import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
+import Play from './components/menu/play/Play'
 import Performance from './components/menu/performanceSelector/PerformanceSelector'
 import TOS from './components/menu/tos/TOS'
 import Information from './components/menu/information/Information'
@@ -36,7 +36,7 @@ import customTheme from './styles/CustomAdminTheme'
 import { setUser } from './components/menu/authentication/actionReducers'
 import utilsQuery from './components/map/utils/query'
 import { ConnectedRouter } from 'connected-react-router'
-import { didYouKnows, properties, themes } from './properties'
+import { didYouKnows, markerIdNameArray, properties, themes } from './properties'
 
 const styles = {
   wrapper: {
@@ -139,14 +139,16 @@ class App extends Component {
   }
 
   componentWillMount () {
-    const { setArea, setYear, setMarker, setMetadata, setLoadStatus, setEpic, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
+    const { setArea, setYear, setMarker, setMetadata, setLoadStatus, setEpic, selectCollectionItem, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
 
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
+    const selectedPerformance = typeof localStorage.getItem('chs_performance_set') === 'undefined' ? false : +localStorage.getItem('chs_performance_set')
+
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 2000))
-    const selectedMarker = (utilsQuery.getURLParameter('markers') || 'a,ar,at,b,c,ca,cp,e,l,m,op,p,r,s,si,o')
-    const markerLimit = (utilsQuery.getURLParameter('limit') || '2000')
-    const selectedEpics = (utilsQuery.getURLParameter('epics') || 'ei,es,ew')
+    const selectedMarker = (utilsQuery.getURLParameter('markers') || (selectedPerformance === false ? 'a,ar,at,b,c,ca,cp,e,l,m,op,p,r,s,si,o' : (+selectedPerformance === 0 ? '' : markerIdNameArray.map(el => el[0]).join(','))))
+    const markerLimit = (utilsQuery.getURLParameter('limit') || (selectedPerformance === false ? '2000' : (+selectedPerformance === 2 ? 5500 : 2000)))
+    const selectedEpics = (utilsQuery.getURLParameter('epics') || (selectedPerformance === false || selectedPerformance !== 2 ? '' : ('ei,es,ew')))
     const activeArea = {
       data: {},
       color: (utilsQuery.getURLParameter('fill') || 'ruler'),
@@ -162,7 +164,7 @@ class App extends Component {
     if (selectedToken) localStorage.setItem('chs_temptoken', selectedToken)
     else localStorage.removeItem('chs_temptoken')
 
-    const fullHost = (window.location.host || "").split('.') || []
+    const fullHost = (((window.location || {}).host || '') || "").split('.') || []
     const potentialLocale = utilsQuery.getURLParameter('locale') || fullHost[0]
     const newLocale = properties.languageOptions.map(el => el.id).includes(potentialLocale) ? potentialLocale : (localStorage.getItem('chs_locale') || 'en')
     // initialize queryparameters
@@ -227,16 +229,26 @@ class App extends Component {
         }, 30000)
 
         setYear(selectedYear)
-        if (!selectedToken && (!window.location.hash || window.location.hash === '#/')) {
+        // if (/*!selectedToken && (!window.location.hash || window.location.hash === '#/')*/) {
           if (selectedMarker !== '') setMarker(selectedMarker.split(','))
           if (selectedEpics !== '') setEpic(selectedEpics.split(','))
-        }
+        // }
         // if (activeArea.color !== 'ruler' || activeArea.label !== 'ruler') setAreaColorLabel(activeArea.color, activeArea.label)
         if (selectedItem.type === TYPE_AREA) {
           selectAreaItem('-1', selectedItem.value)
         } else if (selectedItem.type === TYPE_MARKER) {
           selectMarkerItem(selectedItem.value, selectedItem.value)
+        } else if (selectedItem.type === TYPE_COLLECTION) {
+          selectCollectionItem(selectedItem.value, false)
+          if (window.location.pathname.indexOf('article') === -1) {
+            if (((window.location || {}).host || '').substr(0, 4) === "edu.") {
+              history.push('/login')
+            } else {
+              history.push('/article')
+            }
+          }
         }
+
         setArea(areaDefsRequest.data, activeArea.color, activeArea.label)
 
         setLoadStatus(false)
@@ -277,14 +289,11 @@ class App extends Component {
     let token = (localStorage.getItem('chs_temptoken') !== null) ? localStorage.getItem('chs_temptoken') : undefined
 
     if (typeof token !== 'undefined') {
-      // delete parsedQuery.token
-      // let target = parsedQuery.target
-      // delete parsedQuery.target
-
       const decodedToken = decodeJwt(token)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
+      if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
       localStorage.setItem('chs_token', token)
       // window.history.pushState(null, null, (target ? (target + '/') : '') + queryString.stringify(parsedQuery) || '/')
     } else {
@@ -296,9 +305,13 @@ class App extends Component {
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
+      if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
       localStorage.setItem('chs_token', token)
-      setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar)
-    } else if (!localStorage.getItem('chs_performance') && (!window.location.hash || window.location.hash === '#/')) {
+      const userScore = decodedToken.score || localStorage.getItem('chs_score') || 1
+      setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar, userScore)
+    }
+
+    if (!localStorage.getItem('chs_performance') || localStorage.getItem('chs_performance_set') === null && (!window.location.hash || window.location.hash === '#/')) {
       // show welcome page if user is not logged in and no specific article or other page is specified
 
       utilsQuery.updateQueryStringParameter('markers', '')
@@ -415,6 +428,15 @@ class App extends Component {
                             />
                           )
                         }} />
+                        <Route exact path='/play' render={(props) => {
+                          return (
+                            <Play
+                              setFullscreen={this._setFullscreen}
+                              setBodyFont={this._setBodyFont}
+                              {...props}
+                            />
+                          )
+                        }} />
                         <Route exact path='/performance' render={(props) => {
                           return (
                             <Performance
@@ -460,9 +482,7 @@ class App extends Component {
                         <RightDrawerRoutes history={history} />
                       </Switch>
                     </div>}
-                    {!isLoading && !failAndNotify && !isStatic && <MenuDrawer muiTheme={customTheme}>
-                      {createElement(LayerContent)}
-                    </MenuDrawer>}
+                    {!isLoading && !failAndNotify && !isStatic && <MenuDrawer muiTheme={customTheme} history={history} />}
                     {!isLoading && !failAndNotify && !isStatic && <Sidebar open muiTheme={customTheme}>
                       {createElement(Menu)}
                     </Sidebar>}
@@ -495,6 +515,7 @@ const mapDispatchToProps = {
   setEpic,
   setAreaColorLabel,
   selectAreaItem,
+  selectCollectionItem,
   selectMarkerItem,
   setYear
 }

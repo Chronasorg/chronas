@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { Card, CardText } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
+import Divider from 'material-ui/Divider'
 import RaisedButton from 'material-ui/RaisedButton'
 import IconButton from 'material-ui/IconButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
@@ -151,6 +152,13 @@ class Configuration extends PureComponent {
               })}
             </SelectField>
           </CardText>
+          <br />
+          <Divider style={{ clear: 'both' }}/>
+          <CardText>
+          <p><i>You can let the best data settings be suggested to you at the <a
+            className='customLink' style={{ color: themes[theme].highlightColors[0] }}
+            onClick={() => this.props.history.push('/performance')}>Performance</a> section based on your machine's specs..</i></p>
+        </CardText>
 
           {/* TEXT FONT SELECT */}
 

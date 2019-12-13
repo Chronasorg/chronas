@@ -211,8 +211,7 @@ class EpicTimeline extends React.Component {
       if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && setYearByArticle && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
     }
     this.props.setEpicContentIndex(stepIndex + 1)
-  };
-
+  }
   handlePrev = (newYear) => {
     const { stepIndex, setYearByArticle, yearsSupported } = this.state
     if ((this.props.selectedItem || {}).type === TYPE_AREA) {
@@ -220,7 +219,7 @@ class EpicTimeline extends React.Component {
       if ((typeof newYear !== "undefined" && newYear !== false && !isNaN(newYear)) && setYearByArticle && +newYear >= yearsSupported[0] && +newYear <= yearsSupported[1]) this.props.setYear(+newYear)
     }
     this.props.setEpicContentIndex(stepIndex - 1)
-  };
+  }
   _selectMainArticle = () => {
     if ((this.props.selectedItem || {}).type === TYPE_AREA) {
       this.setState({ stepIndex: -1 })
@@ -231,7 +230,7 @@ class EpicTimeline extends React.Component {
   _selectStepButton = (index, newYear, openOwn, event) => {
     if (openOwn) {
       if (event.stopPropagation) event.stopPropagation()
-      const { activeArea, changeColor, selectEpicItem, selectedYear } = this.props
+      const { selectEpicItem, selectedYear } = this.props
       const { epicLinkedArticles } = this.state
       const selectedArticle = epicLinkedArticles[index]
       const aeId = selectedArticle.aeId
@@ -427,6 +426,7 @@ class EpicTimeline extends React.Component {
       }
     }
   }
+
   toggleYearByArticleWrapper = () => {
     localStorage.setItem('chs_setYearByArticle', !this.state.setYearByArticle)
     this.setState({ setYearByArticle: !this.state.setYearByArticle })
@@ -476,7 +476,7 @@ class EpicTimeline extends React.Component {
           height: (epicLinkedArticles.length === 0 ? (hasChart ? 'calc(100% - 254px)' : '100%') : (hasChart ? 'calc(100% - 300px)' : 'calc(100% - 46px)'))
         }} selectedWiki={selectedWiki || wikiUrl} />
     } else {
-      if (itemType === 'html') {
+      if (itemType === 'h') {
         const content = selectedIndexItem.content
         return <ArticleIframe history={history} selectAreaItemWrapper={this._selectAreaItem}
           setMetadataEntity={setMetadataEntity} toggleYearByArticleDisabled={!contentDetected}

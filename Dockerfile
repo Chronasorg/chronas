@@ -5,6 +5,7 @@ WORKDIR /app
 # ---- Dependencies ----
 FROM base AS dependencies
 COPY package.json ./
+COPY package-lock.json ./
 # install app dependencies including
 RUN npm install
 # ---- Copy Files/Build ----

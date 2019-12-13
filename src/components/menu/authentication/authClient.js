@@ -26,6 +26,10 @@ export default (type, params) => {
           const decodedToken = decodeJwt(token)
           localStorage.setItem('chs_token', token)
           if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
+          if (decodedToken.score) {
+            localStorage.setItem('chs_score', decodedToken.score)
+          }
+
           localStorage.setItem('chs_username', decodedToken.username)
           localStorage.setItem('chs_userid', decodedToken.id)
           localStorage.setItem('chs_privilege', decodedToken.privilege)
@@ -51,6 +55,9 @@ export default (type, params) => {
           const decodedToken = decodeJwt(token)
           localStorage.setItem('chs_token', token)
           if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
+          if (decodedToken.score) {
+            localStorage.setItem('chs_score', decodedToken.score)
+          }
           localStorage.setItem('chs_username', decodedToken.username)
           localStorage.setItem('chs_userid', decodedToken.id)
           localStorage.setItem('chs_privilege', decodedToken.privilege)
@@ -61,6 +68,7 @@ export default (type, params) => {
 
   if (type === AUTH_LOGOUT) {
     localStorage.removeItem('chs_token')
+    localStorage.removeItem('chs_score')
     localStorage.removeItem('chs_username')
     localStorage.removeItem('chs_avatar')
     localStorage.removeItem('chs_privilege')
@@ -72,6 +80,7 @@ export default (type, params) => {
     const { status } = params
     if (status === 401 || status === 403) {
       localStorage.removeItem('chs_token')
+      localStorage.removeItem('chs_score')
       localStorage.removeItem('chs_avatar')
       localStorage.removeItem('chs_username')
       localStorage.removeItem('chs_privilege')
