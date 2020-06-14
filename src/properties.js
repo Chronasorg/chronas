@@ -607,7 +607,7 @@ export const properties = {
   areaColorLayers: ['ruler', 'religion', 'religionGeneral', 'culture', 'population'],
   areaLabelLayers: ['ruler', 'religion', 'religionGeneral', 'culture'],
   provinceThreshold: 4,
-  chronasApiHost: 'http://localhost:4040/v1', // https://api.chronas.org/v1    -  http://localhost:4040/v1
+  chronasApiHost: 'https://api.chronas.org/v1', //    -  http://localhost:4040/v1
   markersTypes: ['w', 'w|b', 'w|si', 'w|c', 'w|h', 'w|ca', 'w|m', 'w|p', 'w|e', 'w|s', 'w|a', 'w|r', 'w|at', 'w|op', 'w|l', 'w|o'],
   // metadataTypes: ['ae|ruler', /*'ae|ca',*/ 'ae|culture', 'ae|religion', 'ae|religionGeneral', 'a', 'e', 't', 'h', 'i|a', 'i|b', 'i|c', 'i|p', 'i|m', 'i|siege', 'i|war', 'ps', 'v'],
 
@@ -702,10 +702,11 @@ export const properties = {
     { id: 'el', name: 'Ελληνικά (no UI translation yet)' },
     { id: 'en', name: 'English' },
     { id: 'es', name: 'Español (no UI translation yet)' },
-    { id: 'fr', name: 'Français (no UI translation yet)' },
+    { id: 'fr', name: 'Français' },
     { id: 'nl', name: 'Nederlands (no UI translation yet)' },
     { id: 'hi', name: 'हिन्दी (no UI translation yet)' },
     { id: 'it', name: 'Italiano (no UI translation yet)' },
+    { id: 'tr', name: 'Türkçe (no UI translation yet)' },
     { id: 'ja', name: '日本語 (no UI translation yet)' },
     { id: 'pl', name: 'Polski (no UI translation yet)' },
     { id: 'pt', name: 'Português (no UI translation yet)' },
@@ -790,6 +791,7 @@ export const languageToFont = {
   ar: "Cairo",
   fr: "Cinzel Regular",
   en: "Cinzel Regular",
+  tr: "Cinzel Regular",
   zh: "Noto Sans SC",
   nl: "Cinzel Regular",
   de: "Cinzel Regular",

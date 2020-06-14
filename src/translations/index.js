@@ -21,6 +21,7 @@ import customDutchMessages from './nl'
 import customGermanMessages from './de'
 import customGreekMessages from './el'
 import customItalianMessages from './it'
+// import customTurkishMessages from './tr'
 import customJapaneseMessages from './ja'
 import customPolishMessages from './pl'
 import customPortugeseMessages from './pt'
@@ -40,6 +41,7 @@ export default {
   de: { ...germanMessages, ...customGermanMessages },
   el: { ...greekMessages, ...customEnglishMessages },
   hi: { ...englishMessages, ...customEnglishMessages },
+  tr: { ...englishMessages, ...customEnglishMessages },
   it: { ...italianMessages, ...customEnglishMessages },
   ja: { ...japaneseMessages, ...customEnglishMessages },
   pl: { ...polishMessages, ...customEnglishMessages },
