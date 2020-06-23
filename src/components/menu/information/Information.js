@@ -327,7 +327,7 @@ class Information extends PureComponent {
               <div style={{
                 background: 'url(/images/compass.png) center bottom no-repeat #f9f9f9',
                 backgroundColor: themes[theme].backColors[0],
-                minHeight: 412,
+                minHeight: 348,
                 marginBottom: -40
               }}>
                 <p>
@@ -351,7 +351,7 @@ class Information extends PureComponent {
                   {/*{ translate('pos.block.welcome41') }<a className='customLink'*/}
                   {/*style={highlightColorStyle}*/}
                   {/*onClick={() => this.handleChange('about')}>*/}
-                  { translate('pos.block.welcome42') }</a>
+                  {/*{ translate('pos.block.welcome42') }</a>*/}
                   { translate('pos.block.welcome43') }<a
                     className='customLink' style={highlightColorStyle}
                     onClick={() => this.handleChange('contact')}>
