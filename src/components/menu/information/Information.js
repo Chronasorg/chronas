@@ -327,7 +327,7 @@ class Information extends PureComponent {
               <div style={{
                 background: 'url(/images/compass.png) center bottom no-repeat #f9f9f9',
                 backgroundColor: themes[theme].backColors[0],
-                minHeight: 512,
+                minHeight: 412,
                 marginBottom: -40
               }}>
                 <p>
@@ -340,13 +340,13 @@ class Information extends PureComponent {
                   <a className='customLink' style={highlightColorStyle} onClick={() => this.handleChange('tutorial')}>{translate('pos.block.welcome22')}</a>
                   { translate('pos.block.welcome23') }
                 </p>
-                <p>
-                  <a className='customLink' style={highlightColorStyle}
-                    onClick={() => history.push('/login')}>{translate('pos.block.welcome31')}</a>
-                  { ReactHtmlParser(translate('pos.block.welcome32', { dontTranslate: welcomeStatistics ? welcomeStatistics.user : '...' })) }
-                  <a className='customLink' style={highlightColorStyle} onClick={() => history.push('/community/general')}>{ translate('pos.block.welcome33') }</a>
-                  { translate('pos.block.welcome34') }
-                </p>
+                {/*<p>*/}
+                  {/*<a className='customLink' style={highlightColorStyle}*/}
+                    {/*onClick={() => history.push('/login')}>{translate('pos.block.welcome31')}</a>*/}
+                  {/*{ ReactHtmlParser(translate('pos.block.welcome32', { dontTranslate: welcomeStatistics ? welcomeStatistics.user : '...' })) }*/}
+                  {/*<a className='customLink' style={highlightColorStyle} onClick={() => history.push('/community/general')}>{ translate('pos.block.welcome33') }</a>*/}
+                  {/*{ translate('pos.block.welcome34') }*/}
+                {/*</p>*/}
                 <p>
                   {/*{ translate('pos.block.welcome41') }<a className='customLink'*/}
                   {/*style={highlightColorStyle}*/}
