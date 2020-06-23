@@ -405,7 +405,7 @@ class App extends Component {
                     {!isLoading && !failAndNotify && createElement(Map, { history, isLoading })}
                     {!isLoading && !failAndNotify && !isStatic &&
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
-                      <PledgeDialog theme={theme} open={pledgeOpen} snooze={() => {
+                      <PledgeDialog theme={theme} open={false} snooze={() => {
                         setTimeout(() => {
                           this.setState({ pledgeOpen: true })
                           this.forceUpdate()

@@ -267,7 +267,7 @@ export default {
       "welcome34": " to suggest new features and report bugs.",
       "welcome41": "Visit the ",
       "welcome42": "About",
-      "welcome43": " section to read more about the Chronas project and send the developers your inquiries, comments or questions through the ",
+      "welcome43": " If you have any inquiries, comments or questions, please use the ",
       "welcome44": "Contact",
       "welcome45": " form.",
       "welcome51": "We believe in the potential of this project to become a popular history tool alongside Wikipedia. If you share our enthusiasm and want to see the project succeed, please consider becoming a sustainer. For more information on <b>support</b> and the <b>future of Chronas</b>, visit the ",

@@ -348,23 +348,23 @@ class Information extends PureComponent {
                   { translate('pos.block.welcome34') }
                 </p>
                 <p>
-                  { translate('pos.block.welcome41') }<a className='customLink'
-                  style={highlightColorStyle}
-                  onClick={() => this.handleChange('about')}>
+                  {/*{ translate('pos.block.welcome41') }<a className='customLink'*/}
+                  {/*style={highlightColorStyle}*/}
+                  {/*onClick={() => this.handleChange('about')}>*/}
                   { translate('pos.block.welcome42') }</a>
                   { translate('pos.block.welcome43') }<a
                     className='customLink' style={highlightColorStyle}
                     onClick={() => this.handleChange('contact')}>
                   { translate('pos.block.welcome44') }</a>
                   { translate('pos.block.welcome45') }</p>
-                <p>
-                  { ReactHtmlParser(translate('pos.block.welcome51')) }
-                  <a
-                    className='customLink' style={highlightColorStyle}
-                    onClick={() => this.handleChange('pro')}>
-                    { translate('pos.block.welcome52') }</a>
-                  { ReactHtmlParser(translate('pos.block.welcome53')) }
-                  </p>
+                {/*<p>*/}
+                  {/*{ ReactHtmlParser(translate('pos.block.welcome51')) }*/}
+                  {/*<a*/}
+                    {/*className='customLink' style={highlightColorStyle}*/}
+                    {/*onClick={() => this.handleChange('pro')}>*/}
+                    {/*{ translate('pos.block.welcome52') }</a>*/}
+                  {/*{ ReactHtmlParser(translate('pos.block.welcome53')) }*/}
+                  {/*</p>*/}
                 <div style={{
                   zIndex: 2,
                   bottom: 0,
@@ -434,50 +434,50 @@ class Information extends PureComponent {
                 </p>
               </div>
             </Tab>
-            <Tab label={translate('pos.info.tabs.about')} value='about'>
-              <br />
-              <div>
-                <br />
-                { ReactHtmlParser(translate('pos.block.about1')) }
+            {/*<Tab label={translate('pos.info.tabs.about')} value='about'>*/}
+              {/*<br />*/}
+              {/*<div>*/}
+                {/*<br />*/}
+                {/*{ ReactHtmlParser(translate('pos.block.about1')) }*/}
 
-                <p>{ ReactHtmlParser(translate('pos.block.about2')) }<a className='customLink' style={highlightColorStyle} onClick={() => this.handleChange('tutorial')}>{translate('pos.block.about3')}</a>.</p>
-                { ReactHtmlParser(translate('pos.block.about4')) }
-                <p>
-                  <YouTube
-                    className='introVideo'
-                    height={400}
-                    videoId='0yqcCK66Az4'
-                    opts={properties.YOUTUBEOPTS}
-                  />
-                </p>
-                { ReactHtmlParser(translate('pos.block.about5')) }
-                <Divider />
-                <br />
-                <p>
-                  <a href="https://icons8.com/icon/81053/gold-bars">Gold Bars icon by Icons8</a>
-                </p>
-                <p>
-                  <b>World Physical map tiles</b> by <a
-                    href='https://www.arcgis.com/home/item.html?id=6cec161c9acc4b9abf97f6b7d65801b3'>ArcGIS Online /
-                  ESRI</a>, under <a href='https://www.esri.com/en-us/legal/terms/full-master-agreement'>Esri Master
-                  License Agreement</a>. Data by <a href='https://www.usa.gov/federal-agencies/national-park-service'>U.S.
-                  National Park Service</a>.
-                </p>
-                <p>
-                  <b>Watercolor map tiles</b> by <a href='http://stamen.com'>Stamen Design</a>, under <a
-                    href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a>. Data by <a
-                      href='http://openstreetmap.org'>OpenStreetMap</a>, under <a
-                        href='http://creativecommons.org/licenses/by-sa/3.0'>CC BY SA</a>.
-                </p>
-                <p>
-                  <a className='customLink' style={highlightColorStyle}
-                    onClick={() => history.push('/tos')}>{ translate('pos.termsOfService')}</a>
-                  <a className='customLink'
-                    style={{ paddingLeft: 16, fontWeight: 800, color: themes[theme].highlightColors[0] }}
-                    onClick={() => history.push('/privacy')}>{ translate('pos.privacyPolicy') }</a>
-                </p>
-              </div>
-            </Tab>
+                {/*<p>{ ReactHtmlParser(translate('pos.block.about2')) }<a className='customLink' style={highlightColorStyle} onClick={() => this.handleChange('tutorial')}>{translate('pos.block.about3')}</a>.</p>*/}
+                {/*{ ReactHtmlParser(translate('pos.block.about4')) }*/}
+                {/*<p>*/}
+                  {/*<YouTube*/}
+                    {/*className='introVideo'*/}
+                    {/*height={400}*/}
+                    {/*videoId='0yqcCK66Az4'*/}
+                    {/*opts={properties.YOUTUBEOPTS}*/}
+                  {/*/>*/}
+                {/*</p>*/}
+                {/*{ ReactHtmlParser(translate('pos.block.about5')) }*/}
+                {/*<Divider />*/}
+                {/*<br />*/}
+                {/*<p>*/}
+                  {/*<a href="https://icons8.com/icon/81053/gold-bars">Gold Bars icon by Icons8</a>*/}
+                {/*</p>*/}
+                {/*<p>*/}
+                  {/*<b>World Physical map tiles</b> by <a*/}
+                    {/*href='https://www.arcgis.com/home/item.html?id=6cec161c9acc4b9abf97f6b7d65801b3'>ArcGIS Online /*/}
+                  {/*ESRI</a>, under <a href='https://www.esri.com/en-us/legal/terms/full-master-agreement'>Esri Master*/}
+                  {/*License Agreement</a>. Data by <a href='https://www.usa.gov/federal-agencies/national-park-service'>U.S.*/}
+                  {/*National Park Service</a>.*/}
+                {/*</p>*/}
+                {/*<p>*/}
+                  {/*<b>Watercolor map tiles</b> by <a href='http://stamen.com'>Stamen Design</a>, under <a*/}
+                    {/*href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a>. Data by <a*/}
+                      {/*href='http://openstreetmap.org'>OpenStreetMap</a>, under <a*/}
+                        {/*href='http://creativecommons.org/licenses/by-sa/3.0'>CC BY SA</a>.*/}
+                {/*</p>*/}
+                {/*<p>*/}
+                  {/*<a className='customLink' style={highlightColorStyle}*/}
+                    {/*onClick={() => history.push('/tos')}>{ translate('pos.termsOfService')}</a>*/}
+                  {/*<a className='customLink'*/}
+                    {/*style={{ paddingLeft: 16, fontWeight: 800, color: themes[theme].highlightColors[0] }}*/}
+                    {/*onClick={() => history.push('/privacy')}>{ translate('pos.privacyPolicy') }</a>*/}
+                {/*</p>*/}
+              {/*</div>*/}
+            {/*</Tab>*/}
             <Tab label={translate('pos.info.tabs.statistics')} value='statistics'>
               <br />
               <div>
@@ -536,50 +536,50 @@ class Information extends PureComponent {
               { ReactHtmlParser(translate('pos.block.rules1')) }
               <br />
             </Tab>
-            <Tab label={translate('pos.info.tabs.support')} style={highlightColorStyle} value='pro'>
-              <br />
-              <div>
-                <br />
-                <h4>{translate('pos.info.tabs.support')}</h4>
-                <p>
-                  { ReactHtmlParser(translate('pos.block.support1')) }
-                </p>
-                <p>
-                  { ReactHtmlParser(translate('pos.block.support2')) }
-                   <a className='customLink' target='_blank' href='https://www.patreon.com/chronas'><Avatar
-                  style={{ marginRight: 8, marginLeft: 6 }} src='/images/240px-Patreon_logo.svg.png' />
-                  Patreon</a>
-                  { ReactHtmlParser(translate('pos.block.support3')) }
-                </p>
-                <p>
-                  <form className="donateButton" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-                    <span>{translate('pos.block.support4')}&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                    <input type="hidden" name="cmd" value="_s-xclick"/>
-                    <input type="hidden" name="hosted_button_id" value="DLRUFHZSBTBNN"/>
-                    <input type="image" src="/images/button-PayPal.png" style={{ "height": 34 }} border="0" name="submit" alt="Donate with PayPal" title="Donate with PayPal" /><img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1"/>
-                  </form>
-                </p>
-                <br />
-                <Divider />
-                <br />
-                <h4>{translate('pos.block.support5')}</h4>
-                <p>
-                  {translate('pos.block.support6')}
-                  <a className='customLink' style={highlightColorStyle} onClick={() => history.push('/community/features')}>{translate('pos.block.support7')}</a>{translate('pos.block.support8')}<a
-                  className='customLink' style={highlightColorStyle}
-                  onClick={() => this.handleChange('contact')}>{translate('pos.block.support9')}</a>{translate('pos.block.support10')}</p>
-                <br />
-                <Divider />
-                <br />
-                <p>
-                  {translate('pos.block.support11')}
-                  <a className='customLink'
-                    style={highlightColorStyle}
-                    onClick={() => this.handleChange('contact')}>{translate('pos.block.support12')}</a>{translate('pos.block.support13')}.
-                </p>
-              </div>
-              <br />
-            </Tab>
+            {/*<Tab label={translate('pos.info.tabs.support')} style={highlightColorStyle} value='pro'>*/}
+              {/*<br />*/}
+              {/*<div>*/}
+                {/*<br />*/}
+                {/*<h4>{translate('pos.info.tabs.support')}</h4>*/}
+                {/*<p>*/}
+                  {/*{ ReactHtmlParser(translate('pos.block.support1')) }*/}
+                {/*</p>*/}
+                {/*<p>*/}
+                  {/*{ ReactHtmlParser(translate('pos.block.support2')) }*/}
+                   {/*<a className='customLink' target='_blank' href='https://www.patreon.com/chronas'><Avatar*/}
+                  {/*style={{ marginRight: 8, marginLeft: 6 }} src='/images/240px-Patreon_logo.svg.png' />*/}
+                  {/*Patreon</a>*/}
+                  {/*{ ReactHtmlParser(translate('pos.block.support3')) }*/}
+                {/*</p>*/}
+                {/*<p>*/}
+                  {/*<form className="donateButton" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">*/}
+                    {/*<span>{translate('pos.block.support4')}&nbsp;&nbsp;&nbsp;&nbsp;</span>*/}
+                    {/*<input type="hidden" name="cmd" value="_s-xclick"/>*/}
+                    {/*<input type="hidden" name="hosted_button_id" value="DLRUFHZSBTBNN"/>*/}
+                    {/*<input type="image" src="/images/button-PayPal.png" style={{ "height": 34 }} border="0" name="submit" alt="Donate with PayPal" title="Donate with PayPal" /><img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1"/>*/}
+                  {/*</form>*/}
+                {/*</p>*/}
+                {/*<br />*/}
+                {/*<Divider />*/}
+                {/*<br />*/}
+                {/*<h4>{translate('pos.block.support5')}</h4>*/}
+                {/*<p>*/}
+                  {/*{translate('pos.block.support6')}*/}
+                  {/*<a className='customLink' style={highlightColorStyle} onClick={() => history.push('/community/features')}>{translate('pos.block.support7')}</a>{translate('pos.block.support8')}<a*/}
+                  {/*className='customLink' style={highlightColorStyle}*/}
+                  {/*onClick={() => this.handleChange('contact')}>{translate('pos.block.support9')}</a>{translate('pos.block.support10')}</p>*/}
+                {/*<br />*/}
+                {/*<Divider />*/}
+                {/*<br />*/}
+                {/*<p>*/}
+                  {/*{translate('pos.block.support11')}*/}
+                  {/*<a className='customLink'*/}
+                    {/*style={highlightColorStyle}*/}
+                    {/*onClick={() => this.handleChange('contact')}>{translate('pos.block.support12')}</a>{translate('pos.block.support13')}.*/}
+                {/*</p>*/}
+              {/*</div>*/}
+              {/*<br />*/}
+            {/*</Tab>*/}
             <Tab label={translate('pos.info.tabs.contact')} value='contact'>
               <br />
               <div className=''>
@@ -648,9 +648,9 @@ class Information extends PureComponent {
                 <Divider />
                 <br />
                 <div>
-                  <Divider />
-                  <br />
-                  © 2018 Dietmar & Joachim Aumann, Chronasorg
+                  {/*<Divider />*/}
+                  {/*<br />*/}
+                  {/*© 2018 Dietmar & Joachim Aumann, Chronasorg*/}
                 </div>
               </div>
             </Tab>
