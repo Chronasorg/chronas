@@ -4,6 +4,8 @@ metadata:
   name: chronas-map
 spec:
   replicas: 2
+  selector:
+    app: chronas-map
   template:
     metadata:
       labels:
