@@ -25,6 +25,9 @@ export const TOGGLE_EPIC = 'TOGGLE_EPIC'
 export const TOGGLE_MIGRATION = 'TOGGLE_MIGRATION'
 export const SET_MIGRATION = 'SET_MIGRATION'
 
+export const TOGGLE_VOICE = 'TOGGLE_VOICE'
+export const SET_VOICE = 'SET_VOICE'
+
 const SET_ALL_MARKER = 'SET_ALL_MARKER'
 
 /** Actions **/
@@ -125,6 +128,15 @@ export const setEpic = epics => ({
 export const toggleEpic = epic => ({
   type: TOGGLE_EPIC,
   payload: epic,
+})
+
+export const setVoice = voiceActive => ({
+  type: SET_VOICE,
+  payload: voiceActive,
+})
+
+export const toggleVoice = () => ({
+  type: TOGGLE_VOICE,
 })
 
 export const setMigration = migrationActive => ({
@@ -309,6 +321,18 @@ export const migrationReducer = (defaultState = false) =>
       case TOGGLE_MIGRATION:
         return !previousState
       case SET_MIGRATION:
+        return payload
+      default:
+        return previousState
+    }
+  }
+
+export const voiceReducer = (defaultState = false) =>
+  (previousState = defaultState, { type, payload }) => {
+    switch (type) {
+      case TOGGLE_VOICE:
+        return !previousState
+      case SET_VOICE:
         return payload
       default:
         return previousState

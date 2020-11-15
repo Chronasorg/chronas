@@ -25,6 +25,7 @@ import { history } from './store/createStore'
 import Account from './components/menu/account/Account'
 import Board from './components/menu/board/Board'
 import Configuration from './components/menu/configuration/Configuration'
+import Voice from './components/menu/voice/Voice'
 import Play from './components/menu/play/Play'
 import Performance from './components/menu/performanceSelector/PerformanceSelector'
 import TOS from './components/menu/tos/TOS'
@@ -469,6 +470,14 @@ class App extends Component {
                         <Route path='/info/:id?' render={(props) => {
                           return (
                             <Information activeTab={props.match.params.id} theme={theme} history={history} showNotification={showNotification} />
+                          )
+                        }} />
+                        <Route exact path='/voice' render={(props) => {
+                          return (
+                            <Voice
+                              theme={theme} history={history}
+                              {...props}
+                            />
                           )
                         }} />
                       </Switch>

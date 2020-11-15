@@ -8,6 +8,8 @@ import HelpIcon from 'material-ui/svg-icons/action/help'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
 import GameIcon from 'material-ui/svg-icons/hardware/videogame-asset'
+import VoiceOnIcon from 'material-ui/svg-icons/av/mic'
+import VoiceOffIcon from 'material-ui/svg-icons/av/mic-off'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
 import Avatar from 'material-ui/Avatar'
@@ -77,7 +79,7 @@ class Menu extends PureComponent {
 
   constructor (props) {
     super(props)
-    this.state = { diceRotation: 60 }
+    this.state = { isVoiceOn: false, diceRotation: 60 }
     const token = localStorage.getItem('chs_token')
     if (token !== null) {
       //  <span>{translate('resources.users.page.delete')} "{username}"</span>
@@ -99,8 +101,8 @@ class Menu extends PureComponent {
   }
 
   render () {
-    const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, translate } = this.props
-    const { diceRotation } = this.state
+    const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, voiceActive, theme, translate } = this.props
+    const { diceRotation, isVoiceOn } = this.state
     const isLoggedIn = (userDetails || {}).token !== ''
     const username = localStorage.getItem('chs_username')
     const customAvatar = (userDetails || {}).avatar || localStorage.getItem('chs_avatar')
@@ -248,6 +250,20 @@ class Menu extends PureComponent {
             <GameIcon hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
           <IconButton
+            key={'voice'}
+            containerElement={<Link to='/voice' />}
+            // tooltipPosition="bottom-right"
+            // tooltip={translate('pos.help')}
+            // tooltipStyles={tooltip}
+            iconStyle={{ color: voiceActive ? themes[theme].highlightColors[0] : themes[theme].foreColors[0] }}
+            onClick={() => {
+              this.setState({ isVoiceOn: !this.state.isVoiceOn })
+              setActiveMenu('voice')
+            }}
+          >
+            <VoiceOnIcon hoverColor={themes[theme].highlightColors[0]} />
+          </IconButton>
+          <IconButton
             key={'help'}
             containerElement={<Link to='/info' />}
             // tooltipPosition="bottom-right"
@@ -277,6 +293,7 @@ Menu.defaultProps = {
 const enhance = compose(
   connect(state => ({
     userDetails: state.userDetails,
+    voiceActive: state.voiceActive,
     theme: state.theme
   }), {
     toggleRightDrawer: toggleRightDrawerAction,
