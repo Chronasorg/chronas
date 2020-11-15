@@ -38,6 +38,7 @@ spec:
   - hosts:
     - chronas.org
     - www.chronas.org
+    - light.chronas.org
     - edu.chronas.org
     - play.chronas.org
     - ar.chronas.org
@@ -75,6 +76,13 @@ spec:
           serviceName: chronas-map
           servicePort: 80
   - host: edu.chronas.org
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: chronas-map
+          servicePort: 80
+  - host: light.chronas.org
     http:
       paths:
       - path: /

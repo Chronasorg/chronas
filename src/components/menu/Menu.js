@@ -99,7 +99,7 @@ class Menu extends PureComponent {
   }
 
   render () {
-    const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, translate } = this.props
+    const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, isLight, translate } = this.props
     const { diceRotation } = this.state
     const isLoggedIn = (userDetails || {}).token !== ''
     const username = localStorage.getItem('chs_username')
@@ -135,7 +135,7 @@ class Menu extends PureComponent {
             hoverColor={themes[theme].highlightColors[0]}
           />
         </IconButton>
-        <IconButton
+        { !isLight && <IconButton
           key={'discover'}
           containerElement={<Link to='/discover' />}
           tooltipPosition='bottom-right'
@@ -146,8 +146,8 @@ class Menu extends PureComponent {
         >
           <DiscoverIcon
             hoverColor={themes[theme].highlightColors[0]} />
-        </IconButton>
-        <IconButton
+        </IconButton>}
+        { !isLight && <IconButton
           key={'random'}
           tooltipPosition='bottom-right'
           tooltip={translate('pos.random')}
@@ -162,7 +162,7 @@ class Menu extends PureComponent {
         >
           <DiceIcon
             hoverColor={themes[theme].highlightColors[0]} />
-        </IconButton>
+        </IconButton> }
         <IconButton
           key={'configuration'}
           containerElement={<Link to='/configuration' />}
@@ -236,7 +236,7 @@ class Menu extends PureComponent {
             <CollectionIcon
               hoverColor={themes[theme].highlightColors[0]} />
           </IconButton>
-          <IconButton
+          { !isLight && <IconButton
             key={'play'}
             containerElement={<Link to='/play' />}
             // tooltipPosition="bottom-right"
@@ -246,8 +246,8 @@ class Menu extends PureComponent {
             iconStyle={{ color: themes[theme].foreColors[0] }}
           >
             <GameIcon hoverColor={themes[theme].highlightColors[0]} />
-          </IconButton>
-          <IconButton
+          </IconButton> }
+          { !isLight && <IconButton
             key={'help'}
             containerElement={<Link to='/info' />}
             // tooltipPosition="bottom-right"
@@ -257,13 +257,13 @@ class Menu extends PureComponent {
             iconStyle={{ color: themes[theme].foreColors[0] }}
           >
             <HelpIcon hoverColor={themes[theme].highlightColors[0]} />
-          </IconButton>
-          <IconButton
+          </IconButton> }
+          { !isLight && <IconButton
             onClick={isLoggedIn ? this.handleLogout : userLogout}
             className='logout'
             iconStyle={{ color: isLoggedIn ? themes[theme].highlightColors[0] : themes[theme].foreColors[0] }}
           > <LogoutIcon hoverColor={themes[theme].highlightColors[0]} />
-          </IconButton>
+          </IconButton> }
         </div>
       </div>
     </div>

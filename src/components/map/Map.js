@@ -169,7 +169,7 @@ class Map extends Component {
   }
   _updateMetaMapStyle = (shouldReset = false, fromInit = false) => {
     // console.log('### updating metadata mapstyles')
-    const { metadata, setModToUpdate, locale } = this.props
+    const { metadata, setModToUpdate, isLight, locale } = this.props
 
     const metadataRuler = metadata['ruler']
     const metadataReligion = metadata['religion']
@@ -186,54 +186,69 @@ class Map extends Component {
       rulStops.push([rulKeys[i], metadataRuler[rulKeys[i]][1]])
     }
 
-    const relKeys = Object.keys(metadataReligion)
-    for (let i = 0; i < relKeys.length; i++) {
-      relStops.push([relKeys[i], metadataReligion[relKeys[i]][1]])
-    }
+    if (!isLight) {
+      const relKeys = Object.keys(metadataReligion)
+      for (let i = 0; i < relKeys.length; i++) {
+        relStops.push([relKeys[i], metadataReligion[relKeys[i]][1]])
+      }
 
-    const relGenKeys = Object.keys(metadataReligionGeneral)
-    for (let i = 0; i < relGenKeys.length; i++) {
-      relGenStops.push([relGenKeys[i], metadataReligionGeneral[relGenKeys[i]][1]])
-    }
+      const relGenKeys = Object.keys(metadataReligionGeneral)
+      for (let i = 0; i < relGenKeys.length; i++) {
+        relGenStops.push([relGenKeys[i], metadataReligionGeneral[relGenKeys[i]][1]])
+      }
 
-    const culKeys = Object.keys(metadataCulture)
-    for (let i = 0; i < culKeys.length; i++) {
-      culStops.push([culKeys[i], metadataCulture[culKeys[i]][1]])
+      const culKeys = Object.keys(metadataCulture)
+      for (let i = 0; i < culKeys.length; i++) {
+        culStops.push([culKeys[i], metadataCulture[culKeys[i]][1]])
+      }
     }
-
-    let mapStyle = this.state.mapStyle
-      .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-color'], fromJS(
-        {
-          'property': 'r',
-          'type': 'categorical',
-          'stops': rulStops,
-          'default': 'rgba(1,1,1,0.3)'
-        }
-      ))
-      .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-color'], fromJS(
-        {
-          'property': 'e',
-          'type': 'categorical',
-          'stops': relStops,
-          'default': 'rgba(1,1,1,0.3)'
-        }
-      ))
-      .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-color'], fromJS(
-        {
-          'property': 'g',
-          'type': 'categorical',
-          'stops': relGenStops,
-          'default': 'rgba(1,1,1,0.3)'
-        }
-      ))
-      .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-color'], fromJS(
-        {
-          'property': 'c',
-          'type': 'categorical',
-          'stops': culStops,
-          'default': 'rgba(1,1,1,0.3)'
-        }
-      ))
+    let mapStyle
+    if (isLight) {
+      mapStyle = this.state.mapStyle
+        .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-color'], fromJS(
+          {
+            'property': 'r',
+            'type': 'categorical',
+            'stops': rulStops,
+            'default': 'rgba(1,1,1,0.3)'
+          }
+        ))
+    }
+    else {
+      mapStyle = this.state.mapStyle
+        .setIn(['layers', areaColorLayerIndex['ruler'], 'paint', 'fill-color'], fromJS(
+          {
+            'property': 'r',
+            'type': 'categorical',
+            'stops': rulStops,
+            'default': 'rgba(1,1,1,0.3)'
+          }
+        ))
+        .setIn(['layers', areaColorLayerIndex['religion'], 'paint', 'fill-color'], fromJS(
+          {
+            'property': 'e',
+            'type': 'categorical',
+            'stops': relStops,
+            'default': 'rgba(1,1,1,0.3)'
+          }
+        ))
+        .setIn(['layers', areaColorLayerIndex['religionGeneral'], 'paint', 'fill-color'], fromJS(
+          {
+            'property': 'g',
+            'type': 'categorical',
+            'stops': relGenStops,
+            'default': 'rgba(1,1,1,0.3)'
+          }
+        ))
+        .setIn(['layers', areaColorLayerIndex['culture'], 'paint', 'fill-color'], fromJS(
+          {
+            'property': 'c',
+            'type': 'categorical',
+            'stops': culStops,
+            'default': 'rgba(1,1,1,0.3)'
+          }
+        ))
+    }
 
     if (shouldReset) setModToUpdate('')
     if (fromInit && languageToFont[locale] !== "Cinzel Regular") {
@@ -242,7 +257,7 @@ class Map extends Component {
     this.setState({ mapStyle })
   }
   _getAreaViewportAndOutlines = (nextActiveColorDim, nextActiveColorValue, prevActiveColorDim = false, prevActiveColorValue = false, teams = false) => {
-    if ((!teams || teams.length === 0) && (!nextActiveColorValue || nextActiveColorValue === 'na')) {
+    if (this.props.isLight || ((!teams || teams.length === 0) && (!nextActiveColorValue || nextActiveColorValue === 'na'))) {
       return {}
     }
 
@@ -331,7 +346,7 @@ class Map extends Component {
     return {}
   }
   _changeArea = (areaDefs, newLabel, newColor, selectedProvince, prevColor = false, prevDimValue = false) => {
-    const { activeArea, mapStyles, metadata, selectedItem } = this.props
+    const { activeArea, isLight, mapStyles, metadata, selectedItem } = this.props
 
     let mapStyle = this.state.mapStyle
 
@@ -360,7 +375,7 @@ class Map extends Component {
       }
     }
 
-    if (typeof newLabel !== 'undefined') {
+    if (!isLight && typeof newLabel !== 'undefined') {
       const plCol = utilsMapping.addTextFeat(areaDefs, newLabel, metadata)
       mapStyle = mapStyle
         .setIn(['sources', 'area-labels', 'data'], fromJS(plCol[0]))
@@ -378,7 +393,7 @@ class Map extends Component {
         prevActiveprovinceValue = (metadata['religion'][prevActiveprovinceValue] || {})[3]
       }
 
-      const {viewport, multiPolygonToOutline} = this._getAreaViewportAndOutlines(newColor, prevDimValue || activeprovinceValue, prevColor, prevActiveprovinceValue, false)
+      const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(newColor, prevDimValue || activeprovinceValue, prevColor, prevActiveprovinceValue, false)
 
       if (typeof multiPolygonToOutline !== 'undefined') {
         let newMapStyle = mapStyle
@@ -435,7 +450,7 @@ class Map extends Component {
 
   _simulateYearChange = (areaDefs) => {
     const { religionGeneral, religion } = this.props.metadata
-    const { activeArea, mapStyles } = this.props
+    const { activeArea, mapStyles, isLight } = this.props
 
     const sourceId = 'provinces'
     const prevMapStyle = this.state.mapStyle
@@ -443,16 +458,26 @@ class Map extends Component {
       return (provValue !== null) ? +provValue[4] : 0
     }))
 
-    let mapStyle = prevMapStyle
-      .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function (feature) {
-        const provValue = areaDefs[feature.properties.name] || []
-        feature.properties.r = provValue[0]
-        feature.properties.c = provValue[1]
-        feature.properties.e = provValue[2]
-        feature.properties.g = (religionGeneral[(religion[provValue[2]] || [])[3]] || [])[0]
-        feature.properties.p = provValue[4]
-        return feature
-      })) // areaColorLayerIndex['ruler']
+    let mapStyle
+    if (isLight) {
+      mapStyle = prevMapStyle
+        .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function (feature) {
+          const provValue = areaDefs[feature.properties.name] || []
+          feature.properties.r = provValue[0]
+          return feature
+        })) // areaColorLayerIndex['ruler']
+    } else {
+      mapStyle = prevMapStyle
+        .updateIn(['sources', sourceId, 'data', 'features'], list => list.map(function (feature) {
+          const provValue = areaDefs[feature.properties.name] || []
+          feature.properties.r = provValue[0]
+          feature.properties.c = provValue[1]
+          feature.properties.e = provValue[2]
+          feature.properties.g = (religionGeneral[(religion[provValue[2]] || [])[3]] || [])[0]
+          feature.properties.p = provValue[4]
+          return feature
+        })) // areaColorLayerIndex['ruler']
+    }
 
     if (mapStyles.popOpacity || activeArea.color === 'population') {
       mapStyle = mapStyle.setIn(['layers', areaColorLayerIndex[activeArea.color], 'paint', 'fill-opacity'], fromJS(
@@ -864,7 +889,7 @@ class Map extends Component {
 
   componentWillReceiveProps (nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
-    const { activeEpics, activeMarkers, activeArea, location, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, setYear, selectAreaItem, selectMarkerItem, updateSingleMetadata, locale } = this.props
+    const { activeEpics, activeMarkers, activeArea, location, isLight, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, setYear, selectAreaItem, selectMarkerItem, updateSingleMetadata, locale } = this.props
 
     const contentIndex = ((selectedItem || {}).data || {}).contentIndex
     const stepIndex = ((selectedItem || {}).data || {}).stepIndex
@@ -1197,6 +1222,8 @@ class Map extends Component {
       }
 
       if (nextProps.selectedItem.type !== TYPE_AREA && nextProps.selectedItem.value !== selectedItem.value || ((nextProps.selectedItem.data || {})._id !== (selectedItem.data || {})._id)) {
+
+        if (isLight) return
         // setup new epic!
         if (selectedItem.type === TYPE_EPIC && !nextProps.selectedItem.data) {
           // remove old geoJson // TODO: this could complicate with sequential wars
@@ -1739,7 +1766,7 @@ class Map extends Component {
   }
 
   _renderPopup () {
-    const { activeArea, metadata, markerTheme, mapStyles, selectMarkerItem, history, theme, translate } = this.props
+    const { activeArea, metadata, markerTheme, mapStyles, selectMarkerItem, history, isLight, theme, translate } = this.props
     const { categories, clusterRawData, filtered, hoverInfo, expanded, searchMarkerText } = this.state
     const isCluster = mapStyles.clusterMarkers
 
@@ -1959,12 +1986,46 @@ class Map extends Component {
 
       const properties = (hoverInfo || {}).feature
       if (properties) {
-        const selectedValues = {
-          'r': metadata.ruler[properties.r] || [],
-          'c': metadata.culture[properties.c] || [],
-          'e': metadata.religion[properties.e] || [],
-          'g': metadata.religionGeneral[properties.g] || [],
-          'p': properties.name || ''
+        let selectedValues = {}
+
+        if (isLight) {
+          selectedValues = {
+          'r': metadata.ruler[properties.r] || []
+          }
+        } else {
+          selectedValues = {
+            'r': metadata.ruler[properties.r] || [],
+            'c': metadata.culture[properties.c] || [],
+            'e': metadata.religion[properties.e] || [],
+            'g': metadata.religionGeneral[properties.g] || [],
+            'p': properties.name || ''
+          }
+        }
+
+        const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
+
+        if (isLight) {
+          const rulerIcon = selectedValues['r'][3]
+          return (
+            <Popup className='dimsTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]}
+                   closeButton={false}>
+              <div className='county-info'>
+                <Chip
+                  className='chipAvatar'
+                  labelColor={'rgba(0, 0, 0, 0.87)'}
+                  backgroundColor={(activeArea.color === 'ruler') ? (selectedValues['r'][1] || '#fff') : '#fff'}
+                >
+                  <Avatar color={themes[theme].backColors[0]}
+                          backgroundColor={rulerIcon ? '#fff' : '#6a6a6a'}
+                          {...(rulerIcon ? (rulerIcon[0] === '/' ? { src: rulerIcon } : { src: getFullIconURL(decodeURIComponent(rulerIcon)) }) : {
+                            icon: <RulerIcon viewBox={'0 0 64 64'} />
+                          })}
+                  />
+                  {hasLocaleMetadata ? (metadata.locale['ruler'][properties.r] || selectedValues['r'][0] || 'n/a') : (selectedValues['r'][0] || 'n/a')}
+                </Chip>
+              </div>
+            </Popup>
+          )
         }
 
         // TODO: only color if selected
@@ -1972,9 +2033,6 @@ class Map extends Component {
         const cultureIcon = selectedValues['c'][3]
         const religionIcon = selectedValues['e'][4]
         const religionGeneralIcon = selectedValues['g'][3]
-
-
-        const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== "undefined"
 
         return (
           <Popup className='dimsTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]}
@@ -2094,7 +2152,7 @@ class Map extends Component {
 
   render () {
     const { arcData, clusterRawData, epics, galleryMarker, markerData, geoData, hoverInfo, mapStyle, mapTimelineContainerClass, mapGalleryContainerClass, migrationData, viewport } = this.state
-    const { activeArea, modActive, menuDrawerOpen, metadata, rightDrawerOpen, history, location, theme, mapStyles, markerTheme, selectedItem, selectedYear } = this.props
+    const { activeArea, modActive, menuDrawerOpen, metadata, rightDrawerOpen, history, isLight, location, theme, mapStyles, markerTheme, selectedItem, selectedYear } = this.props
 
     let leftOffset = isStatic ? 0 : (menuDrawerOpen) ? 156 : 56
     if (rightDrawerOpen) leftOffset -= viewport.width * 0.25
@@ -2111,10 +2169,11 @@ class Map extends Component {
     }
 
     let modMarker = (
-      ((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') ||
+      !isLight &&
+      (((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') ||
       ((selectedItem || {}).type === TYPE_LINKED && ((selectedItem.value || {}).coo || []).length > 0) ||
       ((selectedItem || {}).type === TYPE_EPIC && (selectedItem.coo || []).length > 0) ||
-      (galleryMarker.length > 1)) ? <Marker
+      (galleryMarker.length > 1))) ? <Marker
         captureClick={false}
         captureDrag={false}
         latitude={(galleryMarker || {})[1] || ((modActive || {}).data || {})[1] ||
@@ -2182,7 +2241,7 @@ class Map extends Component {
           onClick={this._onClick}
           onLoad={this._initializeMap}
         >
-          <DeckGLOverlay
+          { !isLight && <DeckGLOverlay
             activeColor={activeArea.color}
             goToViewport={this._goToViewport}
             theme={themes[theme]}
@@ -2210,7 +2269,7 @@ class Map extends Component {
             strokeWidth={15}
             animationInterval={animationInterval}
             contentIndex={(selectedItem.data || {}).contentIndex || (selectedItem.data || {}).stepIndex}
-          />
+          />}
           {modMarker}
           {this._renderPopup()}
         </MapGL>
