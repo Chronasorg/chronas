@@ -141,9 +141,9 @@ class App extends Component {
 
   componentWillMount () {
     const { setArea, setYear, setMarker, setMetadata, setLoadStatus, setEpic, selectCollectionItem, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
-
+    console.debug("isLight", isLight);
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
-
+    
     const selectedPerformance = isLight ? 0 : (typeof localStorage.getItem('chs_performance_set') === 'undefined' ? false : +localStorage.getItem('chs_performance_set'))
 
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * (isLight ? 1000 : 2000)))
