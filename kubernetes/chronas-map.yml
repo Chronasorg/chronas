@@ -5,7 +5,8 @@ metadata:
 spec:
   replicas: 2
   selector:
-    app: chronas-map
+    matchLabels:
+      app: chronas-map
   template:
     metadata:
       labels:
