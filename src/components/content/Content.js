@@ -230,12 +230,12 @@ class Content extends Component {
   }
 
   _handleNewData = (selectedItem, metadata, activeArea, doCleanup = false) => {
-    const { setData, showNotification, setFullModActive, resetModActive } = this.props
+    const { setData, showNotification, setFullModActive, isLight, resetModActive } = this.props
 
-    const isMarker = selectedItem.type === TYPE_MARKER
-    const isCollection = selectedItem.type === TYPE_COLLECTION
-    const isMedia = selectedItem.type === TYPE_LINKED
-    const isArea = selectedItem.type === TYPE_AREA
+    const isMarker = selectedItem.type === TYPE_MARKER || isLight
+    const isCollection = selectedItem.type === TYPE_COLLECTION && !isLight
+    const isMedia = selectedItem.type === TYPE_LINKED && !isLight
+    const isArea = selectedItem.type === TYPE_AREA && !isLight
 
     let selectedWiki = null
 
@@ -249,7 +249,7 @@ class Content extends Component {
       const sunburstDataMeta = {}
       const activeData = activeArea.data
 
-      if (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
+      if (!isLight && selectedItem.wiki !== WIKI_PROVINCE_TIMELINE) {
         console.error('setting up sunburst data, this should only be done once', activeprovinceValue)
         Object.keys(activeData).forEach((provKey) => {
           const currProvData = activeData[provKey]
@@ -306,7 +306,20 @@ class Content extends Component {
           : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
     }
     else if (isMarker || isCollection) {
-      selectedWiki = selectedItem.wiki
+      if (isLight) {
+
+        const selectedProvince = selectedItem.value
+        const activeAreaDim = (activeArea.color === 'population') ? 'ruler' : activeArea.color
+        const activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(activeAreaDim)]
+
+        selectedWiki = (activeAreaDim === 'religionGeneral')
+          ? (metadata[activeAreaDim][(metadata.religion[activeprovinceValue] || [])[3]] || {})[2]
+          : (activeAreaDim === 'province')
+            ? (metadata[activeAreaDim][activeprovinceValue] || {})
+            : (metadata[activeAreaDim][activeprovinceValue] || {})[2]
+      } else {
+        selectedWiki = selectedItem.wiki
+      }
     } else if (isMedia) {
       selectedWiki = selectedItem.wiki
       axios.get(properties.chronasApiHost + '/markers/' + selectedWiki)
@@ -327,7 +340,7 @@ class Content extends Component {
         selectedWiki: selectedWiki
       })
 
-      if (isCollection && selectedItem.data) return
+      if (isLight || (isCollection && selectedItem.data)) return
       // const selectedProvince = selectedItem.value
       const activeAreaDim = (activeArea.color === 'population') ? 'ruler' : activeArea.color
       let activeprovinceValue = utils.getAreaDimKey(metadata, activeArea, selectedItem)
@@ -425,7 +438,9 @@ class Content extends Component {
 
   render () {
     const { activeContentMenuItem, hasQuestions, sunburstData, iframeLoading, selectedWiki } = this.state
-    const { activeArea, deselectItem, selectedItem, influenceRawData, provinceEntity, selectedYear, setMetadataType, showNotification, theme, metadata, newWidth, history, stepIndex, setMetadataEntity } = this.props
+    const { activeArea, deselectItem, selectedItem, isLight, influenceRawData, provinceEntity, selectedYear, setMetadataType, showNotification, theme, metadata, newWidth, history, stepIndex, setMetadataEntity } = this.props
+
+    console.debug("!inside content")
 
     const finalLinkedItems = /* (linkedItems || {}).id ? linkedItems : */selectedItem.data || {
       media: [],
@@ -434,12 +449,12 @@ class Content extends Component {
     }
 
     const activeAreaDim = (activeArea.color === 'population') ? 'ruler' : activeArea.color
-    const entityTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA)
-    const epicTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_EPIC)
+    const entityTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_AREA) && !isLight
+    const epicTimelineOpen = (selectedItem.wiki !== WIKI_PROVINCE_TIMELINE && selectedItem.type === TYPE_EPIC) && !isLight
     const provinceTimelineOpen = (selectedItem.wiki === WIKI_PROVINCE_TIMELINE)
-    const isCollection = selectedItem.type === TYPE_COLLECTION
-    const isMarker = selectedItem.type === TYPE_MARKER
-    const isMedia = selectedItem.type === TYPE_LINKED
+    const isCollection = selectedItem.type === TYPE_COLLECTION && !isLight
+    const isMarker = selectedItem.type === TYPE_MARKER || isLight
+    const isMedia = selectedItem.type === TYPE_LINKED && !isLight
     const linkedCount = (finalLinkedItems.media || []).length
     const hasLinkedImage = (finalLinkedItems.media || []).some(lI => IMAGETYPES.includes(lI.subtype))
     const hasLinkedMovie = (finalLinkedItems.media || []).some(lI => MOVIETYPES.includes(lI.subtype))
@@ -611,7 +626,7 @@ class Content extends Component {
     }
 
     return <div style={(isMarker || isMedia) ? { ...styles.main, boxShadow: 'inherit' } : (isCollection) ? { ...styles.main, boxShadow: 'inherit', background: 'transparent' } : styles.main}>
-      {(entityTimelineOpen || epicTimelineOpen || isMarker || isCollection || isMedia) && <div>
+      {(entityTimelineOpen || epicTimelineOpen || isMarker || isCollection || isMedia) && !isLight && <div>
         <Paper style={{
           ...styles.contentLeftMenu,
           backgroundColor: themes[theme].backColors[0],

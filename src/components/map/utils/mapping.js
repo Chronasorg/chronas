@@ -1,7 +1,10 @@
 import { adjacent } from '../data/datadef'
 import * as scale from 'd3-scale'
+import utilsQuery from "./query";
 
 const turf = require('@turf/turf')
+
+const isLight = utilsQuery.getURLParameter('light') === 'true' || (((window.location || {}).host || '').substr(0, 4) === 'light.')
 
 const utils = {
 
@@ -32,6 +35,7 @@ const utils = {
   },
 
   getExtrema2: function (fullpts) {
+    console.debug('getExtrema2');
     var minX = [fullpts[0][0][0], fullpts[0][0][1]]
     var minY = [fullpts[0][0][0], fullpts[0][0][1]]
     var maxX = [fullpts[0][0][0], fullpts[0][0][1]]
@@ -50,6 +54,7 @@ const utils = {
   },
 
   get_polygon_centroid: function (fullpts) {
+    console.debug('get_polygon_centroid');
     let xSum = 0
     let ySum = 0
     let len = 0
@@ -66,6 +71,7 @@ const utils = {
   },
 
   getCoordsForMultiPolyLine: function (myCoords) {
+    console.debug('getCoordsForMultiPolyLine');
     var extremas = this.getExtrema2(myCoords)
     var point = this.get_polygon_centroid(myCoords)
 
@@ -221,6 +227,8 @@ const utils = {
   },
 
   fillCollectionId: function (myId, addTo, postfix, metadata) {
+
+    console.debug('fillCollectionId');
     // addto = d3 gActiveCouLabels
     var tmpName = ''
     var groups = {}
@@ -320,91 +328,10 @@ const utils = {
 
     return [myColl, polyArray, myLineColl]
   },
-  /*
-   function addAreaFeat(setActiveFeat) {
-   activeAreaFeat = setActiveFeat;
-   if (setActiveFeat === 'none') {
-   $("#provinceAreas").css("visibility", "hidden")
-   }
-   else {
-   $("#provinceAreas").css("visibility", "visible")
-
-   switch (activeAreaFeat) {
-   case "country":
-
-   for (var i = 0; i < provinceGeojson.features.length; i++) {
-   tmpRul = "undefined";
-   tmpProv = provinceGeojson.features[i].properties.name;
-
-   if (activeYear.hasOwnProperty(tmpProv)) {
-   tmpRul = activeYear[tmpProv][0];
-   }
-
-   if (tmpRul != "undefined")
-   provinceGeojson.features[i].properties.Acolor = rulPlus[tmpRul][1];
-   else {
-   provinceGeojson.features[i].properties.Acolor = undefinedColor;
-   }
-
-   }
-
-   //        activeFeatureCollection = jQuery.extend({}, countriesArea);
-   break;
-   case "culture":
-
-   for (var i = 0; i < provinceGeojson.features.length; i++) {
-   provinceGeojson.features[i].properties.Acolor = (culPlus[provinceGeojson.features[i].properties.Cul] !== undefined) ? culPlus[provinceGeojson.features[i].properties.Cul][1] : undefinedColor;
-   }
-   //        activeFeatureCollection = jQuery.extend({}, culArea);
-   break;
-   case "religion":
-
-   for (var i = 0; i < provinceGeojson.features.length; i++) {
-
-   provinceGeojson.features[i].properties.Acolor = (relPlus[provinceGeojson.features[i].properties.Rel] !== undefined) ? relPlus[provinceGeojson.features[i].properties.Rel][1] : undefinedColor;
-   }
-   break;
-
-   case "religionGeneral":
-
-   for (var i = 0; i < provinceGeojson.features.length; i++) {
-
-   provinceGeojson.features[i].properties.Acolor =
-   (relGen[provinceGeojson.features[i].properties.Rel] !== undefined)
-   ? relGen[provinceGeojson.features[i].properties.Rel][1]
-   : undefinedColor;
-   }
-
-   //         activeFeatureCollection = jQuery.extend({}, relArea);
-   break;
-   case "population":
-
-   var max = 1000;
-   for (var i = 0; i < provinceGeojson.features.length; i++) {
-   if (provinceGeojson.features[i].properties.Pop > max)
-   max = provinceGeojson.features[i].properties.Pop;
-   }
-   max = Math.log(max / 1000);
-   var fraction = 0
-   for (var i = 0; i < provinceGeojson.features.length; i++) {
-   fraction = Math.log(provinceGeojson.features[i].properties.Pop / 1000) / max;
-
-   provinceGeojson.features[i].properties.Acolor = "rgb(" + Math.round(200 + fraction * 55) + "," + Math.round(200 - fraction * 200) + "," + Math.round(200 - fraction * 200) + ")";
-   }
-   //         activeFeatureCollection = jQuery.extend({}, popArea);
-   break;
-
-   }
-
-   activeAreaFeature
-   .style("fill", function (d) {
-   return d.properties.Acolor; //._storage_options
-   })
-   }
-   },
-   */
 
   addTextFeat: function (areaDefs, setActiveFeat, metadata) {
+
+    console.debug('addTextFeat');
     this.activeTextFeat = setActiveFeat
 
     if ((this.activeTextFeat === 'ruler' && !this.rulIsSetup) ||
@@ -502,6 +429,7 @@ const utils = {
   },
 
   prepareCollectionIDs: function (targetC, attr, provId) {
+    console.debug('prepareCollectionIDs');
     if (attr && attr !== 'na') {
       if (targetC.hasOwnProperty(attr)) {
         if (targetC[attr][0].length === 0 || this.isTouching(targetC[attr][0], adjacent[provId])) {

@@ -77,6 +77,7 @@ const styles = {
 const PLEDGEREMINDERDURATION = 900000 // 1800000
 const prefixedStyles = {}
 const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
+const isLight = utilsQuery.getURLParameter('light') === 'true' || (((window.location || {}).host || '').substr(0, 4) === 'light.')
 
 class App extends Component {
   _launchFullscreen = (element) => {
@@ -143,16 +144,16 @@ class App extends Component {
 
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
 
-    const selectedPerformance = typeof localStorage.getItem('chs_performance_set') === 'undefined' ? false : +localStorage.getItem('chs_performance_set')
+    const selectedPerformance = isLight ? 0 : (typeof localStorage.getItem('chs_performance_set') === 'undefined' ? false : +localStorage.getItem('chs_performance_set'))
 
-    const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * 2000))
-    const selectedMarker = (utilsQuery.getURLParameter('markers') || (selectedPerformance === false ? 'a,ar,at,b,c,ca,cp,e,l,m,op,p,r,s,si,o' : (+selectedPerformance === 0 ? '' : markerIdNameArray.map(el => el[0]).join(','))))
-    const markerLimit = (utilsQuery.getURLParameter('limit') || (selectedPerformance === false ? '2000' : (+selectedPerformance === 2 ? 5500 : 2000)))
-    const selectedEpics = (utilsQuery.getURLParameter('epics') || (selectedPerformance === false || selectedPerformance !== 2 ? '' : ('ei,es,ew')))
+    const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * (isLight ? 1000 : 2000)))
+    const selectedMarker = isLight ? '' : (utilsQuery.getURLParameter('markers') || (selectedPerformance === false ? 'a,ar,at,b,c,ca,cp,e,l,m,op,p,r,s,si,o' : (+selectedPerformance === 0 ? '' : markerIdNameArray.map(el => el[0]).join(','))))
+    const markerLimit = isLight ? '0' : (utilsQuery.getURLParameter('limit') || (selectedPerformance === false ? '2000' : (+selectedPerformance === 2 ? 5500 : 2000)))
+    const selectedEpics = isLight ? '' : (utilsQuery.getURLParameter('epics') || (selectedPerformance === false || selectedPerformance !== 2 ? '' : ('ei,es,ew')))
     const activeArea = {
       data: {},
-      color: (utilsQuery.getURLParameter('fill') || 'ruler'),
-      label: (utilsQuery.getURLParameter('label') || 'ruler')
+      color: isLight ? 'ruler' : (utilsQuery.getURLParameter('fill') || 'ruler'),
+      label: isLight ? 'ruler' : (utilsQuery.getURLParameter('label') || 'ruler')
     }
     const selectedItem = {
       wiki: '',
@@ -176,6 +177,7 @@ class App extends Component {
       '&type=' + selectedItem.type +
       '&fill=' + activeArea.color +
       '&label=' + activeArea.label +
+      (isLight ? ('&light=' + isLight) : '') +
       // (selectedToken ? ('&token=' + selectedToken) : '') +
       '&value=' + selectedItem.value +
       '&locale=' + newLocale +
@@ -183,11 +185,11 @@ class App extends Component {
       window.location.hash)
 
     const requestList = [
-      axios.get(properties.chronasApiHost + '/metadata?type=g&f=provinces,ruler,culture,religion,capital,province,religionGeneral'),
+      isLight ? axios.get(properties.chronasApiHost + '/metadata?type=g&f=provinces,ruler') : axios.get(properties.chronasApiHost + '/metadata?type=g&f=provinces,ruler,culture,religion,capital,province,religionGeneral'),
       axios.get(properties.chronasApiHost + '/areas/' + selectedYear)
     ]
 
-    if (newLocale && newLocale !== "en") {
+    if (!isLight && newLocale && newLocale !== "en") {
       requestList.push(axios.get(properties.chronasApiHost + '/metadata?type=g&locale=' + newLocale + '&f=' + ('ruler,culture,religion,capital,province,religionGeneral'.split(',').join('_' + newLocale + ',')) + ('_' + newLocale)))
     }
     axios.all(requestList)
@@ -399,11 +401,11 @@ class App extends Component {
             <MuiThemeProvider muiTheme={muiTheme}>
               <div style={prefixedStyles.wrapper}>
                 <div style={prefixedStyles.main}>
-                  {!isStatic && <LoadingBar history={history} failAndNotify={failAndNotify} theme={theme} />}
+                  {!isStatic && !isLight && <LoadingBar history={history} failAndNotify={failAndNotify} theme={theme} />}
                   <div className='body' style={width === 1 ? prefixedStyles.bodySmall : prefixedStyles.body}>
                     {(isLoading || failAndNotify) && !isStatic && <LoadingPage failAndNotify={failAndNotify} />}
-                    {!isLoading && !failAndNotify && createElement(Map, { history, isLoading })}
-                    {!isLoading && !failAndNotify && !isStatic &&
+                    {!isLoading && !failAndNotify && createElement(Map, { history, isLoading, isLight })}
+                    {!isLoading && !failAndNotify && !isStatic && !isLight &&
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
                       <PledgeDialog theme={theme} open={false} snooze={() => {
                         setTimeout(() => {
@@ -482,9 +484,26 @@ class App extends Component {
                         <RightDrawerRoutes history={history} />
                       </Switch>
                     </div>}
+                    {isLight && <div>
+                      <Switch>
+                        <Route exact path='/' />
+                        <Route exact path='/configuration' render={(props) => {
+                          return (
+                            <Configuration
+                              setFullscreen={this._setFullscreen}
+                              setBodyFont={this._setBodyFont}
+                              {...props}
+                            />
+                          )
+                        }} />
+                      </Switch>
+                      <Switch>
+                        <RightDrawerRoutes history={history} isLight={isLight} />
+                      </Switch>
+                    </div>}
                     {!isLoading && !failAndNotify && !isStatic && <MenuDrawer muiTheme={customTheme} history={history} />}
                     {!isLoading && !failAndNotify && !isStatic && <Sidebar open muiTheme={customTheme}>
-                      {createElement(Menu)}
+                      {createElement(Menu, { isLight })}
                     </Sidebar>}
                   </div>
                   {!isStatic && <div className='notifications'>
