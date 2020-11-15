@@ -450,6 +450,7 @@ class RightDrawerRoutes extends PureComponent {
   }
   select = (index) => this.setState({ selectedIndex: index })
   _handleNewData = (selectedItem, activeArea = {}) => {
+    if (this.props.isLight) return
     if (selectedItem.type === TYPE_AREA) {
       const selectedProvince = selectedItem.value
       // is rulerEntity loaded?
@@ -573,7 +574,7 @@ class RightDrawerRoutes extends PureComponent {
       })
     }
 
-    const { rightDrawerOpen, setRightDrawerVisibility } = this.props
+    const { rightDrawerOpen, setRightDrawerVisibility, isLight } = this.props
 
     if (rightDrawerOpen !== nextProps.rightDrawerOpen) {
       if (rightDrawerOpen) {
@@ -587,7 +588,7 @@ class RightDrawerRoutes extends PureComponent {
 
     if (nextProps.location.pathname.indexOf('/mod') > -1 ||
       nextProps.location.pathname.indexOf('/article') > -1) {
-      if (!nextProps.rightDrawerOpen && ((nextProps.selectedItem.type !== TYPE_MARKER && nextProps.selectedItem.type !== TYPE_COLLECTION && nextProps.selectedItem.type !== TYPE_LINKED) || nextProps.location.pathname.indexOf('/article') === -1)) {
+      if (!isLight && !nextProps.rightDrawerOpen && ((nextProps.selectedItem.type !== TYPE_MARKER && nextProps.selectedItem.type !== TYPE_COLLECTION && nextProps.selectedItem.type !== TYPE_LINKED) || nextProps.location.pathname.indexOf('/article') === -1)) {
         setRightDrawerVisibility(true)
       }
     } else if (nextProps.rightDrawerOpen) {
@@ -617,8 +618,8 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   _openPartOf (el) {
-    const { activeArea, changeColor, selectAreaItem, selectedItem, setYear, setFullItem, selectEpicItem, selectMarkerItem, selectLinkedItem, setAreaColorLabel, showNotification, history } = this.props
-
+    const { activeArea, changeColor, selectAreaItem, selectedItem, setYear, setFullItem, selectEpicItem, selectMarkerItem, selectLinkedItem, setAreaColorLabel, showNotification, isLight, history } = this.props
+    if (isLight) return
     const cType = ((el || {}).properties || {}).ct
     const aeId = ((el || {}).properties || {}).aeId
     if (aeId) {
@@ -733,19 +734,19 @@ class RightDrawerRoutes extends PureComponent {
   }
 
   render () {
-    // console.debug('render()   RightDrawerRoutes')
+    console.debug('render()   RightDrawerRoutes')
     const {
       options, setWikiId, setRightDrawerVisibility, theme,
       selectedYear, selectedItem, activeArea, setAreaColorLabel, location,
-      setModData, setModDataLng, setModDataLat, history, metadata, changeColor, translate
+      setModData, setModDataLng, setModDataLat, history, metadata, changeColor, isLight, translate
     } = this.props
     const { newWidth, newMarkerWidth, newMarkerHeight, newMarkerPartOfWidth, newMarkerPartOfHeight, rulerEntity, contentTypeRaw, stepIndex, provinceEntity } = this.state
 
     if ((typeof selectedItem.wiki === 'undefined')) return null
 
-    const isMarker = (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_LINKED) && location.pathname.indexOf('/article') > -1
-    const isCollection = selectedItem.type === TYPE_COLLECTION && location.pathname.indexOf('/article') > -1
-    const isEpic = (selectedItem.type === TYPE_EPIC) && location.pathname.indexOf('/article') > -1
+    const isMarker = (isLight || (selectedItem.type === TYPE_MARKER || selectedItem.type === TYPE_LINKED)) && location.pathname.indexOf('/article') > -1
+    const isCollection = selectedItem.type === TYPE_COLLECTION && location.pathname.indexOf('/article') > -1 && !isLight
+    const isEpic = (selectedItem.type === TYPE_EPIC) && location.pathname.indexOf('/article') > -1 && !isLight
     const currPrivilege = +localStorage.getItem('chs_privilege')
     const resourceList = Object.keys(resources)// .filter(resCheck => +resources[resCheck].permission <= currPrivilege)
     const modHeader = <AppBar
@@ -845,18 +846,19 @@ class RightDrawerRoutes extends PureComponent {
       })
     }
 
-    const entityObject = {
-      ruler: (metadata['ruler'][rulerId] || []),
-      religion: (metadata['religion'][religionId] || {}),
-      religionGeneral: metadata['religionGeneral'][(metadata['religion'][religionId] || [])[3]] || {},
-      culture: (metadata['culture'][cultureId] || {}),
-      // capital: ((metadata['capital'][(activeArea.data[selectedProvince] || {})[3]]) || {}),
-      province: (metadata['province'][selectedProvince] || {}),
-    }
-
+    const entityObject = isLight ? {
+        ruler: (metadata['ruler'][rulerId] || []),
+      } : {
+        ruler: (metadata['ruler'][rulerId] || []),
+        religion: (metadata['religion'][religionId] || {}),
+        religionGeneral: metadata['religionGeneral'][(metadata['religion'][religionId] || [])[3]] || {},
+        culture: (metadata['culture'][cultureId] || {}),
+        // capital: ((metadata['capital'][(activeArea.data[selectedProvince] || {})[3]]) || {}),
+        province: (metadata['province'][selectedProvince] || {}),
+      }
     const hasLocaleMetadata = typeof ((metadata || {}).locale || {}).ruler !== 'undefined'
 
-    const entityMeta = {
+    const entityMeta = isLight ? {} : {
       ruler: {
         name: hasLocaleMetadata
           ? (metadata.locale['ruler'][rulerId] || entityObject.ruler[0] || 'n/a')
@@ -894,7 +896,7 @@ class RightDrawerRoutes extends PureComponent {
       className='articleHeader'
       style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
       iconElementLeft={
-        (selectedItem.type === TYPE_AREA)
+        (selectedItem.type === TYPE_AREA && !isLight)
           ? <BottomNavigation
             style={{ ...styles.articleHeader, backgroundColor: themes[theme].backColors[0] }}
             onChange={this.handleChange}
@@ -1591,6 +1593,7 @@ class RightDrawerRoutes extends PureComponent {
       d_sec: '',
       d_props: {
         metadata,
+        isLight,
         influenceRawData: rulerEntity,
         provinceEntity,
         stepIndex: stepIndex,
