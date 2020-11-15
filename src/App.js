@@ -77,7 +77,7 @@ const styles = {
 const PLEDGEREMINDERDURATION = 900000 // 1800000
 const prefixedStyles = {}
 const isStatic = utilsQuery.getURLParameter('isStatic') === 'true'
-const isLight = utilsQuery.getURLParameter('light') === 'true' || (((window.location || {}).host || '').substr(0, 4) === 'light.')
+const isLight = utilsQuery.getURLParameter('light') === 'true' || (((window.location || {}).host || '').substr(0, 6) === 'light.')
 
 class App extends Component {
   _launchFullscreen = (element) => {
@@ -143,7 +143,7 @@ class App extends Component {
     const { setArea, setYear, setMarker, setMetadata, setLoadStatus, setEpic, selectCollectionItem, setAreaColorLabel, selectAreaItem, selectMarkerItem } = this.props
     console.debug("isLight", isLight);
     document.body.classList.add(localStorage.getItem('chs_font') || properties.fontOptions[0].id)
-    
+
     const selectedPerformance = isLight ? 0 : (typeof localStorage.getItem('chs_performance_set') === 'undefined' ? false : +localStorage.getItem('chs_performance_set'))
 
     const selectedYear = (utilsQuery.getURLParameter('year') || Math.floor(Math.random() * (isLight ? 1000 : 2000)))
@@ -302,6 +302,7 @@ class App extends Component {
       token = localStorage.getItem('chs_token')
     }
 
+    if (isLight) return;
     if (token) {
       const decodedToken = decodeJwt(token)
       localStorage.setItem('chs_userid', decodedToken.id)
