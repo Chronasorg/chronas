@@ -1,7 +1,5 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import YouTube from 'react-youtube'
-import { Player } from 'video-react'
 import Dialog from 'material-ui/Dialog'
 import { GridList } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
@@ -419,6 +417,7 @@ class MapGallery extends PureComponent {
     const { selectedImage, showMax, isOpen, filteredData, isFetchingImages } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
 
+    const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.")
     const hasNoSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
     const hasNoImage = typeof selectedImage.src === 'undefined' || selectedImage.src === ''
     const hasNoWiki = typeof selectedImage.wiki === 'undefined' || selectedImage.wiki === '' || (selectedImage.wiki || []).length === 0
@@ -506,6 +505,34 @@ class MapGallery extends PureComponent {
             top: isOpen ? 6 : -130,
             position: 'fixed'
           }}>
+            <GridTile
+              id={'galleryId-ad'}
+              key={'galleryId-ad'}
+              style={{ border: '0px solid black', cursor: 'pointer' }}
+              titleStyle={styles.title}
+              subtitleStyle={styles.subtitle}
+              title={'galleryId-ad'}
+              subtitle={'galleryId-ad'}
+              actionPosition='right'
+              titlePosition='bottom'
+              titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
+              // cols={((j + 3) % 4 < 2) ? 1 : 2}
+              titleHeight={36}
+            >
+              {showAds ? <div>
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4343308524767879"
+                        crossorigin="anonymous"></script>
+                <ins class="adsbygoogle"
+                     style={{ "display":"block" }}
+                     data-ad-format="fluid"
+                     data-ad-layout-key="-6t+ed+2i-1n-4w"
+                     data-ad-client="ca-pub-4343308524767879"
+                     data-ad-slot="7254273831"></ins>
+                <script>
+                  (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+              </div> : null }
+            </GridTile>
             {filteredData.length > 0 ? filteredData.slice(0, showMax).map((tile, j) => (
                     <GridTile
                       id={'galleryId'+j}
