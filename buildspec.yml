@@ -12,8 +12,11 @@ phases:
       - echo Building the Docker image...          
       - docker build -t $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN .
       - docker tag $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN     
+      - docker tag $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN aumanjoa/chronas-map:$IMAGE_TAG_DYN       
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN
+      - docker login --username $DOCKER_USERNAME --password-stdin $DOCKER_PASSWORD
+      - docker docker push aumanjoa/chronas-map:$IMAGE_TAG_DYN  
