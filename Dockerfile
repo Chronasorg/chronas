@@ -1,5 +1,5 @@
 # ---- Base Node ----
-FROM public.ecr.aws/lambda/nodejs:10 AS base
+FROM node:10 AS base
 # Create app directory
 WORKDIR /app
 # ---- Dependencies ----
@@ -22,5 +22,5 @@ RUN perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index
 
 # move the dist folder to an nginx container to run them
 RUN npm run build
-FROM public.ecr.aws/nginx/nginx:1.21-alpine AS release
+FROM nginx:alpine AS release
 COPY --from=build /app/dist/ /usr/share/nginx/html
