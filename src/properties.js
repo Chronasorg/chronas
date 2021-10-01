@@ -701,7 +701,7 @@ export const properties = {
     { id: 'de', name: 'Deutsch' },
     { id: 'el', name: 'Ελληνικά (no UI translation yet)' },
     { id: 'en', name: 'English' },
-    { id: 'es', name: 'Español (no UI translation yet)' },
+    { id: 'es', name: 'Español' },
     { id: 'fr', name: 'Français' },
     { id: 'nl', name: 'Nederlands (no UI translation yet)' },
     { id: 'hi', name: 'हिन्दी (no UI translation yet)' },
