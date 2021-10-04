@@ -4,7 +4,8 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - docker login --username $DOCKER_USERNAME --password-stdin $DOCKER_PASSWORD
+      - env
+      - echo docker login --username $DOCKER_USERNAME --password-stdin $DOCKER_PASSWORD
       - IMAGE_TAG_DYN=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
   build:
     commands:
