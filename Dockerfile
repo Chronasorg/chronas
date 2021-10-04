@@ -1,7 +1,13 @@
 # ---- Base Node ----
-FROM node:10 AS base
+# FROM node:10 AS base
+FROM public.ecr.aws/lambda/nodejs:10 AS base
 # Create app directory
 WORKDIR /app
+
+# installing because of phantomjs
+RUN yum install -y bzip2
+RUN yum install -y tar
+
 # ---- Dependencies ----
 FROM base AS dependencies
 COPY package.json ./
