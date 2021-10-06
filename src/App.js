@@ -522,7 +522,6 @@ class App extends Component {
 
 const mapStateToProps = (state, props) => ({
   isLoading: state.isLoading,
-  theme: state.theme
   theme: state.theme,
   locale: state.locale
 })

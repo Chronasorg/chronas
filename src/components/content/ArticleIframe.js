@@ -83,8 +83,6 @@ const styles = {
     width: '100%'
   },
   iframe: {
-    width: '100%',
-    height: 'calc(100% - 8px)',
     // width: '100%',
     // height: 'calc(100% - 8px)',
     // right: '8px',
@@ -296,8 +294,6 @@ class ArticleIframe extends React.Component {
   _handleUrlChange = (e) => {
     this.setState({ iframeLoading: false })
     const currSrc = document.getElementById('articleIframe').getAttribute('src')
-    if (currSrc.indexOf('printable=yes') === 1) {
-      this.__setIFrameSource('articleIframe', currSrc + '?printable=yes')
     if (currSrc.indexOf('wikipedia') === 1) {
       this.__setIFrameSource('articleIframe', currSrc)
       // document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
@@ -408,7 +404,7 @@ class ArticleIframe extends React.Component {
     history.push(fModUrl)
   }
 
-  componentWillMount () {
+  componentWillMount = () => {
     const { locale, selectedWiki } = this.props
     // https://www.wikidata.org/w/api.php?action=wbgetentities&titles=Vietnamese_Wikipedia&sites=enwiki&format=json
     if (locale !== "en" && selectedWiki && selectedWiki !== -1) {
@@ -689,10 +685,6 @@ class ArticleIframe extends React.Component {
         {htmlContent && typeof htmlContent === "string" && <div style={{ 'padding': '1em', paddingTop: '2em' }} dangerouslySetInnerHTML={{ __html: htmlContent }} />}
         {htmlContent && htmlContent}
         {!htmlContent && (+fullfinalWiki !== -1) && (fullfinalWiki !== '') && (fullfinalWiki !== null) &&
-        <iframe id='articleIframe' onLoad={this._handleUrlChange}
-          style={{ ...styles.iframe, display: (shouldLoad ? 'none' : ''), height: (!hasChart && isEntity ? 'calc(100% - 56px)' : 'calc(100% - 8px)') }}
-          src={fullfinalWiki +  '?printable=yes'}
-          frameBorder='0' />}
         <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
           <div className="divBlocker" style={{ height: "50px", zIndex: 2, background: themes[theme].backColors[0], position: "absolute" }}></div>
           <iframe
