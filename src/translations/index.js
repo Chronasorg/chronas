@@ -48,6 +48,8 @@ export default {
   pt: { ...englishMessages, ...customPortugeseMessages },
   ru: { ...russianMessages, ...customRussianMessages },
   es: { ...spanishMessages, ...customEnglishMessages },
+  es: { ...spanishMessages, ...customSpanishMessages },
   sv: { ...swedishMessages, ...customEnglishMessages },
   vi: { ...vietnameseMessages, ...customEnglishMessages },
 }
+
