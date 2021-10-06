@@ -523,6 +523,8 @@ class App extends Component {
 const mapStateToProps = (state, props) => ({
   isLoading: state.isLoading,
   theme: state.theme
+  theme: state.theme,
+  locale: state.locale
 })
 
 const mapDispatchToProps = {
@@ -541,3 +543,4 @@ const mapDispatchToProps = {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
+
