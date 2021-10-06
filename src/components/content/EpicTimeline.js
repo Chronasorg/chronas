@@ -835,6 +835,7 @@ class EpicTimeline extends React.Component {
 const enhance = compose(
   connect(state => ({
     selectedItem: state.selectedItem,
+    selectedYear: state.selectedYear,
     contentIndex: ((state.selectedItem || {}).data || {}).contentIndex,
     activeArea: state.activeArea,
     theme: state.theme,
