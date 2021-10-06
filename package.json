@@ -41,7 +41,7 @@
     "aor-language-vietnamese": "^1.0.3",
     "arc": "^0.1.1",
     "axios": "^0.18.0",
-    "axios": "^0.21.4",
+    "axios": "^0.21.2",
     "bootstrap": "^4.1.0",
     "compression": "^1.7.2",
     "connected-react-router": "^5.0.1",
