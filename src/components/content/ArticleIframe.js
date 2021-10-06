@@ -85,6 +85,8 @@ const styles = {
   iframe: {
     width: '100%',
     height: 'calc(100% - 8px)',
+    // width: '100%',
+    // height: 'calc(100% - 8px)',
     // right: '8px',
     padding: '38px 8px 0px'
   },
@@ -296,6 +298,8 @@ class ArticleIframe extends React.Component {
     const currSrc = document.getElementById('articleIframe').getAttribute('src')
     if (currSrc.indexOf('printable=yes') === 1) {
       this.__setIFrameSource('articleIframe', currSrc + '?printable=yes')
+    if (currSrc.indexOf('wikipedia') === 1) {
+      this.__setIFrameSource('articleIframe', currSrc)
       // document.getElementById('articleIframe').setAttribute('src', currSrc + '?printable=yes')
     } // TODO: do this with ref
     this.forceUpdate()
@@ -689,6 +693,15 @@ class ArticleIframe extends React.Component {
           style={{ ...styles.iframe, display: (shouldLoad ? 'none' : ''), height: (!hasChart && isEntity ? 'calc(100% - 56px)' : 'calc(100% - 8px)') }}
           src={fullfinalWiki +  '?printable=yes'}
           frameBorder='0' />}
+        <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+          <div className="divBlocker" style={{ height: "50px", zIndex: 2, background: themes[theme].backColors[0], position: "absolute" }}></div>
+          <iframe
+            id='articleIframe'
+            onLoad={this._handleUrlChange}
+            style={{ ...styles.iframe, display: (shouldLoad ? 'none' : ''), height: (!hasChart && isEntity ? 'calc(100% + 24px)' : isProvince ? 'calc(100% - 250px)' : 'calc(100% + 72px)') }}
+            src={fullfinalWiki}
+            frameBorder='0' />
+        </div>}
       </div>
     )
   }
@@ -718,3 +731,4 @@ const enhance = compose(
 )
 
 export default enhance(ArticleIframe)
+

@@ -23,9 +23,11 @@ export default class InfluenceChart extends React.Component {
     this.setState({ idSetup: newId })
     const nextSeries = newData.map((seriesEl) => seriesEl.data)
 
+    let nearestYear = 0
     const currentYearMarkerValues = epicMeta
       ? nextSeries.map((s, i) => {
         const nearestYear = s[0]
+        nearestYear = s[0]
           .data.map(y => +y.left).reduce(function (prev, curr) {
             return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
           }, Infinity).toString()
@@ -37,6 +39,7 @@ export default class InfluenceChart extends React.Component {
       })
       : newData[0].data.map((s, i) => {
         const nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
+        nearestYear = s.data.map(y => +y.left).reduce(function (prev, curr) {
           return (Math.abs(+curr - +selectedYear) < Math.abs(+prev - +selectedYear) ? +curr : +prev)
         }, +selectedYear).toString()
         const topObj = s.data.find(f => f.left === nearestYear)
@@ -45,6 +48,8 @@ export default class InfluenceChart extends React.Component {
           top: topObj ? (topObj.top + ((i !== 2) ? '' : '%')) : ''
         }
       })
+
+    console.debug("closest year is ", nearestYear)
 
     const crosshairStartValues = epicMeta ? [{
       left: +epicMeta.start
@@ -139,9 +144,11 @@ export default class InfluenceChart extends React.Component {
   _formatCrosshairItems (values) {
     const { rulerProps, epicMeta } = this.props
     const { series } = this.state
+    let toReturn = []
 
     if (epicMeta) {
       return values.map((v, i) => {
+      toReturn = values.map((v, i) => {
         return {
           title: ((rulerProps || {})[i] || {})[0],
           value: (v || {}).top
@@ -149,12 +156,15 @@ export default class InfluenceChart extends React.Component {
       })
     } else {
       return values.map((v, i) => {
+      toReturn = values.map((v, i) => {
         return {
           title: (((series || [])[0] || [])[i] || {}).title,
           value: (v || {}).top
         }
       })
     }
+
+    return toReturn.filter((v, i) => { console.debug(v); return v.value })
   }
 
   shouldComponentUpdate (nextProps, nextState) {
@@ -276,3 +286,4 @@ class ItemImage extends React.Component {
     </div>)//(<div style={style} onClick={this.onClick}>{name}</div>)
   }
 }
+

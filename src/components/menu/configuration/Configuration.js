@@ -99,6 +99,9 @@ class Configuration extends PureComponent {
                 localStorage.setItem('chs_locale', value)
                 utilsQuery.updateQueryStringParameter('locale', value)
                 changeLocale(value)
+                const previousTheme = theme
+                changeTheme(theme === 'light' ? 'dark' : 'light')
+                setTimeout(() => changeTheme(previousTheme), 50)
               }}
               style={{ ...styles.label, color: themes[theme].foreColors[0] }}
               floatingLabelStyle={{ ...styles.label, color: themes[theme].foreColors[0] }}
@@ -190,3 +193,4 @@ export default connect(mapStateToProps, {
   changeTheme: changeThemeAction,
   changeMarkerTheme
 })(translate(Configuration))
+
