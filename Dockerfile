@@ -2,16 +2,14 @@
 FROM node:14 AS base
 # Create app directory
 WORKDIR /app
+COPY . .
 # ---- Dependencies ----
 FROM base AS dependencies
-COPY package.json ./
-COPY package-lock.json ./
+
 # install app dependencies including
 RUN npm install
 # ---- Copy Files/Build ----
 FROM dependencies AS build
-WORKDIR /app
-COPY . /app
 
 ARG API_URL=https://api.chronas.org
 ARG APPLICATIONINSIGHTS_KEY=placeholder
