@@ -1,5 +1,5 @@
 # ---- Base Node ----
-FROM node:14 AS base
+FROM node:10 AS base
 # Create app directory
 WORKDIR /app
 COPY . .
