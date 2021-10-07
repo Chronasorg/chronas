@@ -17,7 +17,6 @@ ARG APPLICATIONINSIGHTS_KEY=placeholder
 RUN perl -pi.back -e "s|http\:\/\/localhost\:4040|$API_URL|g" src/properties.js
 RUN perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index.html
 
-
 # move the dist folder to an nginx container to run them
 RUN npm run build
 FROM nginx:alpine AS release
