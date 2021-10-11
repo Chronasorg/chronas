@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
+import AdSense from 'react-adsense';
 import Dialog from 'material-ui/Dialog'
 import { GridList } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
@@ -520,17 +521,26 @@ class MapGallery extends PureComponent {
               titleHeight={36}
             >
               {showAds ? <div>
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4343308524767879"
-                        crossorigin="anonymous"></script>
-                <ins class="adsbygoogle"
-                     style={{ "display":"block" }}
-                     data-ad-format="fluid"
-                     data-ad-layout-key="-6t+ed+2i-1n-4w"
-                     data-ad-client="ca-pub-4343308524767879"
-                     data-ad-slot="7254273831"></ins>
-                <script>
-                  (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
+                <AdSense.Google
+                  client="ca-pub-4343308524767879"
+                  slot="7254273831"
+                />
+
+                // ads with custom format
+                <AdSense.Google
+                  client="ca-pub-4343308524767879"
+                  slot="7254273831"
+                  style={{ width: 500, height: 300 }}
+                  format=""
+                />
+                <AdSense.Google
+                  client="ca-pub-4343308524767879"
+                  slot="7254273831"
+                  style={{ display: 'block' }}
+                  layout="in-article"
+                  layoutKey="-6t+ed+2i-1n-4w"
+                  format="fluid"
+                />
               </div> : null }
             </GridTile>
             {filteredData.length > 0 ? filteredData.slice(0, showMax).map((tile, j) => (
