@@ -1,5 +1,6 @@
 import React from 'react'
 import pure from 'recompose/pure'
+import AdSense from 'react-adsense';
 import { connect } from 'react-redux'
 import compose from 'recompose/compose'
 import { showNotification, translate } from 'admin-on-rest'
@@ -490,6 +491,7 @@ class ArticleIframe extends React.Component {
     const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, selectedWiki, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
     const bookmarks = (localStorage.getItem('chs_bookmarks') || '').split(',')
+    const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.")
     const potentialAE = (((selectedItem.data || {}).id || '').split(':') || [])[1] || ''
     const toBookmark = (selectedItem.type === TYPE_AREA
       ? (potentialAE.split('|')[2] + '||' + (potentialAE.split('|')[0] + '|' + potentialAE.split('|')[1]))
@@ -687,6 +689,29 @@ class ArticleIframe extends React.Component {
         {!htmlContent && (+fullfinalWiki !== -1) && (fullfinalWiki !== '') && (fullfinalWiki !== null) &&
         <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
           <div className="divBlocker" style={{ height: "50px", zIndex: 2, background: themes[theme].backColors[0], position: "absolute" }}></div>
+          {showAds ? <div>
+            <AdSense.Google
+              client="ca-pub-4343308524767879"
+              slot="6150157291"
+            />
+
+            // ads with custom format
+            <AdSense.Google
+              client="ca-pub-4343308524767879"
+              slot="6150157291"
+              style={{ width: 500, height: 300 }}
+              format=""
+            />
+
+            // responsive and native ads
+            <AdSense.Google
+              client="ca-pub-4343308524767879"
+              slot="6150157291"
+              style={{ display: 'block' }}
+              responsive={"true"}
+              format="auto"
+            />
+          </div> : null }
           <iframe
             id='articleIframe'
             onLoad={this._handleUrlChange}

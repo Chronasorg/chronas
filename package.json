@@ -64,6 +64,7 @@
     "quill-image-resize-module": "^3.0.0",
     "react": "16.8.6",
     "react-addons-shallow-compare": "^15.6.2",
+    "react-adsense": "^0.1.0",
     "react-dom": "16.8.6",
     "react-html-parser": "^2.0.2",
     "react-image-gallery": "^0.8.12",
