@@ -506,43 +506,30 @@ class MapGallery extends PureComponent {
             top: isOpen ? 6 : -130,
             position: 'fixed'
           }}>
-            <GridTile
+            {showAds ? <GridTile
               id={'galleryId-ad'}
-              key={'galleryId-ad'}
-              style={{ border: '0px solid black', cursor: 'pointer' }}
+              key={'galleryId-ad' + filteredData.length}
+              style={{ border: '0px solid black', cursor: 'pointer', minWidth: "250px", maxWidth: "680px"  }}
               titleStyle={styles.title}
               subtitleStyle={styles.subtitle}
-              title={'galleryId-ad'}
-              subtitle={'galleryId-ad'}
+              // title={'galleryId-ad'}
+              // subtitle={'galleryId-ad'}
               actionPosition='right'
               titlePosition='bottom'
               titleBackground='linear-gradient(rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.63) 70%, rgba(0, 0, 0, .7) 100%)'
               // cols={((j + 3) % 4 < 2) ? 1 : 2}
               titleHeight={36}
             >
-              {showAds ? <div>
-                <AdSense.Google
+              <AdSense.Google
                   client="ca-pub-4343308524767879"
                   slot="7254273831"
-                />
-
-                // ads with custom format
-                <AdSense.Google
-                  client="ca-pub-4343308524767879"
-                  slot="7254273831"
-                  style={{ width: 500, height: 300 }}
-                  format=""
-                />
-                <AdSense.Google
-                  client="ca-pub-4343308524767879"
-                  slot="7254273831"
-                  style={{ display: 'block' }}
+                  style={{ display: 'block', height: "128px", minWidth: "250px", maxWidth: "680px" }}
                   layout="in-article"
                   layoutKey="-6t+ed+2i-1n-4w"
+                  responsive='true'
                   format="fluid"
                 />
-              </div> : null }
-            </GridTile>
+            </GridTile> : null }
             {filteredData.length > 0 ? filteredData.slice(0, showMax).map((tile, j) => (
                     <GridTile
                       id={'galleryId'+j}

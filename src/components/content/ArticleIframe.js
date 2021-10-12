@@ -689,25 +689,11 @@ class ArticleIframe extends React.Component {
         {!htmlContent && (+fullfinalWiki !== -1) && (fullfinalWiki !== '') && (fullfinalWiki !== null) &&
         <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
           <div className="divBlocker" style={{ height: "50px", zIndex: 2, background: themes[theme].backColors[0], position: "absolute" }}></div>
-          {showAds ? <div>
+          {showAds ? <div key={'adsFor' + fullfinalWiki} style={{ paddingTop: "50px", width: "100%" }}>
             <AdSense.Google
               client="ca-pub-4343308524767879"
               slot="6150157291"
-            />
-
-            // ads with custom format
-            <AdSense.Google
-              client="ca-pub-4343308524767879"
-              slot="6150157291"
-              style={{ width: 500, height: 300 }}
-              format=""
-            />
-
-            // responsive and native ads
-            <AdSense.Google
-              client="ca-pub-4343308524767879"
-              slot="6150157291"
-              style={{ display: 'block' }}
+              style={{ display: 'block', height: 200 }}
               responsive={"true"}
               format="auto"
             />
