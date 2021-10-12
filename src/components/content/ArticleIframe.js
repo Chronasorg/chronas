@@ -491,7 +491,7 @@ class ArticleIframe extends React.Component {
     const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, selectedWiki, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
     const bookmarks = (localStorage.getItem('chs_bookmarks') || '').split(',')
-    const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.")
+    const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.") || true
     const potentialAE = (((selectedItem.data || {}).id || '').split(':') || [])[1] || ''
     const toBookmark = (selectedItem.type === TYPE_AREA
       ? (potentialAE.split('|')[2] + '||' + (potentialAE.split('|')[0] + '|' + potentialAE.split('|')[1]))
@@ -689,7 +689,16 @@ class ArticleIframe extends React.Component {
         {!htmlContent && (+fullfinalWiki !== -1) && (fullfinalWiki !== '') && (fullfinalWiki !== null) &&
         <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
           <div className="divBlocker" style={{ height: "50px", zIndex: 2, background: themes[theme].backColors[0], position: "absolute" }}></div>
-          { showAds ? <div key={'adsFor' + fullfinalWiki} style={{ paddingTop: "50px", width: "100%" }}>
+          <iframe
+            id='articleIframe'
+            onLoad={this._handleUrlChange}
+            style={{ ...styles.iframe,
+              display: (shouldLoad ? 'none' : ''),
+              height: (!hasChart && isEntity ? 'calc(100% + 4px)' : isProvince ? 'calc(100% - 450px)' : 'calc(100% - 128px)')
+            }}
+            src={fullfinalWiki}
+            frameBorder='0' />
+          { showAds ? <div className={'articleIframeAd'} key={'adsFor' + fullfinalWiki} >
             <AdSense.Google
               client="ca-pub-4343308524767879"
               slot="6150157291"
@@ -698,15 +707,6 @@ class ArticleIframe extends React.Component {
               format="auto"
             />
           </div> : null }
-          <iframe
-            id='articleIframe'
-            onLoad={this._handleUrlChange}
-            style={{ ...styles.iframe,
-              display: (shouldLoad ? 'none' : ''),
-              height: (!hasChart && isEntity ? 'calc(100% + 24px)' : isProvince ? 'calc(100% - 250px)' : 'calc(100% + 72px)')
-            }}
-            src={fullfinalWiki}
-            frameBorder='0' />
         </div>}
       </div>
     )
