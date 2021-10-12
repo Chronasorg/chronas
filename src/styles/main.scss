@@ -1300,5 +1300,5 @@ iframe#articleIframe html {
 .articleIframeAd {
   position: absolute;
   width: calc(100% - 8px);
-  height: 200px;
+  max-height: 150px;
 }
