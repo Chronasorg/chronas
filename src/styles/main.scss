@@ -1297,3 +1297,8 @@ iframe#articleIframe html {
   pointer-events: all;
 }
 
+.articleIframeAd {
+  position: relative;
+  width: calc(100% - 8px);
+  height: 200px;
+}
