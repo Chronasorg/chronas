@@ -694,15 +694,15 @@ class ArticleIframe extends React.Component {
             onLoad={this._handleUrlChange}
             style={{ ...styles.iframe,
               display: (shouldLoad ? 'none' : ''),
-              height: (!hasChart && isEntity ? 'calc(100% + 4px)' : isProvince ? 'calc(100% - 450px)' : 'calc(100% - 128px)')
+              height: (!hasChart && isEntity ? 'calc(100% + 54px)' : isProvince ? 'calc(100% - 400px)' : 'calc(100% - 78px)')
             }}
             src={fullfinalWiki}
             frameBorder='0' />
-          { showAds ? <div className={'articleIframeAd'} key={'adsFor' + fullfinalWiki} >
+          { showAds ? <div className={'articleIframeAd'} style={{height: "150px"}} key={'adsFor' + fullfinalWiki} >
             <AdSense.Google
               client="ca-pub-4343308524767879"
               slot="6150157291"
-              style={{ display: 'block', height: 200 }}
+              style={{ display: 'block', height: 150 }}
               responsive={"true"}
               format="auto"
             />
@@ -737,4 +737,3 @@ const enhance = compose(
 )
 
 export default enhance(ArticleIframe)
-
