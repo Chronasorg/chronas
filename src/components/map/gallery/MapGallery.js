@@ -506,10 +506,10 @@ class MapGallery extends PureComponent {
             top: isOpen ? 6 : -130,
             position: 'fixed'
           }}>
-            {showAds ? <GridTile
+            <GridTile
               id={'galleryId-ad'}
               key={'galleryId-ad' + filteredData.length}
-              style={{ border: '0px solid black', cursor: 'pointer', minWidth: "250px", maxWidth: "680px"  }}
+              style={{ border: '0px solid black', cursor: 'pointer', minWidth: showAds ? "250px" : "0px", maxWidth: "680px"  }}
               titleStyle={styles.title}
               subtitleStyle={styles.subtitle}
               // title={'galleryId-ad'}
@@ -520,16 +520,16 @@ class MapGallery extends PureComponent {
               // cols={((j + 3) % 4 < 2) ? 1 : 2}
               titleHeight={36}
             >
-              <AdSense.Google
+              {showAds ? <AdSense.Google
                   client="ca-pub-4343308524767879"
                   slot="7254273831"
-                  style={{ display: 'block', height: "128px", minWidth: "250px", maxWidth: "680px" }}
+                  style={{ display: 'block', height: showAds ? "128px" : "0px", minWidth: showAds ? "250px" : "0px", maxWidth: "680px" }}
                   layout="in-article"
                   layoutKey="-6t+ed+2i-1n-4w"
                   responsive='true'
                   format="fluid"
-                />
-            </GridTile> : null }
+                /> : null }
+            </GridTile>
             {filteredData.length > 0 ? filteredData.slice(0, showMax).map((tile, j) => (
                     <GridTile
                       id={'galleryId'+j}
