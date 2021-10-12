@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react'
-import AdSense from 'react-adsense';
 import ReactHtmlParser from 'react-html-parser'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -215,8 +214,6 @@ class Information extends PureComponent {
     const { statistics, welcomeStatistics, statisticsBreakdown, tabForm } = this.state
     const highlightColorStyle = { color: themes[theme].highlightColors[0] }
 
-    const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.")
-
     const statItem = (title, value, tooltip, tooltipPosition) => {
       return <div className='FeedBox_container'>
         <div className='FeedBox_header'>
@@ -271,29 +268,6 @@ class Information extends PureComponent {
       }} onRequestClose={this.handleClose}>
         <Card style={styles.card}>
           <div>
-            {showAds ? <div>
-              <AdSense.Google
-                client="ca-pub-4343308524767879"
-                slot="6150157291"
-              />
-
-              // ads with custom format
-              <AdSense.Google
-                client="ca-pub-4343308524767879"
-                slot="6150157291"
-                style={{ width: 500, height: 300 }}
-                format=""
-              />
-
-              // responsive and native ads
-              <AdSense.Google
-                client="ca-pub-4343308524767879"
-                slot="6150157291"
-                style={{ display: 'block' }}
-                responsive={"true"}
-                format="auto"
-              />
-            </div> : null }
             <Toolbar style={styles.toolbar}>
               <ToolbarGroup>
                 <ToolbarTitle text={''} />
