@@ -1298,7 +1298,7 @@ iframe#articleIframe html {
 }
 
 .articleIframeAd {
-  position: relative;
+  position: absolute;
   width: calc(100% - 8px);
   height: 200px;
 }
