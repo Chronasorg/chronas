@@ -520,7 +520,7 @@ class MapGallery extends PureComponent {
               // cols={((j + 3) % 4 < 2) ? 1 : 2}
               titleHeight={36}
             >
-              {showAds ? <AdSense.Google
+              {showAds ? <div style={{ width: "100%", height: "100%" }}><AdSense.Google
                   client="ca-pub-4343308524767879"
                   slot="7254273831"
                   style={{ display: 'block', height: showAds ? "128px" : "0px", minWidth: showAds ? "250px" : "0px", maxWidth: "680px" }}
@@ -528,7 +528,7 @@ class MapGallery extends PureComponent {
                   layoutKey="-6t+ed+2i-1n-4w"
                   responsive='true'
                   format="fluid"
-                /> : null }
+                /></div> : null }
             </GridTile>
             {filteredData.length > 0 ? filteredData.slice(0, showMax).map((tile, j) => (
                     <GridTile
