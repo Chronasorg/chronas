@@ -1257,8 +1257,6 @@ iframe#articleIframe {
   z-index: 1;
   margin-top: -80px;
   overflow-x: hidden;
-  width: calc(100% + 178px);
-  margin-left: -178px;
 }
 .divBlocker {
   width: calc(100% - 12px);
@@ -1299,6 +1297,7 @@ iframe#articleIframe html {
 
 .articleIframeAd {
   position: absolute;
-  width: calc(100% - 16px);
-  max-height: 150px;
+  //width: calc(100% - 16px);
+  //max-height: 150px;
+  right: 16px;
 }
