@@ -735,7 +735,7 @@ class Content extends Component {
               selectValue={this.selectValueWrapper}
               linkedItems={((selectedItem || {}).data || {}).media || []} selectedYear={selectedYear}
               qName={safeSelectedWiki || ''} />
-            <ArticleIframe history={history} deselectItem={deselectItem} htmlContent={htmlContent}
+            <ArticleIframe toggleYearByArticleDisabled={true} history={history} deselectItem={deselectItem} htmlContent={htmlContent}
               customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={safeSelectedWiki} selectedItem={selectedItem} />
           </div>
       }
