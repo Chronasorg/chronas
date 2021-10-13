@@ -180,7 +180,7 @@ class ProvinceTimeline extends React.Component {
           clickHandler={this._onClickTimeline}
         />
         <div style={contentStyle}>
-          <ArticleIframe history={history} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki}
+          <ArticleIframe toggleYearByArticleDisabled={true} history={history} customStyle={{ ...styles.iframe, height: '100%' }} selectedWiki={selectedWiki}
             selectedTypeId={selectedTypeId} setMetadataEntity={setMetadataEntity} selectedItem={selectedItem} setMetadataType={setMetadataType}
             provinceType={''} deselectItem={deselectItem} />
         </div>
