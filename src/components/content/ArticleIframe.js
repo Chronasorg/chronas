@@ -489,7 +489,8 @@ class ArticleIframe extends React.Component {
   render () {
     const { bookmarkDialogOpen, isFullScreen, fullfinalWiki, iframeLoading, flagged, iframeLoadingFull, privateCollections } = this.state
     const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, selectedWiki, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
-
+    const domEl = document.getElementById("articleIframe")
+    const marginLeftOffset = (domEl && domEl.offsetWidth > 997) ? 186 : 178
     const bookmarks = (localStorage.getItem('chs_bookmarks') || '').split(',')
     const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.")
     const potentialAE = (((selectedItem.data || {}).id || '').split(':') || [])[1] || ''
@@ -694,11 +695,13 @@ class ArticleIframe extends React.Component {
             onLoad={this._handleUrlChange}
             style={{ ...styles.iframe,
               display: (shouldLoad ? 'none' : ''),
-              height: (!hasChart && isEntity ? 'calc(100% + 54px)' : isProvince ? 'calc(100% - 400px)' : 'calc(100% - 78px)')
+              width: "calc(100% + " + marginLeftOffset + "px)",
+              marginLeft: (-1* marginLeftOffset) + "px",
+              height: (!hasChart && isEntity ? (showAds ? 'calc(100% + 54px)' : 'calc(100% + 204px)') : isProvince ? (showAds ? 'calc(100% - 400px)' : 'calc(100% - 250px)') : (showAds ? 'calc(100% - 78px)' : 'calc(100% + 72px)'))
             }}
             src={fullfinalWiki}
             frameBorder='0' />
-          { showAds ? <div className={'articleIframeAd'} style={{height: "150px"}} key={'adsFor' + fullfinalWiki} >
+          { showAds ? <div className={'articleIframeAd'} style={{ height: "150px", left: !toggleYearByArticleDisabled ? "calc(19% + 16px)" : "8px" }} key={'adsFor' + fullfinalWiki} >
             <AdSense.Google
               client="ca-pub-4343308524767879"
               slot="6150157291"
