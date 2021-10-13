@@ -491,7 +491,7 @@ class ArticleIframe extends React.Component {
     const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, selectedWiki, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
 
     const bookmarks = (localStorage.getItem('chs_bookmarks') || '').split(',')
-    const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.") || true
+    const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.")
     const potentialAE = (((selectedItem.data || {}).id || '').split(':') || [])[1] || ''
     const toBookmark = (selectedItem.type === TYPE_AREA
       ? (potentialAE.split('|')[2] + '||' + (potentialAE.split('|')[0] + '|' + potentialAE.split('|')[1]))
@@ -704,7 +704,7 @@ class ArticleIframe extends React.Component {
               slot="6150157291"
               style={{ display: 'block', height: 150 }}
               responsive={"true"}
-              format="auto"
+              format=""
             />
           </div> : null }
         </div>}
