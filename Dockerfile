@@ -11,8 +11,8 @@ RUN npm install
 # ---- Copy Files/Build ----
 FROM dependencies AS build
 
-ARG API_URL=https://api.chronas.org
-ARG APPLICATIONINSIGHTS_KEY=placeholder
+ENV API_URL=https://api.chronas.org
+ENV APPLICATIONINSIGHTS_KEY=placeholder
 
 RUN perl -pi.back -e "s|http\:\/\/localhost\:4040|$API_URL|g" src/properties.js
 RUN perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index.html
