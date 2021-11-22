@@ -10,7 +10,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker image...          
-      - docker build --build-arg API_URL="http://ChronasApiAlb-521455639.eu-central-1.elb.amazonaws.com" -t $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN .
+      - docker build --build-arg API_URL="http://ChronasApiAlb-521455639.eu-central-1.elb.amazonaws.com/v1" -t $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN .
       - docker tag $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN     
       - docker tag $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN aumanjoa/chronas-map:$IMAGE_TAG_DYN       
   post_build:
