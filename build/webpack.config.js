@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin-legacy')
 const project = require('../project.config')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const inProject = path.resolve.bind(path, project.basePath)
@@ -43,6 +44,13 @@ const config = {
   },
   plugins: [
     // new BundleAnalyzerPlugin(),
+
+    new TerserPlugin({
+      parallel: true,
+      terserOptions: {
+        ecma: 6,
+      },
+    }),
     new webpack.ProvidePlugin({
       'window.Quill': 'quill/dist/quill.js',
       'Quill': 'quill/dist/quill.js',
