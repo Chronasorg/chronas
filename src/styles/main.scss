@@ -2,6 +2,7 @@
 @import '~bootstrap/scss/bootstrap.scss';
 @import '~mapbox-gl/dist/mapbox-gl.css';
 @import '~react-vis/dist/style';
+@import '~react-image-gallery/styles/scss/image-gallery.scss';
 
 html {
   box-sizing: border-box;
@@ -1257,6 +1258,8 @@ iframe#articleIframe {
   z-index: 1;
   margin-top: -80px;
   overflow-x: hidden;
+  width: calc(100% + 178px);
+  margin-left: -178px;
 }
 .divBlocker {
   width: calc(100% - 12px);
@@ -1295,9 +1298,3 @@ iframe#articleIframe html {
   pointer-events: all;
 }
 
-.articleIframeAd {
-  position: absolute;
-  //width: calc(100% - 16px);
-  //max-height: 150px;
-  right: 16px;
-}
