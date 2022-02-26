@@ -3,9 +3,12 @@ import React, { PureComponent } from 'react'
 import BoardIcon from 'material-ui/svg-icons/communication/forum'
 import CollectionIcon from 'material-ui/svg-icons/image/collections-bookmark'
 import IconButton from 'material-ui/IconButton'
+import FloatingActionButton from 'material-ui/FloatingActionButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
 import HelpIcon from 'material-ui/svg-icons/action/help'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
+import compose from 'recompose/compose'
+import PlusIcon from 'material-ui/svg-icons/maps/local-hospital'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
 import GameIcon from 'material-ui/svg-icons/hardware/videogame-asset'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
@@ -16,7 +19,6 @@ import SVG from 'react-inlinesvg'
 import { Link } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
-import compose from 'recompose/compose'
 import { defaultTheme, showNotification, translate, userLogout } from 'admin-on-rest'
 import { selectAreaItem as selectAreaItemAction } from '../map/actionReducers'
 import { setActiveMenu as setActiveMenuAction, toggleMenuDrawer as toggleMenuDrawerAction } from './actionReducers'
@@ -67,6 +69,7 @@ class Menu extends PureComponent {
     const { logout, showNotification } = this.props
     localStorage.removeItem('chs_token')
     localStorage.removeItem('chs_score')
+    localStorage.removeItem('chs_subscription')
     localStorage.removeItem('chs_username')
     localStorage.removeItem('chs_avatar')
     localStorage.removeItem('chs_privilege')
@@ -102,6 +105,7 @@ class Menu extends PureComponent {
     const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, isLight, translate } = this.props
     const { diceRotation } = this.state
     const isLoggedIn = (userDetails || {}).token !== ''
+    const isPro = (userDetails || {}).subscription === 1
     const username = localStorage.getItem('chs_username')
     const customAvatar = (userDetails || {}).avatar || localStorage.getItem('chs_avatar')
     const preUserScore = (userDetails || {}).score || 1
@@ -175,9 +179,42 @@ class Menu extends PureComponent {
           <SettingsIcon hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
       </div>
+
+
+
       <div style={styles.bottomMenu}>
-        <div>
-          {isLoggedIn ? (
+
+      <div>
+
+        <IconButton
+          key={'pro'}
+          containerElement={<Link to={'/pro'} />}
+          tooltipPosition='bottom-right'
+          tooltip={'PRO Version'}
+          tooltipStyles={tooltip}
+          onClick={onMenuTap}
+          hoverColor={themes[theme].highlightColors[0]}
+          iconStyle={{ marginLeft: -6,     height: 42,
+                                           width: 42,
+                                           marginLeft: -8,
+                                           marginTop: -8,
+                                           fontSize: 16,
+                                           border: "2px solid #6a6a6a",
+                                           backgroundColor: isPro ? themes[theme].highlightColors[0] : themes[theme].foreColors[0] }}
+//          iconStyle={{ backgroundColor: themes[theme].foreColors[0] }}
+        >
+          <Avatar
+            style={{ fontSize: 14 }}
+            size={42}
+            color={{
+              // color: themes[theme].foreColors[0],
+              // backgroundColor: themes[theme].backColors[0]
+            }}>
+            <span style={{ fontWeight: 'bolder', color: themes[theme].backColors[0] }}>PRO</span>
+          </Avatar>
+        </IconButton>
+
+{isLoggedIn ? (
             <div>
               <IconButton
                 key={'community'}
@@ -224,6 +261,7 @@ class Menu extends PureComponent {
             </Badge>
             </div>
           ) : null }
+
           <IconButton
             key={'collections'}
             tooltipPosition='bottom-right'

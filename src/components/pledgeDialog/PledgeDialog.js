@@ -1,5 +1,8 @@
 import React, { PureComponent } from 'react'
+import { connect } from 'react-redux'
 import ReactHtmlParser from 'react-html-parser'
+import axios from 'axios'
+import { PayPalButton } from "react-paypal-button-v2"
 import Avatar from 'material-ui/Avatar'
 import { Card, CardActions, CardText } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
@@ -8,8 +11,9 @@ import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
-import { Restricted, translate } from 'admin-on-rest'
-import { themes } from '../../properties'
+import { setSubscription } from '../menu/authentication/actionReducers'
+import { showNotification, Restricted, translate } from 'admin-on-rest'
+import { themes, properties } from '../../properties'
 
 const styles = {
   label: { width: '10em', display: 'inline-block', color: 'rgba(255, 255, 255, 0.7)' },
@@ -44,7 +48,7 @@ class PledgeDialog extends PureComponent {
   }
 
   render () {
-    const { theme, translate, open, closePledge, snooze } = this.props
+    const { theme, translate, open, closePledge, setSubscription, snooze } = this.props
 
     return (<Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open={open}
       contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
@@ -69,6 +73,54 @@ class PledgeDialog extends PureComponent {
         </div>
 
         <CardText>
+        <PayPalButton
+          options={{vault: true}}
+          createSubscription={(data, actions) => {
+
+
+            const userId = localStorage.getItem("chs_userid")
+            if (!userId) alert("Please login first")
+            return actions.subscription.create({
+              plan_id: 'P-24929775D9861254YMIJJ6PQ'
+            });
+          }}
+          onError={(e) => {
+            console.debug(e);
+            this.props.showNotification("Something went wrong")
+            }}
+          catchError={(e) => {
+            console.debug(e);
+            this.props.showNotification("Canceled")
+            }}
+            style = {{
+                         layout:  'vertical',
+                         color:   'white',
+                         shape:   'rect',
+                         label:   'pay'
+                       }}
+          onCancel={(e) => {
+            console.debug(e);
+            this.props.showNotification("Canceled")
+            }}
+          onApprove={(data, actions) => {
+            // Capture the funds from the transaction
+            return actions.subscription.get().then((details) => {
+              // Show a success message to your buyer
+              console.debug("setSubscription",setSubscription,this.props)
+
+              const token = localStorage.getItem('chs_token')
+              this.props.setSubscription(1)
+              const userId = localStorage.getItem("chs_userid")
+              axios.put(properties.chronasApiHost + '/users/' + userId + '/subscription/1', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+                      .then((e) => {
+                        this.props.showNotification("pos.info.tabs.welcome");
+                        console.debug("ok", e)})
+                      .catch((e) => {
+                        this.props.showNotification("Something went wrong");
+              });
+            });
+          }}
+        />
           <p>
             { ReactHtmlParser(translate('pos.block.pledge1')) }
           </p>
@@ -106,7 +158,110 @@ class PledgeDialog extends PureComponent {
 }
 
 const mapStateToProps = state => ({})
+export default connect(mapStateToProps, {
+  setSubscription,
+  showNotification
+})(translate(PledgeDialog))
 
-export default (translate(PledgeDialog))
 // connect(mapStateToProps, {
 // })(translate(PledgeDialog))
+
+/**
+ *
+
+
+
+
+
+<div id="paypal-button-container-P-2DG92832TU634905MMIFCXYA"></div>
+<script src="https://www.paypal.com/sdk/js?client-id=AbxiFy63NVZ5DIC-bEI7rgp1iYpaZkeJSR_WDj60WPP-TQ6lfQhR6_Ex5LT_AeipBK1QTMX9oX7s0Wr8&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'rect',
+          color: 'white',
+          layout: 'horizontal',
+          label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          // Creates the subscription
+          plan_id: 'P-2DG92832TU634905MMIFCXYA'
+        });
+      },
+      onApprove: function(data, actions) {
+        // do add user privilege to timestamp 1 month from now (?)
+        alert(data.subscriptionID); // You can add optional success message for the subscriber here
+      }
+  }).render('#paypal-button-container-P-2DG92832TU634905MMIFCXYA'); // Renders the PayPal button
+</script>
+
+
+
+
+
+
+
+<div id="paypal-button-container-P-2SE90484UT842910AMIFDCFY"></div>
+<script src="https://www.paypal.com/sdk/js?client-id=AbxiFy63NVZ5DIC-bEI7rgp1iYpaZkeJSR_WDj60WPP-TQ6lfQhR6_Ex5LT_AeipBK1QTMX9oX7s0Wr8&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'rect',
+          color: 'white',
+          layout: 'horizontal',
+          label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          // Creates the subscription
+          plan_id: 'P-2SE90484UT842910AMIFDCFY'
+        });
+      },
+      onApprove: function(data, actions) {
+        alert(data.subscriptionID); // You can add optional success message for the subscriber here
+      }
+  }).render('#paypal-button-container-P-2SE90484UT842910AMIFDCFY'); // Renders the PayPal button
+</script>
+
+
+
+
+
+
+sandbox: <div id="paypal-button-container-P-24929775D9861254YMIJJ6PQ"></div>
+<script src="https://www.paypal.com/sdk/js?client-id=AYxTwJ35cx6UjyodB-sDWHhi1BFz6ivTbagUSgfpB6wp5vQNeIjhVb6zZZd1a_UpXuTVNeM_W_Dq-yeK&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'rect',
+          color: 'gold',
+          layout: 'vertical',
+          label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create(
+          plan_id: 'P-24929775D9861254YMIJJ6PQ'
+        });
+      },
+      onApprove: function(data, actions) {
+        alert(data.subscriptionID); // You can add optional success message for the subscriber here
+      }
+  }).render('#paypal-button-container-P-24929775D9861254YMIJJ6PQ'); // Renders the PayPal button
+</script>
+
+
+buyer:
+
+sb-mrztv14068953@personal.example.com
+l(P/W|4q
+
+
+Email ID:
+sb-qu43w214047863@business.example.com
+System Generated Password:
+6W.-rK_6
+
+
+ *
+ */

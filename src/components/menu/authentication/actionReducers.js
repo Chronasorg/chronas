@@ -1,6 +1,7 @@
 export const FLUSH_USER = 'FLUSH_USER'
 export const SET_USER = 'SET_USER'
 export const SET_PRIVILEGE = 'SET_PRIVILEGE'
+export const SET_SUBSCRIPTION = 'SET_SUBSCRIPTION'
 export const SET_USERNAME = 'SET_USERNAME'
 export const SET_TOKEN = 'SET_TOKEN'
 export const USER_LOGIN_SUCCESS = 'AOR/USER_LOGIN_SUCCESS'
@@ -21,9 +22,9 @@ export const userSignup = (payload, pathName) => ({
   meta: { auth: true, pathName },
 })
 
-export const setUser = (token, user, privilege, avatar, score) => ({
+export const setUser = (token, user, privilege, avatar, score, subscription) => ({
   type: SET_USER,
-  payload: [token, user, privilege, avatar, score],
+  payload: [token, user, privilege, avatar, score, subscription],
 })
 
 export const customNotification = message => ({
@@ -56,13 +57,18 @@ export const setPrivilege = privilege => ({
   payload: privilege,
 })
 
+export const setSubscription = subscription => ({
+  type: SET_SUBSCRIPTION,
+  payload: subscription,
+})
+
 export const logout = () => ({
   type: USER_LOGOUT,
 })
 
 /** Reducers **/
 
-export const userReducer = (initial = { 'token': '', 'username': '', 'privilege': '', 'score':  +localStorage.getItem('chs_score') || 1 }) =>
+export const userReducer = (initial = { 'token': '', 'username': '', 'subscription': '', 'privilege': '', 'score':  +localStorage.getItem('chs_score') || 1, 'subscription':  +localStorage.getItem('chs_subscription') || -1 }) =>
   (prevUser = initial, { type, payload }) => {
     switch (type) {
       case FLUSH_USER:
@@ -70,6 +76,7 @@ export const userReducer = (initial = { 'token': '', 'username': '', 'privilege'
       case USER_LOGIN_FAILURE:
         localStorage.removeItem('chs_token')
         localStorage.removeItem('chs_score')
+        localStorage.removeItem('chs_subscription')
         return initial
       case SET_USER:
         return {
@@ -77,7 +84,8 @@ export const userReducer = (initial = { 'token': '', 'username': '', 'privilege'
           username: payload[1],
           privilege: payload[2],
           avatar: payload[3],
-          score: payload[4]
+          score: payload[4],
+          subscription: payload[5]
         }
       case USER_LOGIN_SUCCESS:
       case SET_TOKEN:
@@ -99,6 +107,13 @@ export const userReducer = (initial = { 'token': '', 'username': '', 'privilege'
         return {
           ...prevUser,
           username: payload
+        }
+      case SET_SUBSCRIPTION:
+        console.debug("setting chs_subscription")
+        localStorage.setItem('chs_subscription', payload)
+        return {
+          ...prevUser,
+          subscription: payload
         }
       case SET_PRIVILEGE:
         return {

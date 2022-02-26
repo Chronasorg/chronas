@@ -73,6 +73,7 @@ export default (type, params) => {
     localStorage.removeItem('chs_avatar')
     localStorage.removeItem('chs_privilege')
     localStorage.removeItem('chs_id')
+    localStorage.removeItem('chs_subscription')
     return Promise.resolve()
   }
 
@@ -84,6 +85,7 @@ export default (type, params) => {
       localStorage.removeItem('chs_avatar')
       localStorage.removeItem('chs_username')
       localStorage.removeItem('chs_privilege')
+      localStorage.removeItem('chs_subscription')
       localStorage.removeItem('chs_id')
 
       return Promise.reject(type)
