@@ -9,14 +9,14 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - echo Building the Docker image...          
-      - docker build --build-arg API_URL="https://aws-api.chronas.org/v1" -t $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN .
-      - docker tag $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN     
-      - docker tag $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN aumanjoa/chronas-map:$IMAGE_TAG_DYN       
+      - echo Building the Docker image...
+      - docker build --build-arg API_URL="https://api.chronas.org/v1" -t $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN .
+      - docker tag $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN
+      - docker tag $IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN aumanjoa/chronas-map:$IMAGE_TAG_DYN
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker image...
-      - docker push aumanjoa/chronas-map:$IMAGE_TAG_DYN  
+      - docker push aumanjoa/chronas-map:$IMAGE_TAG_DYN
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:chronas-map-$IMAGE_TAG_DYN
