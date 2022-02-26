@@ -175,7 +175,7 @@ class Menu extends PureComponent {
           <SettingsIcon hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
       </div>
-      <div style={styles.bottomMenu}>
+      <div className='bottomMenuItems' style={styles.bottomMenu}>
         <div>
           {isLoggedIn ? (
             <div>
