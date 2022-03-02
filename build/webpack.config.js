@@ -1,11 +1,9 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
-const TerserPlugin = require('terser-webpack-plugin-legacy')
 const project = require('../project.config')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const inProject = path.resolve.bind(path, project.basePath)
 const inProjectSrc = (file) => inProject(project.srcDir, file)
 
@@ -14,6 +12,8 @@ const __TEST__ = project.env === 'test'
 const __PROD__ = project.env === 'production'
 
 const config = {
+  optimization: {},
+  mode: project.env,
   entry: {
     normalize: [
       inProjectSrc('normalize'),
@@ -45,21 +45,15 @@ const config = {
   plugins: [
     // new BundleAnalyzerPlugin(),
 
-    new TerserPlugin({
-      parallel: true,
-      terserOptions: {
-        ecma: 6,
-      },
-    }),
     new webpack.ProvidePlugin({
       'window.Quill': 'quill/dist/quill.js',
       'Quill': 'quill/dist/quill.js',
     }),
     new webpack.DefinePlugin(Object.assign({
-      'process.env': { NODE_ENV: JSON.stringify(project.env) },
-      __DEV__,
-      __TEST__,
-      __PROD__,
+     'process.env': { NODE_ENV: JSON.stringify(project.env) },
+     __DEV__,
+     __TEST__,
+     __PROD__,
     }, project.globals))
   ],
 }
@@ -71,7 +65,7 @@ config.module.rules.push({
   exclude: /node_modules/,
   use: [{
     loader: 'babel-loader',
-    query: {
+    options: {
       cacheDirectory: true,
       plugins: [
         'babel-plugin-transform-class-properties',
@@ -110,51 +104,22 @@ config.module.rules.push({
 
 // Styles
 // ------------------------------------
-const extractStyles = new ExtractTextPlugin({
-  filename: 'styles/[name].[contenthash].css',
-  allChunks: true,
-  disable: __DEV__,
-})
+//const extractStyles = new ExtractTextPlugin({
+//  filename: 'styles/[name].[contenthash].css',
+//  allChunks: true,
+//  disable: __DEV__,
+//})
 
 config.module.rules.push({
   test: /\.(sass|scss|css)$/,
-  loader: extractStyles.extract({
-    fallback: 'style-loader',
-    use: [
-      {
-        loader: 'css-loader',
-        options: {
-          sourceMap: project.sourcemaps,
-          minimize: {
-            autoprefixer: {
-              add: true,
-              remove: true,
-              browsers: ['last 2 versions'],
-            },
-            discardComments: {
-              removeAll : true,
-            },
-            discardUnused: false,
-            mergeIdents: false,
-            reduceIdents: false,
-            safe: true,
-            sourcemap: project.sourcemaps,
-          },
-        },
-      },
-      {
-        loader: 'sass-loader',
-        options: {
-          sourceMap: project.sourcemaps,
-          includePaths: [
-            inProjectSrc('styles'),
-          ],
-        },
-      }
-    ],
-  })
+   use: [
+            !__PROD__ ? "style-loader" : MiniCssExtractPlugin.loader,
+            "css-loader",
+            "postcss-loader",
+            "sass-loader",
+          ]
 })
-config.plugins.push(extractStyles)
+//config.plugins.push(extractStyles)
 
 // Images
 // ------------------------------------
@@ -206,9 +171,9 @@ if (__DEV__) {
   config.entry.main.push(
     `webpack-hot-middleware/client.js?path=${config.output.publicPath}__webpack_hmr`
   )
+  config.optimization.moduleIds = 'named';
   config.plugins.push(
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin()
   )
 }
 
@@ -221,7 +186,7 @@ if (!__TEST__) {
     bundles.unshift('vendor')
     config.entry.vendor = project.vendors
   }
-  config.plugins.push(new webpack.optimize.CommonsChunkPlugin({ names: bundles }))
+//  config.plugins.push(new webpack.optimize.CommonsChunkPlugin({ names: bundles }))
 }
 
 // Production Optimizations
@@ -232,26 +197,11 @@ if (__PROD__) {
       minimize: true,
       debug: false,
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: !!config.devtool,
-      comments: false,
-      compress: {
-        warnings: false,
-        screw_ie8: true,
-        conditionals: true,
-        unused: true,
-        comparisons: false,
-        sequences: true,
-        dead_code: true,
-        evaluate: true,
-        if_return: true,
-        join_vars: true,
-      },
-    }),
     new LodashModuleReplacementPlugin({
       'collections': true,
       'shorthands': true
-    })
+    }),
+    new MiniCssExtractPlugin()
   )
 }
 
