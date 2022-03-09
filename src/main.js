@@ -4,6 +4,9 @@ import createStore from './store/createStore'
 import './styles/main.scss'
 import './styles/videoplayer.scss'
 import './styles/login.scss'
+
+import { __DEV__, __TEST__ } from './store/createStore'
+
 // Store Initialization
 // ------------------------------------
 const store = createStore(window.__INITIAL_STATE__)

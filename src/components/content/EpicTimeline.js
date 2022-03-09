@@ -130,7 +130,8 @@ const styles = {
   iframe: {
     width: '100%',
     right: 0,
-    padding: '2px 8px'
+    padding: '2px 8px',
+    minWidth: '580px'
   },
   imageItem: {
     width: '100%',

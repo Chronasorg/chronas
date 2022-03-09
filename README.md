@@ -25,10 +25,6 @@
 
 11. [Thank You](#thank-you)
 
-## Requirements
-* node `>=8.1.0`
-* npm `>=5.0.3`
-
 ## Installation
 
 After confirming that your environment meets the above [requirements](#requirements), you can install Chronas locally by doing the following:

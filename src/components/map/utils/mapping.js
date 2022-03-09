@@ -35,7 +35,6 @@ const utils = {
   },
 
   getExtrema2: function (fullpts) {
-    console.debug('getExtrema2');
     var minX = [fullpts[0][0][0], fullpts[0][0][1]]
     var minY = [fullpts[0][0][0], fullpts[0][0][1]]
     var maxX = [fullpts[0][0][0], fullpts[0][0][1]]
@@ -54,7 +53,6 @@ const utils = {
   },
 
   get_polygon_centroid: function (fullpts) {
-    console.debug('get_polygon_centroid');
     let xSum = 0
     let ySum = 0
     let len = 0
@@ -71,7 +69,6 @@ const utils = {
   },
 
   getCoordsForMultiPolyLine: function (myCoords) {
-    console.debug('getCoordsForMultiPolyLine');
     var extremas = this.getExtrema2(myCoords)
     var point = this.get_polygon_centroid(myCoords)
 
@@ -227,8 +224,6 @@ const utils = {
   },
 
   fillCollectionId: function (myId, addTo, postfix, metadata) {
-
-    console.debug('fillCollectionId');
     // addto = d3 gActiveCouLabels
     var tmpName = ''
     var groups = {}
@@ -330,8 +325,6 @@ const utils = {
   },
 
   addTextFeat: function (areaDefs, setActiveFeat, metadata) {
-
-    console.debug('addTextFeat');
     this.activeTextFeat = setActiveFeat
 
     if ((this.activeTextFeat === 'ruler' && !this.rulIsSetup) ||
@@ -429,7 +422,6 @@ const utils = {
   },
 
   prepareCollectionIDs: function (targetC, attr, provId) {
-    console.debug('prepareCollectionIDs');
     if (attr && attr !== 'na') {
       if (targetC.hasOwnProperty(attr)) {
         if (targetC[attr][0].length === 0 || this.isTouching(targetC[attr][0], adjacent[provId])) {

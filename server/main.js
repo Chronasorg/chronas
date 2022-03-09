@@ -6,6 +6,9 @@ const webpackConfig = require('../build/webpack.config')
 const project = require('../project.config')
 const compress = require('compression')
 
+const middleware = require("webpack-dev-middleware");
+
+
 const oneDay = 86400000
 const app = express()
 app.use(compress())
@@ -14,16 +17,12 @@ app.use(compress())
 // Apply Webpack HMR Middleware
 // ------------------------------------
 if (project.env === 'development') {
-  const compiler = webpack(webpackConfig)
+  const compiler = webpack(webpackConfig);
 
   logger.info('Enabling webpack development and HMR middleware')
-  app.use(require('webpack-dev-middleware')(compiler, {
+  app.use(middleware(compiler, {
     publicPath  : webpackConfig.output.publicPath,
-    contentBase : path.resolve(project.basePath, project.srcDir),
-    hot         : true,
-    quiet       : false,
-    noInfo      : false,
-    lazy        : false,
+//    contentBase : path.resolve(project.basePath, project.srcDir),
     stats       : 'normal',
   }))
   app.use(require('webpack-hot-middleware')(compiler, {

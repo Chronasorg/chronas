@@ -214,7 +214,7 @@ class Menu extends PureComponent {
           </Avatar>
         </IconButton>
 
-{isLoggedIn ? (
+        {isLoggedIn ? (
             <div>
               <IconButton
                 key={'community'}
