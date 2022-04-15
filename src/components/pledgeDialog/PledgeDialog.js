@@ -11,7 +11,7 @@ import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
-import { setSubscription } from '../menu/authentication/actionReducers'
+import { setSubscription, setToken, setPrivilege } from '../menu/authentication/actionReducers'
 import { showNotification, Restricted, translate } from 'admin-on-rest'
 import { themes, properties } from '../../properties'
 
@@ -48,7 +48,8 @@ class PledgeDialog extends PureComponent {
   }
 
   render () {
-    const { theme, translate, open, closePledge, setSubscription, snooze } = this.props
+    const { theme, translate, open, userDetails, closePledge, setSubscription, snooze } = this.props
+    const isPro = (userDetails || {}).subscription && (userDetails || {}).subscription != "-1"
 
     return (<Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open={open}
       contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
@@ -72,111 +73,147 @@ class PledgeDialog extends PureComponent {
           </Toolbar>
         </div>
 
-        <CardText>
-        <PayPalButton
-          options={{vault: true}}
-          createSubscription={(data, actions) => {
-
-
-            const userId = localStorage.getItem("chs_userid")
-            if (!userId) alert("Please login first")
-            return actions.subscription.create({
-              plan_id: 'P-24929775D9861254YMIJJ6PQ'
-            });
-          }}
-          onError={(e) => {
-            console.debug(e);
-            this.props.showNotification("Something went wrong")
-            }}
-          catchError={(e) => {
-            console.debug(e);
-            this.props.showNotification("Canceled")
-            }}
-            style = {{
-                         layout:  'vertical',
-                         color:   'white',
-                         shape:   'rect',
-                         label:   'pay'
-                       }}
-          onCancel={(e) => {
-            console.debug(e);
-            this.props.showNotification("Canceled")
-            }}
-          onApprove={(data, actions) => {
-            // Capture the funds from the transaction
-            return actions.subscription.get().then((details) => {
-              // Show a success message to your buyer
-              console.debug("setSubscription",setSubscription,this.props)
-
-              const token = localStorage.getItem('chs_token')
-              this.props.setSubscription(1)
-              const userId = localStorage.getItem("chs_userid")
-              axios.put(properties.chronasApiHost + '/users/' + userId + '/subscription/1', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
-                      .then((e) => {
-                        this.props.showNotification("pos.info.tabs.welcome");
-                        console.debug("ok", e)})
-                      .catch((e) => {
-                        this.props.showNotification("Something went wrong");
-              });
-            });
-          }}
-        />
-          <p>
-            { ReactHtmlParser(translate('pos.block.pledge1')) }
-          </p>
-          <p>
-            {translate('pos.block.pledge2')}
-              <a className='customLink' target='_blank'
-                href='https://www.patreon.com/chronas'><Avatar
-                  style={{ marginRight: 8, marginLeft: 6 }} src='/images/240px-Patreon_logo.svg.png' />
-              Patreon</a>
-            {translate('pos.block.pledge3')}
-          </p>
+{ isPro ? <div>
+<CardText>
           <p>
             {translate('pos.block.pledge4')}
           </p>
-          <form className="donateButton" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <span>{translate('pos.block.pledge5')}&nbsp;&nbsp;</span>
-            <input type="hidden" name="cmd" value="_s-xclick"/>
-            <input type="hidden" name="hosted_button_id" value="DLRUFHZSBTBNN"/>
-            <input type="image" src="/images/button-PayPal.png" style={{ height: 34 }} border="0" name="submit" alt="Donate with PayPal" title="Donate with PayPal" /><img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1"/>
-          </form>
+{(userDetails || {}).subscription}
+           <FlatButton style={{
+    color: 'rgb(255, 64, 129)' }}label={'cancel subscription'} secondary={true}
+                        onClick={() => {
+                          const token = localStorage.getItem('chs_token')
+                          const subId = (userDetails || {}).subscription
+
+                              const userId = localStorage.getItem("chs_userid")
+
+                              axios.put(properties.chronasApiHost + '/users/' + userId + '/subscription/' + subId + '/cancel', {},
+                               { 'headers': { 'Authorization': 'Bearer ' + token } })
+                                  .then((res) => {
+
+                                    if (((res || {}).data || {}).token) {
+                                        const token = res.data.token
+                                        this.props.setToken(token)
+                                        // TODO: breadcrumb last login delta
+                                        const decodedToken = decodeJwt(token)
+                                        console.debug("decodedToken", decodedToken)
+                                        localStorage.setItem('chs_token', token)
+                                        if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
+                                        if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
+
+                                        localStorage.setItem('chs_subscription', decodedToken.subscription || "-1")
+                                        localStorage.setItem('chs_username', decodedToken.username)
+                                        localStorage.setItem('chs_userid', decodedToken.id)
+                                        localStorage.setItem('chs_privilege', decodedToken.privilege)
+
+                                        this.props.setPrivilege(decodedToken.privilege)
+                                    }
+                                    this.props.showNotification("Subscription successfully canceled!");
+                                    this.props.setSubscription("-1")
+                                    localStorage.setItem('chs_subscription', -1)
+                                  })
+                                  .catch((e) => {
+                                    this.props.showNotification("Something went wrong");
+                                  });
+                            }} />
         </CardText>
-        <Divider />
-        <CardActions>
-          <FlatButton label={translate('pos.pledgeRemind')} onClick={() => snooze()} />
-          <FlatButton label={translate('pos.pledgeOpen')} onClick={() => {
-            var win = window.open('https://www.patreon.com/chronas', '_blank')
-            win.focus()
-          }} />
-          <FlatButton style={{ right: 0, position: 'absolute' }} label={translate('aor.action.close')} onClick={() => closePledge()} />
-        </CardActions>
-      </Card>
-    </Dialog>
-    )
-  }
-}
+</div> : <div>
+  <CardText>
+          <PayPalButton
+            options={{vault: true}}
+            createSubscription={(data, actions) => {
 
-const mapStateToProps = state => ({})
-export default connect(mapStateToProps, {
-  setSubscription,
-  showNotification
-})(translate(PledgeDialog))
 
-// connect(mapStateToProps, {
-// })(translate(PledgeDialog))
+              const userId = localStorage.getItem("chs_userid")
+              if (!userId) alert("Please login first")
+              return actions.subscription.create({
+                plan_id: 'P-7RB838343G9556941MJF4LNY'
+              });
+            }}
+            onError={(e) => {
+              console.debug(e);
+              this.props.showNotification("Something went wrong")
+              }}
+            catchError={(e) => {
+              console.debug(e);
+              this.props.showNotification("Canceled")
+              }}
+              style = {{
+                           layout:  'vertical',
+                           color:   'white',
+                           shape:   'rect',
+                           label:   'pay'
+                         }}
+            onCancel={(e) => {
+              console.debug(e);
+              this.props.showNotification("Canceled")
+              }}
+            onApprove={(data, actions) => {
+              // Capture the funds from the transaction
+              return actions.subscription.get().then((details) => {
+                // Show a success message to your buyer
+                console.debug("setSubscription",setSubscription,this.props)
+
+                const token = localStorage.getItem('chs_token')
+                this.props.setSubscription(1)
+                const userId = localStorage.getItem("chs_userid")
+                axios.put(properties.chronasApiHost + '/users/' + userId + '/subscription/1', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+                        .then((e) => {
+                          this.props.showNotification("pos.info.tabs.welcome");
+                          console.debug("ok", e)})
+                        .catch((e) => {
+                          this.props.showNotification("Something went wrong");
+                });
+              });
+            }}
+          />
+            <p>
+              { ReactHtmlParser(translate('pos.block.pledge1')) }
+            </p>
+            <p>
+              {translate('pos.block.pledge2')}
+                <a className='customLink' target='_blank'
+                  href='https://www.patreon.com/chronas'><Avatar
+                    style={{ marginRight: 8, marginLeft: 6 }} src='/images/240px-Patreon_logo.svg.png' />
+                Patreon</a>
+              {translate('pos.block.pledge3')}
+            </p>
+            <p>
+              {translate('pos.block.pledge4')}
+            </p>
+            <form className="donateButton" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+              <span>{translate('pos.block.pledge5')}&nbsp;&nbsp;</span>
+              <input type="hidden" name="cmd" value="_s-xclick"/>
+              <input type="hidden" name="hosted_button_id" value="DLRUFHZSBTBNN"/>
+              <input type="image" src="/images/button-PayPal.png" style={{ height: 34 }} border="0" name="submit" alt="Donate with PayPal" title="Donate with PayPal" /><img alt="" border="0" src="https://www.paypalobjects.com/de_DE/i/scr/pixel.gif" width="1" height="1"/>
+            </form>
+          </CardText>
+          </div> }
+
+          <Divider />
+                  <CardActions>
+                    <FlatButton label={translate('pos.pledgeRemind')} onClick={() => snooze()} />
+                    <FlatButton label={translate('pos.pledgeOpen')} onClick={() => {
+                      var win = window.open('https://www.patreon.com/chronas', '_blank')
+                      win.focus()
+                    }} />
+                    <FlatButton style={{ right: 0, position: 'absolute' }} label={translate('aor.action.close')} onClick={() => closePledge()} />
+                  </CardActions>
+                </Card>
+              </Dialog>
+              )
+            }
+          }
+
+          const mapStateToProps = state => ({})
+          export default connect(mapStateToProps, {
+            setSubscription,
+            showNotification
+          })(translate(PledgeDialog))
 
 /**
- *
-
-
-
-
-
-<div id="paypal-button-container-P-2DG92832TU634905MMIFCXYA"></div>
-<script src="https://www.paypal.com/sdk/js?client-id=AbxiFy63NVZ5DIC-bEI7rgp1iYpaZkeJSR_WDj60WPP-TQ6lfQhR6_Ex5LT_AeipBK1QTMX9oX7s0Wr8&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
-<script>
-  paypal.Buttons({
+<div id="paypal-button-container-P-7RB838343G9556941MJF4LNY"></div>
+yq
       style: {
           shape: 'rect',
           color: 'white',
@@ -256,6 +293,11 @@ buyer:
 sb-mrztv14068953@personal.example.com
 l(P/W|4q
 
+Email ID:
+sb-2tl8710494634@personal.example.com
+System Generated Password:
+#__+9Tgb
+
 
 Email ID:
 sb-qu43w214047863@business.example.com
@@ -263,5 +305,14 @@ System Generated Password:
 6W.-rK_6
 
 
+new buyer:
+sb-cysju15140091@personal.example.com
+0,Bfbv<?
+
+new business:
+sb-unppw15161824@business.example.com
+Ye=_Z18s
+
+https://developer.paypal.com/api/subscriptions/v1/
  *
  */

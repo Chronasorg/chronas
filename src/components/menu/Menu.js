@@ -24,7 +24,7 @@ import { selectAreaItem as selectAreaItemAction } from '../map/actionReducers'
 import { setActiveMenu as setActiveMenuAction, toggleMenuDrawer as toggleMenuDrawerAction } from './actionReducers'
 import { toggleRightDrawer as toggleRightDrawerAction } from '../content/actionReducers'
 import { tooltip } from '../../styles/chronasStyleComponents'
-import {logout, setToken, setUserScore } from './authentication/actionReducers'
+import {logout, setToken, setUserScore, setUser } from './authentication/actionReducers'
 import { themes } from '../../properties'
 import decodeJwt from "jwt-decode";
 
@@ -90,13 +90,17 @@ class Menu extends PureComponent {
   }
 
   componentWillReceiveProps (nextProps) {
-    const { setUserScore } = this.props
+    const { setUserScore, setUser } = this.props
     const { token, username } = this.props.userDetails
     if (token !== nextProps.userDetails.token && nextProps.userDetails.token && username === nextProps.userDetails.username) {
       const decodedToken = decodeJwt(nextProps.userDetails.token)
       if (decodedToken.score) {
         localStorage.setItem('chs_score', decodedToken.score)
-        setUserScore(+decodedToken.score)
+//         setUserScore(+decodedToken.score)
+
+         const userScore = decodedToken.score
+         setUser(nextProps.userDetails.token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar, userScore, decodedToken.subscription)
+
       }
     }
   }
@@ -105,7 +109,8 @@ class Menu extends PureComponent {
     const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, isLight, translate } = this.props
     const { diceRotation } = this.state
     const isLoggedIn = (userDetails || {}).token !== ''
-    const isPro = (userDetails || {}).subscription === 1
+    const isPro = (userDetails || {}).subscription && (userDetails || {}).subscription != "-1"
+    console.debug("isPro",isPro)
     const username = localStorage.getItem('chs_username')
     const customAvatar = (userDetails || {}).avatar || localStorage.getItem('chs_avatar')
     const preUserScore = (userDetails || {}).score || 1
@@ -323,6 +328,7 @@ const enhance = compose(
     selectAreaItem: selectAreaItemAction,
     userLogout,
     setUserScore,
+    setUser,
     setToken,
     showNotification,
     logout

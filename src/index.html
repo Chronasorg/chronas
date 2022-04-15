@@ -15,7 +15,28 @@
 <body>
 <div id="root" style="height: 100%"></div>
 </body>
-<script src="https://www.paypal.com/sdk/js?client-id=AYxTwJ35cx6UjyodB-sDWHhi1BFz6ivTbagUSgfpB6wp5vQNeIjhVb6zZZd1a_UpXuTVNeM_W_Dq-yeK&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<!--<script src="https://www.paypal.com/sdk/js?client-id=ATl03-JPDdeVKVx6wtY94Pd4djo5rko99hXjMKr9n8t796_uGbgHxJDnNGWuqK521YfhkqUu3wJAnxTo&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>-->
+<script src="https://www.paypal.com/sdk/js?client-id=ATl03-JPDdeVKVx6wtY94Pd4djo5rko99hXjMKr9n8t796_uGbgHxJDnNGWuqK521YfhkqUu3wJAnxTo&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
+<script>
+  paypal.Buttons({
+      style: {
+          shape: 'rect',
+          color: 'white',
+          layout: 'horizontal',
+          label: 'subscribe'
+      },
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          /* Creates the subscription */
+          plan_id: 'P-7RB838343G9556941MJF4LNY'
+        });
+      },
+      onApprove: function(data, actions) {
+        alert(data.subscriptionID); // You can add optional success message for the subscriber here
+      }
+  }).render('#paypal-button-container-P-7RB838343G9556941MJF4LNY'); // Renders the PayPal button
+</script>
+<div id="paypal-button-container-P-7RB838343G9556941MJF4LNY"></div>
 <script type="text/javascript">
   var appInsights = window.appInsights || function (a) {
     function b(a) {
