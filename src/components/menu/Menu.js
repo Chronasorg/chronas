@@ -109,8 +109,7 @@ class Menu extends PureComponent {
     const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, isLight, translate } = this.props
     const { diceRotation } = this.state
     const isLoggedIn = (userDetails || {}).token !== ''
-    const isPro = (userDetails || {}).subscription && (userDetails || {}).subscription != "-1"
-    console.debug("isPro",isPro)
+    const isPro = ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
     const username = localStorage.getItem('chs_username')
     const customAvatar = (userDetails || {}).avatar || localStorage.getItem('chs_avatar')
     const preUserScore = (userDetails || {}).score || 1

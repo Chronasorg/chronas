@@ -6,6 +6,7 @@ import { PayPalButton } from "react-paypal-button-v2"
 import Avatar from 'material-ui/Avatar'
 import { Card, CardActions, CardText } from 'material-ui/Card'
 import Dialog from 'material-ui/Dialog'
+import decodeJwt from 'jwt-decode'
 import Divider from 'material-ui/Divider'
 import FlatButton from 'material-ui/FlatButton'
 import IconButton from 'material-ui/IconButton'
@@ -43,13 +44,19 @@ class PledgeDialog extends PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      hiddenElement: true
+      hiddenElement: true,
+      subscriptionCheckoutPlanId: localStorage.getItem('chs_subCheckoutPlanId') || false,
     }
   }
 
+  checkLoginAndGoPlan = (planId) => {
+    this.setState({ subscriptionCheckout: planId })
+  }
+
   render () {
-    const { theme, translate, open, userDetails, closePledge, setSubscription, snooze } = this.props
-    const isPro = (userDetails || {}).subscription && (userDetails || {}).subscription != "-1"
+    const { theme, translate, open, userDetails, setToken, setPrivilege, closePledge, setSubscription, snooze } = this.props
+    const { subscriptionCheckout } = this.state
+    const isPro = ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
 
     return (<Dialog bodyStyle={{ backgroundImage: themes[theme].gradientColors[0] }} open={open}
       contentClassName={(this.state.hiddenElement) ? '' : 'classReveal'}
@@ -90,10 +97,10 @@ class PledgeDialog extends PureComponent {
                               axios.put(properties.chronasApiHost + '/users/' + userId + '/subscription/' + subId + '/cancel', {},
                                { 'headers': { 'Authorization': 'Bearer ' + token } })
                                   .then((res) => {
-
+                                  console.debug("tata")
                                     if (((res || {}).data || {}).token) {
                                         const token = res.data.token
-                                        this.props.setToken(token)
+                                        setToken(token)
                                         // TODO: breadcrumb last login delta
                                         const decodedToken = decodeJwt(token)
                                         console.debug("decodedToken", decodedToken)
@@ -106,20 +113,20 @@ class PledgeDialog extends PureComponent {
                                         localStorage.setItem('chs_userid', decodedToken.id)
                                         localStorage.setItem('chs_privilege', decodedToken.privilege)
 
-                                        this.props.setPrivilege(decodedToken.privilege)
+                                        setPrivilege(decodedToken.privilege)
                                     }
                                     this.props.showNotification("Subscription successfully canceled!");
                                     this.props.setSubscription("-1")
-                                    localStorage.setItem('chs_subscription', -1)
+                                    localStorage.setItem('chs_subscription', "-1")
                                   })
                                   .catch((e) => {
                                     this.props.showNotification("Something went wrong");
                                   });
                             }} />
         </CardText>
-</div> : <div>
-  <CardText>
-          <PayPalButton
+</div> : subscriptionCheckout ? <div>
+  <FlatButton label={'Go Back'} onClick={() =>  this.setState({ subscriptionCheckout: false }) } />
+<PayPalButton
             options={{vault: true}}
             createSubscription={(data, actions) => {
 
@@ -127,7 +134,7 @@ class PledgeDialog extends PureComponent {
               const userId = localStorage.getItem("chs_userid")
               if (!userId) alert("Please login first")
               return actions.subscription.create({
-                plan_id: 'P-7RB838343G9556941MJF4LNY'
+                plan_id: this.state.subscriptionCheckoutPlanId
               });
             }}
             onError={(e) => {
@@ -152,12 +159,12 @@ class PledgeDialog extends PureComponent {
               // Capture the funds from the transaction
               return actions.subscription.get().then((details) => {
                 // Show a success message to your buyer
-                console.debug("setSubscription",setSubscription,this.props)
+                console.debug("setSubscription",setSubscription,this.props,data,details)
 
                 const token = localStorage.getItem('chs_token')
-                this.props.setSubscription(1)
+                this.props.setSubscription(data.subscriptionID)
                 const userId = localStorage.getItem("chs_userid")
-                axios.put(properties.chronasApiHost + '/users/' + userId + '/subscription/1', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
+                axios.put(properties.chronasApiHost + '/users/' + userId + '/subscription/' + data.subscriptionID + '/add', {}, { 'headers': { 'Authorization': 'Bearer ' + token } })
                         .then((e) => {
                           this.props.showNotification("pos.info.tabs.welcome");
                           console.debug("ok", e)})
@@ -167,6 +174,11 @@ class PledgeDialog extends PureComponent {
               });
             }}
           />
+          </div> : <div>
+  <CardText>
+  <FlatButton label={'SUBSCRIBE WITH PAYPAL Plan 1'} onClick={() => this.checkLoginAndGoPlan('P-7RB838343G9556941MJF4LNY') } />
+  <FlatButton label={'SUBSCRIBE WITH PAYPAL Plan 2'} onClick={() => this.checkLoginAndGoPlan('P-7RB838343G9556941MJF4LNY') } />
+CHECK FOR LOGIN
             <p>
               { ReactHtmlParser(translate('pos.block.pledge1')) }
             </p>
@@ -205,9 +217,10 @@ class PledgeDialog extends PureComponent {
             }
           }
 
-          const mapStateToProps = state => ({})
-          export default connect(mapStateToProps, {
+          export default connect(state => ({ userDetails: state.userDetails, theme: state.theme }), {
             setSubscription,
+            setPrivilege,
+            setToken,
             showNotification
           })(translate(PledgeDialog))
 
