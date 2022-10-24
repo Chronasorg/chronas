@@ -3,26 +3,29 @@ import React, { PureComponent } from 'react'
 import BoardIcon from 'material-ui/svg-icons/communication/forum'
 import CollectionIcon from 'material-ui/svg-icons/image/collections-bookmark'
 import IconButton from 'material-ui/IconButton'
+import FloatingActionButton from 'material-ui/FloatingActionButton'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
 import HelpIcon from 'material-ui/svg-icons/action/help'
 import DiscoverIcon from 'material-ui/svg-icons/action/explore'
+import compose from 'recompose/compose'
+import PlusIcon from 'material-ui/svg-icons/maps/local-hospital'
 import DiceIcon from 'material-ui/svg-icons/places/casino'
 import GameIcon from 'material-ui/svg-icons/hardware/videogame-asset'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
+import StarIcon from 'material-ui/svg-icons/action/grade'
 import Avatar from 'material-ui/Avatar'
 import Badge from 'material-ui/Badge'
 import SVG from 'react-inlinesvg'
 import { Link } from 'react-router-dom'
 import pure from 'recompose/pure'
 import { connect } from 'react-redux'
-import compose from 'recompose/compose'
 import { defaultTheme, showNotification, translate, userLogout } from 'admin-on-rest'
 import { selectAreaItem as selectAreaItemAction } from '../map/actionReducers'
 import { setActiveMenu as setActiveMenuAction, toggleMenuDrawer as toggleMenuDrawerAction } from './actionReducers'
 import { toggleRightDrawer as toggleRightDrawerAction } from '../content/actionReducers'
 import { tooltip } from '../../styles/chronasStyleComponents'
-import {logout, setToken, setUserScore } from './authentication/actionReducers'
+import {logout, setToken, setUserScore, setUser } from './authentication/actionReducers'
 import { themes } from '../../properties'
 import decodeJwt from "jwt-decode";
 
@@ -67,6 +70,7 @@ class Menu extends PureComponent {
     const { logout, showNotification } = this.props
     localStorage.removeItem('chs_token')
     localStorage.removeItem('chs_score')
+    localStorage.removeItem('chs_subscription')
     localStorage.removeItem('chs_username')
     localStorage.removeItem('chs_avatar')
     localStorage.removeItem('chs_privilege')
@@ -87,13 +91,17 @@ class Menu extends PureComponent {
   }
 
   componentWillReceiveProps (nextProps) {
-    const { setUserScore } = this.props
+    const { setUserScore, setUser } = this.props
     const { token, username } = this.props.userDetails
     if (token !== nextProps.userDetails.token && nextProps.userDetails.token && username === nextProps.userDetails.username) {
       const decodedToken = decodeJwt(nextProps.userDetails.token)
       if (decodedToken.score) {
         localStorage.setItem('chs_score', decodedToken.score)
-        setUserScore(+decodedToken.score)
+//         setUserScore(+decodedToken.score)
+
+         const userScore = decodedToken.score
+         setUser(nextProps.userDetails.token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar, userScore, decodedToken.subscription)
+
       }
     }
   }
@@ -102,6 +110,7 @@ class Menu extends PureComponent {
     const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, isLight, translate } = this.props
     const { diceRotation } = this.state
     const isLoggedIn = (userDetails || {}).token !== ''
+    const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
     const username = localStorage.getItem('chs_username')
     const customAvatar = (userDetails || {}).avatar || localStorage.getItem('chs_avatar')
     const preUserScore = (userDetails || {}).score || 1
@@ -175,9 +184,29 @@ class Menu extends PureComponent {
           <SettingsIcon hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
       </div>
-      <div className='bottomMenuItems' style={styles.bottomMenu}>
-        <div>
-          {isLoggedIn ? (
+
+
+
+      <div style={styles.bottomMenu}>
+
+      <div>
+
+        <IconButton
+          key={'pro'}
+          containerElement={<Link to={'/pro'} />}
+          tooltipPosition='bottom-right'
+          tooltip={'PRO Version'}
+          tooltipStyles={tooltip}
+          onClick={onMenuTap}
+          hoverColor={themes[theme].highlightColors[0]}
+          iconStyle={{
+                                           color: isPro ? themes[theme].highlightColors[0] : themes[theme].foreColors[0] }}
+//          iconStyle={{ backgroundColor: themes[theme].foreColors[0] }}
+        >
+        <StarIcon hoverColor={themes[theme].highlightColors[0]} />
+        </IconButton>
+
+        {isLoggedIn ? (
             <div>
               <IconButton
                 key={'community'}
@@ -224,6 +253,7 @@ class Menu extends PureComponent {
             </Badge>
             </div>
           ) : null }
+
           <IconButton
             key={'collections'}
             tooltipPosition='bottom-right'
@@ -285,6 +315,7 @@ const enhance = compose(
     selectAreaItem: selectAreaItemAction,
     userLogout,
     setUserScore,
+    setUser,
     setToken,
     showNotification,
     logout

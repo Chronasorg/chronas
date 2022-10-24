@@ -19,6 +19,7 @@ import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import LoadingBar from './components/global/LoadingBar'
 import PledgeDialog from './components/pledgeDialog/PledgeDialog'
+import SubscribeDialog from './components/pledgeDialog/SubscribeDialog'
 import LoadingPage from './components/loadingPage/LoadingPage'
 import messages from './translations'
 import { history } from './store/createStore'
@@ -292,8 +293,10 @@ class App extends Component {
 
     if (typeof token !== 'undefined') {
       const decodedToken = decodeJwt(token)
+      console.debug("decodedToken",decodedToken)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
+      localStorage.setItem('chs_subscription', decodedToken.subscription || "-1")
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
       localStorage.setItem('chs_token', token)
@@ -305,13 +308,15 @@ class App extends Component {
     if (isLight) return;
     if (token) {
       const decodedToken = decodeJwt(token)
+      console.debug("decodedToken",decodedToken)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
+      localStorage.setItem('chs_subscription', decodedToken.subscription || "-1")
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
       localStorage.setItem('chs_token', token)
       const userScore = decodedToken.score || localStorage.getItem('chs_score') || 1
-      setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar, userScore)
+      setUser(token, (decodedToken.name || {}).first || (decodedToken.name || {}).last || decodedToken.email, decodedToken.privilege, decodedToken.avatar, userScore, decodedToken.subscription)
     }
 
     if (!localStorage.getItem('chs_performance') || localStorage.getItem('chs_performance_set') === null && (!window.location.hash || window.location.hash === '#/')) {
@@ -339,6 +344,7 @@ class App extends Component {
     const {
       width,
       showNotification,
+      setSubscription,
       isLoading,
       store,
       theme
@@ -408,7 +414,7 @@ class App extends Component {
                     {!isLoading && !failAndNotify && createElement(Map, { history, isLoading, isLight })}
                     {!isLoading && !failAndNotify && !isStatic && !isLight &&
                     <div style={width === 1 ? prefixedStyles.contentSmall : prefixedStyles.content}>
-                      <PledgeDialog theme={theme} open={false} snooze={() => {
+                      <PledgeDialog open={pledgeOpen} theme={theme} setSubscription={setSubscription} showNotification={showNotification} snooze={() => {
                         setTimeout(() => {
                           this.setState({ pledgeOpen: true })
                           this.forceUpdate()
@@ -422,6 +428,14 @@ class App extends Component {
                       }} />
                       <Switch>
                         <Route exact path='/' />
+                        <Route exact path='/pro' render={(props) => {
+                          return (
+                             <PledgeDialog
+                              history={history} setSubscription={setSubscription} showNotification={showNotification} open={true} theme={theme} closePledge={() => history.push('/')}
+                              {...props}
+                               />
+                          )
+                        }} />
                         <Route exact path='/configuration' render={(props) => {
                           return (
                             <Configuration
@@ -456,6 +470,11 @@ class App extends Component {
                               theme={theme}
                               activeSection={'tos'}
                             />
+                          )
+                        }} />
+                        <Route exact path='/pro/subscribe' render={() => {
+                          return (
+                            <SubscribeDialog history={history} setUser={setUser} theme={theme} setSubscription={setSubscription} showNotification={showNotification} closePledge={() => history.push('/')} />
                           )
                         }} />
                         <Route exact path='/privacy' render={() => {

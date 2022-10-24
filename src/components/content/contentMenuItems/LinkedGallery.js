@@ -391,11 +391,26 @@ class LinkedGallery extends React.Component {
     this.props.setContentMenuItem('')
   }
   _handleEdit = (id) => {
+
+  const { userDetails } = this.props
+
+   const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+   if (!isPro) {
+      return this.props.history.push('/pro');
+   }
+
     const selectedItem = this.state.tileData.find(el => (el.src === decodeURIComponent(id)))
     this.props.selectLinkedItem(selectedItem)
     this.props.history.push('/mod/linked')
   }
   _handleAdd = () => {
+    const { userDetails } = this.props
+
+     const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+     if (!isPro) {
+        return this.props.history.push('/pro');
+     }
+
     this.props.history.push('/mod/links')
   }
   _handleOpenSource = (source) => {
@@ -749,6 +764,7 @@ const enhance = compose(
   connect(state => ({
     theme: state.theme,
     locale: state.locale,
+    userDetails: state.userDetails,
   }), {
     toggleRightDrawer: toggleRightDrawerAction,
     setFullModActive,

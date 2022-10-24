@@ -1,6 +1,6 @@
 import { AUTH_CHECK, AUTH_GET_PERMISSIONS, AUTH_ERROR, AUTH_LOGIN, AUTH_LOGOUT } from 'admin-on-rest'
 import decodeJwt from 'jwt-decode'
-import { setToken, USER_SIGNUP } from './actionReducers'
+import { setToken, setUser, USER_SIGNUP } from './actionReducers'
 import { properties } from '../../../properties'
 
 export default (type, params) => {
@@ -24,12 +24,12 @@ export default (type, params) => {
           setToken(token)
           // TODO: breadcrumb last login delta
           const decodedToken = decodeJwt(token)
+          console.debug("decodedToken", decodedToken)
           localStorage.setItem('chs_token', token)
           if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
-          if (decodedToken.score) {
-            localStorage.setItem('chs_score', decodedToken.score)
-          }
+          if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
 
+          localStorage.setItem('chs_subscription', decodedToken.subscription || "-1")
           localStorage.setItem('chs_username', decodedToken.username)
           localStorage.setItem('chs_userid', decodedToken.id)
           localStorage.setItem('chs_privilege', decodedToken.privilege)
@@ -59,6 +59,7 @@ export default (type, params) => {
             localStorage.setItem('chs_score', decodedToken.score)
           }
           localStorage.setItem('chs_username', decodedToken.username)
+          localStorage.setItem('chs_subscription', decodedToken.subscription || "-1")
           localStorage.setItem('chs_userid', decodedToken.id)
           localStorage.setItem('chs_privilege', decodedToken.privilege)
           return Promise.resolve(token)
@@ -73,6 +74,7 @@ export default (type, params) => {
     localStorage.removeItem('chs_avatar')
     localStorage.removeItem('chs_privilege')
     localStorage.removeItem('chs_id')
+    localStorage.removeItem('chs_subscription')
     return Promise.resolve()
   }
 
@@ -84,6 +86,7 @@ export default (type, params) => {
       localStorage.removeItem('chs_avatar')
       localStorage.removeItem('chs_username')
       localStorage.removeItem('chs_privilege')
+      localStorage.removeItem('chs_subscription')
       localStorage.removeItem('chs_id')
 
       return Promise.reject(type)

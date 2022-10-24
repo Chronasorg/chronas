@@ -6,6 +6,8 @@ import { GridList } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
+import StarIcon from 'material-ui/svg-icons/action/grade'
+import FlatButton from 'material-ui/FlatButton'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
 import IconThumbUp from 'material-ui/svg-icons/hardware/keyboard-arrow-up'
 import IconThumbDown from 'material-ui/svg-icons/hardware/keyboard-arrow-down'
@@ -363,6 +365,12 @@ class MapGallery extends PureComponent {
   }
 
   _handleEdit = (id, dataKey = false) => {
+     const { userDetails } = this.props
+     const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+     if (!isPro) {
+        return this.props.history.push('/pro');
+     }
+
     const selectedItem = (dataKey) ? this.state.tileData[dataKey].find(el => (el.src === decodeURIComponent(id))) : this.state.selectedImage
     this.props.selectLinkedItem(selectedItem, {
       ...selectedItem,
@@ -414,11 +422,12 @@ class MapGallery extends PureComponent {
   }
 
   render () {
-    const { selectedYear, translate, rightDrawerOpen, theme, setGalleryMarker, setRightDrawerVisibility } = this.props
+    const { location, selectedYear, translate, rightDrawerOpen, theme, setGalleryMarker, userDetails, setRightDrawerVisibility } = this.props
     const { selectedImage, showMax, isOpen, filteredData, isFetchingImages } = this.state
     if (rightDrawerOpen) setRightDrawerVisibility(false)
 
-    const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.")
+    const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+    const showAds = !isPro
     const hasNoSource = typeof selectedImage.source === 'undefined' || selectedImage.source === ''
     const hasNoImage = typeof selectedImage.src === 'undefined' || selectedImage.src === ''
     const hasNoWiki = typeof selectedImage.wiki === 'undefined' || selectedImage.wiki === '' || (selectedImage.wiki || []).length === 0
@@ -497,14 +506,21 @@ class MapGallery extends PureComponent {
             display: 'flex',
             flexWrap: 'nowrap',
             overflowX: 'auto',
-            transition: 'all 1s ease',
+            transition: 'all 300ms cubic-bezier(0.4, 0, 0.2, 1)',
             width: 'calc(100% - 62px)',
             backgroundImage: themes[theme].gradientColors[0],
             boxShadow: 'rgba(0, 0, 0, 0.4) -6px 6px 6px -3px',
             left: 64,
             height: 137,
             top: isOpen ? 6 : -130,
-            position: 'fixed'
+            position: 'fixed',
+            filter: ((location || {}).pathname === '/' || (
+                          (location || {}).pathname !== '/info' &&
+                          (location || {}).pathname !== '/login' &&
+                          (location || {}).pathname !== '/configuration' &&
+                          (location || {}).pathname !== '/account' &&
+                          (location || {}).pathname !== '/performance' &&
+                          ((location || {}).pathname || '').indexOf('/community/') === -1)) ? 'inherit' : 'blur(20px)'
           }}>
             <GridTile
               id={'galleryId-ad'}
@@ -520,7 +536,20 @@ class MapGallery extends PureComponent {
               // cols={((j + 3) % 4 < 2) ? 1 : 2}
               titleHeight={36}
             >
-              {showAds ? <div style={{ width: "100%", height: "100%" }}><AdSense.Google
+              {showAds ? <div style={{ width: "100%", height: "100%" }}>
+
+                      <FlatButton
+                                  style={{ position: "relative", zIndex: 100, height: 24, left: 0, top: 0,  float: 'left', lineHeight: '24px', backgroundColor: 'rgb(255 255 255 / 50%)' }}
+                                                    label={<span style={{ fontSize: "12px" }}>Remove ads</span>}
+                                                    labelPosition="before"
+                                                    primary={true}
+                                                    onClick={() => {this.props.history.push('/pro')}}
+                                                    icon={<StarIcon style={{
+                                                        height: 16,
+                                                        width: 16,
+                                                        marginTop: -2
+                                                    }} />}
+                                                  /><AdSense.Google
                   client="ca-pub-4343308524767879"
                   slot="7254273831"
                   style={{ display: 'block', height: showAds ? "128px" : "0px", minWidth: showAds ? "250px" : "0px", maxWidth: "680px" }}
@@ -528,7 +557,8 @@ class MapGallery extends PureComponent {
                   layoutKey="-6t+ed+2i-1n-4w"
                   responsive='true'
                   format="fluid"
-                /></div> : null }
+                />
+                </div> : null }
             </GridTile>
             {filteredData.length > 0 ? filteredData.slice(0, showMax).map((tile, j) => (
                     <GridTile
@@ -731,6 +761,7 @@ class MapGallery extends PureComponent {
 }
 
 const mapStateToProps = state => ({
+userDetails: state.userDetails,
   activeArea: state.activeArea,
   selectedYear: state.selectedYear,
   rightDrawerOpen: state.rightDrawerOpen,
