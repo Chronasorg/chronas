@@ -19,6 +19,7 @@ import IconFlaggedAlert from 'material-ui/svg-icons/action/report-problem'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import FlatButton from 'material-ui/FlatButton'
 import CloseIcon from 'material-ui/svg-icons/content/clear'
+import StarIcon from 'material-ui/svg-icons/action/grade'
 import FullscreenEnterIcon from 'material-ui/svg-icons/navigation/fullscreen'
 import RaisedButton from 'material-ui/RaisedButton'
 import Toggle from 'material-ui/Toggle'
@@ -159,6 +160,12 @@ class ArticleIframe extends React.Component {
   }
   _addNewCollection = () => {
     const { selectCollectionItem, history } = this.props
+     const { userDetails } = this.props
+     const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+     if (!isPro) {
+        return this.props.history.push('/pro');
+     }
+
     selectCollectionItem(false, false)
     history.push('/mod/linked/create')
   }
@@ -323,6 +330,12 @@ class ArticleIframe extends React.Component {
   _goToRevision = (modUrl, isProvince) => {
     const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
 
+     const { userDetails } = this.props
+     const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+     if (!isPro) {
+        return this.props.history.push('/pro');
+     }
+
     let entityId = ''
     let subentity = ''
 
@@ -359,6 +372,12 @@ class ArticleIframe extends React.Component {
 
   _goToMod = (modUrl, isProvince) => {
     const { selectedItem, setData, setMetadataType, selectedTypeId, selectedYear, selectAreaItemWrapper, selectLinkedItem, setMetadataEntity, selectEpicItem, selectMarkerItem, history } = this.props
+
+     const { userDetails } = this.props
+     const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+     if (!isPro) {
+        return this.props.history.push('/pro');
+     }
 
     let contentIndex = (selectedItem.data || {}).contentIndex || (selectedItem.data || {}).stepIndex
     if (typeof contentIndex === 'undefined') contentIndex = -1
@@ -488,11 +507,12 @@ class ArticleIframe extends React.Component {
 
   render () {
     const { bookmarkDialogOpen, isFullScreen, fullfinalWiki, iframeLoading, flagged, iframeLoadingFull, privateCollections } = this.state
-    const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, selectedWiki, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
+    const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, selectedWiki, userDetails, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
     const domEl = document.getElementById("articleIframe")
     const marginLeftOffset = (domEl && domEl.offsetWidth > 997) ? 186 : 178
     const bookmarks = (localStorage.getItem('chs_bookmarks') || '').split(',')
-    const showAds = (((window.location || {}).host || '').substr(0, 7) === "adtest.")
+        const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+
     const potentialAE = (((selectedItem.data || {}).id || '').split(':') || [])[1] || ''
     const toBookmark = (selectedItem.type === TYPE_AREA
       ? (potentialAE.split('|')[2] + '||' + (potentialAE.split('|')[0] + '|' + potentialAE.split('|')[1]))
@@ -519,6 +539,9 @@ class ArticleIframe extends React.Component {
       stepIndex = (selectedItem.data || {}).stepIndex
       stepItem = (((selectedItem.data || {}).content || [])[stepIndex] || {}).properties
     }
+
+    const shouldLoad = !htmlContent && (noWiki || iframeLoading)
+    const showAds = !shouldLoad && (+fullfinalWiki !== -1) && (fullfinalWiki !== '') && (fullfinalWiki !== null) && !isPro
 
     const modMenu = <div>{isEpicInfo
       ? <div style={styles.epicInfoContainer}><img className='tsTicks discoveryIcon articleEpic'
@@ -645,7 +668,7 @@ class ArticleIframe extends React.Component {
       </div>
     </div>
 
-    const shouldLoad = !htmlContent && (noWiki || iframeLoading)
+
 
     return (
       <div style={{ Zindex: 2147483647, height: '100%', width: '100%', ...customStyle }}>
@@ -702,7 +725,20 @@ class ArticleIframe extends React.Component {
             src={fullfinalWiki}
             frameBorder='0' />
           { showAds ? <div className={'articleIframeAd'} style={{ height: "150px", left: !toggleYearByArticleDisabled ? "calc(19% + 16px)" : "8px" }} key={'adsFor' + fullfinalWiki} >
-            <AdSense.Google
+
+            <FlatButton
+                style={{ position: "relative", zIndex: 100, height: 24, left: 0, top: 0, float: 'left', lineHeight: '24px', backgroundColor: 'rgb(255 255 255 / 50%)' }}
+                                  label={<span style={{ fontSize: "12px" }}>Remove ads</span>}
+          labelPosition="before"
+          primary={true}
+          onClick={() => {this.props.history.push('/pro')}}
+          icon={<StarIcon style={{
+              height: 16,
+              width: 16,
+              marginTop: -2
+          }} />}
+                                />
+                              <AdSense.Google
               client="ca-pub-4343308524767879"
               slot="6150157291"
               style={{ display: 'block', height: 150 }}
@@ -720,6 +756,7 @@ class ArticleIframe extends React.Component {
 const enhance = compose(
   connect(state => ({
     activeArea: state.activeArea,
+    userDetails: state.userDetails,
     theme: state.theme,
     selectedYear: state.selectedYear,
   }), {

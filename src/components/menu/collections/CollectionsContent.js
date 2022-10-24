@@ -140,6 +140,13 @@ class CollectionsContent extends Component {
 
   _goToMod = (selectedCollection = false, event = false) => {
     if (event && event.stopPropagation) event.stopPropagation()
+      const { userDetails } = this.props
+
+       const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+       if (!isPro) {
+          return this.props.history.push('/pro');
+       }
+
     const { selectCollectionItem, history } = this.props
     let fModUrl
 
@@ -227,6 +234,7 @@ const enhance = compose(
   connect(state => ({
     theme: state.theme,
     locale: state.locale,
+    userDetails: state.userDetails,
     collectionUpdatedIndex: state.collectionUpdatedIndex
   }), {
     changeBasemap: changeBasemapAction,

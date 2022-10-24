@@ -13,6 +13,7 @@ import DiceIcon from 'material-ui/svg-icons/places/casino'
 import GameIcon from 'material-ui/svg-icons/hardware/videogame-asset'
 import LogoutIcon from 'material-ui/svg-icons/action/power-settings-new'
 import LayersIcon from 'material-ui/svg-icons/maps/layers'
+import StarIcon from 'material-ui/svg-icons/action/grade'
 import Avatar from 'material-ui/Avatar'
 import Badge from 'material-ui/Badge'
 import SVG from 'react-inlinesvg'
@@ -109,7 +110,7 @@ class Menu extends PureComponent {
     const { toggleMenuDrawer, userLogout, userDetails, setActiveMenu, selectAreaItem, onMenuTap, theme, isLight, translate } = this.props
     const { diceRotation } = this.state
     const isLoggedIn = (userDetails || {}).token !== ''
-    const isPro = ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+    const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
     const username = localStorage.getItem('chs_username')
     const customAvatar = (userDetails || {}).avatar || localStorage.getItem('chs_avatar')
     const preUserScore = (userDetails || {}).score || 1
@@ -198,24 +199,11 @@ class Menu extends PureComponent {
           tooltipStyles={tooltip}
           onClick={onMenuTap}
           hoverColor={themes[theme].highlightColors[0]}
-          iconStyle={{ marginLeft: -6,     height: 42,
-                                           width: 42,
-                                           marginLeft: -8,
-                                           marginTop: -8,
-                                           fontSize: 16,
-                                           border: "2px solid #6a6a6a",
-                                           backgroundColor: isPro ? themes[theme].highlightColors[0] : themes[theme].foreColors[0] }}
+          iconStyle={{
+                                           color: isPro ? themes[theme].highlightColors[0] : themes[theme].foreColors[0] }}
 //          iconStyle={{ backgroundColor: themes[theme].foreColors[0] }}
         >
-          <Avatar
-            style={{ fontSize: 14 }}
-            size={42}
-            color={{
-              // color: themes[theme].foreColors[0],
-              // backgroundColor: themes[theme].backColors[0]
-            }}>
-            <span style={{ fontWeight: 'bolder', color: themes[theme].backColors[0] }}>PRO</span>
-          </Avatar>
+        <StarIcon hoverColor={themes[theme].highlightColors[0]} />
         </IconButton>
 
         {isLoggedIn ? (

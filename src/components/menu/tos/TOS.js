@@ -324,7 +324,8 @@ class TOS extends PureComponent {
                         assist us in analyzing how our Service is used.</p>
                       <p>These third parties have access to your Personal Data only to perform these tasks on our behalf
                         and are obligated not to disclose or use it for any other purpose.</p>
-
+<h3>Google Ads</h3>
+<p>We may also show adverts provided by Google. Read more about Google Adsense here: https://support.google.com/adsense/answer/7549925?hl=en</p>
                       <h3>Analytics</h3>
                       <p>We may use third-party Service Providers to monitor and analyze the use of our Service.</p>
                       <ul>

@@ -257,7 +257,7 @@ export default {
       "support9": "contacting",
       "welcome11": "<b>Chronas</b> is a history map application with over ",
       "welcome12": "50 million data points",
-      "welcome13": " which every registered user can curate and contribute to (just like <a>Wikipedia</a>).",
+      "welcome13": " which users can curate and contribute to (similar to <a>Wikipedia</a>).",
       "welcome21": "Before you dive in, make sure to watch the short ",
       "welcome22": "Tutorial Video",
       "welcome23": " in the How To section.",

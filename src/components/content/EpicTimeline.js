@@ -439,6 +439,13 @@ class EpicTimeline extends React.Component {
     this.props.selectValue(value)
   }
   _handleEdit = (id) => {
+
+     const { userDetails } = this.props
+     const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+     if (!isPro) {
+        return this.props.history.push('/pro');
+     }
+
     // const selectedItem = this.state.tileData.filter(el => (el.src === decodeURIComponent(id)))[0]
     this.props.selectLinkedItem(this.state.selectedImage)
     this.props.history.push('/mod/linked')
@@ -836,6 +843,7 @@ class EpicTimeline extends React.Component {
 const enhance = compose(
   connect(state => ({
     selectedItem: state.selectedItem,
+    userDetails: state.userDetails,
     selectedYear: state.selectedYear,
     contentIndex: ((state.selectedItem || {}).data || {}).contentIndex,
     activeArea: state.activeArea,

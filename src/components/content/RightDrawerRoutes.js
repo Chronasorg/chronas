@@ -890,7 +890,15 @@ class RightDrawerRoutes extends PureComponent {
       }
     }
 
-    const modUrl = '/mod/' + selectedItem.type
+    let modUrl = '/mod/' + selectedItem.type
+
+        const { userDetails } = this.props
+
+         const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+         if (!isPro) {
+            modUrl = '/pro';
+         }
+
 
     const articleHeader = <AppBar
       className='articleHeader'
@@ -1672,6 +1680,7 @@ const mapStateToProps = (state, props) => ({
   rightDrawerOpen: state.rightDrawerOpen,
   selectedItem: state.selectedItem,
   selectedYear: state.selectedYear,
+  userDetails: state.userDetails,
   metadata: state.metadata,
   locale: state.locale, // force redraw on locale change
   theme: state.theme, // force redraw on theme changes
