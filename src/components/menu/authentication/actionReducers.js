@@ -68,8 +68,9 @@ export const logout = () => ({
 
 /** Reducers **/
 
-export const userReducer = (initial = { 'token': '', 'username': '', 'subscription': '', 'privilege': '', 'score':  +localStorage.getItem('chs_score') || 1, 'subscription':  +localStorage.getItem('chs_subscription') || -1 }) =>
+export const userReducer = (initial = { 'token': '', 'username': '', 'subscription': '-1', 'privilege': '', 'score':  +localStorage.getItem('chs_score') || 1, 'subscription':  localStorage.getItem('chs_subscription') || -1 }) =>
   (prevUser = initial, { type, payload }) => {
+  console.debug('switch',type)
     switch (type) {
       case FLUSH_USER:
       case USER_LOGOUT:
@@ -109,7 +110,7 @@ export const userReducer = (initial = { 'token': '', 'username': '', 'subscripti
           username: payload
         }
       case SET_SUBSCRIPTION:
-        console.debug("setting chs_subscription")
+        console.debug("setting chs_subscription to " + payload)
         localStorage.setItem('chs_subscription', payload)
         return {
           ...prevUser,

@@ -19,6 +19,7 @@ import Sidebar from './components/menu/Sidebar'
 import MenuDrawer from './components/menu/MenuDrawer'
 import LoadingBar from './components/global/LoadingBar'
 import PledgeDialog from './components/pledgeDialog/PledgeDialog'
+import SubscribeDialog from './components/pledgeDialog/SubscribeDialog'
 import LoadingPage from './components/loadingPage/LoadingPage'
 import messages from './translations'
 import { history } from './store/createStore'
@@ -295,7 +296,7 @@ class App extends Component {
       console.debug("decodedToken",decodedToken)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
-      localStorage.setItem('chs_subscription', decodedToken.subscription || -1)
+      localStorage.setItem('chs_subscription', decodedToken.subscription || "-1")
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
       localStorage.setItem('chs_token', token)
@@ -310,7 +311,7 @@ class App extends Component {
       console.debug("decodedToken",decodedToken)
       localStorage.setItem('chs_userid', decodedToken.id)
       localStorage.setItem('chs_username', decodedToken.username)
-      localStorage.setItem('chs_subscription', decodedToken.subscription || -1)
+      localStorage.setItem('chs_subscription', decodedToken.subscription || "-1")
       if (decodedToken.avatar) localStorage.setItem('chs_avatar', decodedToken.avatar)
       if (decodedToken.score) localStorage.setItem('chs_score', decodedToken.score)
       localStorage.setItem('chs_token', token)
@@ -429,7 +430,8 @@ class App extends Component {
                         <Route exact path='/' />
                         <Route exact path='/pro' render={(props) => {
                           return (
-                             <PledgeDialog setSubscription={setSubscription} showNotification={showNotification} open={true} theme={theme} closePledge={() => history.push('/')}
+                             <PledgeDialog
+                              history={history} setSubscription={setSubscription} showNotification={showNotification} open={true} theme={theme} closePledge={() => history.push('/')}
                               {...props}
                                />
                           )
@@ -468,6 +470,11 @@ class App extends Component {
                               theme={theme}
                               activeSection={'tos'}
                             />
+                          )
+                        }} />
+                        <Route exact path='/pro/subscribe' render={() => {
+                          return (
+                            <SubscribeDialog history={history} setUser={setUser} theme={theme} setSubscription={setSubscription} showNotification={showNotification} closePledge={() => history.push('/')} />
                           )
                         }} />
                         <Route exact path='/privacy' render={() => {

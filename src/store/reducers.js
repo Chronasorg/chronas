@@ -4,7 +4,7 @@ import locationReducer from './location'
 import { adminReducer } from 'admin-on-rest'
 import { modActiveReducer } from '../components/restricted/shared/buttons/actionReducers'
 import { loadingReducer, metadataReducer } from '../components/map/data/actionReducers'
-import { localeReducer, markerThemeReducer, themeReducer } from '../components/menu/configuration/actionReducers'
+import { localeReducer, markerThemeReducer, themeReducer, planReducer } from '../components/menu/configuration/actionReducers'
 import { areaReducer, epicReducer, migrationReducer, mapStylesReducer, markerReducer } from '../components/menu/layers/actionReducers'
 import { userReducer } from '../components/menu/authentication/actionReducers'
 import { rightDrawerReducer } from '../components/content/actionReducers'
@@ -45,6 +45,7 @@ export const makeRootReducer = (asyncReducers) => {
     selectedYear: yearReducer(),
     suggestedYear: suggestedYearReducer(),
     theme: themeReducer(),
+    subPlan: planReducer(),
     // board: {
     user: boardUserReducer,
     app: appReducer,

@@ -2226,6 +2226,7 @@ class Map extends Component {
               (location || {}).pathname !== '/login' &&
               (location || {}).pathname !== '/configuration' &&
               (location || {}).pathname !== '/account' &&
+              (location || {}).pathname !== '/performance' &&
               ((location || {}).pathname || '').indexOf('/community/') === -1)) ? 'inherit' : 'blur(10px)'
           }}
           ref={(map) => {

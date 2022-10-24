@@ -1,6 +1,7 @@
 import utilsQuery from '../../map/utils/query'
 import { properties } from '../../../properties'
 
+const CHANGE_PLAN = 'CHANGE_PLAN'
 const CHANGE_THEME = 'CHANGE_THEME'
 const CHANGE_LOCALE = 'CHANGE_LOCALE'
 const CHANGE_MARKERTHEME = 'CHANGE_MARKERTHEME'
@@ -10,6 +11,12 @@ const potentialLocale = utilsQuery.getURLParameter('locale') || fullHost[0]
 const INITIALLOCALE = properties.languageOptions.map(el => el.id).includes(potentialLocale) ? potentialLocale : (localStorage.getItem('chs_locale') || 'en')
 
 /** Actions **/
+
+
+export const changePlan = plan => ({
+  type: CHANGE_PLAN,
+  payload: plan,
+})
 
 export const changeTheme = theme => ({
   type: CHANGE_THEME,
@@ -45,6 +52,16 @@ export const markerThemeReducer = (initialLocale = 'abstract') =>
         return payload
       default:
         return previousLocale
+    }
+  }
+
+export const planReducer = (initialPlan = '') =>
+  (previousPlan = initialPlan, { type, payload }) => {
+    switch (type) {
+      case CHANGE_PLAN:
+        return payload
+      default:
+        return previousPlan
     }
   }
 

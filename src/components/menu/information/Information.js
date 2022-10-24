@@ -9,6 +9,7 @@ import Avatar from 'material-ui/Avatar'
 import Dialog from 'material-ui/Dialog'
 import Divider from 'material-ui/Divider'
 import IconButton from 'material-ui/IconButton'
+import GoIcon from  'material-ui/svg-icons/navigation/arrow-forward'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import IconHelp from 'material-ui/svg-icons/action/help-outline'
 import IconEmail from 'material-ui/svg-icons/communication/email'
@@ -358,6 +359,24 @@ class Information extends PureComponent {
                     onClick={() => this.handleChange('contact')}>
                   { translate('pos.block.welcome44') }</a>
                   { translate('pos.block.welcome45') }</p>
+<br/>
+<br/>
+
+    <RaisedButton
+      onClick={
+      ()=> {
+               this.props.history.push('/')
+             }
+      }
+      label={<i>Sic infit!</i>}
+      labelPosition="before"
+      secondary={true}
+      style={{
+                 margin: 12,
+               }}
+      icon={<GoIcon />}
+    />
+
                 {/*<p>*/}
                   {/*{ ReactHtmlParser(translate('pos.block.welcome51')) }*/}
                   {/*<a*/}
@@ -536,6 +555,31 @@ class Information extends PureComponent {
               <br />
               { ReactHtmlParser(translate('pos.block.rules1')) }
               <br />
+              <Divider />
+                              <br />
+                              <p>
+                                <a href="https://icons8.com/icon/81053/gold-bars">Gold Bars icon by Icons8</a>
+                              </p>
+                              <p>
+                                <b>World Physical map tiles</b> by <a
+                                  href='https://www.arcgis.com/home/item.html?id=6cec161c9acc4b9abf97f6b7d65801b3'>ArcGIS Online /
+                                ESRI</a>, under <a href='https://www.esri.com/en-us/legal/terms/full-master-agreement'>Esri Master
+                                License Agreement</a>. Data by <a href='https://www.usa.gov/federal-agencies/national-park-service'>U.S.
+                                National Park Service</a>.
+                              </p>
+                              <p>
+                                <b>Watercolor map tiles</b> by <a href='http://stamen.com'>Stamen Design</a>, under <a
+                                  href='http://creativecommons.org/licenses/by/3.0'>CC BY 3.0</a>. Data by <a
+                                    href='http://openstreetmap.org'>OpenStreetMap</a>, under <a
+                                      href='http://creativecommons.org/licenses/by-sa/3.0'>CC BY SA</a>.
+                              </p>
+                              <p>
+                                <a className='customLink' style={highlightColorStyle}
+                                  onClick={() => history.push('/tos')}>Terms of Service</a>
+                                <a className='customLink'
+                                  style={{ paddingLeft: 16, fontWeight: 800, color: themes[theme].highlightColors[0] }}
+                                  onClick={() => history.push('/privacy')}>Privacy Policy</a>
+                              </p>
             </Tab>
             {/*<Tab label={translate('pos.info.tabs.support')} style={highlightColorStyle} value='pro'>*/}
               {/*<br />*/}

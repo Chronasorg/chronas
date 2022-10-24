@@ -458,6 +458,13 @@ class Discover extends PureComponent {
     }
   }
   _handleEdit = (id, dataKey = false) => {
+        const { userDetails } = this.props
+
+         const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+         if (!isPro) {
+            return this.props.history.push('/pro');
+         }
+
     const selectedItem = (dataKey) ? this.state.tileData[dataKey].find(el => (el.src === decodeURIComponent(id))) : this.state.selectedImage
     this.props.selectLinkedItem(selectedItem, {
       ...selectedItem,
@@ -473,6 +480,13 @@ class Discover extends PureComponent {
     this.props.history.push('/mod/linked')
   }
   _handleAdd = () => {
+        const { userDetails } = this.props
+
+         const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
+         if (!isPro) {
+            return this.props.history.push('/pro');
+         }
+
     this.props.history.push('/mod/linked/create')
   }
   _handleOpenSource = (source) => {
@@ -984,6 +998,7 @@ const mapStateToProps = state => ({
   activeArea: state.activeArea,
   selectedYear: state.selectedYear,
   rightDrawerOpen: state.rightDrawerOpen,
+  userDetails: state.userDetails,
   theme: state.theme,
   locale: state.locale,
 })
