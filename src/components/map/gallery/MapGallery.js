@@ -539,7 +539,7 @@ class MapGallery extends PureComponent {
               {showAds ? <div style={{ width: "100%", height: "100%" }}>
 
                       <FlatButton
-                                  style={{ position: "relative", zIndex: 100, height: 24, left: 0, top: 0,  float: 'left', lineHeight: '24px', backgroundColor: 'rgb(255 255 255 / 50%)' }}
+                                  style={{ position: "absolute", zIndex: 100, height: 24, left: 0, top: 0,  float: 'left', lineHeight: '24px' }}
                                                     label={<span style={{ fontSize: "12px" }}>Remove ads</span>}
                                                     labelPosition="before"
                                                     primary={true}
