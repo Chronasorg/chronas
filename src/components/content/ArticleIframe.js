@@ -727,7 +727,7 @@ class ArticleIframe extends React.Component {
           { showAds ? <div className={'articleIframeAd'} style={{ height: "150px", left: !toggleYearByArticleDisabled ? "calc(19% + 16px)" : "8px" }} key={'adsFor' + fullfinalWiki} >
 
             <FlatButton
-                style={{ position: "relative", zIndex: 100, height: 24, left: 0, top: 0, float: 'left', lineHeight: '24px', backgroundColor: 'rgb(255 255 255 / 50%)' }}
+                style={{ position: "absolute", zIndex: 100, height: 24, float: 'left', lineHeight: '24px' }}
                                   label={<span style={{ fontSize: "12px" }}>Remove ads</span>}
           labelPosition="before"
           primary={true}
