@@ -7,7 +7,7 @@ COPY . .
 FROM base AS dependencies
 
 # install app dependencies including
-RUN npm install
+RUN npm install --legacy-peer-deps
 # ---- Copy Files/Build ----
 FROM dependencies AS build
 
