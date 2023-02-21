@@ -6,6 +6,7 @@ import { GridList } from 'material-ui/GridList'
 import IconButton from 'material-ui/IconButton'
 import RaisedButton from 'material-ui/RaisedButton'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
+import OpenNewIcon from 'material-ui/svg-icons/action/open-in-new'
 import StarIcon from 'material-ui/svg-icons/action/grade'
 import FlatButton from 'material-ui/FlatButton'
 import { Toolbar, ToolbarGroup, ToolbarTitle } from 'material-ui/Toolbar'
@@ -32,6 +33,9 @@ import { selectAreaItem, selectEpicItem, selectLinkedItem, selectMarkerItem } fr
 import { properties, themes } from '../../../properties'
 import utils from '../../map/utils/general'
 import { tooltip } from '../../../styles/chronasStyleComponents'
+
+import CheckCircleIcon from 'material-ui/svg-icons/action/check-circle'
+import {List, ListItem} from 'material-ui/List';
 
 const GALLERYBATCHSIZE = 15
 const imgButton = { width: 20, height: 20 }
@@ -549,15 +553,36 @@ class MapGallery extends PureComponent {
                                                         width: 16,
                                                         marginTop: -2
                                                     }} />}
-                                                  /><AdSense.Google
-                  client="ca-pub-4343308524767879"
-                  slot="7254273831"
+                                                  /><div
                   style={{ display: 'block', height: showAds ? "128px" : "0px", minWidth: showAds ? "250px" : "0px", maxWidth: "680px" }}
-                  layout="in-article"
-                  layoutKey="-6t+ed+2i-1n-4w"
-                  responsive='true'
-                  format="fluid"
-                />
+
+                >
+                <table style={{
+    height: '100%' }} onClick={() => {this.props.history.push('/pro')}}><tr>
+               <td>
+               <List dense={true}>
+                                           <ListItem style={{ padding: '16px 21px 0px 52px' }} onClick={() => {this.props.history.push('/pro')}} leftIcon={<CheckCircleIcon color={themes[theme].highlightColors[0]} />} disabled={true} insetChildren={true}
+                                           primaryText={<b>Full Features</b>}
+                                            />
+                                           <ListItem style={{ padding: '16px 21px 0px 52px' }} onClick={() => {this.props.history.push('/pro')}} leftIcon={<CheckCircleIcon color={themes[theme].highlightColors[0]} />} disabled={true} insetChildren={true}
+                                           primaryText={<b>No Ads</b>}
+                                           />
+                                           </List></td>
+               <td>
+
+               <List dense={true}><ListItem style={{ padding: '16px 21px 0px 52px' }} onClick={() => {this.props.history.push('/pro')}} leftIcon={<CheckCircleIcon color={themes[theme].highlightColors[0]} />} disabled={true} insetChildren={true}
+
+
+                                                              primaryText={<div><b>
+                                                              Support</b></div>} />
+
+                                                                  <ListItem style={{ padding: '16px 21px 0px 52px' }}  leftIcon={<CheckCircleIcon color={themes[theme].highlightColors[0]} />} disabled={true} insetChildren={true}
+                                                                                    primaryText={<b>Full write permissions</b>}
+                                                                                     />
+                                                          </List></td>
+               </tr></table>
+
+                </div>
                 </div> : null }
             </GridTile>
             {filteredData.length > 0 ? filteredData.slice(0, showMax).map((tile, j) => (

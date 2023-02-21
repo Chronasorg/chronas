@@ -14,6 +14,7 @@ import IconClose from 'material-ui/svg-icons/navigation/close'
 import IconBack from 'material-ui/svg-icons/navigation/arrow-back'
 import IconOpenEpic from 'material-ui/svg-icons/action/open-in-browser'
 import IconOpenInNew from 'material-ui/svg-icons/action/open-in-new'
+import CheckCircleIcon from 'material-ui/svg-icons/action/check-circle'
 import IconFlagged from 'material-ui/svg-icons/content/flag'
 import IconFlaggedAlert from 'material-ui/svg-icons/action/report-problem'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
@@ -509,7 +510,7 @@ class ArticleIframe extends React.Component {
     const { bookmarkDialogOpen, isFullScreen, fullfinalWiki, iframeLoading, flagged, iframeLoadingFull, privateCollections } = this.state
     const { hasChart, selectedItem, theme, isEntity, customStyle, htmlContent, selectedWiki, userDetails, translate, toggleYearByArticle, toggleYearByArticleDisabled, yearByArticleValue } = this.props
     const domEl = document.getElementById("articleIframe")
-    const marginLeftOffset = (domEl && domEl.offsetWidth > 997) ? 186 : 178
+    const marginLeftOffset = (domEl && domEl.offsetWidth > 997) ? 20 : 20
     const bookmarks = (localStorage.getItem('chs_bookmarks') || '').split(',')
         const isPro = (localStorage.getItem('chs_subscription') && !((userDetails || {}).subscription)) || ((userDetails || {}).subscription && (userDetails || {}).subscription || "").length > 4
 
@@ -720,6 +721,7 @@ class ArticleIframe extends React.Component {
               display: (shouldLoad ? 'none' : ''),
               width: "calc(100% + " + marginLeftOffset + "px)",
               marginLeft: (-1* marginLeftOffset) + "px",
+              marginTop: -84,
               height: (!hasChart && isEntity ? (showAds ? 'calc(100% + 54px)' : 'calc(100% + 204px)') : isProvince ? (showAds ? 'calc(100% - 400px)' : 'calc(100% - 250px)') : (showAds ? 'calc(100% - 78px)' : 'calc(100% + 72px)'))
             }}
             src={fullfinalWiki}
@@ -738,13 +740,34 @@ class ArticleIframe extends React.Component {
               marginTop: -2
           }} />}
                                 />
-                              <AdSense.Google
-              client="ca-pub-4343308524767879"
-              slot="6150157291"
+                              <div
               style={{ display: 'block', height: 150 }}
-              responsive={"true"}
-              format=""
-            />
+            >
+             <table style={{ height: '110%' }} onClick={() => {this.props.history.push('/pro')}}><tr>
+                            <td>
+                            <List dense={true}>
+                                                        <ListItem onClick={() => {this.props.history.push('/pro')}} leftIcon={<CheckCircleIcon color={themes[theme].highlightColors[0]} />} disabled={true} insetChildren={true}
+                                                        primaryText={<b>Full Features</b>}
+                                                         />
+                                                        <ListItem onClick={() => {this.props.history.push('/pro')}} leftIcon={<CheckCircleIcon color={themes[theme].highlightColors[0]} />} disabled={true} insetChildren={true}
+                                                        primaryText={<b>No Ads</b>}
+                                                        />
+                                                        </List></td>
+                            <td>
+
+                            <List dense={true}><ListItem style={{     /* padding: 16px 21px 0px 52px; */ }}onClick={() => {this.props.history.push('/pro')}} leftIcon={<CheckCircleIcon color={themes[theme].highlightColors[0]} />} disabled={true} insetChildren={true}
+
+
+                                                                           primaryText={<div><b>
+                                                                           Support</b></div>} />
+
+                                                                               <ListItem  leftIcon={<CheckCircleIcon color={themes[theme].highlightColors[0]} />} disabled={true} insetChildren={true}
+                                                                                                 primaryText={<b>Full write permissions</b>}
+                                                                                                  />
+                                                                       </List></td>
+                            </tr></table>
+
+             </div>
           </div> : null }
         </div>}
       </div>
