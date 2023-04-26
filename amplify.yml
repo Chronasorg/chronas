@@ -1,0 +1,19 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install --legacy-peer-deps
+        - perl -pi.back -e "s|https\:\/\/api.chronas.org\/v1|$API_URL|g" src/properties.js
+        - perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index.html
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    # IMPORTANT - Please verify your build output directory
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
