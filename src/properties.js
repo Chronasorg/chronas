@@ -607,7 +607,7 @@ export const properties = {
   areaColorLayers: ['ruler', 'religion', 'religionGeneral', 'culture', 'population'],
   areaLabelLayers: ['ruler', 'religion', 'religionGeneral', 'culture'],
   provinceThreshold: 4,
-  chronasApiHost: 'https://api.chronas.org/v1', //    -  http://localhost:4040/v1              https://api.chronas.org/v1
+  chronasApiHost: 'https://n3ic0eiq81.execute-api.eu-west-1.amazonaws.com/v1', //    -  http://localhost:4040/v1              https://api.chronas.org/v1
   markersTypes: ['w', 'w|b', 'w|si', 'w|c', 'w|h', 'w|ca', 'w|m', 'w|p', 'w|e', 'w|s', 'w|a', 'w|r', 'w|at', 'w|op', 'w|l', 'w|o'],
   // metadataTypes: ['ae|ruler', /*'ae|ca',*/ 'ae|culture', 'ae|religion', 'ae|religionGeneral', 'a', 'e', 't', 'h', 'i|a', 'i|b', 'i|c', 'i|p', 'i|m', 'i|siege', 'i|war', 'ps', 'v'],
 
