@@ -361,7 +361,7 @@ export default {
         "support": "Support",
         "welcome": "Welcome"
       },
-      "welcomeTo": "Welcome to"
+      "welcomeTo": "Welcome to chronas on AWS "
     },
     "information": "Information",
     "label": "Label",
