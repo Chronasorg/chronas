@@ -4,7 +4,6 @@ frontend:
     preBuild:
       commands:
         - npm install --legacy-peer-deps
-        - sed -i "s~https://api.chronas.org/v1~$API_URL~g" src/properties.js
         - perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index.html
     build:
       commands:
