@@ -5,6 +5,7 @@ frontend:
       commands:
         - npm install --legacy-peer-deps
         - perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index.html
+        - cat src/index.html
     build:
       commands:
         - npm run build
