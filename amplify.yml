@@ -5,6 +5,10 @@ frontend:
       commands:
         - npm install --legacy-peer-deps
         - perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index.html
+        - perl -pi.back -e "s|##RumGuestRoleArn##|$RUM_ROLEARN|g" src/index.html
+        - perl -pi.back -e "s|##RumIdenityPoolId##|$RUM_IDPOOL|g" src/index.html
+        - perl -pi.back -e "s|##RumEndpoint##|$RUM_ENDPIONT|g" src/index.html
+        - perl -pi.back -e "s|##RumApplicationId##|$RUM_APPLICATION_ID|g" src/index.html
         - cat src/index.html
     build:
       commands:
