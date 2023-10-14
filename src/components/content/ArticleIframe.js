@@ -743,7 +743,7 @@ class ArticleIframe extends React.Component {
                               <div
               style={{ display: 'block', height: 150 }}
             >
-             <table style={{ height: '110%' }} onClick={() => {this.props.history.push('/pro')}}><tr>
+             <table style={{ height: '110%'}} onClick={() => {this.props.history.push('/pro')}}><tr>
                             <td>
                             <List dense={true}>
                                                         <ListItem onClick={() => {this.props.history.push('/pro')}} leftIcon={<CheckCircleIcon color={themes[theme].highlightColors[0]} />} disabled={true} insetChildren={true}

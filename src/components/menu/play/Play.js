@@ -170,6 +170,9 @@ class Play extends PureComponent {
 
     const potentialCountry = rankedCountries[Math.floor(Math.random() * (rankedCountries.length))]
     rankedCountries.splice(rankedCountries.indexOf(potentialCountry), 1)
+
+
+
     axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:ae|ruler|' + potentialCountry)
       .then((res) => {
         if (res.status === 200) {

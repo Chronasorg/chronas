@@ -321,7 +321,7 @@ class RightDrawerRoutes extends PureComponent {
 
       if (newLinkKey) {
         const newArr1 = newLinkKey.split('||')
-        axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + window.encodeURIComponent(((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + newArr1[0]))
+        axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=' + ((properties.markersTypes.includes(newArr1[1])) ? '0:' : '1:') + window.encodeURIComponent(((newArr1[1].indexOf('ae|') > -1) ? (newArr1[1] + '|') : '') + (newArr1[0] || "").replaceAll('.','^')))
           .then((res) => {
             if (res.status === 200) {
               const linkedItemResult = res.data
