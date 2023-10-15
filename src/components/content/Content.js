@@ -346,7 +346,7 @@ class Content extends Component {
       let activeprovinceValue = utils.getAreaDimKey(metadata, activeArea, selectedItem)
       const linkId = ((((selectedItem || {}).value || {}).subtype === 'ei') ? '1:e_' : (isMarker && (((selectedItem || {}).value || {}).subtype !== 'ps')) ? '0:' : '1:') + (isArea ? ('ae|' + activeAreaDim + '|' + activeprovinceValue) : selectedWiki)
 
-      const urlMetadataLinks = isCollection ? properties.chronasApiHost + '/collections/' + (selectedItem || {}).wiki : properties.chronasApiHost + '/metadata/links/getLinked?source=' + window.encodeURIComponent(linkId)
+      const urlMetadataLinks = isCollection ? properties.chronasApiHost + '/collections/' + (selectedItem || {}).wiki : properties.chronasApiHost + '/metadata/links/getLinked?source=' + window.encodeURIComponent((linkId || "").replaceAll('.','^'))
       axios.get(urlMetadataLinks, { 'headers': { 'Authorization': 'Bearer ' + localStorage.getItem('chs_token')}})
         .then((linkedItemResult) => {
           if (linkedItemResult.status === 200) {

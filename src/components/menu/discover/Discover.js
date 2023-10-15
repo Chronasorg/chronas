@@ -672,7 +672,7 @@ class Discover extends PureComponent {
               })
 
               if (tile.subtype !== 'ps') {
-                axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + window.encodeURIComponent((tile.src || tile.original)))
+                axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + window.encodeURIComponent(((tile.src || tile.original) || "").replaceAll('.','^') ))
                   .then((linkedItemResult) => {
                     if (linkedItemResult.status === 200) {
                       const res = (linkedItemResult.data.map || []).concat(linkedItemResult.data.media || [])
@@ -770,7 +770,7 @@ class Discover extends PureComponent {
                             })
 
                             if (tile.subtype !== 'ps') {
-                              axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + window.encodeURIComponent(tile.src))
+                              axios.get(properties.chronasApiHost + '/metadata/links/getLinked?source=1:' + window.encodeURIComponent((tile.src || "").replaceAll('.','^')))
                                 .then((linkedItemResult) => {
                                   if (linkedItemResult.status === 200) {
                                     const res = (linkedItemResult.data.map || []).concat(linkedItemResult.data.media || [])
