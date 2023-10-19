@@ -50,7 +50,7 @@ const styles = {
     right: '1em',
     top: '1em',
     width: '24px',
-    minWidth: '24px'
+    minWidth: '23px'
   }
 }
 
