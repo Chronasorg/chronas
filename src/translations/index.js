@@ -36,7 +36,7 @@ export default {
   ca: { ...englishMessages, ...customEnglishMessages },
   fr: { ...frenchMessages, ...customFrenchMessages },
   en: { ...englishMessages, ...customEnglishMessages },
-  zh: { ...chineseMessages, ...customEnglishMessages },
+  zh: { ...chineseMessages, ...customChineseMessages },
   nl: { ...dutchMessages, ...customEnglishMessages },
   de: { ...germanMessages, ...customGermanMessages },
   el: { ...greekMessages, ...customEnglishMessages },
