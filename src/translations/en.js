@@ -361,7 +361,7 @@ export default {
         "support": "Support",
         "welcome": "Welcome"
       },
-      "welcomeTo": "Welcome to chronas from DWX"
+      "welcomeTo": "Welcome to"
     },
     "information": "Information",
     "label": "Label",
