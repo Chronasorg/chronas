@@ -247,7 +247,7 @@ export default {
       "support8": " vorschlagen oder direkt die Entwickler ",
       "support9": "kontaktieren",
       "welcome11": "<b>Chronas</b> ist eine Geschichts-Karten-Anwendung mit über ",
-      "welcome12": "50 Millionen Datenpunkte",
+      "welcome12": "50 Millionen Datenpunkten",
       "welcome13": ", die jeder registrierter Nutzer editieren und kuratieren kann, wie <a> - Wikipedia</a>.",
       "welcome21": "Bevor Sie eintauchen, empfehlen wir zuerst das kurze ",
       "welcome22": "Tutorial Video",
