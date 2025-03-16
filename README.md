@@ -110,7 +110,6 @@ You can find Chronas as well on Docker [aumanjoa/chronas-map](https://hub.docker
 
 To run the docker use ```docker run -p -d 80:80 aumanjoa/chronas-map```
 
-
 ## Thank You
 
 This project wouldn't be possible without help from the Chronas community, so I'd like to thank especially those who backed the [Kickstarter](https://www.kickstarter.com/projects/1152044848/chronas-interactive-history-map-application) campaign!
