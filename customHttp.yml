@@ -1,9 +1,4 @@
 customHeaders:
-  # JavaScript files - long-term caching with immutable flag
-  - pattern: '/static/js/*.js'
-    headers:
-      - key: 'Cache-Control'
-        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
   # CSS files - long-term caching with immutable flag
   - pattern: '/static/css/*.css'
     headers:
@@ -15,10 +10,6 @@ customHeaders:
       - key: 'Cache-Control'
         value: 'public, max-age=31536000, s-maxage=31536000, immutable'
   # Root-level JS and CSS files (common in React builds)
-  - pattern: '/*.js'
-    headers:
-      - key: 'Cache-Control'
-        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
   - pattern: '/*.css'
     headers:
       - key: 'Cache-Control'
@@ -53,10 +44,3 @@ customHeaders:
     headers:
       - key: 'Cache-Control'
         value: 'public, max-age=31536000, s-maxage=31536000, immutable'
-  # HTML files - no browser caching but edge caching with validation
-  - pattern: '/index.html'
-    headers:
-      - key: 'Cache-Control'
-        value: 'public, max-age=0, s-maxage=2628000, must-revalidate'
-      - key: 'X-Frame-Options'
-        value: 'SAMEORIGIN'
