@@ -1,0 +1,63 @@
+name: Deploy Chronas Frontend to S3
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+        
+      - name: Replace environment variables in HTML
+        run: |
+          perl -pi.back -e "s|##AppInsightsKey##|$APPLICATIONINSIGHTS_KEY|g" src/index.html
+          perl -pi.back -e "s|##RumGuestRoleArn##|$RUM_ROLEARN|g" src/index.html
+          perl -pi.back -e "s|##RumIdenityPoolId##|$RUM_IDPOOL|g" src/index.html
+          perl -pi.back -e "s|##RumEndpoint##|$RUM_ENDPIONT|g" src/index.html
+          perl -pi.back -e "s|##RumApplicationId##|$RUM_APPLICATION_ID|g" src/index.html
+        env:
+          APPLICATIONINSIGHTS_KEY: ${{ secrets.APPLICATIONINSIGHTS_KEY }}
+          RUM_ROLEARN: ${{ secrets.RUM_ROLEARN }}
+          RUM_IDPOOL: ${{ secrets.RUM_IDPOOL }}
+          RUM_ENDPIONT: ${{ secrets.RUM_ENDPIONT }}
+          RUM_APPLICATION_ID: ${{ secrets.RUM_APPLICATION_ID }}
+          
+      - name: Build application
+        run: npm run build
+        
+      # TODO: Uncomment after S3 bucket is created
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: eu-west-1
+      #     
+      # - name: Deploy to S3
+      #   run: |
+      #     aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME }} --delete --cache-control "public, max-age=31536000, immutable" --exclude "*.html"
+      #     aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME }} --delete --cache-control "public, max-age=0, must-revalidate" --include "*.html"
+      #     
+      # - name: Invalidate CloudFront cache
+      #   run: |
+      #     aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: chronas-build
+          path: dist/
