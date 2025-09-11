@@ -29,6 +29,7 @@ jobs:
           perl -pi.back -e "s|##RumIdenityPoolId##|$RUM_IDPOOL|g" src/index.html
           perl -pi.back -e "s|##RumEndpoint##|$RUM_ENDPIONT|g" src/index.html
           perl -pi.back -e "s|##RumApplicationId##|$RUM_APPLICATION_ID|g" src/index.html
+          cat src/index.html
         env:
           APPLICATIONINSIGHTS_KEY: ${{ secrets.APPLICATIONINSIGHTS_KEY }}
           RUM_ROLEARN: ${{ secrets.RUM_ROLEARN }}
