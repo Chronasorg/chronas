@@ -1,0 +1,46 @@
+customHeaders:
+  # CSS files - long-term caching with immutable flag
+  - pattern: '/static/css/*.css'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
+  # Media files (images, etc.) - long-term caching with immutable flag
+  - pattern: '/static/media/*.*'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
+  # Root-level JS and CSS files (common in React builds)
+  - pattern: '/*.css'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
+  # Font files - long-term caching as observed in request logs
+  - pattern: '/fonts/*.*'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
+  - pattern: '/*.woff'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
+  - pattern: '/*.woff2'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
+  # Image files - specific formats observed in logs
+  - pattern: '/*.png'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
+  - pattern: '/*.jpg'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
+  - pattern: '/*.svg'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
+  - pattern: '/*.ico'
+    headers:
+      - key: 'Cache-Control'
+        value: 'public, max-age=31536000, s-maxage=31536000, immutable'
