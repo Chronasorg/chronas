@@ -68,7 +68,7 @@ import MapTimeline from './timeline/MapTimeline'
 import MapGallery from './gallery/MapGallery'
 import BasicPin from './markers/basic-pin'
 import utils from './utils/general'
-import {updateSingleMetadata} from "./data/actionReducers";
+import { updateSingleMetadata } from "./data/actionReducers";
 
 const turf = require('@turf/turf')
 const FLYTOANIMATIONDURATION = 2000
@@ -144,13 +144,64 @@ const messageYearNotification = (year, isBC, foreColor) => <div><span style={{
   top: 24
 }}>{isBC ? '(BC)' : '(AD)'}</span><br /><span style={{ color: foreColor }}>{year}</span></div>
 
+// CRITICAL FIX: Helper function to safely access area data with detailed logging
+const safeAreaDataAccess = (areaData, provinceId, index) => {
+  // Map index to data type for better logging
+  const dataTypes = {
+    0: 'ruler',
+    1: 'culture', 
+    2: 'religion',
+    3: 'capital',
+    4: 'population'
+  };
+  
+  const dataType = dataTypes[index] || `index_${index}`;
+  
+  if (!areaData) {
+    console.warn(`🚨 MISSING DATA: No area data provided when accessing ${dataType} for province ${provinceId}`);
+    return null;
+  }
+  
+  if (!areaData[provinceId]) {
+    console.warn(`🚨 MISSING PROVINCE: Province ${provinceId} not found in area data when accessing ${dataType}`);
+    return null;
+  }
+  
+  const provinceData = areaData[provinceId];
+  
+  if (!Array.isArray(provinceData)) {
+    console.warn(`🚨 INVALID STRUCTURE: Province ${provinceId} data is not an array (${typeof provinceData}):`, provinceData);
+    return null;
+  }
+  
+  if (provinceData.length <= index) {
+    console.warn(`🚨 INCOMPLETE DATA: Province ${provinceId} missing ${dataType} data (array length: ${provinceData.length}, needed index: ${index}):`, provinceData);
+    return null;
+  }
+  
+  const value = provinceData[index];
+  if (value === null || value === undefined) {
+    console.warn(`🚨 NULL VALUE: Province ${provinceId} has null/undefined ${dataType} data at index ${index}:`, provinceData);
+    return null;
+  }
+  
+  // Success case - log religion data specifically for debugging
+  if (dataType === 'religion') {
+    console.log(`✅ RELIGION DATA: Province ${provinceId} = ${value}`);
+  } else if (Math.random() < 0.005) { // Log 0.5% of other successful accesses to avoid spam
+    console.log(`✅ SUCCESS: Province ${provinceId} ${dataType} = ${value}`);
+  }
+  
+  return value;
+};
+
 class Map extends Component {
   componentDidMount = () => {
     const { selectedYear, location } = this.props
     const fromPerformance = ((location || {}).pathname || "").indexOf('performance') > -1
-      this._addGeoJson(TYPE_MARKER, fromPerformance ? [] : this.props.activeMarkers.list, false, +(utilsQuery.getURLParameter('year') || selectedYear))
-      this._addEpic(fromPerformance ? [] : this.props.activeEpics)
-    window.addEventListener('resize', this._resize, {passive: true})
+    this._addGeoJson(TYPE_MARKER, fromPerformance ? [] : this.props.activeMarkers.list, false, +(utilsQuery.getURLParameter('year') || selectedYear))
+    this._addEpic(fromPerformance ? [] : this.props.activeEpics)
+    window.addEventListener('resize', this._resize, { passive: true })
     this._resize()
   }
   _initializeMap = () => {
@@ -348,12 +399,74 @@ class Map extends Component {
   _changeArea = (areaDefs, newLabel, newColor, selectedProvince, prevColor = false, prevDimValue = false) => {
     const { activeArea, isLight, mapStyles, metadata, selectedItem } = this.props
 
+    // 🎨 LOG AREA COLOR CHANGES
+    if (newColor && newColor !== prevColor) {
+      console.group(`🎨 AREA COLOR CHANGE: ${prevColor || 'none'} → ${newColor}`);
+      
+      if (newColor === 'religion') {
+        console.log('🚨 SWITCHING TO RELIGION FILL - Analyzing data availability...');
+        
+        // Count provinces with religion data
+        let religionDataCount = 0;
+        let totalProvinces = 0;
+        const missingReligionProvinces = [];
+        
+        if (areaDefs) {
+          Object.keys(areaDefs).forEach(provinceId => {
+            totalProvinces++;
+            const provinceData = areaDefs[provinceId];
+            if (Array.isArray(provinceData) && provinceData[2] !== null && provinceData[2] !== undefined) {
+              religionDataCount++;
+            } else {
+              missingReligionProvinces.push(provinceId);
+            }
+          });
+        }
+        
+        console.log(`📊 Religion data availability: ${religionDataCount}/${totalProvinces} provinces (${(religionDataCount/totalProvinces*100).toFixed(1)}%)`);
+        
+        if (missingReligionProvinces.length > 0) {
+          console.warn(`🚨 ${missingReligionProvinces.length} provinces missing religion data:`, missingReligionProvinces.slice(0, 10));
+          if (missingReligionProvinces.length > 10) {
+            console.warn(`... and ${missingReligionProvinces.length - 10} more`);
+          }
+        }
+      }
+      
+      console.groupEnd();
+    }
+
     let mapStyle = this.state.mapStyle
 
     if (mapStyles.popOpacity || newColor === 'population') {
-      const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
-        return (provValue !== null) ? +provValue[4] : 0
-      }))
+      console.log('📊 CALCULATING POPULATION DATA...');
+      
+      let validPopulationCount = 0;
+      let invalidPopulationCount = 0;
+      const invalidPopulationProvinces = [];
+      
+      const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue, index) {
+        // CRITICAL FIX: Validate data structure before accessing array indices
+        if (provValue !== null && Array.isArray(provValue) && provValue.length > 4) {
+          validPopulationCount++;
+          return +provValue[4];
+        } else {
+          invalidPopulationCount++;
+          // Find province ID for this invalid data (this is approximate)
+          const provinceIds = Object.keys(areaDefs);
+          if (provinceIds[index]) {
+            invalidPopulationProvinces.push(provinceIds[index]);
+          }
+          return 0;
+        }
+      }));
+      
+      console.log(`📈 Population data: ${validPopulationCount} valid, ${invalidPopulationCount} invalid`);
+      console.log(`📊 Max population value: ${populationMax}`);
+      
+      if (invalidPopulationProvinces.length > 0) {
+        console.warn('🚨 Provinces with invalid population data:', invalidPopulationProvinces.slice(0, 5));
+      }
       mapStyle = mapStyle
         .setIn(['layers', areaColorLayerIndex[newColor], 'paint', 'fill-opacity'], fromJS(
           ['interpolate', ['linear'], ['get', 'p'],
@@ -384,8 +497,8 @@ class Map extends Component {
 
     if (selectedItem.type === TYPE_AREA && newColor !== '' && selectedProvince) {
       // prev active refers to color change
-      let activeprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(newColor)]
-      let prevActiveprovinceValue = (activeArea.data[selectedProvince] || {})[utils.activeAreaDataAccessor(prevColor)]
+      let activeprovinceValue = safeAreaDataAccess(activeArea.data, selectedProvince, utils.activeAreaDataAccessor(newColor))
+      let prevActiveprovinceValue = safeAreaDataAccess(activeArea.data, selectedProvince, utils.activeAreaDataAccessor(prevColor))
       // TODO: do this async!
 
       if (newColor === 'religionGeneral') {
@@ -409,7 +522,7 @@ class Map extends Component {
 
         if (newColor === 'population' && prevColor && prevColor !== 'population') {
           const populationMax = Math.max.apply(Math, Object.values(areaDefs).map(function (provValue) {
-            return (provValue !== null && provValue[utils.activeAreaDataAccessor(prevColor)] === prevActiveprovinceValue) ? +provValue[4] : 0
+            return (provValue !== null && Array.isArray(provValue) && provValue.length > 4 && provValue[utils.activeAreaDataAccessor(prevColor)] === prevActiveprovinceValue) ? +provValue[4] : 0
           }))
 
           newMapStyle = newMapStyle
@@ -656,7 +769,7 @@ class Map extends Component {
   }
   _changeYear = (year, migrationActive) => {
     const { activeArea, activeMarkers, changeAreaData, deselectItem, selectedItem, setYear, metadata } = this.props
-    let prevActiveprovinceValue = (activeArea.data[selectedItem.value] || {})[utils.activeAreaDataAccessor(activeArea.color)]
+    let prevActiveprovinceValue = safeAreaDataAccess(activeArea.data, selectedItem.value, utils.activeAreaDataAccessor(activeArea.color))
 
     if (activeArea.color === 'religionGeneral') {
       prevActiveprovinceValue = (metadata['religion'][prevActiveprovinceValue] || {})[3]
@@ -674,8 +787,85 @@ class Map extends Component {
     }
 
     this._addGeoJson(TYPE_MARKER, activeMarkers.list, false, year)
+    console.log(`🌐 API CALL: ${properties.chronasApiHost}/areas/${year}`);
     axios.get(properties.chronasApiHost + '/areas/' + year)
       .then((areaDefsRequest) => {
+        const areaData = areaDefsRequest.data;
+        
+        // 📊 DETAILED AREA DATA ANALYSIS
+        console.group(`📊 AREA DATA ANALYSIS - Year ${year}`);
+        console.log(`Total provinces received: ${Object.keys(areaData).length}`);
+        
+        // Analyze data completeness
+        const dataAnalysis = {
+          total: 0,
+          complete: 0,
+          missingRuler: 0,
+          missingCulture: 0,
+          missingReligion: 0,
+          missingCapital: 0,
+          missingPopulation: 0,
+          invalidStructure: 0,
+          nullValues: 0
+        };
+        
+        Object.keys(areaData).forEach(provinceId => {
+          dataAnalysis.total++;
+          const provinceData = areaData[provinceId];
+          
+          if (!Array.isArray(provinceData)) {
+            dataAnalysis.invalidStructure++;
+            console.warn(`❌ ${provinceId}: Invalid structure (${typeof provinceData}):`, provinceData);
+            return;
+          }
+          
+          if (provinceData.length < 5) {
+            console.warn(`❌ ${provinceId}: Incomplete array (length ${provinceData.length}):`, provinceData);
+          }
+          
+          // Check each data type
+          if (!provinceData[0] && provinceData[0] !== 0) dataAnalysis.missingRuler++;
+          if (!provinceData[1] && provinceData[1] !== 0) dataAnalysis.missingCulture++;
+          if (!provinceData[2] && provinceData[2] !== 0) dataAnalysis.missingReligion++;
+          if (!provinceData[3] && provinceData[3] !== 0) dataAnalysis.missingCapital++;
+          if (!provinceData[4] && provinceData[4] !== 0) dataAnalysis.missingPopulation++;
+          
+          // Check for null values
+          if (provinceData.some(val => val === null || val === undefined)) {
+            dataAnalysis.nullValues++;
+          }
+          
+          // Complete data check
+          if (provinceData.length >= 5 && provinceData.every(val => val !== null && val !== undefined)) {
+            dataAnalysis.complete++;
+          }
+        });
+        
+        // Log summary
+        console.log('📈 DATA COMPLETENESS SUMMARY:');
+        console.log(`✅ Complete provinces: ${dataAnalysis.complete}/${dataAnalysis.total} (${(dataAnalysis.complete/dataAnalysis.total*100).toFixed(1)}%)`);
+        console.log(`❌ Missing ruler: ${dataAnalysis.missingRuler}`);
+        console.log(`❌ Missing culture: ${dataAnalysis.missingCulture}`);
+        console.log(`🚨 Missing religion: ${dataAnalysis.missingReligion}`);
+        console.log(`❌ Missing capital: ${dataAnalysis.missingCapital}`);
+        console.log(`❌ Missing population: ${dataAnalysis.missingPopulation}`);
+        console.log(`💥 Invalid structure: ${dataAnalysis.invalidStructure}`);
+        console.log(`⚠️ Null values: ${dataAnalysis.nullValues}`);
+        
+        // Log specific provinces with missing religion data
+        if (dataAnalysis.missingReligion > 0) {
+          console.group('🚨 PROVINCES MISSING RELIGION DATA:');
+          Object.keys(areaData).forEach(provinceId => {
+            const provinceData = areaData[provinceId];
+            if (Array.isArray(provinceData) && (!provinceData[2] && provinceData[2] !== 0)) {
+              console.log(`${provinceId}: [${provinceData.join(', ')}]`);
+            }
+          });
+          console.groupEnd();
+        }
+        
+        console.groupEnd();
+        
         changeAreaData(areaDefsRequest.data)
         this._simulateYearChange(areaDefsRequest.data)
         this._changeArea(areaDefsRequest.data, activeArea.label, activeArea.color, selectedItem.value, false, prevActiveprovinceValue)
@@ -688,17 +878,26 @@ class Map extends Component {
           if (nextYear <= autoplayData[1]) {
             setTimeout(() => {
               setYear(nextYear)
-            }, autoplayData[4]*1000)
+            }, autoplayData[4] * 1000)
           } else if (autoplayData[3]) {
             // go back to the beginning if repeat is on
             setTimeout(() => {
               setYear(autoplayData[0])
-            }, autoplayData[4]*1000)
+            }, autoplayData[4] * 1000)
           } else {
             // stop if not
             deselectItem()
           }
         }
+      })
+      .catch((error) => {
+        console.error(`🚨 API ERROR: Failed to load area data for year ${year}:`, error);
+        console.error('Error details:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          url: `${properties.chronasApiHost}/areas/${year}`
+        });
       })
   }
   _goToViewport = ({ longitude, latitude, zoomIn }) => {
@@ -845,7 +1044,7 @@ class Map extends Component {
     })
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props)
     this._onMarkerClick = this._onMarkerClick.bind(this)
     this._onDeckHover = this._onDeckHover.bind(this)
@@ -887,7 +1086,7 @@ class Map extends Component {
     this.props.showNotification('somethingWentWrong', 'confirm')
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     // TODO: move all unneccesary logic to specific components (this gets executed a lot!)
     const { activeEpics, activeMarkers, activeArea, location, isLight, selectedYear, mapStyles, metadata, modActive, history, migrationActive, selectedItem, setMarker, setYear, selectAreaItem, selectMarkerItem, updateSingleMetadata, locale } = this.props
 
@@ -976,8 +1175,9 @@ class Map extends Component {
     // slected item changed?
     if (selectedItem.value !== nextProps.selectedItem.value) {
       // console.debug('###### Item changed')
-      const isRulerHold = (activeArea.data[selectedItem.value] &&
-        activeArea.data[selectedItem.value][utils.activeAreaDataAccessor(nextProps.activeArea.color)] === (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)])
+      const currentValue = safeAreaDataAccess(activeArea.data, selectedItem.value, utils.activeAreaDataAccessor(nextProps.activeArea.color))
+      const nextValue = safeAreaDataAccess(nextProps.activeArea.data, nextProps.selectedItem.value, utils.activeAreaDataAccessor(nextProps.activeArea.color))
+      const isRulerHold = (currentValue !== null && currentValue === nextValue)
       if (nextProps.selectedItem.wiki === 'random') {
         const { markerData } = this.state
         const markerDataArray = (markerData.filter(el => el.subtype !== 'c' && el.subtype !== 'cp') || [])
@@ -1002,8 +1202,8 @@ class Map extends Component {
         nextProps.selectedItem.value !== '' &&
         nextProps.activeArea.color !== '' &&
         nextProps.activeArea.color === activeArea.color) {
-        let nextActiveprovinceValue = (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[utils.activeAreaDataAccessor(nextProps.activeArea.color)]
-        let prevActiveprovinceValue = (activeArea.data[selectedItem.value] || {})[utils.activeAreaDataAccessor(activeArea.color)]
+        let nextActiveprovinceValue = safeAreaDataAccess(nextProps.activeArea.data, nextProps.selectedItem.value, utils.activeAreaDataAccessor(nextProps.activeArea.color))
+        let prevActiveprovinceValue = safeAreaDataAccess(activeArea.data, selectedItem.value, utils.activeAreaDataAccessor(activeArea.color))
 
         if (nextProps.activeArea.color === 'religionGeneral') {
           nextActiveprovinceValue = (metadata['religion'][nextActiveprovinceValue] || {})[3]
@@ -1094,7 +1294,7 @@ class Map extends Component {
 
             const bounds = webMercatorViewport.fitBounds(
               [[bbox[0], bbox[1]], [bbox[2], bbox[3]]],
-              {padding: 20, offset: [0, -40]}
+              { padding: 20, offset: [0, -40] }
             )
 
             const viewport = {
@@ -1121,9 +1321,9 @@ class Map extends Component {
           })
         }
         else if (selectedFeature && (((selectedFeature || {}).properties || {}).ct === 'area')) {
-          const {aeId} = selectedFeature.properties
+          const { aeId } = selectedFeature.properties
           const aeIDArr = aeId.split('|')
-          const {viewport, multiPolygonToOutline} = this._getAreaViewportAndOutlines(aeIDArr[1], aeIDArr[2])
+          const { viewport, multiPolygonToOutline } = this._getAreaViewportAndOutlines(aeIDArr[1], aeIDArr[2])
 
           if (typeof multiPolygonToOutline !== 'undefined') {
             this.setState({
@@ -1475,7 +1675,7 @@ class Map extends Component {
                     'geometry': province.geometry
                   }
                 })
-              ))
+            ))
         }
       }
     } else if (modActive.type === TYPE_AREA) {
@@ -1539,19 +1739,19 @@ class Map extends Component {
 
     // Area Color not changed and is ruler area and not leaving and provinceruler would change
     else if (nextProps.activeArea.color === 'ruler' && nextProps.selectedItem.type === 'areas' && nextProps.selectedItem.value !== '' &&
-      (activeArea.data[nextProps.selectedItem.value] &&
-        activeArea.data[nextProps.selectedItem.value][0] !== (nextProps.activeArea.data[nextProps.selectedItem.value] || {})[0])) {
+      (safeAreaDataAccess(activeArea.data, nextProps.selectedItem.value, 0) !== null &&
+        safeAreaDataAccess(activeArea.data, nextProps.selectedItem.value, 0) !== safeAreaDataAccess(nextProps.activeArea.data, nextProps.selectedItem.value, 0))) {
       // year changed while ruler article open and new ruler in province, ensure same ruler is kept if possible
-      const rulerToHold = activeArea.data[selectedItem.value][0]
+      const rulerToHold = safeAreaDataAccess(activeArea.data, selectedItem.value, 0)
       const nextData = nextProps.activeArea.data
-      const provinceWithOldRuler = Object.keys(nextData).find(key => nextData[key][0] === rulerToHold)
+      const provinceWithOldRuler = Object.keys(nextData).find(key => safeAreaDataAccess(nextData, key, 0) === rulerToHold)
       if (provinceWithOldRuler) selectAreaItem(provinceWithOldRuler, provinceWithOldRuler)
     }
 
     if (mapStyles.popOpacity !== nextProps.mapStyles.popOpacity) {
       // popOpacity changed
       const populationMax = Math.max.apply(Math, Object.values(nextProps.activeArea.data).map(function (provValue) {
-        return (provValue !== null) ? +provValue[4] : 0
+        return (provValue !== null && Array.isArray(provValue) && provValue.length > 4) ? +provValue[4] : 0
       }))
 
       if (nextProps.mapStyles.popOpacity) {
@@ -1628,21 +1828,21 @@ class Map extends Component {
     // this._resize() // TODO: is this necessary?
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     window.removeEventListener('resize', this._resize)
   }
 
-  _queryMigrationData (year) {
+  _queryMigrationData(year) {
     axios.get(properties.chronasApiHost + '/markers?migration=true&year=' + ((!year || isNaN(year)) ? this.props.selectedYear : year))
       .then(migrationRes => {
-          this.setState({ migrationData: migrationRes.data })
+        this.setState({ migrationData: migrationRes.data })
       })
       .catch(() => {
         this.props.showNotification('Migration query failed')
       })
   }
 
-  _onDeckHover ({ x, y, object }) {
+  _onDeckHover({ x, y, object }) {
     const { viewport, expanded } = this.state
     const activeCluster = this.props.mapStyles.clusterMarkers
     // don;t reset on mouseleave if expanded
@@ -1685,7 +1885,7 @@ class Map extends Component {
     this.setState(toUpdate)
   }
 
-  _onMarkerClick (layerClicked) {
+  _onMarkerClick(layerClicked) {
     const { selectedItem, setWikiId, setData, selectMarkerItem, modActive, history, setEpicContentIndex } = this.props
     const { markerData, clusterRawData, viewport } = this.state
 
@@ -1765,7 +1965,7 @@ class Map extends Component {
     if (layerClicked.object) history.push('/article')
   }
 
-  _renderPopup () {
+  _renderPopup() {
     const { activeArea, metadata, markerTheme, mapStyles, selectMarkerItem, history, isLight, theme, translate } = this.props
     const { categories, clusterRawData, filtered, hoverInfo, expanded, searchMarkerText } = this.state
     const isCluster = mapStyles.clusterMarkers
@@ -1776,7 +1976,7 @@ class Map extends Component {
         if (expanded) {
           const menuRow = <div style={styles.rootMenu}>
             <TextField
-              style={{ width: 160, marginRight: 20, marginTop: -16 /*, height: 48 */}}
+              style={{ width: 160, marginRight: 20, marginTop: -16 /*, height: 48 */ }}
               hintText={translate('pos.search')}
               value={searchMarkerText}
               floatingLabelText={translate('pos.searchMarkers')}
@@ -1970,7 +2170,7 @@ class Map extends Component {
                             fontSize: '20px',
                             fontWeight: 'bolder'
                           }}>
-                            { isCity && <span style={{ marginLeft: -10, marginRight: 2, fontSize: '12px', fontWeight: 400 }}>{translate('pos.founded')} </span>}
+                            {isCity && <span style={{ marginLeft: -10, marginRight: 2, fontSize: '12px', fontWeight: 400 }}>{translate('pos.founded')} </span>}
                             {year}
                           </div>
                         </StepButton>
@@ -1990,7 +2190,7 @@ class Map extends Component {
 
         if (isLight) {
           selectedValues = {
-          'r': metadata.ruler[properties.r] || []
+            'r': metadata.ruler[properties.r] || []
           }
         } else {
           selectedValues = {
@@ -2008,7 +2208,7 @@ class Map extends Component {
           const rulerIcon = selectedValues['r'][3]
           return (
             <Popup className='dimsTooltip' longitude={hoverInfo.lngLat[0]} latitude={hoverInfo.lngLat[1]}
-                   closeButton={false}>
+              closeButton={false}>
               <div className='county-info'>
                 <Chip
                   className='chipAvatar'
@@ -2016,10 +2216,10 @@ class Map extends Component {
                   backgroundColor={(activeArea.color === 'ruler') ? (selectedValues['r'][1] || '#fff') : '#fff'}
                 >
                   <Avatar color={themes[theme].backColors[0]}
-                          backgroundColor={rulerIcon ? '#fff' : '#6a6a6a'}
-                          {...(rulerIcon ? (rulerIcon[0] === '/' ? { src: rulerIcon } : { src: getFullIconURL(decodeURIComponent(rulerIcon)) }) : {
-                            icon: <RulerIcon viewBox={'0 0 64 64'} />
-                          })}
+                    backgroundColor={rulerIcon ? '#fff' : '#6a6a6a'}
+                    {...(rulerIcon ? (rulerIcon[0] === '/' ? { src: rulerIcon } : { src: getFullIconURL(decodeURIComponent(rulerIcon)) }) : {
+                      icon: <RulerIcon viewBox={'0 0 64 64'} />
+                    })}
                   />
                   {hasLocaleMetadata ? (metadata.locale['ruler'][properties.r] || selectedValues['r'][0] || 'n/a') : (selectedValues['r'][0] || 'n/a')}
                 </Chip>
@@ -2102,7 +2302,7 @@ class Map extends Component {
                   backgroundColor={'#6a6a6a'}
                   {...({ icon: <ProvinceIcon viewBox={'0 0 64 64'} /> })}
                 />
-                  {hasLocaleMetadata ? ((metadata.locale['province'] || {})[properties.name] || selectedValues['p']) : selectedValues['p']} ({properties.p > 1000000 ? (properties.p / 1000000 + ' M') : (properties.p > 1000 ? (properties.p / 1000 + ' k') : properties.p)})
+                {hasLocaleMetadata ? ((metadata.locale['province'] || {})[properties.name] || selectedValues['p']) : selectedValues['p']} ({properties.p > 1000000 ? (properties.p / 1000000 + ' M') : (properties.p > 1000 ? (properties.p / 1000 + ' k') : properties.p)})
               </Chip>
             </div>
           </Popup>
@@ -2115,9 +2315,9 @@ class Map extends Component {
   }
 
   __createLine = (x1, y1, x2, y2, lineId) => {
-    let distance = Math.sqrt( ((x1-x2) * (x1-x2)) + ((y1-y2) * (y1-y2)))
-    let xMid = (x1+x2)/2
-    let yMid = (y1+y2)/2
+    let distance = Math.sqrt(((x1 - x2) * (x1 - x2)) + ((y1 - y2) * (y1 - y2)))
+    let xMid = (x1 + x2) / 2
+    let yMid = (y1 + y2) / 2
     let slopeInRadian = Math.atan2(y1 - y2, x1 - x2)
     let slopeInDegrees = (slopeInRadian * 180) / Math.PI
 
@@ -2127,7 +2327,7 @@ class Map extends Component {
     line.style.width = distance + "px"
     line.style.top = yMid + "px"
     line.style.left = (xMid - (distance / 2)) + "px"
-    line.style.transform =  "rotate(" + slopeInDegrees + "deg)"
+    line.style.transform = "rotate(" + slopeInDegrees + "deg)"
     customMarker.style.opacity = "1"
   }
 
@@ -2150,7 +2350,7 @@ class Map extends Component {
     }
   }
 
-  render () {
+  render() {
     const { arcData, clusterRawData, epics, galleryMarker, markerData, geoData, hoverInfo, mapStyle, mapTimelineContainerClass, mapGalleryContainerClass, migrationData, viewport } = this.state
     const { activeArea, modActive, menuDrawerOpen, metadata, rightDrawerOpen, history, isLight, location, theme, mapStyles, markerTheme, selectedItem, selectedYear } = this.props
 
@@ -2171,21 +2371,21 @@ class Map extends Component {
     let modMarker = (
       !isLight &&
       (((modActive.type === TYPE_MARKER || modActive.type === TYPE_LINKED) && typeof modActive.data[0] !== 'undefined') ||
-      ((selectedItem || {}).type === TYPE_LINKED && ((selectedItem.value || {}).coo || []).length > 0) ||
-      ((selectedItem || {}).type === TYPE_EPIC && (selectedItem.coo || []).length > 0) ||
-      (galleryMarker.length > 1))) ? <Marker
-        captureClick={false}
-        captureDrag={false}
-        latitude={(galleryMarker || {})[1] || ((modActive || {}).data || {})[1] ||
-      (selectedItem.coo || {})[1] ||
-      ((selectedItem.value || {}).coo || {})[1]}
-        longitude={(galleryMarker || {})[0] || ((modActive || {}).data || {})[0] ||
-      (selectedItem.coo || {})[0] ||
-      ((selectedItem.value || {}).coo || {})[0]}
-        offsetLeft={0}
-        offsetTop={0}>
-        <BasicPin hideInit={(galleryMarker.length > 1)} size={60} />
-      </Marker> : null
+        ((selectedItem || {}).type === TYPE_LINKED && ((selectedItem.value || {}).coo || []).length > 0) ||
+        ((selectedItem || {}).type === TYPE_EPIC && (selectedItem.coo || []).length > 0) ||
+        (galleryMarker.length > 1))) ? <Marker
+          captureClick={false}
+          captureDrag={false}
+          latitude={(galleryMarker || {})[1] || ((modActive || {}).data || {})[1] ||
+            (selectedItem.coo || {})[1] ||
+            ((selectedItem.value || {}).coo || {})[1]}
+          longitude={(galleryMarker || {})[0] || ((modActive || {}).data || {})[0] ||
+            (selectedItem.coo || {})[0] ||
+            ((selectedItem.value || {}).coo || {})[0]}
+          offsetLeft={0}
+          offsetTop={0}>
+      <BasicPin hideInit={(galleryMarker.length > 1)} size={60} />
+    </Marker> : null
 
     const activeCluster = mapStyles.clusterMarkers
     let possibleClusterRaw = []
@@ -2242,7 +2442,7 @@ class Map extends Component {
           onClick={this._onClick}
           onLoad={this._initializeMap}
         >
-          { !isLight && <DeckGLOverlay
+          {!isLight && <DeckGLOverlay
             activeColor={activeArea.color}
             goToViewport={this._goToViewport}
             theme={themes[theme]}

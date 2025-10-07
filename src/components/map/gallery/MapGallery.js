@@ -336,7 +336,12 @@ class MapGallery extends PureComponent {
         const tileData = []
         const filteredData = []
 
-        const bounds = ((refMap || {}).getMap() || {}).getBounds()
+        const mapRef = refMap && typeof refMap.getMap === 'function' ? refMap.getMap() : null
+        if (!mapRef) {
+          console.warn('Map reference not available in MapGallery')
+          return // Exit early if map reference is not available
+        }
+        const bounds = mapRef.getBounds()
         const NE = bounds._ne
         const SW = bounds._sw
 
