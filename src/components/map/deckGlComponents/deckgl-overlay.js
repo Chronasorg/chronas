@@ -139,9 +139,9 @@ export default class DeckGLOverlay extends Component {
         }
       })) : nextProps.markerData
       // }
-      const nextTextMarker = nextProps.markerData.filter(el => el.subtype === 'c' || el.subtype === 'cp')
+      const nextTextMarker = nextProps.markerData.filter(el => el && el.subtype && (el.subtype === 'c' || el.subtype === 'cp'))
       const iconMarker = (geoData.length !== 0 || wasEpic) ? geoData : markerData
-      const textMarker = markerData.filter(el => el.subtype === 'c')
+      const textMarker = markerData.filter(el => el && el.subtype === 'c')
 
       let capitalMarkers = []
       let capitalMarkers0 = []
@@ -163,9 +163,9 @@ export default class DeckGLOverlay extends Component {
 
         capitalMarkers = []
         if (!showCluster && nextProps.activeColor === 'ruler') {
-          capitalMarkers = nextIconMarker.filter(el => el.subtype === 'cp' || (el.subtype === 'c' && (el.capital && el.capital.find((ell) => {
+          capitalMarkers = nextIconMarker.filter(el => el && el.subtype && (el.subtype === 'cp' || (el.subtype === 'c' && (el.capital && el.capital.find((ell) => {
             return ell[0] <= +selectedYear && ell[1] >= +selectedYear
-          }))))
+          })))))
         }
 
         capitalMarkers0 = []
@@ -184,7 +184,7 @@ export default class DeckGLOverlay extends Component {
           highlightColor: showCluster ? [0, 50, 0, 1] : RGBAtoArray(theme.highlightColors[0]), // showCluster
           data: this._getMarker({
             ...{
-              markerData: (showCluster && nextProps.geoData.length > 0) ? [] : (nextProps.activeColor === 'ruler') ? nextIconMarker.filter(el => el.subtype !== 'c').concat(capitalMarkers0).concat(capitalMarkers) : nextIconMarker.filter(el => el.subtype[0] !== 'c')
+              markerData: (showCluster && nextProps.geoData.length > 0) ? [] : (nextProps.activeColor === 'ruler') ? nextIconMarker.filter(el => el && el.subtype !== 'c').concat(capitalMarkers0).concat(capitalMarkers) : nextIconMarker.filter(el => el && el.subtype && el.subtype[0] !== 'c')
             }, // .filter(el => el.subtype !== 'c')},
             sizeScale,
             viewport,
@@ -221,9 +221,9 @@ export default class DeckGLOverlay extends Component {
 
         capitalMarkers = []
         if (showCluster && nextProps.activeColor === 'ruler') {
-          capitalMarkers = nextIconMarker.filter(el => el.subtype === 'cp' || (el.subtype === 'c' && (el.capital && el.capital.find((ell) => {
+          capitalMarkers = nextIconMarker.filter(el => el && el.subtype && (el.subtype === 'cp' || (el.subtype === 'c' && (el.capital && el.capital.find((ell) => {
             return ell[0] <= +selectedYear && ell[1] >= +selectedYear
-          }))))
+          })))))
         }
 
         capitalMarkers0 = []
@@ -328,7 +328,7 @@ export default class DeckGLOverlay extends Component {
           else migrationLocations[idAdd][0]++
         })
 
-        const migrationLocationValues = Object.values(migrationLocations).filter(el => el[0] !== -1)
+        const migrationLocationValues = Object.values(migrationLocations).filter(el => el && Array.isArray(el) && el[0] !== -1)
         const finalMigrationLocation = {
           min: migrationLocationValues.reduce((min, p) => p[0] < min ? p[0] : min, Infinity),
           max: migrationLocationValues.reduce((max, p) => p[0] > max ? p[0] : max, -Infinity),
@@ -340,7 +340,7 @@ export default class DeckGLOverlay extends Component {
         const absMax = -1 * locMin + locMax
         const hideThreshold = (0.005 * absMax) + 1
 
-        finalMigrationLocation.data = migrationLocationValues.filter(d => Math.abs(d[0]) > hideThreshold).map(d => {
+        finalMigrationLocation.data = migrationLocationValues.filter(d => d && Array.isArray(d) && Math.abs(d[0]) > hideThreshold).map(d => {
           const val = d[0] // (Math.sqrt(Math.abs(d[0]) / absMax))
           const color = (val > 0)
             ? [100 - (100 * val / locMax), 100 + (100 * val / locMax), 0, 100 + (155 * val / locMax)]
@@ -535,7 +535,7 @@ export default class DeckGLOverlay extends Component {
       for (let z = 0; z <= 20; z++) {
         const radius = sizeScale / Math.sqrt(2) / Math.pow(2, z)
 
-        markerData.filter(el => el.subtype !== 'c').forEach(p => {
+        markerData.filter(el => el && el.subtype !== 'c').forEach(p => {
           if (p.zoomLevels && p.zoomLevels[z] === undefined) {
             // this point does not belong to a cluster
             const { x, y } = p
