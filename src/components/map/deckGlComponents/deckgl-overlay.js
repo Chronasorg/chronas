@@ -9,14 +9,14 @@ import { iconMapping, iconSize, properties, RGBAtoArray } from '../../../propert
 import utilsQuery from '../utils/query'
 import MovementLayerWrapper from './movement-wrapper'
 
-const ROUTEABLETYPES = ["b","h","si","c","ca","l"]
+const ROUTEABLETYPES = ["b", "h", "si", "c", "ca", "l"]
 
 const Arc = require('arc')
 
 const fullTime = 4000
 let interval = -1
 
-function getIconName (size) {
+function getIconName(size) {
   if (size === 0) {
     return ''
   }
@@ -29,11 +29,11 @@ function getIconName (size) {
   return '100'
 }
 
-function getIconSize (size) {
+function getIconSize(size) {
   return Math.min(100, size) / 100 * 0.5 + 0.5
 }
 
-function colorToRGBArray (color) {
+function colorToRGBArray(color) {
   if (Array.isArray(color)) {
     return color.slice(0, 4)
   }
@@ -43,7 +43,7 @@ function colorToRGBArray (color) {
 }
 
 export default class DeckGLOverlay extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this._tree = rbush(9, ['.x', '.y', '.x', '.y'])
@@ -58,7 +58,7 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
-  static get defaultViewport () {
+  static get defaultViewport() {
     return {
       longitude: -100,
       latitude: 40.7,
@@ -69,7 +69,7 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (interval !== -1) {
       clearInterval(interval)
       interval = -1
@@ -78,7 +78,7 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     const { activeColor, clusterRawData, contentIndex, markerData, arcData, markerTheme, migrationData, selectedYear, selectedItem, geoData, updateLine, goToViewport } = this.props
     const { strokeWidth, onHover, showCluster, theme, metadata, onMarkerClick, sizeScale } = nextProps
 
@@ -86,7 +86,7 @@ export default class DeckGLOverlay extends Component {
     const { viewport } = nextProps
     const oldViewport = this.props.viewport
 
-    const { animatedFeature, arcs, marker, texts, /* geo */} = this.state
+    const { animatedFeature, arcs, marker, texts, /* geo */ } = this.state
     const z = Math.floor(viewport.zoom)
     const size = /* showCluster ? 1 : */ Math.min(Math.pow(1.55, viewport.zoom - 10), 1)
     const updateTrigger = z * showCluster
@@ -289,8 +289,8 @@ export default class DeckGLOverlay extends Component {
         layers[0] = new ScatterplotLayer({
           id: 'cities-dots',
           data: myTexts.filter(el => !(el.capital && el.capital.find((ell) => {
-              return ell[0] <= +selectedYear && ell[1] >= +selectedYear
-            })
+            return ell[0] <= +selectedYear && ell[1] >= +selectedYear
+          })
           )),
           // outline: true,
           radiusScale: 10000,
@@ -319,12 +319,12 @@ export default class DeckGLOverlay extends Component {
 
         const migrationLocations = {}
 
-        nextProps.migrationData.forEach( el => {
+        nextProps.migrationData.forEach(el => {
           const idLeave = el[0][0] + " " + el[0][1]
           const idAdd = el[1][0] + " " + el[1][1]
-          if (typeof migrationLocations[idLeave] === "undefined") migrationLocations[idLeave] = [-1,el[0]]
+          if (typeof migrationLocations[idLeave] === "undefined") migrationLocations[idLeave] = [-1, el[0]]
           else migrationLocations[idLeave][0]--
-          if (typeof migrationLocations[idAdd] === "undefined") migrationLocations[idAdd] = [1,el[1]]
+          if (typeof migrationLocations[idAdd] === "undefined") migrationLocations[idAdd] = [1, el[1]]
           else migrationLocations[idAdd][0]++
         })
 
@@ -480,7 +480,7 @@ export default class DeckGLOverlay extends Component {
     }
   }
 
-  _getTexts ({ textData, viewport }) {
+  _getTexts({ textData, viewport }) {
     if (!textData) {
       return false
     }
@@ -504,7 +504,7 @@ export default class DeckGLOverlay extends Component {
     return textData
   }
 
-  _getMarker ({ markerData, viewport, showCluster }) {
+  _getMarker({ markerData, viewport, showCluster }) {
     if (!markerData) {
       return false
     }
@@ -569,7 +569,7 @@ export default class DeckGLOverlay extends Component {
     return markerData
   }
 
-  _getArcs (data) {
+  _getArcs(data) {
     if (!data) {
       return null
     }
@@ -590,12 +590,12 @@ export default class DeckGLOverlay extends Component {
     return arcs
   }
 
-  render () {
+  render() {
     const { viewport } = this.props
     const { layers } = this.state
 
     return <DeckGL {...viewport}
-                   getCursor={() => 'pointer'}
-                   layers={layers} />
+      getCursor={() => 'pointer'}
+      layers={layers} />
   }
 }
