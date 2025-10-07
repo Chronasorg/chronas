@@ -893,9 +893,9 @@ class Map extends Component {
       .catch((error) => {
         console.error(`🚨 API ERROR: Failed to load area data for year ${year}:`, error);
         console.error('Error details:', {
-          status: error.response?.status,
-          statusText: error.response?.statusText,
-          data: error.response?.data,
+          status: error.response && error.response.status,
+          statusText: error.response && error.response.statusText,
+          data: error.response && error.response.data,
           url: `${properties.chronasApiHost}/areas/${year}`
         });
       })
