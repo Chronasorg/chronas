@@ -4,6 +4,7 @@
 [![dependencies](https://david-dm.org/daumann/chronas.svg)](https://david-dm.org/daumann/chronas)
 [![devDependency Status](https://david-dm.org/daumann/chronas/dev-status.svg)](https://david-dm.org/daumann/chronas#info=devDependencies)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Chronasorg/chronas)
 
 ## Table of Contents
 - [Chronas](#chronas)
