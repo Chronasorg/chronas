@@ -4,6 +4,10 @@
 @import '~react-vis/dist/style';
 @import '~react-image-gallery/styles/scss/image-gallery.scss';
 
+:root {
+  --banner-height: 39px;
+}
+
 html {
   box-sizing: border-box;
 }
@@ -14,6 +18,13 @@ body {
   padding: 0;
   height: 100%;
   overflow: hidden;
+}
+
+#root {
+  position: relative;
+  top: var(--banner-height);
+  height: calc(100% - var(--banner-height)) !important;
+  transform: translateZ(0);
 }
 
 *,
