@@ -79,7 +79,7 @@ Hot reloading is enabled by default when the application is running in developme
 **We recommend using the [Redux DevTools Chrome Extension](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd).**
 Using the chrome extension allows your monitors to run on a separate thread and affords better performance and functionality. It comes with several of the most popular monitors, is easy to configure, filters actions, and doesn't require installing any packages in your project.
 
-However, it's easy to bundle these developer tools locally should you choose to do so. First, grab the packages from npm:
+However it's easy to bundle these developer tools locally should you choose to do so. First, grab the packages from npm:
 
 ```bash
 npm add --dev redux-devtools redux-devtools-log-monitor redux-devtools-dock-monitor
